@@ -194,6 +194,10 @@ Project is licensed with the MIT License. To contribute, just fork, make changes
 and send a pull request. If its a rather long/complicated change, please
 consider opening an [issue][] first so we can discuss it out.
 
+Any comments/suggestions/feedback welcome. Please join the discussion on the
+[reddit page][] of this project.
+
 [Vundle]: https://github.com/gmarik/vundle
 [oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh
 [issue]: https://github.com/sharat87/antigen/issues
+[reddit page]: http://www.reddit.com/r/commandline/comments/u4f26/antigen_a_plugin_manager_for_zsh_shell/
