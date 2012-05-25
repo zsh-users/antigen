@@ -107,6 +107,36 @@ bundle-install! () {
     bundle-install --update
 }
 
+bundle-cleanup () {
+
+    # Find directores in ANTIGEN_BUNDLE_DIR, that are not in the bundles record.
+    local unidentified_bundles="$(comm -13 \
+        <(echo-non-empty "$bundles" | awk '{print $1}' | sort) \
+        <(ls -1 "$ANTIGEN_BUNDLE_DIR"))"
+
+    if [[ -z $unidentified_bundles ]]; then
+        echo "You don't have any unidentified bundles."
+        return 0
+    fi
+
+    echo The following bundles are not recorded:
+    echo "$unidentified_bundles" | sed 's/^/  /'
+
+    echo -n '\nDelete them all? [y/N] '
+    if read -q; then
+        echo
+        echo
+        echo "$unidentified_bundles" | while read name; do
+            echo -n Deleting $name...
+            rm -rf "$ANTIGEN_BUNDLE_DIR/$name"
+            echo ' done.'
+        done
+    else
+        echo
+        echo Nothing deleted.
+    fi
+}
+
 bundle-load () {
     if [[ $1 == --init ]]; then
         do_init=true
