@@ -194,24 +194,6 @@ bundle-init () {
     compinit -i
 }
 
-# A python command wrapper. Almost the same as `python -c`, but dedents the
-# source string.
-py () {
-    code="$1"
-
-    # Find indentation from first line.
-    indent="$(echo "$code" | grep -m1 -v '^$' | grep -o '^\s*' | wc -c)"
-
-    # Strip that many spaces in the start from each line.
-    if [[ $indent != 0 ]]; then
-        indent=$(($indent - 1))
-        code="$(echo "$code" | sed "s/^\s\{$indent\}//")"
-    fi
-
-    # Run the piece of code.
-    python -c "$code"
-}
-
 # Does what it says.
 echo-non-empty () {
     echo "$@" | while read line; do
