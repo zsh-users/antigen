@@ -6,10 +6,15 @@ typical vim+pathogen setup. Antigen is to zsh, what [Vundle][] is to vim.
 
 # Quick Usage
 
+First, clone this repo, probably as a submodule if you have your dotfiles in a
+git repo,
+
+    git clone https://github.com/sharat87/antigen.git
+
 The usage should be very familiar to you if you use Vundle. A typical `.zshrc`
 might look like this
 
-    source ~/labs/antigen/antigen.zsh
+    source /path-to-antigen-clone/antigen.zsh
 
     # Load the oh-my-zsh's library.
     bundle-lib
