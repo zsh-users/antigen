@@ -81,10 +81,10 @@ bundle-install () {
         local clone_dir="$(echo "$spec" | awk '{print $4}')"
 
         if [[ -z "$(echo "$handled_repos" | grep -Fm1 "$url")" ]]; then
-            if [[ -d $clone_dir ]]; then
-                git --git-dir "$clone_dir/.git" pull
-            else
+            if [[ ! -d $clone_dir ]]; then
                 git clone "$url" "$clone_dir"
+            elif $update; then
+                git --git-dir "$clone_dir/.git" pull
             fi
 
             handled_repos="$handled_repos\n$url"
