@@ -91,7 +91,7 @@ bundle-install () {
         fi
 
         if [[ $name != *.theme ]]; then
-            cp -R "$clone_dir/$loc" "$ANTIGEN_BUNDLE_DIR/$name"
+            cp -r "$clone_dir/$loc" "$ANTIGEN_BUNDLE_DIR/$name"
         else
             mkdir -p "$ANTIGEN_BUNDLE_DIR/$name"
             cp "$clone_dir/$loc" "$ANTIGEN_BUNDLE_DIR/$name"
