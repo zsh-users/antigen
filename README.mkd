@@ -1,0 +1,194 @@
+# Antigen
+
+Antigen is a small set of functions that help you easily manage your shell (zsh)
+plugins, called bundles. The concept is pretty much the same as bundles in a
+typical vim+pathogen setup. Antigen is to zsh, what [Vundle][] is to vim.
+
+# Quick Usage
+
+The usage should be very familiar to you if you use Vundle. A typical `.zshrc`
+might look like this
+
+    source ~/labs/antigen/antigen.zsh
+
+    # Load the oh-my-zsh's library.
+    bundle-lib
+
+    # Bundles from the default repo (robbyrussell's oh-my-zsh).
+    bundle --loc=plugins/git
+    bundle --loc=plugins/heroku
+    bundle --loc=plugins/pip
+    bundle --loc=plugins/lein
+    bundle --loc=plugins/command-not-found
+
+    # Syntax highlighting bundle.
+    bundle zsh-users/zsh-syntax-highlighting
+
+    # Load the theme.
+    bundle-theme robbyrussell
+
+Open your zsh with this zshrc and run `bundle-install` and you should be ready
+to roll. The complete syntax for the `bundle` command is discussed further down
+on this page.
+
+# Motivation
+
+If you use zsh and [oh-my-zsh][], you know that having many different plugins
+that are developed by many different authors in a single (sub)repo is not a very
+easy to maintain. There are some really fantastic plugins and utilities in
+oh-my-zsh, but having them all in a single repo doesn't really scale well. And I
+admire robbyrussell's efforts for reviewing and mergine the gigantic number of
+pull requests the project gets. It needs a better way of plugin management.
+
+This was discussed on [a][1] [few][2] [issues][3], but it doesn't look like
+there was any progress made. So, I'm trying to start this off with antigen,
+hoping to better this situation. Please note that I'm by no means a zsh or any
+shell script expert (far from it).
+
+[1]: https://github.com/robbyrussell/oh-my-zsh/issues/465
+[2]: https://github.com/robbyrussell/oh-my-zsh/issues/377
+[3]: https://github.com/robbyrussell/oh-my-zsh/issues/1014
+
+Inspired by vundle, antigen can pull oh-my-zsh style plugins from various github
+repositories. You are not limited to use plugins from the oh-my-zsh repository
+only and you don't need to maintain your own fork and pull from upstream every
+now and then.
+
+Antigen also lets you switch the prompt theme with one command, just like that
+
+    bundle-theme candy
+
+and your prompt is changed, just for this session of course.
+
+# Commands
+
+## bundle
+
+This is the command you use to tell antigen that you want to use a plugin. The
+simplest usage follows the following syntax
+
+    bundle [<url> [<loc> [<name>]]]
+
+where `<url>` is the repository url and it defaults to [robbyrussell's
+oh-my-zsh][oh-my-zsh] repo. `<loc>` is the path under this repository which has
+the zsh plugin. This is typically the directory that contains a `*.plugin.zsh`
+file, but it could contain a completion file too. `<loc>` defaults to `/`, which
+indicates the repository itself is a plugin. `<name>` is the name with which
+this plugin will be identified. This plugin will be installed in the bundles
+directory with this name used as the directory name. If the `<name>` is not
+given, antigen tries to make an intelligent guess based on the other given
+arguments.
+
+An example invocation would be
+
+    bundle https://github.com/robbyrussell/oh-my-zsh.git plugins/ant
+
+This would install the ant plugin (with `<name>` as `ant`) from robbyrussell's
+oh-my-zsh repo. Of course, github url's can be shortened.
+
+    bundle robbyrussell/oh-my-zsh plugins/ant
+
+And since this is the default, even that isn't necessary. But we can't specify
+the `loc` without giving the first argument.
+
+For this and a few other reasons, `bundle` also supports a simple keyword
+argument syntax, using which we can rewrite the above as
+
+    bundle --loc=plugins/ant
+
+Note that you can mix and match positional and keyword arguments. But you can't
+have positional arguments after starting keyword arguments.
+
+    bundle robbyrussell/oh-my-zsh --loc=plugins/ant
+
+And keyword arguments don't care about the order in which the arguments are
+specified. The following is perfectly valid.
+
+    bundle --loc=plugins/ant --url=robbyrussell/oh-my-zsh --name=ant
+
+In addition to the above discussed arguments, `bundle` also takes the following
+arguments but only as keyword arguments.
+
+`load` &mdash; Set to `true` (default) or `false`. If this is set to `false`,
+the plugin specified is only recorded, may be for future use. It is not loaded
+into the environment. But with `true`, the plugin is immediately sourced and
+is ready to use, which is the default behavior.
+
+## bundle-install
+
+This is something you might not want to put in your `.zshrc`. Instead, run it to
+install all the recorded bundles, using the `bundle` command. It has the
+following syntax.
+
+    bundle-install [--update]
+
+The optional `--update` argument can be given to update all your plugins from
+the server. By default, `bundle-install` does *not* check for updates on the
+plugins. It just installs them, if there is a cached copy available and if its
+not already installed.
+
+## bundle-install!
+
+This is the same as running
+
+    bundle-install --update
+
+That is, it installs the recorded plugins, and updates them to the latest
+available versions.
+
+## bundle-cleanup
+
+Used to clean up unused bundles. It takes no arguments. When this is run, it
+lists out the plugins that are installed but are not recorded with a `bundle`
+command, and will ask you if you want to delete them.
+
+This command currently cannot run in a non-interactive mode. So it won't be very
+pleasant to use it in your `.zshrc`.
+
+## bundle-lib
+
+This currently exists only to make is possible to use oh-my-zsh's library, since
+its organisation is different from that of plugins. If you want to load
+oh-my-zsh's library, which you very likely do, put a
+
+    bundle-lib
+
+in  your `.zshrc`, before any `bundle` declarations. It takes no arguments.
+
+## bundle-theme
+
+Used for switching the prompt theme. Invoke it with the name of the theme you
+want to use.
+
+    bundle-theme fox
+
+Currently, themes are pulled from robbyrussell's oh-my-zsh repo, but it will
+support getting themes from other repos as well in the future.
+
+# Configuration
+
+The following environment variables can be set to customize the behavior of
+antigen. Make sure you set them *before* sourceing `antigen.zsh`.
+
+`ANTIGEN_DEFAULT_REPO_URL` &mdash; This is the default repository url that is
+used for `bundle` commands. The default value is robbyrussell's oh-my-zsh repo,
+but you can set this to the fork url of your own fork.
+
+`ANTIGEN_REPO_CACHE` &mdash; This is where the cloned repositories are cached.
+Defaults to `$HOME/.antigen/cache`
+
+`ANTIGEN_BUNDLE_DIR` &mdash; This is where the plugins are installed and sourced
+from. Defaults to `$HOME/.antigen/bundles`
+
+# Meta
+
+Please note that I built this over night and should be considered very alpha.
+However, I am using it full time now on my work machine.
+
+Project is licensed with the MIT License. To contribute, just fork, make changes
+and send a pull request. If its a rather long/complicated change, please
+consider opening an [issue][] first so we can discuss it out.
+
+[Vundle]: https://github.com/gmarik/vundle
+[oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh
+[issue]: https://github.com/sharat87/antigen/issues
