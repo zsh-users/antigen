@@ -38,8 +38,8 @@ bundle () {
 
     # Resolve the url.
     if [[ $url != git://* && $url != https://* ]]; then
-        url="https://github.com/$url.git"
         name="$(basename "$url")"
+        url="https://github.com/$url.git"
     fi
 
     # Plugin's repo will be cloned here.
