@@ -103,6 +103,10 @@ bundle-install () {
 
 }
 
+bundle-install! () {
+    bundle-install --update
+}
+
 bundle-load () {
     if [[ $1 == --init ]]; then
         do_init=true
