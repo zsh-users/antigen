@@ -20,11 +20,11 @@ might look like this
     bundle-lib
 
     # Bundles from the default repo (robbyrussell's oh-my-zsh).
-    bundle --loc=plugins/git
-    bundle --loc=plugins/heroku
-    bundle --loc=plugins/pip
-    bundle --loc=plugins/lein
-    bundle --loc=plugins/command-not-found
+    bundle git
+    bundle heroku
+    bundle pip
+    bundle lein
+    bundle command-not-found
 
     # Syntax highlighting bundle.
     bundle zsh-users/zsh-syntax-highlighting
@@ -72,6 +72,14 @@ and your prompt is changed, just for this session of course.
 This is the command you use to tell antigen that you want to use a plugin. The
 simplest usage follows the following syntax
 
+    bundle <plugin-name>
+
+This will add the `plugins/<name>` directory from [robbyrussell's
+oh-my-zsh][oh-my-zsh] (can be changed by setting `ANTIGEN_DEFAULT_REPO_URL`).
+
+However, the above is just syntax sugar for the real syntax of the `bundle`
+command.
+
     bundle [<url> [<loc> [<name>]]]
 
 where `<url>` is the repository url and it defaults to [robbyrussell's
@@ -100,6 +108,12 @@ For this and a few other reasons, `bundle` also supports a simple keyword
 argument syntax, using which we can rewrite the above as
 
     bundle --loc=plugins/ant
+
+Which is the same as
+
+    bundle ant
+
+(In the short syntax sugar introduced at the start of this section).
 
 Note that you can mix and match positional and keyword arguments. But you can't
 have positional arguments after starting keyword arguments.
