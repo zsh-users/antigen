@@ -27,6 +27,12 @@ bundle () {
         i=$(($i + 1))
     done
 
+    # Check if url is just the plugin name. Super short syntax.
+    if [[ "$url" != */* ]]; then
+        loc="plugins/$url"
+        url="$ANTIGEN_DEFAULT_REPO_URL"
+    fi
+
     # Set spec values from keyword arguments, if any. The remaining arguments
     # are all assumed to be keyword arguments.
     while [[ $1 == --*=* ]]; do
