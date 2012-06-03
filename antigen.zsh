@@ -74,6 +74,7 @@ bundle-install () {
     local handled_repos=""
 
     echo-non-empty "$bundles" | while read spec; do
+        echo "-> $spec"
 
         local name="$(echo "$spec" | awk '{print $1}')"
         local url="$(echo "$spec" | awk '{print $2}')"
@@ -91,7 +92,12 @@ bundle-install () {
         fi
 
         if [[ $name != *.theme ]]; then
-            cp -r "$clone_dir/$loc" "$ANTIGEN_BUNDLE_DIR/$name"
+            echo Installing $name
+            mkdir -p "$ANTIGEN_BUNDLE_DIR/$name"
+            pushd "$clone_dir/$loc" > /dev/null
+            ls | grep -Fv '.git' \
+                | xargs cp -rt "$ANTIGEN_BUNDLE_DIR/$name"
+            popd > /dev/null
         else
             mkdir -p "$ANTIGEN_BUNDLE_DIR/$name"
             cp "$clone_dir/$loc" "$ANTIGEN_BUNDLE_DIR/$name"
