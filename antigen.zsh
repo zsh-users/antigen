@@ -101,10 +101,7 @@ bundle-install () {
         if [[ $name != *.theme ]]; then
             echo Installing $name
             mkdir -p "$ANTIGEN_BUNDLE_DIR/$name"
-            pushd "$clone_dir/$loc" > /dev/null
-            ls | grep -Fv '.git' \
-                | xargs cp -rt "$ANTIGEN_BUNDLE_DIR/$name"
-            popd > /dev/null
+            rsync --archive --exclude=.git "$clone_dir/$loc/" "$ANTIGEN_BUNDLE_DIR/$name"
         else
             mkdir -p "$ANTIGEN_BUNDLE_DIR/$name"
             cp "$clone_dir/$loc" "$ANTIGEN_BUNDLE_DIR/$name"
