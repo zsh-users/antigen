@@ -136,6 +136,12 @@ bundle-install! () {
 
 bundle-cleanup () {
 
+    if [[ ! -d "$ANTIGEN_BUNDLE_DIR" || \
+        "$(ls "$ANTIGEN_BUNDLE_DIR/" | wc -l)" == 0 ]]; then
+        echo "You don't have any bundles."
+        return 0
+    fi
+
     # Find directores in ANTIGEN_BUNDLE_DIR, that are not in the bundles record.
     local unidentified_bundles="$(comm -13 \
         <(echo-non-empty "$bundles" | awk '{print $1}' | sort) \
