@@ -4,4 +4,4 @@ tests:
 	ZDOTDIR="${PWD}/tests" cram --shell=zsh tests
 
 itests:
-	cram -i --shell=zsh tests
+	ZDOTDIR="${PWD}/tests" cram -i --shell=zsh tests
