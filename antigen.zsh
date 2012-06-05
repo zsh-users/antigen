@@ -198,8 +198,9 @@ bundle-theme () {
 
 bundle-init () {
     # Initialize completion.
-    # FIXME: Ensure this runs only once.
-    autoload -U compinit
+    if ! type compinit &>/dev/null; then
+        autoload -U compinit
+    fi
     compinit -i
 }
 
