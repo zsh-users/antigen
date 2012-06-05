@@ -20,8 +20,8 @@ bundle () {
     local position_args='url loc name'
     local i=1
     while ! [[ -z $1 || $1 == --*=* ]]; do
-        arg_name="$(echo "$position_args" | cut -d\  -f$i)"
-        arg_value="$1"
+        local arg_name="$(echo "$position_args" | cut -d\  -f$i)"
+        local arg_value="$1"
         eval "local $arg_name='$arg_value'"
         shift
         i=$(($i + 1))
@@ -36,8 +36,8 @@ bundle () {
     # Set spec values from keyword arguments, if any. The remaining arguments
     # are all assumed to be keyword arguments.
     while [[ $1 == --*=* ]]; do
-        arg_name="$(echo "$1" | cut -d= -f1 | sed 's/^--//')"
-        arg_value="$(echo "$1" | cut -d= -f2)"
+        local arg_name="$(echo "$1" | cut -d= -f1 | sed 's/^--//')"
+        local arg_value="$(echo "$1" | cut -d= -f2)"
         eval "local $arg_name='$arg_value'"
         shift
     done
@@ -70,11 +70,10 @@ bundle () {
 
 bundle-install () {
 
+    local update=false
     if [[ $1 == --update ]]; then
-        local update=true
+        update=true
         shift
-    else
-        local update=false
     fi
 
     mkdir -p "$ANTIGEN_BUNDLE_DIR"
@@ -167,11 +166,11 @@ bundle-cleanup () {
 
 bundle-load () {
 
-    name="$1"
-    bundle_dir="$ANTIGEN_BUNDLE_DIR/$name"
+    local name="$1"
+    local bundle_dir="$ANTIGEN_BUNDLE_DIR/$name"
 
     # Source the plugin script
-    script_loc="$bundle_dir/$name.plugin.zsh"
+    local script_loc="$bundle_dir/$name.plugin.zsh"
     if [[ -f $script_loc ]]; then
         source "$script_loc"
     fi
@@ -234,8 +233,8 @@ echo-non-empty () {
 # Same as `export $1=$2`, but will only happen if the name specified by `$1` is
 # not already set.
 -set-default () {
-    arg_name="$1"
-    arg_value="$2"
+    local arg_name="$1"
+    local arg_value="$2"
     eval "test -z \"\$$arg_name\" && export $arg_name='$arg_value'"
 }
 
