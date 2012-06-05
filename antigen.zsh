@@ -91,7 +91,6 @@ bundle-install () {
         echo-non-empty "$bundles"
 
     fi | while read spec; do
-        echo "-> $spec"
 
         local name="$(echo "$spec" | awk '{print $1}')"
         local url="$(echo "$spec" | awk '{print $2}')"
