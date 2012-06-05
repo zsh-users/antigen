@@ -81,7 +81,16 @@ bundle-install () {
 
     local handled_repos=""
 
-    echo-non-empty "$bundles" | while read spec; do
+    if [[ $# != 0 ]]; then
+        # Record and install just the given plugin here and now.
+        bundle "$@"
+        echo "$bundles" | tail -1
+
+    else
+        # Install all the plugins, previously recorded.
+        echo-non-empty "$bundles"
+
+    fi | while read spec; do
         echo "-> $spec"
 
         local name="$(echo "$spec" | awk '{print $1}')"
