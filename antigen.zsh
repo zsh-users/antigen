@@ -122,6 +122,9 @@ bundle-install () {
 
     done
 
+    # Initialize completions after installing
+    bundle-apply
+
 }
 
 bundle-install! () {
