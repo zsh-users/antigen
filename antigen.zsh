@@ -215,6 +215,16 @@ bundle-apply () {
     compinit -i
 }
 
+bundle-list () {
+    # List all currently installed bundles
+    if [[ -z "$bundles" ]]; then
+        echo "You don't have any bundles." >&2
+        return 1
+    else
+        echo-non-empty "$bundles" | awk '{print $1 " " $2 " " $3}'
+    fi
+}
+
 # Does what it says.
 echo-non-empty () {
     echo "$@" | while read line; do
