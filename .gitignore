@@ -1,0 +1,5 @@
+# Running tests creates this completion dump file.
+tests/.zcompdump
+
+# Test failure reports
+tests/*.t.err
