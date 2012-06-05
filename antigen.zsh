@@ -196,7 +196,7 @@ bundle-theme () {
     bundle "$url" --name=$name.theme --loc=themes/$name.zsh-theme
 }
 
-bundle-init () {
+bundle-apply () {
     # Initialize completion.
     if ! type compinit &>/dev/null; then
         autoload -U compinit
@@ -227,4 +227,3 @@ echo-non-empty () {
 }
 
 -bundle-env-setup
-bundle-init

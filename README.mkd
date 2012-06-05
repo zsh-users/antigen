@@ -32,6 +32,9 @@ might look like this
     # Load the theme.
     bundle-theme robbyrussell
 
+    # Tell antigen that you're done.
+    bundle-apply
+
 Open your zsh with this zshrc and run `bundle-install` and you should be ready
 to roll. The complete syntax for the `bundle` command is discussed further down
 on this page.
@@ -183,6 +186,20 @@ want to use.
 
 Currently, themes are pulled from robbyrussell's oh-my-zsh repo, but it will
 support getting themes from other repos as well in the future.
+
+## bundle-apply
+
+You have to add this command after defining all bundles you need, in your zshrc.
+The completions defined by your bundles will be loaded at this step.
+
+It is possible to load completions as and when a bundle is specified with the
+bundle command, in which case this command would not be necessary. But loading
+the completions is a time-consuming process and your shell will start noticeably
+slow if you have a good number of bundle specifications.
+
+However, if you're a zsh expert and can suggest a way so that this would not be
+necessary, I am very interested in discussing it. Please open up an issue with
+your details. Thanks.
 
 # Configuration
 
