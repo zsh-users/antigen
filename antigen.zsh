@@ -80,17 +80,22 @@ bundle-install () {
     mkdir -p "$ANTIGEN_BUNDLE_DIR"
 
     local handled_repos=""
+    local install_bundles=""
 
     if [[ $# != 0 ]]; then
         # Record and install just the given plugin here and now.
         bundle "$@"
-        echo "$bundles" | tail -1
-
+        install_bundles="$(echo "$bundles" | tail -1)"
     else
         # Install all the plugins, previously recorded.
-        echo-non-empty "$bundles"
+        install_bundles="$(echo-non-empty "$bundles")"
+    fi
 
-    fi | while read spec; do
+    # If the above `if` is directly piped to the below `while`, the contents
+    # inside the `if` construct are run in a new subshell, so changes to the
+    # `$bundles` variable are lost after the `if` construct finishes. So, we
+    # need the temporary `$install_bundles` variable.
+    echo "$install_bundles" | while read spec; do
 
         local name="$(echo "$spec" | awk '{print $1}')"
         local url="$(echo "$spec" | awk '{print $2}')"
