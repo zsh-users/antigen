@@ -102,7 +102,7 @@ bundle-install () {
             echo Installing $name
             local bundle_dest="$ANTIGEN_BUNDLE_DIR/$name"
             test -e "$bundle_dest" && rm -rf "$bundle_dest"
-            ln -sT "$clone_dir/$loc" "$bundle_dest"
+            ln -s "$clone_dir/$loc" "$bundle_dest"
         else
             mkdir -p "$ANTIGEN_BUNDLE_DIR/$name"
             cp "$clone_dir/$loc" "$ANTIGEN_BUNDLE_DIR/$name"
