@@ -160,7 +160,7 @@ is **almost** equivalent to
     bundle <plugin-spec>
     bundle-install
 
-I says **almost** because in the former, *only* the said plugin is installed and
+I say **almost** because in the former, *only* the said plugin is installed and
 is usable immediately. This kind of invocation is supposed to be used directly
 from the shell, not added to your `.zshrc`. The idea is to let you try out new
 plugins you come across. For example,
