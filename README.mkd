@@ -142,12 +142,40 @@ This is something you might not want to put in your `.zshrc`. Instead, run it to
 install all the recorded bundles, using the `bundle` command. It has the
 following syntax.
 
-    bundle-install [--update]
+    bundle-install [--update] [<plugin-spec>]
 
 The optional `--update` argument can be given to update all your plugins from
 the server. By default, `bundle-install` does *not* check for updates on the
 plugins. It just installs them, if there is a cached copy available and if its
 not already installed.
+
+The other argument part illustrated above is the `<plugin-spec>`. Other than the
+optional `--update` argument, everything else is considered as describing a
+particular plugin to be installed. So, a command like
+
+    bundle-install <plugin-spec>
+
+is **almost** equivalent to
+
+    bundle <plugin-spec>
+    bundle-install
+
+I says **almost** because in the former, *only* the said plugin is installed and
+is usable immediately. This kind of invocation is supposed to be used directly
+from the shell, not added to your `.zshrc`. The idea is to let you try out new
+plugins you come across. For example,
+
+    bundle-install lol
+
+After that, you have the `lol` plugin ready to be used right there. You can try
+it out and if you like it, you can add the following to load it in every new
+shell instance you open
+
+    bundle lol
+
+If you don't want it, the plugin will still stay installed, but won't be used.
+No harm done, but you can run `bundle-cleanup` to clean up such stray plugins
+that you don't use. Documentation for that command further down.
 
 ## bundle-install!
 
