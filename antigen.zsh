@@ -166,12 +166,6 @@ bundle-cleanup () {
 }
 
 bundle-load () {
-    if [[ $1 == --init ]]; then
-        do_init=true
-        shift
-    else
-        do_init=false
-    fi
 
     name="$1"
     bundle_dir="$ANTIGEN_BUNDLE_DIR/$name"
@@ -199,9 +193,6 @@ bundle-load () {
     # Add to $fpath, for completion(s)
     fpath=($bundle_dir $fpath)
 
-    if $do_init; then
-        bundle-init
-    fi
 }
 
 bundle-lib () {
