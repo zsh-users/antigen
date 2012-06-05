@@ -188,7 +188,8 @@ bundle-load () {
     # If the name ends with `.theme`, it is handled as if it were a zsh-theme
     # plugin.
     if [[ $name == *.theme ]]; then
-        source "$bundle_dir/${name%.theme}.zsh-theme"
+        local theme_file="$bundle_dir/${name%.theme}.zsh-theme"
+        test -f "$theme_file" && source "$theme_file"
     fi
 
     # Add to $fpath, for completion(s)
@@ -206,7 +207,7 @@ bundle-lib () {
 bundle-theme () {
     local url="$ANTIGEN_DEFAULT_REPO_URL"
     local name="${1:-robbyrussell}"
-    bundle "$url" --name=$name.theme --loc=themes/$name.zsh-theme
+    bundle-install "$url" --name=$name.theme --loc=themes/$name.zsh-theme
 }
 
 bundle-apply () {
