@@ -198,9 +198,6 @@ bundle-theme () {
 
 bundle-apply () {
     # Initialize completion.
-    if ! type compinit &>/dev/null; then
-        autoload -U compinit
-    fi
     compinit -i
 }
 
@@ -212,10 +209,17 @@ echo-non-empty () {
 }
 
 -bundle-env-setup () {
+    # Pre-startup initializations
     -set-default ANTIGEN_DEFAULT_REPO_URL \
         https://github.com/robbyrussell/oh-my-zsh.git
     -set-default ANTIGEN_REPO_CACHE $HOME/.antigen/cache
     -set-default ANTIGEN_BUNDLE_DIR $HOME/.antigen/bundles
+
+    # Load the compinit module
+    autoload -U compinit
+
+    # Without the following, `compdef` function is not defined.
+    compinit -i
 }
 
 # Same as `export $1=$2`, but will only happen if the name specified by `$1` is
