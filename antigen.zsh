@@ -178,10 +178,8 @@ bundle-load () {
         source "$bundle_dir/${name%.theme}.zsh-theme"
     fi
 
-    # Add to $fpath, if it provides completion
-    if [[ -f "$bundle_dir/_$name" ]]; then
-        fpath=($bundle_dir $fpath)
-    fi
+    # Add to $fpath, for completion(s)
+    fpath=($bundle_dir $fpath)
 
     if $do_init; then
         bundle-init
