@@ -177,6 +177,10 @@ If you don't want it, the plugin will still stay installed, but won't be used.
 No harm done, but you can run `bundle-cleanup` to clean up such stray plugins
 that you don't use. Documentation for that command further down.
 
+**Note** that the `<plugin-spec>` can be made of multiple number of arguments,
+just like the `bundle` command can take multiple number of arguments to
+correctly describe the plugin.
+
 ## bundle-install!
 
 This is the same as running
