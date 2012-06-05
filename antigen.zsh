@@ -72,6 +72,7 @@ bundle-install () {
 
     if [[ $1 == --update ]]; then
         local update=true
+        shift
     else
         local update=false
     fi
