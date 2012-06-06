@@ -87,7 +87,7 @@ bundle-install () {
         install_bundles="$(echo "$bundles" | tail -1)"
     else
         # Install all the plugins, previously recorded.
-        install_bundles="$(echo-non-empty "$bundles")"
+        install_bundles="$(-bundle-echo-record)"
     fi
 
     # If the above `if` is directly piped to the below `while`, the contents
@@ -144,7 +144,7 @@ bundle-cleanup () {
 
     # Find directores in ANTIGEN_BUNDLE_DIR, that are not in the bundles record.
     local unidentified_bundles="$(comm -13 \
-        <(echo-non-empty "$bundles" | awk '{print $1}' | sort) \
+        <(-bundle-echo-record | awk '{print $1}' | sort) \
         <(ls -1 "$ANTIGEN_BUNDLE_DIR"))"
 
     if [[ -z $unidentified_bundles ]]; then
@@ -221,15 +221,13 @@ bundle-list () {
         echo "You don't have any bundles." >&2
         return 1
     else
-        echo-non-empty "$bundles" | awk '{print $1 " " $2 " " $3}'
+        -bundle-echo-record | awk '{print $1 " " $2 " " $3}'
     fi
 }
 
 # Does what it says.
-echo-non-empty () {
-    echo "$@" | while read line; do
-        [[ $line != "" ]] && echo $line
-    done
+-bundle-echo-record () {
+    echo "$bundles" | sed -n '1!p'
 }
 
 -bundle-env-setup () {
