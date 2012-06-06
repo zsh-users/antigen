@@ -4,7 +4,7 @@
 # character.
 # <bundle-name>, <repo-url>, <plugin-location>, <repo-local-clone-dir>
 # FIXME: Is not kept local by zsh!
-local bundles=""
+local _ANTIGEN_BUNDLE_RECORD=""
 
 # Syntaxes
 #   bundle <url> [<loc>=/] [<name>]
@@ -60,7 +60,7 @@ bundle () {
     fi
 
     # Add it to the record.
-    bundles="$bundles\n$name $url $loc $clone_dir"
+    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$name $url $loc $clone_dir"
 
     # Load it, unless specified otherwise.
     if $load; then
@@ -84,7 +84,7 @@ bundle-install () {
     if [[ $# != 0 ]]; then
         # Record and install just the given plugin here and now.
         bundle "$@"
-        install_bundles="$(echo "$bundles" | tail -1)"
+        install_bundles="$(-bundle-echo-record | tail -1)"
     else
         # Install all the plugins, previously recorded.
         install_bundles="$(-bundle-echo-record)"
@@ -92,8 +92,8 @@ bundle-install () {
 
     # If the above `if` is directly piped to the below `while`, the contents
     # inside the `if` construct are run in a new subshell, so changes to the
-    # `$bundles` variable are lost after the `if` construct finishes. So, we
-    # need the temporary `$install_bundles` variable.
+    # `$_ANTIGEN_BUNDLE_RECORD` variable are lost after the `if` construct
+    # finishes. So, we need the temporary `$install_bundles` variable.
     echo "$install_bundles" | while read spec; do
 
         local name="$(echo "$spec" | awk '{print $1}')"
@@ -217,7 +217,7 @@ bundle-apply () {
 
 bundle-list () {
     # List all currently installed bundles
-    if [[ -z "$bundles" ]]; then
+    if [[ -z "$_ANTIGEN_BUNDLE_RECORD" ]]; then
         echo "You don't have any bundles." >&2
         return 1
     else
@@ -227,7 +227,7 @@ bundle-list () {
 
 # Does what it says.
 -bundle-echo-record () {
-    echo "$bundles" | sed -n '1!p'
+    echo "$_ANTIGEN_BUNDLE_RECORD" | sed -n '1!p'
 }
 
 -bundle-env-setup () {
