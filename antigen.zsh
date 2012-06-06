@@ -50,7 +50,7 @@ bundle () {
     fi
 
     # Plugin's repo will be cloned here.
-    local clone_dir="$ANTIGEN_REPO_CACHE/$(echo "$url" \
+    local clone_dir="$ADOTDIR/repos/$(echo "$url" \
         | sed -e 's/\.git$//' -e 's./.-SLASH-.g' -e 's.:.-COLON-.g')"
 
     # Make an intelligent guess about the name of the plugin, if not already
@@ -76,7 +76,7 @@ bundle-install () {
         shift
     fi
 
-    mkdir -p "$ANTIGEN_BUNDLE_DIR"
+    mkdir -p "$ADOTDIR/bundles"
 
     local handled_repos=""
     local install_bundles=""
@@ -113,12 +113,12 @@ bundle-install () {
 
         if [[ $name != *.theme ]]; then
             echo Installing $name
-            local bundle_dest="$ANTIGEN_BUNDLE_DIR/$name"
+            local bundle_dest="$ADOTDIR/bundles/$name"
             test -e "$bundle_dest" && rm -rf "$bundle_dest"
             ln -s "$clone_dir/$loc" "$bundle_dest"
         else
-            mkdir -p "$ANTIGEN_BUNDLE_DIR/$name"
-            cp "$clone_dir/$loc" "$ANTIGEN_BUNDLE_DIR/$name"
+            mkdir -p "$ADOTDIR/bundles/$name"
+            cp "$clone_dir/$loc" "$ADOTDIR/bundles/$name"
         fi
 
         bundle-load "$name"
@@ -136,16 +136,16 @@ bundle-install! () {
 
 bundle-cleanup () {
 
-    if [[ ! -d "$ANTIGEN_BUNDLE_DIR" || \
-        "$(ls "$ANTIGEN_BUNDLE_DIR/" | wc -l)" == 0 ]]; then
+    if [[ ! -d "$ADOTDIR/bundles" || \
+        "$(ls "$ADOTDIR/bundles/" | wc -l)" == 0 ]]; then
         echo "You don't have any bundles."
         return 0
     fi
 
-    # Find directores in ANTIGEN_BUNDLE_DIR, that are not in the bundles record.
+    # Find directores in ADOTDIR/bundles, that are not in the bundles record.
     local unidentified_bundles="$(comm -13 \
         <(-bundle-echo-record | awk '{print $1}' | sort) \
-        <(ls -1 "$ANTIGEN_BUNDLE_DIR"))"
+        <(ls -1 "$ADOTDIR/bundles"))"
 
     if [[ -z $unidentified_bundles ]]; then
         echo "You don't have any unidentified bundles."
@@ -161,7 +161,7 @@ bundle-cleanup () {
         echo
         echo "$unidentified_bundles" | while read name; do
             echo -n Deleting $name...
-            rm -rf "$ANTIGEN_BUNDLE_DIR/$name"
+            rm -rf "$ADOTDIR/bundles/$name"
             echo ' done.'
         done
     else
@@ -173,7 +173,7 @@ bundle-cleanup () {
 bundle-load () {
 
     local name="$1"
-    local bundle_dir="$ANTIGEN_BUNDLE_DIR/$name"
+    local bundle_dir="$ADOTDIR/bundles/$name"
 
     # Source the plugin script
     local script_loc="$bundle_dir/$name.plugin.zsh"
@@ -234,8 +234,7 @@ bundle-list () {
     # Pre-startup initializations
     -set-default ANTIGEN_DEFAULT_REPO_URL \
         https://github.com/robbyrussell/oh-my-zsh.git
-    -set-default ANTIGEN_REPO_CACHE $HOME/.antigen/cache
-    -set-default ANTIGEN_BUNDLE_DIR $HOME/.antigen/bundles
+    -set-default ADOTDIR $HOME/.antigen
 
     # Load the compinit module
     autoload -U compinit

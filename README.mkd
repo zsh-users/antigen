@@ -253,11 +253,13 @@ antigen. Make sure you set them *before* sourceing `antigen.zsh`.
 used for `bundle` commands. The default value is robbyrussell's oh-my-zsh repo,
 but you can set this to the fork url of your own fork.
 
-`ANTIGEN_REPO_CACHE` &mdash; This is where the cloned repositories are cached.
-Defaults to `$HOME/.antigen/cache`
+`ADOTDIR` &mdash; This directory is used to store all the repo clones, your
+bundles, themes, caches and everything else antigen requires to run smoothly.
+Defaults to `$HOME/.antigen`.
 
-`ANTIGEN_BUNDLE_DIR` &mdash; This is where the plugins are installed and sourced
-from. Defaults to `$HOME/.antigen/bundles`
+**Note**: `ANTIGEN_REPO_CACHE` & `ANTIGEN_BUNDLE_DIR` &mdash; These variables
+were used previously but are now removed. Please use `ADOTDIR` instead, as
+mentioned above.
 
 # Meta
 
