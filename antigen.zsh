@@ -45,7 +45,7 @@ bundle () {
     # Resolve the url.
     if [[ $url != git://* && $url != https://* ]]; then
         url="${url%.git}"
-        name="$(basename "$url")"
+        test -z "$name" && name="$(basename "$url")"
         url="https://github.com/$url.git"
     fi
 
@@ -56,7 +56,7 @@ bundle () {
     # Make an intelligent guess about the name of the plugin, if not already
     # done or is explicitly specified.
     if [[ -z $name ]]; then
-        name="$(basename $url/$loc)"
+        name="$(basename $(echo $url | sed 's/\.git$//')/$loc)"
     fi
 
     # Add it to the record.

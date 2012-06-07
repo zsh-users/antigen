@@ -47,7 +47,7 @@ Short repo with location and name.
 
 Long repo with location and name.
 
-  $ b https://github.com/user/repo plugin/path plugin-name
+  $ b https://github.com/user/repo.git plugin/path plugin-name
   $ lb
   plugin-name https://github.com/user/repo.git plugin/path
 
@@ -72,14 +72,19 @@ Keyword arguments, in reversed order.
 Mixed positional and keyword arguments, and skip `loc`.
 
   $ b user/repo --name=plugin
+  $ lb
   plugin https://github.com/user/repo.git /
 
 Just `loc`, using keyword arguments.
 
   $ b --loc=plugin/path
+  $ lb
   path https://github.com/robbyrussell/oh-my-zsh.git plugin/path
 
 Just `name`, using keyword arguments.
 
   $ b --name=robby-oh-my-zsh
+  $ lb
   robby-oh-my-zsh https://github.com/robbyrussell/oh-my-zsh.git /
+
+TODO: Error reporting with erroneous arguments or usage with incorrect syntax.
