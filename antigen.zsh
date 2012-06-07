@@ -212,6 +212,7 @@ bundle-theme () {
 
 bundle-apply () {
     # Initialize completion.
+    # TODO: Doesn't look like this is really necessary. Need to investigate.
     compinit -i
 }
 
