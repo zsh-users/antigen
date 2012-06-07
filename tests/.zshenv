@@ -2,8 +2,7 @@
 
 # See cram's documentation for some of the variables used below.
 
-export ANTIGEN_REPO_CACHE="$TMP/dot-antigen/cache"
-export ANTIGEN_BUNDLE_DIR="$TMP/dot-antigen/bundle"
+export ADOTDIR="$TMP/dot-antigen"
 
 rm "$TESTDIR/.zcompdump"
 
