@@ -55,7 +55,36 @@ bundle () {
     # Add it to the record.
     _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $clone_dir $btype"
 
+    -antigen-ensure-repo "$url" "$clone_dir"
+
     bundle-load "$clone_dir/$loc" "$btype"
+
+}
+
+-antigen-ensure-repo () {
+
+    local update=false
+    if [[ $1 == --update ]]; then
+        update=true
+        shift
+    fi
+
+    local handled_repos=""
+    local install_bundles=""
+
+    local url="$1"
+    local clone_dir="$2"
+
+    if ! echo "$handled_repos" | grep -Fqm1 "$url"; then
+        if [[ ! -d $clone_dir ]]; then
+            git clone "$url" "$clone_dir"
+        elif $update; then
+            git --git-dir "$clone_dir/.git" pull
+        fi
+
+        handled_repos="$handled_repos\n$url"
+    fi
+
 }
 
 bundle-install () {
