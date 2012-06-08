@@ -15,7 +15,6 @@ bundle () {
     local url="$ANTIGEN_DEFAULT_REPO_URL"
     local loc=/
     local btype=plugin
-    local load=true
 
     # Set spec values based on the positional arguments.
     local position_args='url loc'
@@ -56,10 +55,7 @@ bundle () {
     # Add it to the record.
     _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $clone_dir $btype"
 
-    # Load it, unless specified otherwise.
-    if $load; then
-        bundle-load "$clone_dir/$loc" "$btype"
-    fi
+    bundle-load "$clone_dir/$loc" "$btype"
 }
 
 bundle-install () {
