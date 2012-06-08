@@ -42,7 +42,7 @@ bundle () {
     done
 
     # Resolve the url.
-    if [[ $url != git://* && $url != https://* ]]; then
+    if [[ $url != git://* && $url != https://* && $url != /* ]]; then
         url="${url%.git}"
         url="https://github.com/$url.git"
     fi
