@@ -2,24 +2,23 @@
 
 # Each line in this string has the following entries separated by a space
 # character.
-# <bundle-name>, <repo-url>, <plugin-location>, <repo-local-clone-dir>,
+# <repo-url>, <plugin-location>, <repo-local-clone-dir>,
 # <bundle-type>
 # FIXME: Is not kept local by zsh!
 local _ANTIGEN_BUNDLE_RECORD=""
 
 # Syntaxes
-#   bundle <url> [<loc>=/] [<name>]
+#   bundle <url> [<loc>=/]
 bundle () {
 
     # Bundle spec arguments' default values.
     local url="$ANTIGEN_DEFAULT_REPO_URL"
     local loc=/
-    local name=
     local btype=plugin
     local load=true
 
     # Set spec values based on the positional arguments.
-    local position_args='url loc name'
+    local position_args='url loc'
     local i=1
     while ! [[ -z $1 || $1 == --*=* ]]; do
         local arg_name="$(echo "$position_args" | cut -d\  -f$i)"
@@ -47,7 +46,6 @@ bundle () {
     # Resolve the url.
     if [[ $url != git://* && $url != https://* ]]; then
         url="${url%.git}"
-        test -z "$name" && name="$(basename "$url")"
         url="https://github.com/$url.git"
     fi
 
@@ -55,18 +53,11 @@ bundle () {
     local clone_dir="$ADOTDIR/repos/$(echo "$url" \
         | sed -e 's/\.git$//' -e 's./.-SLASH-.g' -e 's.:.-COLON-.g')"
 
-    # Make an intelligent guess about the name of the plugin, if not already
-    # done or is explicitly specified.
-    if [[ -z $name ]]; then
-        name="$(basename $(echo $url | sed 's/\.git$//')/$loc)"
-    fi
-
     # Add it to the record.
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$name $url $loc $clone_dir $btype"
+    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $clone_dir $btype"
 
     # Load it, unless specified otherwise.
     if $load; then
-        # bundle-load "$name"
         bundle-load "$clone_dir/$loc" "$btype"
     fi
 }
@@ -113,16 +104,6 @@ bundle-install () {
             fi
 
             handled_repos="$handled_repos\n$url"
-        fi
-
-        if [[ $name != *.theme ]]; then
-            echo Installing $name
-            local bundle_dest="$ADOTDIR/bundles/$name"
-            test -e "$bundle_dest" && rm -rf "$bundle_dest"
-            ln -s "$clone_dir/$loc" "$bundle_dest"
-        else
-            mkdir -p "$ADOTDIR/bundles/$name"
-            cp "$clone_dir/$loc" "$ADOTDIR/bundles/$name"
         fi
 
         bundle-load "$clone_dir/$loc" "$btype"
