@@ -194,6 +194,8 @@ bundle-theme () {
 
 bundle-apply () {
     # Initialize completion.
+    # TODO: Only load completions if there are any changes to the bundle
+    # repositories.
     compinit -i
 }
 
