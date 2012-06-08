@@ -197,7 +197,7 @@ bundle-list () {
         echo "You don't have any bundles." >&2
         return 1
     else
-        -bundle-echo-record | awk '{print $1 " " $2 " " $3}'
+        -bundle-echo-record
     fi
 }
 
