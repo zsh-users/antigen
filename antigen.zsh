@@ -50,13 +50,20 @@ bundle () {
     # Add it to the record.
     _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
 
-    -antigen-ensure-repo "$url"
+    -bundle-ensure-repo "$url"
 
-    bundle-load "$url" "$loc" "$btype"
+    -bundle-load "$url" "$loc" "$btype"
 
 }
 
--antigen-get-clone-dir () {
+bundle-update () {
+    # Update your bundles, i.e., `git pull` in all the plugin repos.
+    -bundle-echo-record | awk '{print $1}' | sort -u | while read url; do
+        -bundle-ensure-repo --update "$url"
+    done
+}
+
+-bundle-get-clone-dir () {
     # Takes a repo url and gives out the path that this url needs to be cloned
     # to. Doesn't actually clone anything.
     # TODO: Memoize?
@@ -67,7 +74,7 @@ bundle () {
         -e 's.:.-COLON-.g'
 }
 
--antigen-get-clone-url () {
+-bundle-get-clone-url () {
     # Takes a repo's clone dir and gives out the repo's original url that was
     # used to create the given directory path.
     # TODO: Memoize?
@@ -78,7 +85,7 @@ bundle () {
         -e 's.-COLON-.:.g'
 }
 
--antigen-ensure-repo () {
+-bundle-ensure-repo () {
 
     local update=false
     if [[ $1 == --update ]]; then
@@ -87,7 +94,7 @@ bundle () {
     fi
 
     local url="$1"
-    local clone_dir="$(-antigen-get-clone-dir $url)"
+    local clone_dir="$(-bundle-get-clone-dir $url)"
 
     if [[ ! -d $clone_dir ]]; then
         git clone "$url" "$clone_dir"
@@ -97,17 +104,10 @@ bundle () {
 
 }
 
-bundle-update () {
-    # Update your bundles, i.e., `git pull` in all the plugin repos.
-    -bundle-echo-record | awk '{print $1}' | sort -u | while read url; do
-        -antigen-ensure-repo --update "$url"
-    done
-}
-
-bundle-load () {
+-bundle-load () {
 
     local url="$1"
-    local location="$(-antigen-get-clone-dir "$url")/$2"
+    local location="$(-bundle-get-clone-dir "$url")/$2"
     local btype="$3"
 
     if [[ $btype == theme ]]; then
@@ -149,7 +149,7 @@ bundle-cleanup () {
     local unused_clones="$(comm -13 \
         <(-bundle-echo-record | awk '{print $1}' | sort -u) \
         <(ls "$ADOTDIR/repos" | while read line; do
-                -antigen-get-clone-url "$line"
+                -bundle-get-clone-url "$line"
             done))"
 
     if [[ -z $unused_clones ]]; then
@@ -166,7 +166,7 @@ bundle-cleanup () {
         echo
         echo "$unused_clones" | while read url; do
             echo -n "Deleting clone for $url..."
-            rm -rf "$(-antigen-get-clone-dir $url)"
+            rm -rf "$(-bundle-get-clone-dir $url)"
             echo ' done.'
         done
     else
@@ -180,7 +180,6 @@ bundle-lib () {
 }
 
 bundle-theme () {
-    local url="$ANTIGEN_DEFAULT_REPO_URL"
     local name="${1:-robbyrussell}"
     bundle --loc=themes/$name.zsh-theme --btype=theme
 }
