@@ -2,7 +2,8 @@
 
 # Each line in this string has the following entries separated by a space
 # character.
-# <bundle-name>, <repo-url>, <plugin-location>, <repo-local-clone-dir>
+# <bundle-name>, <repo-url>, <plugin-location>, <repo-local-clone-dir>,
+# <bundle-type>
 # FIXME: Is not kept local by zsh!
 local _ANTIGEN_BUNDLE_RECORD=""
 
@@ -14,6 +15,7 @@ bundle () {
     local url="$ANTIGEN_DEFAULT_REPO_URL"
     local loc=/
     local name=
+    local btype=plugin
     local load=true
 
     # Set spec values based on the positional arguments.
@@ -60,11 +62,12 @@ bundle () {
     fi
 
     # Add it to the record.
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$name $url $loc $clone_dir"
+    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$name $url $loc $clone_dir $btype"
 
     # Load it, unless specified otherwise.
     if $load; then
-        bundle-load "$name"
+        # bundle-load "$name"
+        bundle-load "$clone_dir/$loc" "$btype"
     fi
 }
 
@@ -100,6 +103,7 @@ bundle-install () {
         local url="$(echo "$spec" | awk '{print $2}')"
         local loc="$(echo "$spec" | awk '{print $3}')"
         local clone_dir="$(echo "$spec" | awk '{print $4}')"
+        local btype="$(echo "$spec" | awk '{print $5}')"
 
         if [[ -z "$(echo "$handled_repos" | grep -Fm1 "$url")" ]]; then
             if [[ ! -d $clone_dir ]]; then
@@ -121,7 +125,7 @@ bundle-install () {
             cp "$clone_dir/$loc" "$ADOTDIR/bundles/$name"
         fi
 
-        bundle-load "$name"
+        bundle-load "$clone_dir/$loc" "$btype"
 
     done
 
@@ -172,42 +176,45 @@ bundle-cleanup () {
 
 bundle-load () {
 
-    local name="$1"
-    local bundle_dir="$ADOTDIR/bundles/$name"
+    local location="$1"
+    local btype="$2"
 
-    # Source the plugin script
-    local script_loc="$bundle_dir/$name.plugin.zsh"
-    if [[ -f $script_loc ]]; then
-        source "$script_loc"
+    if [[ $btype == theme ]]; then
+
+        # Of course, if its a theme, the location would point to the script
+        # file.
+        source "$location"
+
+    else
+
+        # Source the plugin script
+        # FIXME: I don't know. Looks very very ugly. Needs a better
+        # implementation once tests are ready.
+        local script_loc="$(ls "$location" | grep -m1 '.plugin.zsh$')"
+        if [[ -f $script_loc ]]; then
+            # If we have a `*.plugin.zsh`, source it.
+            source "$script_loc"
+        elif [[ ! -z "$(ls "$location" | grep -m1 '.zsh$')" ]]; then
+            # If there is no `*.plugin.zsh` file, source *all* the `*.zsh`
+            # files.
+            for script ($location/*.zsh) source "$script"
+        fi
+
+        # Add to $fpath, for completion(s)
+        fpath=($location $fpath)
+
     fi
-
-    # If the name of the plugin ends with `.lib`, all the *.zsh files in it are
-    # sourced. This is kind of a hack to source the libraries of oh-my-zsh.
-    if [[ $name == *.lib ]]; then
-        # FIXME: This throws an error if no files match the given glob pattern.
-        for lib ($bundle_dir/*.zsh) source $lib
-    fi
-
-    # If the name ends with `.theme`, it is handled as if it were a zsh-theme
-    # plugin.
-    if [[ $name == *.theme ]]; then
-        local theme_file="$bundle_dir/${name%.theme}.zsh-theme"
-        test -f "$theme_file" && source "$theme_file"
-    fi
-
-    # Add to $fpath, for completion(s)
-    fpath=($bundle_dir $fpath)
 
 }
 
 bundle-lib () {
-    bundle --name=oh-my-zsh.lib --loc=lib
+    bundle --loc=lib
 }
 
 bundle-theme () {
     local url="$ANTIGEN_DEFAULT_REPO_URL"
     local name="${1:-robbyrussell}"
-    bundle-install "$url" --name=$name.theme --loc=themes/$name.zsh-theme
+    bundle --loc=themes/$name.zsh-theme --btype=theme
 }
 
 bundle-apply () {
