@@ -67,6 +67,17 @@ bundle () {
         -e 's.:.-COLON-.g'
 }
 
+-antigen-get-clone-url () {
+    # Takes a repo's clone dir and gives out the repo's original url that was
+    # used to create the given directory path.
+    # TODO: Memoize?
+    echo "$1" | sed \
+        -e "s:^$ADOTDIR/repos/::" \
+        -e 's/$/.git/' \
+        -e 's.-SLASH-./.g' \
+        -e 's.-COLON-.:.g'
+}
+
 -antigen-ensure-repo () {
 
     local update=false
@@ -98,42 +109,6 @@ bundle-update () {
     -bundle-echo-record | awk '{print $1}' | sort -u | while read url; do
         -antigen-ensure-repo --update "$url"
     done
-}
-
-bundle-cleanup () {
-
-    if [[ ! -d "$ADOTDIR/bundles" || \
-        "$(ls "$ADOTDIR/bundles/" | wc -l)" == 0 ]]; then
-        echo "You don't have any bundles."
-        return 0
-    fi
-
-    # Find directores in ADOTDIR/bundles, that are not in the bundles record.
-    local unidentified_bundles="$(comm -13 \
-        <(-bundle-echo-record | awk '{print $1}' | sort) \
-        <(ls -1 "$ADOTDIR/bundles"))"
-
-    if [[ -z $unidentified_bundles ]]; then
-        echo "You don't have any unidentified bundles."
-        return 0
-    fi
-
-    echo The following bundles are not recorded:
-    echo "$unidentified_bundles" | sed 's/^/  /'
-
-    echo -n '\nDelete them all? [y/N] '
-    if read -q; then
-        echo
-        echo
-        echo "$unidentified_bundles" | while read name; do
-            echo -n Deleting $name...
-            rm -rf "$ADOTDIR/bundles/$name"
-            echo ' done.'
-        done
-    else
-        echo
-        echo Nothing deleted.
-    fi
 }
 
 bundle-load () {
@@ -168,6 +143,43 @@ bundle-load () {
 
     fi
 
+}
+
+bundle-cleanup () {
+
+    if [[ ! -d "$ADOTDIR/repos" || -z "$(ls "$ADOTDIR/repos/")" ]]; then
+        echo "You don't have any bundles."
+        return 0
+    fi
+
+    # Find directores in ADOTDIR/repos, that are not in the bundles record.
+    local unused_clones="$(comm -13 \
+        <(-bundle-echo-record | awk '{print $1}' | sort -u) \
+        <(ls "$ADOTDIR/repos" | while read line; do
+                -antigen-get-clone-url "$line"
+            done))"
+
+    if [[ -z $unused_clones ]]; then
+        echo "You don't have any unidentified bundles."
+        return 0
+    fi
+
+    echo 'You have clones for the following repos, but are not used.'
+    echo "$unused_clones" | sed 's/^/  /'
+
+    echo -n '\nDelete them all? [y/N] '
+    if read -q; then
+        echo
+        echo
+        echo "$unused_clones" | while read url; do
+            echo -n "Deleting clone for $url..."
+            rm -rf "$(-antigen-get-clone-dir $url)"
+            echo ' done.'
+        done
+    else
+        echo
+        echo Nothing deleted.
+    fi
 }
 
 bundle-lib () {
