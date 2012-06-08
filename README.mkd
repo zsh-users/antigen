@@ -40,9 +40,9 @@ might look like this
     # Tell antigen that you're done.
     bundle-apply
 
-Open your zsh with this zshrc and run `bundle-install` and you should be ready
-to roll. The complete syntax for the `bundle` command is discussed further down
-on this page.
+Open your zsh with this zshrc and you should see all the bundles you defined
+here, getting installed. Once its done, you are ready to roll. The complete
+syntax for the `bundle` command is discussed further down on this page.
 
 # Motivation
 
@@ -50,7 +50,7 @@ If you use zsh and [oh-my-zsh][], you know that having many different plugins
 that are developed by many different authors in a single (sub)repo is not a very
 easy to maintain. There are some really fantastic plugins and utilities in
 oh-my-zsh, but having them all in a single repo doesn't really scale well. And I
-admire robbyrussell's efforts for reviewing and mergine the gigantic number of
+admire robbyrussell's efforts for reviewing and merging the gigantic number of
 pull requests the project gets. It needs a better way of plugin management.
 
 This was discussed on [a][1] [few][2] [issues][3], but it doesn't look like
@@ -77,149 +77,114 @@ and your prompt is changed, just for this session of course.
 
 ## bundle
 
-This is the command you use to tell antigen that you want to use a plugin. The
-simplest usage follows the following syntax
+This command tells antigen to install (if not already installed) and load the
+given plugin. The simplest usage follows the following syntax.
 
     bundle <plugin-name>
 
-This will add the `plugins/<name>` directory from [robbyrussell's
+This will install the `plugins/<name>` directory from [robbyrussell's
 oh-my-zsh][oh-my-zsh] (can be changed by setting `ANTIGEN_DEFAULT_REPO_URL`).
 
-However, the above is just syntax sugar for the real syntax of the `bundle`
+However, the above is just syntax sugar for the extended syntax of the `bundle`
 command.
 
-    bundle [<url> [<loc> [<name>]]]
+    bundle [<url> [<loc>]]
 
 where `<url>` is the repository url and it defaults to [robbyrussell's
-oh-my-zsh][oh-my-zsh] repo. `<loc>` is the path under this repository which has
-the zsh plugin. This is typically the directory that contains a `*.plugin.zsh`
-file, but it could contain a completion file too. `<loc>` defaults to `/`, which
-indicates the repository itself is a plugin. `<name>` is the name with which
-this plugin will be identified. This plugin will be installed in the bundles
-directory with this name used as the directory name. If the `<name>` is not
-given, antigen tries to make an intelligent guess based on the other given
-arguments.
+oh-my-zsh][oh-my-zsh] repo (can be changed by setting `ANTIGEN_DEFAULT_REPO_URL`
+discussed further down). `<loc>` is the path under this repository which has the
+zsh plugin. This is typically the directory that contains a `*.plugin.zsh` file,
+but it could contain a completion file or just many `*.zsh` files to be sourced.
+`<loc>` defaults to `/`, which indicates the repository itself is a plugin.
 
 An example invocation would be
 
+    # The following is the same as `bundle ant`. But for demonstration purposes,
+    # we use the extended syntax here.
     bundle https://github.com/robbyrussell/oh-my-zsh.git plugins/ant
 
-This would install the ant plugin (with `<name>` as `ant`) from robbyrussell's
-oh-my-zsh repo. Of course, github url's can be shortened.
+This would install the ant plugin from robbyrussell's oh-my-zsh repo. Of course,
+github url's can be shortened.
 
     bundle robbyrussell/oh-my-zsh plugins/ant
 
-And since this is the default, even that isn't necessary. But we can't specify
-the `loc` without giving the first argument.
+And since this repo is the default, even that isn't necessary. But we can't
+specify the `loc` without giving the first argument.
 
 For this and a few other reasons, `bundle` also supports a simple keyword
 argument syntax, using which we can rewrite the above as
 
     bundle --loc=plugins/ant
 
-Which is the same as
+Which picks up the default for the `url` argument, and uses the `loc` given to
+it.
 
-    bundle ant
-
-(In the short syntax sugar introduced at the start of this section).
-
-Note that you can mix and match positional and keyword arguments. But you can't
-have positional arguments after starting keyword arguments.
+*Note* that you can mix and match positional and keyword arguments. But you
+can't have positional arguments after keyword arguments.
 
     bundle robbyrussell/oh-my-zsh --loc=plugins/ant
 
 And keyword arguments don't care about the order in which the arguments are
 specified. The following is perfectly valid.
 
-    bundle --loc=plugins/ant --url=robbyrussell/oh-my-zsh --name=ant
+    bundle --loc=plugins/ant --url=robbyrussell/oh-my-zsh
 
-In addition to the above discussed arguments, `bundle` also takes the following
-arguments but only as keyword arguments.
+In addition to the above discussed arguments, `bundle` also takes a `btype`
+keyword-only argument, that is used internally. You shouldn't be concerned with
+this argument, its only used internally and will probably go away in the future.
+It indicates whether the bundle is a theme or a simple plugin.
 
-`load` &mdash; Set to `true` (default) or `false`. If this is set to `false`,
-the plugin specified is only recorded, may be for future use. It is not loaded
-into the environment. But with `true`, the plugin is immediately sourced and
-is ready to use, which is the default behavior.
+You can use this `bundle` command not just from your `.zshrc`, but also from
+your shell environment. This allows you to install plugins on the fly and try
+them out. Of course if you want a bundle to be available every time you open a
+shell, put it in your `.zshrc`.
 
-## bundle-install
+## bundle-update
 
-This is something you might not want to put in your `.zshrc`. Instead, run it to
-install all the recorded bundles, using the `bundle` command. It has the
-following syntax.
+This is something you might not want to put in your `.zshrc`. Instead, run it
+occasionally to update all your plugins. It doesn't take any arguments.
 
-    bundle-install [--update] [<plugin-spec>]
+    bundle-update
 
-The optional `--update` argument can be given to update all your plugins from
-the server. By default, `bundle-install` does *not* check for updates on the
-plugins. It just installs them, if there is a cached copy available and if its
-not already installed.
-
-The other argument part illustrated above is the `<plugin-spec>`. Other than the
-optional `--update` argument, everything else is considered as describing a
-particular plugin to be installed. So, a command like
-
-    bundle-install <plugin-spec>
-
-is **almost** equivalent to
-
-    bundle <plugin-spec>
-    bundle-install
-
-I say **almost** because in the former, *only* the said plugin is installed and
-is usable immediately. This kind of invocation is supposed to be used directly
-from the shell, not added to your `.zshrc`. The idea is to let you try out new
-plugins you come across. For example,
-
-    bundle-install lol
-
-After that, you have the `lol` plugin ready to be used right there. You can try
-it out and if you like it, you can add the following to load it in every new
-shell instance you open
-
-    bundle lol
-
-If you don't want it, the plugin will still stay installed, but won't be used.
-No harm done, but you can run `bundle-cleanup` to clean up such stray plugins
-that you don't use. Documentation for that command further down.
-
-**Note** that the `<plugin-spec>` can be made of multiple number of arguments,
-just like the `bundle` command can take multiple number of arguments to
-correctly describe the plugin.
-
-## bundle-install!
-
-This is the same as running
-
-    bundle-install --update
-
-That is, it installs the recorded plugins, and updates them to the latest
-available versions.
+Please note that the updates that are downloaded are not immediately available.
+You have to open a new shell to be able to see the changes. This is a limitation
+by design since reloading all the plugins *might* have some nasty side effects
+that may not be immediately apparent. Let's just say it can make your shell act
+real quirky.
 
 ## bundle-list
 
-Use this command to list out the currently recorded plugins. *Note* that the
-plugins listed by this command are not necessarily installed. They are just the
-ones that have be recorded, probably with the `bundle` command.
+Use this command to list out the currently *loaded* plugins. Keep in mind that
+this includes any bundles installed on-the-fly.
 
-If you have done any on-spot temporary installation of some plugins with
-`bundle-install`, they will *not* be listed in the output of this command.
-Record them with the `bundle` command for them to be listed in the output of
-this command.
+Takes no arguments. Gives out the repo url and the plugin's location under the
+repo.
 
 ## bundle-cleanup
 
-Used to clean up unused bundles. It takes no arguments. When this is run, it
-lists out the plugins that are installed but are not recorded with a `bundle`
-command, and will ask you if you want to delete them.
+Used to clean up the clones of repos which are not used by any plugins. It takes
+no arguments. When this is run, it lists out the repo-clones that are available
+but are not used by any plugin *currently loaded*.
 
 This command currently cannot run in a non-interactive mode. So it won't be very
 pleasant to use it in your `.zshrc`.
 
 ## bundle-lib
 
-This currently exists only to make is possible to use oh-my-zsh's library, since
-its organisation is different from that of plugins. If you want to load
-oh-my-zsh's library, which you very likely do, put a
+This is a shortcut to
+
+    bundle --loc=lib
+
+So, it basically installs the oh-my-zsh's library as a bundle. Please note that
+this assumes that the `ANTIGEN_DEFAULT_REPO_URL` is set to the oh-my-zsh repo or
+a fork of that repo. If you want to specify the `url` too, then you can't use
+the `bundle-lib` short cut. You have to do that directly with the `bundle`
+command.
+
+This is present only for legacy reasons and *might* (or might not) be removed in
+the future.
+
+Use
 
     bundle-lib
 
@@ -234,6 +199,9 @@ want to use.
 
 Currently, themes are pulled from robbyrussell's oh-my-zsh repo, but it will
 support getting themes from other repos as well in the future.
+
+You can use this command to change your theme on the fly in your shell. Go on,
+try out a few themes in your shell before you set it in your `.zshrc`.
 
 ## bundle-apply
 
@@ -252,7 +220,7 @@ your details. Thanks.
 # Configuration
 
 The following environment variables can be set to customize the behavior of
-antigen. Make sure you set them *before* sourceing `antigen.zsh`.
+antigen. Make sure you set them *before* source-ing `antigen.zsh`.
 
 `ANTIGEN_DEFAULT_REPO_URL` &mdash; This is the default repository url that is
 used for `bundle` commands. The default value is robbyrussell's oh-my-zsh repo,
@@ -268,17 +236,17 @@ mentioned above.
 
 # Meta
 
-Please note that I built this over night and should be considered very alpha.
-However, I am using it full time now on my work machine.
-
-Project is licensed with the MIT License. To contribute, just fork, make changes
-and send a pull request. If its a rather long/complicated change, please
-consider opening an [issue][] first so we can discuss it out.
+Project is licensed with the [MIT License][license]. To contribute, just fork,
+make changes and send a pull request. If its a rather long/complicated change,
+please consider opening an [issue][] first so we can discuss it out.
 
 Any comments/suggestions/feedback welcome. Please join the discussion on the
-[reddit page][] of this project.
+[reddit page][] of this project. Also, follow me on twitter,
+[@sharat87](twitter).
 
 [Vundle]: https://github.com/gmarik/vundle
 [oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh
 [issue]: https://github.com/sharat87/antigen/issues
+[license]: http://mit.sharats.me
 [reddit page]: http://www.reddit.com/r/commandline/comments/u4f26/antigen_a_plugin_manager_for_zsh_shell/
+[twitter]: http://twitter.com/sharat87
