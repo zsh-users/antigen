@@ -2,8 +2,7 @@
 
 # Each line in this string has the following entries separated by a space
 # character.
-# <repo-url>, <plugin-location>, <repo-local-clone-dir>,
-# <bundle-type>
+# <repo-url>, <plugin-location>, <bundle-type>
 # FIXME: Is not kept local by zsh!
 local _ANTIGEN_BUNDLE_RECORD=""
 
@@ -48,17 +47,24 @@ bundle () {
         url="https://github.com/$url.git"
     fi
 
-    # Plugin's repo will be cloned here.
-    local clone_dir="$ADOTDIR/repos/$(echo "$url" \
-        | sed -e 's/\.git$//' -e 's./.-SLASH-.g' -e 's.:.-COLON-.g')"
-
     # Add it to the record.
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $clone_dir $btype"
+    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
 
-    -antigen-ensure-repo "$url" "$clone_dir"
+    -antigen-ensure-repo "$url"
 
-    bundle-load "$clone_dir/$loc" "$btype"
+    bundle-load "$url" "$loc" "$btype"
 
+}
+
+-antigen-get-clone-dir () {
+    # Takes a repo url and gives out the path that this url needs to be cloned
+    # to. Doesn't actually clone anything.
+    # TODO: Memoize?
+    echo -n $ADOTDIR/repos/
+    echo "$1" | sed \
+        -e 's/\.git$//' \
+        -e 's./.-SLASH-.g' \
+        -e 's.:.-COLON-.g'
 }
 
 -antigen-ensure-repo () {
@@ -73,7 +79,7 @@ bundle () {
     local install_bundles=""
 
     local url="$1"
-    local clone_dir="$2"
+    local clone_dir="$(-antigen-get-clone-dir $url)"
 
     if ! echo "$handled_repos" | grep -Fqm1 "$url"; then
         if [[ ! -d $clone_dir ]]; then
@@ -85,63 +91,6 @@ bundle () {
         handled_repos="$handled_repos\n$url"
     fi
 
-}
-
-bundle-install () {
-
-    local update=false
-    if [[ $1 == --update ]]; then
-        update=true
-        shift
-    fi
-
-    mkdir -p "$ADOTDIR/bundles"
-
-    local handled_repos=""
-    local install_bundles=""
-
-    if [[ $# != 0 ]]; then
-        # Record and install just the given plugin here and now.
-        bundle "$@"
-        install_bundles="$(-bundle-echo-record | tail -1)"
-    else
-        # Install all the plugins, previously recorded.
-        install_bundles="$(-bundle-echo-record)"
-    fi
-
-    # If the above `if` is directly piped to the below `while`, the contents
-    # inside the `if` construct are run in a new subshell, so changes to the
-    # `$_ANTIGEN_BUNDLE_RECORD` variable are lost after the `if` construct
-    # finishes. So, we need the temporary `$install_bundles` variable.
-    echo "$install_bundles" | while read spec; do
-
-        local name="$(echo "$spec" | awk '{print $1}')"
-        local url="$(echo "$spec" | awk '{print $2}')"
-        local loc="$(echo "$spec" | awk '{print $3}')"
-        local clone_dir="$(echo "$spec" | awk '{print $4}')"
-        local btype="$(echo "$spec" | awk '{print $5}')"
-
-        if [[ -z "$(echo "$handled_repos" | grep -Fm1 "$url")" ]]; then
-            if [[ ! -d $clone_dir ]]; then
-                git clone "$url" "$clone_dir"
-            elif $update; then
-                git --git-dir "$clone_dir/.git" pull
-            fi
-
-            handled_repos="$handled_repos\n$url"
-        fi
-
-        bundle-load "$clone_dir/$loc" "$btype"
-
-    done
-
-    # Initialize completions after installing
-    bundle-apply
-
-}
-
-bundle-install! () {
-    bundle-install --update
 }
 
 bundle-cleanup () {
@@ -182,8 +131,9 @@ bundle-cleanup () {
 
 bundle-load () {
 
-    local location="$1"
-    local btype="$2"
+    local url="$1"
+    local location="$(-antigen-get-clone-dir "$url")/$2"
+    local btype="$3"
 
     if [[ $btype == theme ]]; then
 
