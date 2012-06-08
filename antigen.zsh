@@ -86,20 +86,13 @@ bundle () {
         shift
     fi
 
-    local handled_repos=""
-    local install_bundles=""
-
     local url="$1"
     local clone_dir="$(-antigen-get-clone-dir $url)"
 
-    if ! echo "$handled_repos" | grep -Fqm1 "$url"; then
-        if [[ ! -d $clone_dir ]]; then
-            git clone "$url" "$clone_dir"
-        elif $update; then
-            git --git-dir "$clone_dir/.git" pull
-        fi
-
-        handled_repos="$handled_repos\n$url"
+    if [[ ! -d $clone_dir ]]; then
+        git clone "$url" "$clone_dir"
+    elif $update; then
+        git --git-dir "$clone_dir/.git" pull
     fi
 
 }
