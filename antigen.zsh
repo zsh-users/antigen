@@ -93,6 +93,13 @@ bundle () {
 
 }
 
+bundle-update () {
+    # Update your bundles, i.e., `git pull` in all the plugin repos.
+    -bundle-echo-record | awk '{print $1}' | sort -u | while read url; do
+        -antigen-ensure-repo --update "$url"
+    done
+}
+
 bundle-cleanup () {
 
     if [[ ! -d "$ADOTDIR/bundles" || \
