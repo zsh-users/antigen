@@ -1,5 +1,8 @@
-Test helper function.
+Test helper and mock functions.
 
+  $ git () {
+  >     echo git "$@"
+  > }
   $ b () {
   >     bundle "$@"
   >     bundle-list | tail -1
@@ -7,7 +10,7 @@ Test helper function.
 
 Short and sweet.
 
-  $ b plugin-name
+  $ b lol
   plugin-name https://github.com/robbyrussell/oh-my-zsh.git plugins/plugin-name
 
 Short repo url.
@@ -35,44 +38,29 @@ Short repo with location.
   $ b user/plugin path/to/plugin
   plugin https://github.com/user/plugin.git path/to/plugin
 
-Short repo with location and name.
-
-  $ b user/repo plugin/path plugin-name
-  plugin-name https://github.com/user/repo.git plugin/path
-
-Long repo with location and name.
-
-  $ b https://github.com/user/repo.git plugin/path plugin-name
-  plugin-name https://github.com/user/repo.git plugin/path
-
 Keyword arguments, in respective places.
 
-  $ b --url=user/repo --loc=path/of/plugin --name=plugin-name
+  $ b --url=user/repo --loc=path/of/plugin
   plugin-name https://github.com/user/repo.git path/of/plugin
 
 Keyword arguments, in respective places, with full repo url.
 
-  $ b --url=https://github.com/user/repo.git --loc=plugin/path --name=name
+  $ b --url=https://github.com/user/repo.git --loc=plugin/path
   name https://github.com/user/repo.git plugin/path
 
 Keyword arguments, in reversed order.
 
-  $ b --name=plugin-name --loc=path/of/plugin --url=user/repo
+  $ b --loc=path/of/plugin --url=user/repo
   plugin-name https://github.com/user/repo.git path/of/plugin
 
 Mixed positional and keyword arguments, and skip `loc`.
 
-  $ b user/repo --name=plugin
-  plugin https://github.com/user/repo.git /
+  $ b user/repo --loc=plugin/loc
+  plugin https://github.com/user/repo.git plugin/loc
 
 Just `loc`, using keyword arguments.
 
   $ b --loc=plugin/path
   path https://github.com/robbyrussell/oh-my-zsh.git plugin/path
-
-Just `name`, using keyword arguments.
-
-  $ b --name=robby-oh-my-zsh
-  robby-oh-my-zsh https://github.com/robbyrussell/oh-my-zsh.git /
 
 TODO: Error reporting with erroneous arguments or usage with incorrect syntax.
