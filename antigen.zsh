@@ -70,7 +70,7 @@ antigen-bundles () {
     done
 }
 
-antigen-bundle-update () {
+antigen-update () {
     # Update your bundles, i.e., `git pull` in all the plugin repos.
     -antigen-echo-record | awk '{print $1}' | sort -u | while read url; do
         -antigen-ensure-repo --update "$url"
