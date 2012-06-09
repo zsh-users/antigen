@@ -7,8 +7,8 @@
 local _ANTIGEN_BUNDLE_RECORD=""
 
 # Syntaxes
-#   bundle <url> [<loc>=/]
-bundle () {
+#   antigen-bundle <url> [<loc>=/]
+antigen-bundle () {
 
     # Bundle spec arguments' default values.
     local url="$ANTIGEN_DEFAULT_REPO_URL"
@@ -50,20 +50,20 @@ bundle () {
     # Add it to the record.
     _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
 
-    -bundle-ensure-repo "$url"
+    -antigen-ensure-repo "$url"
 
-    -bundle-load "$url" "$loc" "$btype"
+    -antigen-load "$url" "$loc" "$btype"
 
 }
 
-bundle-update () {
+antigen-bundle-update () {
     # Update your bundles, i.e., `git pull` in all the plugin repos.
-    -bundle-echo-record | awk '{print $1}' | sort -u | while read url; do
-        -bundle-ensure-repo --update "$url"
+    -antigen-echo-record | awk '{print $1}' | sort -u | while read url; do
+        -antigen-ensure-repo --update "$url"
     done
 }
 
--bundle-get-clone-dir () {
+-antigen-get-clone-dir () {
     # Takes a repo url and gives out the path that this url needs to be cloned
     # to. Doesn't actually clone anything.
     # TODO: Memoize?
@@ -74,7 +74,7 @@ bundle-update () {
         -e 's.:.-COLON-.g'
 }
 
--bundle-get-clone-url () {
+-antigen-get-clone-url () {
     # Takes a repo's clone dir and gives out the repo's original url that was
     # used to create the given directory path.
     # TODO: Memoize?
@@ -85,7 +85,7 @@ bundle-update () {
         -e 's.-COLON-.:.g'
 }
 
--bundle-ensure-repo () {
+-antigen-ensure-repo () {
 
     local update=false
     if [[ $1 == --update ]]; then
@@ -94,7 +94,7 @@ bundle-update () {
     fi
 
     local url="$1"
-    local clone_dir="$(-bundle-get-clone-dir $url)"
+    local clone_dir="$(-antigen-get-clone-dir $url)"
 
     if [[ ! -d $clone_dir ]]; then
         git clone "$url" "$clone_dir"
@@ -104,10 +104,10 @@ bundle-update () {
 
 }
 
--bundle-load () {
+-antigen-load () {
 
     local url="$1"
-    local location="$(-bundle-get-clone-dir "$url")/$2"
+    local location="$(-antigen-get-clone-dir "$url")/$2"
     local btype="$3"
 
     if [[ $btype == theme ]]; then
@@ -138,7 +138,7 @@ bundle-update () {
 
 }
 
-bundle-cleanup () {
+antigen-cleanup () {
 
     if [[ ! -d "$ADOTDIR/repos" || -z "$(ls "$ADOTDIR/repos/")" ]]; then
         echo "You don't have any bundles."
@@ -147,9 +147,9 @@ bundle-cleanup () {
 
     # Find directores in ADOTDIR/repos, that are not in the bundles record.
     local unused_clones="$(comm -13 \
-        <(-bundle-echo-record | awk '{print $1}' | sort -u) \
+        <(-antigen-echo-record | awk '{print $1}' | sort -u) \
         <(ls "$ADOTDIR/repos" | while read line; do
-                -bundle-get-clone-url "$line"
+                -antigen-get-clone-url "$line"
             done))"
 
     if [[ -z $unused_clones ]]; then
@@ -166,7 +166,7 @@ bundle-cleanup () {
         echo
         echo "$unused_clones" | while read url; do
             echo -n "Deleting clone for $url..."
-            rm -rf "$(-bundle-get-clone-dir $url)"
+            rm -rf "$(-antigen-get-clone-dir $url)"
             echo ' done.'
         done
     else
@@ -175,39 +175,39 @@ bundle-cleanup () {
     fi
 }
 
-bundle-lib () {
-    bundle --loc=lib
+antigen-lib () {
+    antigen-bundle --loc=lib
 }
 
-bundle-theme () {
+antigen-theme () {
     local name="${1:-robbyrussell}"
-    bundle --loc=themes/$name.zsh-theme --btype=theme
+    antigen-bundle --loc=themes/$name.zsh-theme --btype=theme
 }
 
-bundle-apply () {
+antigen-apply () {
     # Initialize completion.
     # TODO: Only load completions if there are any changes to the bundle
     # repositories.
     compinit -i
 }
 
-bundle-list () {
+antigen-list () {
     # List all currently installed bundles
     if [[ -z "$_ANTIGEN_BUNDLE_RECORD" ]]; then
         echo "You don't have any bundles." >&2
         return 1
     else
-        -bundle-echo-record
+        -antigen-echo-record
     fi
 }
 
 # Echo the bundle specs as in the record. The first line is not echoed since it
 # is a blank line.
--bundle-echo-record () {
+-antigen-echo-record () {
     echo "$_ANTIGEN_BUNDLE_RECORD" | sed -n '1!p'
 }
 
--bundle-env-setup () {
+-antigen-env-setup () {
     # Pre-startup initializations
     -set-default ANTIGEN_DEFAULT_REPO_URL \
         https://github.com/robbyrussell/oh-my-zsh.git
@@ -228,4 +228,4 @@ bundle-list () {
     eval "test -z \"\$$arg_name\" && export $arg_name='$arg_value'"
 }
 
--bundle-env-setup
+-antigen-env-setup
