@@ -139,6 +139,37 @@ from your shell environment. This allows you to install plugins on the fly and
 try them out. Of course if you want a bundle to be available every time you open
 a shell, put it in your `.zshrc`.
 
+## antigen-bundles
+
+If you have a fair number of bundles, using the `antigen-bundle` command can
+look cumbersome. You can use the `antigen-bundles` command to *bulk* define
+bundles instead of individual calls to `antigen-bundle`.
+
+Usage is pretty straightforward. Just pipe the bundle specifications, just as
+you would give to the `antigen-bundle` command, one per line, into the
+`antigen-bundles` command. The easiest way to do this, is using the heredoc
+syntax.
+
+    antigen-bundles <<EOF
+    # Guess what to install when running an unknown command.
+    command-not-found
+
+    # The heroku tool helper plugin.
+    heroku
+
+    EOF
+
+This is equivalent to
+
+    antigen-bundle command-not-found
+    antigen-bundle heroku
+
+Of course, as you can see, from the lines piped to `antigen-bundles`, empty
+lines and those starting with a `#` are ignored. The rest are passed to
+`antigen-bundle` without any quoting rules applied. They are actually `eval`-ed
+with the `antigen-bundle` command. See the source if you want to really
+understand how it works. Its a very small function.
+
 ## antigen-update
 
 This is something you might not want to put in your `.zshrc`. Instead, run it
