@@ -22,27 +22,27 @@ might look like this
     source /path-to-antigen-clone/antigen.zsh
 
     # Load the oh-my-zsh's library.
-    bundle-lib
+    antigen-lib
 
     # Bundles from the default repo (robbyrussell's oh-my-zsh).
-    bundle git
-    bundle heroku
-    bundle pip
-    bundle lein
-    bundle command-not-found
+    antigen-bundle git
+    antigen-bundle heroku
+    antigen-bundle pip
+    antigen-bundle lein
+    antigen-bundle command-not-found
 
     # Syntax highlighting bundle.
-    bundle zsh-users/zsh-syntax-highlighting
+    antigen-bundle zsh-users/zsh-syntax-highlighting
 
     # Load the theme.
-    bundle-theme robbyrussell
+    antigen-theme robbyrussell
 
     # Tell antigen that you're done.
-    bundle-apply
+    antigen-apply
 
 Open your zsh with this zshrc and you should see all the bundles you defined
 here, getting installed. Once its done, you are ready to roll. The complete
-syntax for the `bundle` command is discussed further down on this page.
+syntax for the `antigen-bundle` command is discussed further down on this page.
 
 # Motivation
 
