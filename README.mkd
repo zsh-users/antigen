@@ -9,7 +9,7 @@ incompatible changes now and then, until we have a pretty stable system we can
 reason about. **Please** read the commit comments of the changesets when you
 pull a new version of antigen.
 
-# Show off
+## Show off
 
 > Enough talk. Let's fight!
 >   -- Po, Kung-fu Panda.
@@ -63,7 +63,7 @@ library of oh-my-zsh loaded. So, if you want to experiment further, issue a
 and continue until you're tired. At which point you can come back to this page
 ;)
 
-# Usage
+## Usage
 
 So, now that you're here, I'll assume you are convinced and want antigen running
 your shell all the time. Sweet. Let's do it.
@@ -101,7 +101,7 @@ Open your zsh with this zshrc and you should see all the bundles you defined
 here, getting installed. Once its done, you are ready to roll. The complete
 syntax for the `antigen-bundle` command is discussed further down on this page.
 
-# Motivation
+## Motivation
 
 If you use zsh and [oh-my-zsh][], you know that having many different plugins
 that are developed by many different authors in a single (sub)repo is not a very
@@ -130,9 +130,9 @@ Antigen also lets you switch the prompt theme with one command, just like that
 
 and your prompt is changed, just for this session of course.
 
-# Commands
+## Commands
 
-## antigen-bundle
+### antigen-bundle
 
 This command tells antigen to install (if not already installed) and load the
 given plugin. The simplest usage follows the following syntax.
@@ -196,7 +196,7 @@ from your shell environment. This allows you to install plugins on the fly and
 try them out. Of course if you want a bundle to be available every time you open
 a shell, put it in your `.zshrc`.
 
-## antigen-bundles
+### antigen-bundles
 
 If you have a fair number of bundles, using the `antigen-bundle` command can
 look cumbersome. You can use the `antigen-bundles` command to *bulk* define
@@ -227,7 +227,7 @@ lines and those starting with a `#` are ignored. The rest are passed to
 with the `antigen-bundle` command. See the source if you want to really
 understand how it works. Its a very small function.
 
-## antigen-update
+### antigen-update
 
 This is something you might not want to put in your `.zshrc`. Instead, run it
 occasionally to update all your plugins. It doesn't take any arguments.
@@ -243,7 +243,7 @@ real quirky.
 **Please note**: This command is not for updating *antigen* itself. Its for
 updating the bundles you are using with antigen.
 
-## antigen-list
+### antigen-list
 
 Use this command to list out the currently *loaded* plugins. Keep in mind that
 this includes any bundles installed on-the-fly.
@@ -251,7 +251,7 @@ this includes any bundles installed on-the-fly.
 Takes no arguments. Gives out the repo url and the plugin's location under the
 repo.
 
-## antigen-cleanup
+### antigen-cleanup
 
 Used to clean up the clones of repos which are not used by any plugins. It takes
 no arguments. When this is run, it lists out the repo-clones that are available
@@ -260,7 +260,7 @@ but are not used by any plugin *currently loaded*.
 This command currently cannot run in a non-interactive mode. So it won't be very
 pleasant to use it in your `.zshrc`.
 
-## antigen-lib
+### antigen-lib
 
 This is a shortcut to
 
@@ -282,7 +282,7 @@ Use
 in  your `.zshrc`, before any `antigen-bundle` declarations. It takes no
 arguments.
 
-## antigen-theme
+### antigen-theme
 
 Used for switching the prompt theme. Invoke it with the name of the theme you
 want to use.
@@ -295,7 +295,7 @@ support getting themes from other repos as well in the future.
 You can use this command to change your theme on the fly in your shell. Go on,
 try out a few themes in your shell before you set it in your `.zshrc`.
 
-## antigen-apply
+### antigen-apply
 
 You have to add this command after defining all bundles you need, in your zshrc.
 The completions defined by your bundles will be loaded at this step.
@@ -309,7 +309,7 @@ However, if you're a zsh expert and can suggest a way so that this would not be
 necessary, I am very interested in discussing it. Please open up an issue with
 your details. Thanks.
 
-# Configuration
+## Configuration
 
 The following environment variables can be set to customize the behavior of
 antigen. Make sure you set them *before* source-ing `antigen.zsh`.
@@ -326,11 +326,11 @@ Defaults to `$HOME/.antigen`.
 were used previously but are now removed. Please use `ADOTDIR` instead, as
 mentioned above.
 
-# Notes on writing plugins
+## Notes on writing plugins
 
 > *TBD*
 
-# Meta
+## Meta
 
 Project is licensed with the [MIT License][license]. To contribute, just fork,
 make changes and send a pull request. If its a rather long/complicated change,
