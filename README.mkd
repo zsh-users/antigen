@@ -9,7 +9,63 @@ incompatible changes now and then, until we have a pretty stable system we can
 reason about. **Please** read the commit comments of the changesets when you
 pull a new version of antigen.
 
-# Quick Usage
+# Show off
+
+> Enough talk. Let's fight!
+>   -- Po, Kung-fu Panda.
+
+You're going to experience antigen right in your open shell. No `.zshrc`
+tweaking and reading the rest of this documentation. Kinda like an ice-cream
+sample, if you will.
+
+Get and load antigen.
+
+    curl https://raw.github.com/zsh-users/antigen/master/antigen.zsh > antigen.zsh
+    source antigen.zsh
+
+There. You now have all the antigen goodies. Let's try install some plugins. How
+about some color to start with. Get the syntax highlighting plugin by running
+
+    antigen-bundle zsh-users/zsh-syntax-highlighting
+
+Now let it do its thing and once its done and you're back at your prompt, try
+and type a command. See that? Colors!
+
+So, you do git? ruby? git and ruby? There are lots of awesome plugins over at
+oh-my-zsh. Treat yourself to some.
+
+    antigen-bundle robbyrussell/oh-my-zsh plugins/ruby
+    antigen-bundle robbyrussell/oh-my-zsh plugins/git
+
+There are lots of plugins out there in the wild and people are writing zsh
+utilities as small scripts all the time. Antigen is compatible with all of them.
+The plugins and scripts don't need any special handling to be compatible with
+antigen.
+
+The side effect of this is that you can tell antigen to grab just about anything
+from anyone's `dotfiles` repo, as long as it is in a directory under any repo on
+github.
+
+And themes? How would you like a fancy new prompt for yourself?
+
+    antigen-theme funky
+
+No? Not your taste? There are many themes available to you, check out the
+oh-my-zsh's page on themes. (You can currently only install themes from
+robbyrussell's, i.e., the canonical oh-my-zsh repo).
+
+Note: Many of those plugins and especially themes, assume you have the core
+library of oh-my-zsh loaded. So, if you want to experiment further, issue a
+
+    antigen-lib
+
+and continue until you're tired. At which point you can come back to this page
+;)
+
+# Usage
+
+So, now that you're here, I'll assume you are convinced and want antigen running
+your shell all the time. Sweet. Let's do it.
 
 First, clone this repo, probably as a submodule if you have your dotfiles in a
 git repo,
