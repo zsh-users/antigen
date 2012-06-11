@@ -113,7 +113,7 @@ antigen-update () {
     if [[ ! -d $clone_dir ]]; then
         git clone "$url" "$clone_dir"
     elif $update; then
-        git --git-dir "$clone_dir/.git" pull
+        git --git-dir "$clone_dir/.git" --work-tree "$clone_dir" pull
     fi
 
 }
