@@ -4,9 +4,10 @@ Antigen is a small set of functions that help you easily manage your shell (zsh)
 plugins, called bundles. The concept is pretty much the same as bundles in a
 typical vim+pathogen setup. Antigen is to zsh, what [Vundle][] is to vim.
 
-Antigen is a very new project and can be considered beta at best. That said, I
-am using antigen full time now on my work machine. Also, please read the commit
-comments of the changesets when you pull a new version of antigen.
+Please note that this is a very new project and can be considered beta at best.
+That said, I am using antigen full time now on my work machine. Also, please
+read the commit comments of the changesets when you pull a new version of
+antigen.
 
 ## Show off
 
