@@ -63,7 +63,7 @@ antigen-bundles () {
 
     local line
 
-    grep -v '^$\|^#' | while read line; do
+    grep -v '^\s*$\|^#' | while read line; do
         # Using `eval` so that we can use the shell-style quoting in each line
         # piped to `antigen-bundles`.
         eval "antigen-bundle $line"
