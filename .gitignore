@@ -3,3 +3,6 @@ tests/.zcompdump
 
 # Test failure reports
 tests/*.t.err
+
+# Repos, in cases when autogen is included as a submodule
+repos/
