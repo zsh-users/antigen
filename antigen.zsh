@@ -8,11 +8,14 @@ local _ANTIGEN_BUNDLE_RECORD=""
 
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
+# Keyword only arguments:
+#   branch - The branch of the repo to use for this bundle.
 antigen-bundle () {
 
     # Bundle spec arguments' default values.
     local url="$ANTIGEN_DEFAULT_REPO_URL"
     local loc=/
+    local branch=-
     local btype=plugin
 
     # Set spec values based on the positional arguments.
@@ -48,11 +51,11 @@ antigen-bundle () {
     fi
 
     # Add it to the record.
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
+    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype $branch"
 
-    -antigen-ensure-repo "$url"
+    -antigen-ensure-repo "$url" "$branch"
 
-    -antigen-load "$url" "$loc" "$btype"
+    -antigen-load "$url" "$loc" "$btype" "$branch"
 
 }
 
@@ -81,11 +84,21 @@ antigen-update () {
     # Takes a repo url and gives out the path that this url needs to be cloned
     # to. Doesn't actually clone anything.
     # TODO: Memoize?
+    local url="$1"
+    local branch="$2"
     echo -n $ADOTDIR/repos/
-    echo "$1" | sed \
+
+    local branched_url="$url"
+
+    if [[ "$branch" != - ]]; then
+        branched_url="$branched_url|$branch"
+    fi
+
+    echo "$branched_url" | sed \
         -e 's/\.git$//' \
         -e 's./.-SLASH-.g' \
-        -e 's.:.-COLON-.g'
+        -e 's.:.-COLON-.g' \
+        -e 's.|.-PIPE-.g'
 }
 
 -antigen-get-clone-url () {
@@ -96,7 +109,8 @@ antigen-update () {
         -e "s:^$ADOTDIR/repos/::" \
         -e 's/$/.git/' \
         -e 's.-SLASH-./.g' \
-        -e 's.-COLON-.:.g'
+        -e 's.-COLON-.:.g' \
+        -e 's.-PIPE-.|.g'
 }
 
 -antigen-ensure-repo () {
@@ -108,7 +122,8 @@ antigen-update () {
     fi
 
     local url="$1"
-    local clone_dir="$(-antigen-get-clone-dir $url)"
+    local branch="$2"
+    local clone_dir="$(-antigen-get-clone-dir $url $branch)"
 
     if [[ ! -d $clone_dir ]]; then
         git clone "$url" "$clone_dir"
@@ -116,13 +131,21 @@ antigen-update () {
         git --git-dir "$clone_dir/.git" --work-tree "$clone_dir" pull
     fi
 
+    if [[ "$branch" != - ]]; then
+        git --git-dir "$clone_dir/.git" --work-tree "$clone_dir" \
+            checkout "$branch"
+    fi
+
 }
 
 -antigen-load () {
 
     local url="$1"
-    local location="$(-antigen-get-clone-dir "$url")/$2"
+    local loc="$2"
     local btype="$3"
+    local branch="$4"
+
+    local location="$(-antigen-get-clone-dir "$url" "$branch")/$loc"
 
     if [[ $btype == theme ]]; then
 
@@ -165,7 +188,7 @@ antigen-cleanup () {
 
     # Find directores in ADOTDIR/repos, that are not in the bundles record.
     local unused_clones="$(comm -13 \
-        <(-antigen-echo-record | awk '{print $1}' | sort -u) \
+        <(-antigen-echo-record | awk '{print $1 "|" $4}' | sort -u) \
         <(ls "$ADOTDIR/repos" | while read line; do
                 -antigen-get-clone-url "$line"
             done))"
@@ -176,7 +199,8 @@ antigen-cleanup () {
     fi
 
     echo 'You have clones for the following repos, but are not used.'
-    echo "$unused_clones" | sed 's/^/  /'
+    echo "$unused_clones" \
+        | sed -e 's/^/  /' -e 's/|/, branch /'
 
     echo -n '\nDelete them all? [y/N] '
     if read -q; then
