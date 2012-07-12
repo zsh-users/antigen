@@ -196,6 +196,14 @@ from your shell environment. This allows you to install plugins on the fly and
 try them out. Of course if you want a bundle to be available every time you open
 a shell, put it in your `.zshrc`.
 
+Other keyword-only arguments accepted:
+
+--branch &mdash; Specify the branch of the git repo to be used for this bundle.
+Please note that if you specify two plugins to be loaded from the same git repo,
+but different branches, then two separate clones of this repo will be
+maintained. This is a small implementation detail and shouldn't influence you in
+any way.
+
 ### antigen-bundles
 
 If you have a fair number of bundles, using the `antigen-bundle` command can
