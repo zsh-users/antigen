@@ -385,15 +385,35 @@ Defaults to `$HOME/.antigen`.
 were used previously but are now removed. Please use `ADOTDIR` instead, as
 mentioned above.
 
+## Running the tests
+
+All the tests are in the `tests` folder and are run using the [cram]() test
+system.  Once you have cram installed, you can run the tests as
+
+    make
+
+or
+
+    make tests
+
+If you are making a feature addition, I'd really appreciate if you can add a
+test for your feature. Even if you can add a test for an existing feature, that
+would be great as the tests are currently seriously lagging behind the full
+functionality of antigen.
+
 ## Notes on writing plugins
 
 > *TBD*
 
 ## Meta
 
-Project is licensed with the [MIT License][license]. To contribute, just fork,
+### Helping out
+
+Antigen is licensed with the [MIT License][license]. To contribute, just fork,
 make changes and send a pull request. If its a rather long/complicated change,
 please consider opening an [issue][] first so we can discuss it out.
+
+### Feedback please
 
 Any comments/suggestions/feedback welcome. Please join the discussion on the
 [reddit page][] of this project. Also, follow me on twitter,
@@ -404,6 +424,7 @@ Any comments/suggestions/feedback welcome. Please join the discussion on the
 [syntax highlighting plugin]: https://github.com/zsh-users/zsh-syntax-highlighting
 [autoenv]: https://github.com/kennethreitz/autoenv
 [oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh
+[cram]: https://bitheap.org/cram/
 [issue]: https://github.com/sharat87/antigen/issues
 [license]: http://mit.sharats.me
 [reddit page]: http://www.reddit.com/r/commandline/comments/u4f26/antigen_a_plugin_manager_for_zsh_shell/
