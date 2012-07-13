@@ -43,6 +43,14 @@ utilities as small scripts all the time. Antigen is compatible with all of them.
 The plugins and scripts don't need any special handling to be compatible with
 antigen.
 
+Another example, [kennethreitz's autoenv](autoenv). Just a bundle command away.
+
+    antigen-bundle kennethreitz/autoenv
+
+And boom! you have all the autoenv goodness. Just remember how you used to do
+these before antigen, clone it, modify your bashrc to source it, load a new
+terminal, all just to test it out. Duh!
+
 The side effect of this is that you can tell antigen to grab just about anything
 from anyone's `dotfiles` repo, as long as it is in a directory under any repo on
 github.
@@ -351,6 +359,7 @@ Any comments/suggestions/feedback welcome. Please join the discussion on the
 [Vundle]: https://github.com/gmarik/vundle
 [page on themes]: https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 [syntax highlighting plugin]: https://github.com/zsh-users/zsh-syntax-highlighting
+[autoenv]: https://github.com/kennethreitz/autoenv
 [oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh
 [issue]: https://github.com/sharat87/antigen/issues
 [license]: http://mit.sharats.me
