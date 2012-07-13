@@ -64,7 +64,11 @@ antigen-bundle () {
 
     local url="$1"
 
-    if [[ $url != git://* && $url != https://* && $url != /* ]]; then
+    if [[ $url != git://* && \
+            $url != https://* && \
+            $url != /* && \
+            $url != git@github.com:*/*
+            ]]; then
         url="${url%.git}"
         url="https://github.com/$url.git"
     fi
