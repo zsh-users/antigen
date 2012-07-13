@@ -140,6 +140,11 @@ and your prompt is changed, just for this session of course.
 
 ## Commands
 
+The following are the commands provided by antigen. Note that the `-` in the
+following commands is kind of optional. You can write `antigen-bundle ...` as
+`antigen bundle` and get away with it. For more details see the help on
+`antigen` command further down in this section.
+
 ### antigen-bundle
 
 This command tells antigen to install (if not already installed) and load the
@@ -324,6 +329,44 @@ slow if you have a good number of bundle specifications.
 However, if you're a zsh expert and can suggest a way so that this would not be
 necessary, I am very interested in discussing it. Please open up an issue with
 your details. Thanks.
+
+### antigen-help
+
+This exists so that there can be some help right in the command line. Currently
+it doesn't provide much help other than redirecting you to the project page for
+documentation. It is intended to provide more meaning and sub-command specific
+help in the future.
+
+I could use some help here as I'm not that good at writing documentation that
+looks good as output on the command line.
+
+### antigen
+
+This is a parent command that mainly exists for convenience. The idea is the
+following two are the same.
+
+    antigen-list
+    antigen list
+
+and
+
+    antigen-help
+    antigen help
+
+Because of this, we can create aliases like
+
+    alias a=antigen
+    alias an=antigen
+
+and run the antigen commands without making them look annoyingly long.
+
+    a bundle ruby
+    a theme candy
+    a list
+
+And even...
+
+    an update
 
 ## Configuration
 
