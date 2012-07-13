@@ -1,18 +1,19 @@
-Skip test.
+Empty initial listing.
 
-  $ exit 80
-
-Listing recorded bundles.
-
-  $ bundle-list
+  $ antigen-list
   You don't have any bundles.
   [1]
-  $ bundle lol
-  $ bundle-list
-  lol https://github.com/robbyrussell/oh-my-zsh.git plugins/lol
-  $ bundle vi-mode
-  $ bundle-list
-  lol https://github.com/robbyrussell/oh-my-zsh.git plugins/lol
-  vi-mode https://github.com/robbyrussell/oh-my-zsh.git plugins/vi-mode
 
-TODO: Listing of plugins installed on-spot.
+Add a bundle.
+
+  $ antigen-bundle $PLUGIN_DIR
+  Cloning into '.+?'\.\.\. (re)
+  done.
+  $ antigen-list
+  .*?/test-plugin / plugin - (re)
+
+Add same bundle and check uniqueness.
+
+  $ antigen-bundle $PLUGIN_DIR
+  $ antigen-list
+  .*?/test-plugin / plugin - (re)
