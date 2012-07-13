@@ -6,6 +6,12 @@ Load plugin from master.
   $ hehe
   hehe
 
+Load the plugin again. Just to see nothing happens.
+
+  $ antigen-bundle $PLUGIN_DIR
+  $ hehe
+  hehe
+
 Update the plugin.
 
   $ cat > $PLUGIN_DIR/aliases.zsh <<EOF
