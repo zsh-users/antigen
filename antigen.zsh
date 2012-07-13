@@ -280,7 +280,7 @@ antigen-list () {
         echo "You don't have any bundles." >&2
         return 1
     else
-        -antigen-echo-record
+        -antigen-echo-record | sort -u
     fi
 }
 
