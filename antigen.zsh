@@ -269,6 +269,14 @@ antigen-list () {
     fi
 }
 
+# A syntax sugar to avoid the `-` when calling antigen commands. With this
+# function, you can write `antigen-bundle` as `antigen bundle` and so on.
+antigen () {
+    local cmd="$1"
+    shift
+    "antigen-$cmd" "$@"
+}
+
 # Echo the bundle specs as in the record. The first line is not echoed since it
 # is a blank line.
 -antigen-echo-record () {
