@@ -3,7 +3,7 @@ Branch b1.
   $ pg branch b1
   $ pg checkout b1
   Switched to branch 'b1'
-  $ cat > test-plugin/aliases.zsh <<EOF
+  $ cat > $PLUGIN_DIR/aliases.zsh <<EOF
   > alias hehe='echo hehe from b1'
   > EOF
   $ pg commit -am 'Change for b1'
@@ -17,7 +17,7 @@ Go back to master.
 
 Load plugin from b1.
 
-  $ antigen-bundle $PWD/test-plugin --branch=b1
+  $ antigen-bundle $PLUGIN_DIR --branch=b1
   Cloning into '.+?'\.\.\. (re)
   done.
   Switched to a new branch 'b1'
@@ -27,7 +27,7 @@ Load plugin from b1.
 
 Load plugin from master.
 
-  $ antigen-bundle $PWD/test-plugin
+  $ antigen-bundle $PLUGIN_DIR
   Cloning into '.+?'\.\.\. (re)
   done.
   $ hehe

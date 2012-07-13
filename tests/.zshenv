@@ -17,14 +17,15 @@ source "$TESTDIR/../antigen.zsh"
 
 # A test plugin repository to test out antigen with.
 
-mkdir test-plugin
+export PLUGIN_DIR="$PWD/test-plugin"
+mkdir "$PLUGIN_DIR"
 
 # A wrapper function over `git` to work with the test plugin repo.
 pg () {
-    git --git-dir test-plugin/.git --work-tree test-plugin "$@"
+    git --git-dir "$PLUGIN_DIR"/.git --work-tree "$PLUGIN_DIR" "$@"
 }
 
-cat > test-plugin/aliases.zsh <<EOF
+cat > "$PLUGIN_DIR"/aliases.zsh <<EOF
 alias hehe='echo hehe'
 EOF
 

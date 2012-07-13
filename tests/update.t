@@ -1,6 +1,6 @@
 Load plugin from master.
 
-  $ antigen-bundle $PWD/test-plugin
+  $ antigen-bundle $PLUGIN_DIR
   Cloning into '.+?'\.\.\. (re)
   done.
   $ hehe
@@ -8,7 +8,7 @@ Load plugin from master.
 
 Update the plugin.
 
-  $ cat > test-plugin/aliases.zsh <<EOF
+  $ cat > $PLUGIN_DIR/aliases.zsh <<EOF
   > alias hehe='echo hehe, updated'
   > EOF
   $ pg commit -am 'Updated message'
@@ -18,7 +18,7 @@ Update the plugin.
 Update bundles.
 
   $ antigen-update
-  From .+?/test-plugin (re)
+  From \S+? (re)
      [a-z0-9]{7}\.\.[a-z0-9]{7}  master     -> origin/master (re)
   Updating [a-z0-9]{7}\.\.[a-z0-9]{7} (re)
   Fast-forward
