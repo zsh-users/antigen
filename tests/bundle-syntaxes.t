@@ -1,3 +1,7 @@
+Skip test.
+
+  $ exit 80
+
 Test helper and mock functions.
 
   $ git () {

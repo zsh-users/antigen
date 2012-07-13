@@ -1,3 +1,7 @@
+Skip test.
+
+  $ exit 80
+
 Confirm we have no plugins.
 
   $ bundle-list

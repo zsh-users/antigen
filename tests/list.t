@@ -1,3 +1,7 @@
+Skip test.
+
+  $ exit 80
+
 Listing recorded bundles.
 
   $ bundle-list
