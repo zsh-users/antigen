@@ -14,16 +14,28 @@ export PLUGIN_DIR="$PWD/test-plugin"
 mkdir "$PLUGIN_DIR"
 
 # A wrapper function over `git` to work with the test plugin repo.
-pg () {
-    git --git-dir "$PLUGIN_DIR"/.git --work-tree "$PLUGIN_DIR" "$@"
-}
+alias pg='git --git-dir "$PLUGIN_DIR/.git" --work-tree "$PLUGIN_DIR"'
 
-cat > "$PLUGIN_DIR"/aliases.zsh <<EOF
-alias hehe='echo hehe'
-EOF
+echo 'alias hehe="echo hehe"' > "$PLUGIN_DIR"/aliases.zsh
 
 {
     pg init
     pg add .
     pg commit -m 'Initial commit'
+} > /dev/null
+
+# Another test plugin.
+
+export PLUGIN_DIR2="$PWD/test-plugin2"
+mkdir "$PLUGIN_DIR2"
+
+# A wrapper function over `git` to work with the test plugin repo.
+alias pg2='git --git-dir "$PLUGIN_DIR2/.git" --work-tree "$PLUGIN_DIR2"'
+
+echo 'alias hehe="echo hehe2"' > "$PLUGIN_DIR2"/aliases.zsh
+
+{
+    pg2 init
+    pg2 add .
+    pg2 commit -m 'Initial commit'
 } > /dev/null
