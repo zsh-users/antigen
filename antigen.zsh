@@ -53,8 +53,10 @@ antigen-bundle () {
     # Add it to the record.
     _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype $branch"
 
+    # Ensure a clone exists for this repo.
     -antigen-ensure-repo "$url" "$branch"
 
+    # Load the plugin.
     -antigen-load "$url" "$loc" "$btype" "$branch"
 
 }
@@ -89,14 +91,19 @@ antigen-update () {
     # TODO: Memoize?
     local url="$1"
     local branch="$2"
-    echo -n $ADOTDIR/repos/
 
+    # The branched_url will be the same as the url itself, unless there is no
+    # branch specified.
     local branched_url="$url"
 
+    # If a branch is specified, i.e., branch is not `-`, append it to the url,
+    # separating with a pipe character.
     if [[ "$branch" != - ]]; then
         branched_url="$branched_url|$branch"
     fi
 
+    # Echo the full path to the clone directory.
+    echo -n $ADOTDIR/repos/
     echo "$branched_url" | sed \
         -e 's/\.git$//' \
         -e 's./.-SLASH-.g' \
@@ -118,22 +125,31 @@ antigen-update () {
 
 -antigen-ensure-repo () {
 
+    # Ensure that a clone exists for the given repo url and branch. If the first
+    # argument is `--update` and if a clone already exists for the given repo
+    # and branch, it is pull-ed, i.e., updated.
+
+    # Check if we have to update.
     local update=false
     if [[ $1 == --update ]]; then
         update=true
         shift
     fi
 
+    # Get the clone's directory as per the given repo url and branch.
     local url="$1"
     local branch="$2"
     local clone_dir="$(-antigen-get-clone-dir $url $branch)"
 
+    # Clone if it doesn't already exist.
     if [[ ! -d $clone_dir ]]; then
         git clone "$url" "$clone_dir"
     elif $update; then
+        # Pull changes if update requested.
         git --git-dir "$clone_dir/.git" --work-tree "$clone_dir" pull
     fi
 
+    # If its a specific branch that we want, checkout that branch.
     if [[ "$branch" != - ]]; then
         git --git-dir "$clone_dir/.git" --work-tree "$clone_dir" \
             checkout "$branch"
@@ -148,6 +164,7 @@ antigen-update () {
     local btype="$3"
     local branch="$4"
 
+    # The full location where the plugin is located.
     local location="$(-antigen-get-clone-dir "$url" "$branch")/$loc"
 
     if [[ $btype == theme ]]; then
@@ -162,20 +179,24 @@ antigen-update () {
         # FIXME: I don't know. Looks very very ugly. Needs a better
         # implementation once tests are ready.
         local script_loc="$(ls "$location" | grep -m1 '.plugin.zsh$')"
+
         if [[ -f $script_loc ]]; then
             # If we have a `*.plugin.zsh`, source it.
             source "$script_loc"
+
         elif [[ ! -z "$(ls "$location" | grep -m1 '.zsh$')" ]]; then
             # If there is no `*.plugin.zsh` file, source *all* the `*.zsh`
             # files.
             for script ($location/*.zsh) source "$script"
+
         elif [[ ! -z "$(ls "$location" | grep -m1 '.sh$')" ]]; then
             # If there are no `*.zsh` files either, we look for and source any
             # `*.sh` files instead.
             for script ($location/*.sh) source "$script"
+
         fi
 
-        # Add to $fpath, for completion(s)
+        # Add to $fpath, for completion(s).
         fpath=($location $fpath)
 
     fi
@@ -183,6 +204,8 @@ antigen-update () {
 }
 
 antigen-cleanup () {
+
+    # Cleanup unused repositories.
 
     if [[ ! -d "$ADOTDIR/repos" || -z "$(ls "$ADOTDIR/repos/")" ]]; then
         echo "You don't have any bundles."
