@@ -269,6 +269,14 @@ antigen-list () {
     fi
 }
 
+antigen-help () {
+    cat <<EOF
+Antigen is a plugin management system for zsh. It makes it easy to grab awesome
+shell scripts and utilities, put up on github. For further details and complete
+documentation, visit the project's page at 'http://antigen.sharats.me'.
+EOF
+}
+
 # A syntax sugar to avoid the `-` when calling antigen commands. With this
 # function, you can write `antigen-bundle` as `antigen bundle` and so on.
 antigen () {
