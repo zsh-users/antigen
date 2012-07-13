@@ -1,32 +1,6 @@
-Setup a plugin.
-
-  $ mkdir plugin
-
-A git wrapper that works with the plugin's repo.
-
-  $ pg () {
-  >   git --git-dir plugin/.git --work-tree plugin "$@"
-  > }
-
-Setup the plugin repo.
-
-  $ pg init
-  Initialized empty Git repository in .+?/plugin/\.git/? (re)
-
-Write to the plugin.
-
-  $ cat > plugin/aliases.zsh <<EOF
-  > alias hehe='echo hehe'
-  > EOF
-  $ pg add .
-  $ pg commit -m 'Initial commit'
-  \[master \(root-commit\) [a-f0-9]{7}\] Initial commit (re)
-   1 file changed, 1 insertion(+)
-   create mode [\d]{6} aliases\.zsh (re)
-
 Load plugin from master.
 
-  $ antigen-bundle $PWD/plugin
+  $ antigen-bundle $PWD/test-plugin
   Cloning into '.+?'\.\.\. (re)
   done.
   $ hehe
@@ -34,7 +8,7 @@ Load plugin from master.
 
 Update the plugin.
 
-  $ cat > plugin/aliases.zsh <<EOF
+  $ cat > test-plugin/aliases.zsh <<EOF
   > alias hehe='echo hehe, updated'
   > EOF
   $ pg commit -am 'Updated message'
@@ -44,7 +18,7 @@ Update the plugin.
 Update bundles.
 
   $ antigen-update
-  From .+?/plugin (re)
+  From .+?/test-plugin (re)
      [a-z0-9]{7}\.\.[a-z0-9]{7}  master     -> origin/master (re)
   Updating [a-z0-9]{7}\.\.[a-z0-9]{7} (re)
   Fast-forward
