@@ -45,10 +45,7 @@ antigen-bundle () {
     done
 
     # Resolve the url.
-    if [[ $url != git://* && $url != https://* && $url != /* ]]; then
-        url="${url%.git}"
-        url="https://github.com/$url.git"
-    fi
+    url="$(-antigen-resolve-bundle-url "$url")"
 
     # Add it to the record.
     _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype $branch"
@@ -59,6 +56,20 @@ antigen-bundle () {
     # Load the plugin.
     -antigen-load "$url" "$loc" "$btype" "$branch"
 
+}
+
+-antigen-resolve-bundle-url () {
+    # Given an acceptable short/full form of a bundle's repo url, this function
+    # echoes the full form of the repo's clone url.
+
+    local url="$1"
+
+    if [[ $url != git://* && $url != https://* && $url != /* ]]; then
+        url="${url%.git}"
+        url="https://github.com/$url.git"
+    fi
+
+    echo "$url"
 }
 
 antigen-bundles () {
