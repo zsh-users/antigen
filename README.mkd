@@ -403,7 +403,27 @@ functionality of antigen.
 
 ## Notes on writing plugins
 
-> *TBD*
+If you are just going to write a single `.sh` file with the goodness you want to
+create, just forget about this and go do that. Antigen will work just find with
+such a plugin.
+
+If you want to know how antigen loads the plugins, do continue.
+
+Firstly, antigen looks for a `*.plugin.zsh` file in the plugin directory. If
+present, it will source *only* this script. Nothing else is sourced.
+
+Otherwise, it looks for `*.zsh` files and if there are any, *all* of them are
+sourced. The order in which they are sourced is not currently defined. Please
+don't rely on this order. Nothing else is sourced after all the `*.zsh` scripts.
+
+If no `*.zsh` files are present, it finally looks for any `*.sh` files and
+sources *all* of them. Again, the order in which they are sourced in not
+currently defined.
+
+No matter which (or none) of the above happen to be sourced, this plugin
+directory is added to the zsh's function path (`$fpath`) so that any completions
+in it are loaded. One exception to this rule is that if this plugin is a prompt
+theme. In which case the theme script is just sourced and nothing else is done.
 
 ## Meta
 
