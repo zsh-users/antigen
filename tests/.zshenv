@@ -9,7 +9,7 @@ if [[ ! -d "$default_clone" ]]; then
 fi
 
 export ANTIGEN_DEFAULT_REPO_URL="$default_clone"
-export ADOTDIR="$TMP/dot-antigen"
+export ADOTDIR="$PWD/dot-antigen"
 
 rm "$TESTDIR/.zcompdump"
 
