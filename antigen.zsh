@@ -235,7 +235,8 @@ antigen-cleanup () {
         <(ls "$ADOTDIR/repos" \
             | while read line; do
                 -antigen-get-clone-url "$line"
-            done))"
+            done \
+            | sort -u))"
 
     if [[ -z $unused_clones ]]; then
         echo "You don't have any unidentified bundles."
