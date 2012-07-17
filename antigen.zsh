@@ -251,9 +251,9 @@ antigen-cleanup () {
     if read -q; then
         echo
         echo
-        echo "$unused_clones" | while read url; do
-            echo -n "Deleting clone for $url..."
-            rm -rf "$(-antigen-get-clone-dir $url)"
+        echo "$unused_clones" | while read line; do
+            echo -n "Deleting clone for $line..."
+            rm -rf "$(-antigen-get-clone-dir $line)"
             echo ' done.'
         done
     else
