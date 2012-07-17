@@ -132,10 +132,10 @@ antigen-update () {
     # TODO: Memoize?
     echo "$1" | sed \
         -e "s:^$ADOTDIR/repos/::" \
-        -e 's/$/.git/' \
         -e 's.-SLASH-./.g' \
         -e 's.-COLON-.:.g' \
-        -e 's.-PIPE-.|.g'
+        -e 's.-PIPE-.|.g' \
+        | awk '/^\// {print; next} {print $0 ".git"}'
 }
 
 -antigen-ensure-repo () {
