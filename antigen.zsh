@@ -229,8 +229,11 @@ antigen-cleanup () {
 
     # Find directores in ADOTDIR/repos, that are not in the bundles record.
     local unused_clones="$(comm -13 \
-        <(-antigen-echo-record | awk '{print $1 "|" $4}' | sort -u) \
-        <(ls "$ADOTDIR/repos" | while read line; do
+        <(-antigen-echo-record \
+            | awk '{print ($4 == "-" ? $1 : $1 "|" $4)}' \
+            | sort -u) \
+        <(ls "$ADOTDIR/repos" \
+            | while read line; do
                 -antigen-get-clone-url "$line"
             done))"
 
