@@ -69,13 +69,13 @@ antigen-bundle () {
 
     local url="$1"
 
+    # Expand short github url syntax: `username/reponame`
     if [[ $url != git://* && \
             $url != https://* && \
             $url != /* && \
             $url != git@github.com:*/*
             ]]; then
-        url="${url%.git}"
-        url="https://github.com/$url.git"
+        url="https://github.com/${url%.git}.git"
     fi
 
     echo "$url"
