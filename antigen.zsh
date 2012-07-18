@@ -216,6 +216,11 @@ antigen-cleanup () {
 
     # Cleanup unused repositories.
 
+    local force=false
+    if [[ $1 == --force ]]; then
+        force=true
+    fi
+
     if [[ ! -d "$ADOTDIR/repos" || -z "$(ls "$ADOTDIR/repos/")" ]]; then
         echo "You don't have any bundles."
         return 0
@@ -239,8 +244,7 @@ antigen-cleanup () {
     echo "$unused_clones" \
         | sed -e 's/^/  /' -e 's/|/, branch /'
 
-    echo -n '\nDelete them all? [y/N] '
-    if read -q; then
+    if $force || (echo -n '\nDelete them all? [y/N] '; read -q); then
         echo
         echo
         echo "$unused_clones" | while read line; do
