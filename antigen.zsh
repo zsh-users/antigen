@@ -15,7 +15,7 @@ antigen-bundle () {
     # Bundle spec arguments' default values.
     local url="$ANTIGEN_DEFAULT_REPO_URL"
     local loc=/
-    local branch=-
+    local branch=
     local btype=plugin
 
     # Set spec values based on the positional arguments.
@@ -47,14 +47,19 @@ antigen-bundle () {
     # Resolve the url.
     url="$(-antigen-resolve-bundle-url "$url")"
 
+    # Add the branch information to the url.
+    if [[ ! -z $branch ]]; then
+        url="$url|$branch"
+    fi
+
     # Add it to the record.
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype $branch"
+    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
 
     # Ensure a clone exists for this repo.
-    -antigen-ensure-repo "$url" "$branch"
+    -antigen-ensure-repo "$url"
 
     # Load the plugin.
-    -antigen-load "$url" "$loc" "$btype" "$branch"
+    -antigen-load "$url" "$loc" "$btype"
 
 }
 
@@ -93,10 +98,10 @@ antigen-bundles () {
 antigen-update () {
     # Update your bundles, i.e., `git pull` in all the plugin repos.
     -antigen-echo-record \
-        | awk '{print $1 "|" $4}' \
+        | awk '{print $1}' \
         | sort -u \
-        | while read url_line; do
-            -antigen-ensure-repo --update "${url_line%|*}" "${url_line#*|}"
+        | while read url; do
+            -antigen-ensure-repo --update "$url"
         done
 }
 
@@ -104,22 +109,13 @@ antigen-update () {
     # Takes a repo url and gives out the path that this url needs to be cloned
     # to. Doesn't actually clone anything.
     # TODO: Memoize?
+
+    # The url given.
     local url="$1"
-    local branch="$2"
-
-    # The branched_url will be the same as the url itself, unless there is no
-    # branch specified.
-    local branched_url="$url"
-
-    # If a branch is specified, i.e., branch is not `-`, append it to the url,
-    # separating with a pipe character.
-    if [[ "$branch" != - ]]; then
-        branched_url="$branched_url|$branch"
-    fi
 
     # Echo the full path to the clone directory.
     echo -n $ADOTDIR/repos/
-    echo "$branched_url" | sed \
+    echo "$url" | sed \
         -e 's/\.git$//' \
         -e 's./.-SLASH-.g' \
         -e 's.:.-COLON-.g' \
@@ -153,21 +149,20 @@ antigen-update () {
 
     # Get the clone's directory as per the given repo url and branch.
     local url="$1"
-    local branch="$2"
-    local clone_dir="$(-antigen-get-clone-dir $url $branch)"
+    local clone_dir="$(-antigen-get-clone-dir $url)"
 
     # Clone if it doesn't already exist.
     if [[ ! -d $clone_dir ]]; then
-        git clone "$url" "$clone_dir"
+        git clone "${url%|*}" "$clone_dir"
     elif $update; then
         # Pull changes if update requested.
         git --git-dir "$clone_dir/.git" --work-tree "$clone_dir" pull
     fi
 
     # If its a specific branch that we want, checkout that branch.
-    if [[ "$branch" != - ]]; then
+    if [[ $url == *\|* ]]; then
         git --git-dir "$clone_dir/.git" --work-tree "$clone_dir" \
-            checkout "$branch"
+            checkout "${url#*|}"
     fi
 
 }
@@ -177,10 +172,9 @@ antigen-update () {
     local url="$1"
     local loc="$2"
     local btype="$3"
-    local branch="$4"
 
     # The full location where the plugin is located.
-    local location="$(-antigen-get-clone-dir "$url" "$branch")/$loc"
+    local location="$(-antigen-get-clone-dir "$url")/$loc"
 
     if [[ $btype == theme ]]; then
 
@@ -229,9 +223,7 @@ antigen-cleanup () {
 
     # Find directores in ADOTDIR/repos, that are not in the bundles record.
     local unused_clones="$(comm -13 \
-        <(-antigen-echo-record \
-            | awk '{print ($4 == "-" ? $1 : $1 "|" $4)}' \
-            | sort -u) \
+        <(-antigen-echo-record | awk '{print $1}' | sort -u) \
         <(ls "$ADOTDIR/repos" \
             | while read line; do
                 -antigen-get-clone-url "$line"
