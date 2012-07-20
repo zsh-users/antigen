@@ -140,12 +140,17 @@ antigen-update () {
     # argument is `--update` and if a clone already exists for the given repo
     # and branch, it is pull-ed, i.e., updated.
 
+    # Argument defaults.
     # Check if we have to update.
     local update=false
-    if [[ $1 == --update ]]; then
-        update=true
+    # Verbose output.
+    local verbose=false
+
+    # Load any boolean arguments specified.
+    while [[ $1 == --* ]]; do
+        eval "local '${1#--}=true'"
         shift
-    fi
+    done
 
     # Get the clone's directory as per the given repo url and branch.
     local url="$1"
