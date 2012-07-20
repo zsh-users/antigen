@@ -101,7 +101,9 @@ antigen-update () {
         | awk '{print $1}' \
         | sort -u \
         | while read url; do
+            echo "**** Pulling $url"
             -antigen-ensure-repo --update "$url"
+            echo
         done
 }
 

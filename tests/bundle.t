@@ -24,12 +24,14 @@ Update the plugin.
 Update bundles.
 
   $ antigen-update
-  From \S+? (re)
-     [a-z0-9]{7}\.\.[a-z0-9]{7}  master     -> origin/master (re)
-  Updating [a-z0-9]{7}\.\.[a-z0-9]{7} (re)
+  **** Pulling */test-plugin (glob)
+  From */test-plugin (glob)
+     ???????..???????  master     -> origin/master (glob)
+  Updating ???????..??????? (glob)
   Fast-forward
    aliases.zsh |    2 +-
    1 file changed, 1 insertion(+), 1 deletion(-)
+  
 
 Confirm there is still only one repository.
 
