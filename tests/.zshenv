@@ -4,7 +4,7 @@
 
 export ADOTDIR="$PWD/dot-antigen"
 
-rm "$TESTDIR/.zcompdump"
+test -f "$TESTDIR/.zcompdump" && rm "$TESTDIR/.zcompdump"
 
 source "$TESTDIR/../antigen.zsh"
 
