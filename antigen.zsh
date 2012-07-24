@@ -16,6 +16,7 @@ antigen-bundle () {
     local url="$ANTIGEN_DEFAULT_REPO_URL"
     local loc=/
     local branch=
+    local no_local_clone=false
     local btype=plugin
 
     # Set spec values based on the positional arguments.
@@ -62,13 +63,15 @@ antigen-bundle () {
     fi
 
     # Add it to the record.
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
+    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype $no_local_clone"
 
-    # Ensure a clone exists for this repo.
-    -antigen-ensure-repo "$url"
+    # Ensure a clone exists for this repo, if needed.
+    if ! [[ $url == /* && $no_local_clone == true ]]; then
+        -antigen-ensure-repo "$url"
+    fi
 
     # Load the plugin.
-    -antigen-load "$url" "$loc" "$btype"
+    -antigen-load "$url" "$loc" "$btype" "$no_local_clone"
 
 }
 
@@ -201,9 +204,15 @@ antigen-update () {
     local url="$1"
     local loc="$2"
     local btype="$3"
+    local no_local_clone="$4"
 
     # The full location where the plugin is located.
-    local location="$(-antigen-get-clone-dir "$url")/$loc"
+    local location
+    if ! [[ $url == /* && $no_local_clone == true ]]; then
+        location="$(-antigen-get-clone-dir "$url")/$loc"
+    else
+        location="$url"
+    fi
 
     if [[ $btype == theme ]]; then
 

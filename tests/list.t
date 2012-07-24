@@ -10,13 +10,13 @@ Add a bundle.
   Cloning into '.+?'\.\.\. (re)
   done.
   $ antigen-list
-  .*?/test-plugin / plugin (re)
+  */test-plugin / plugin false (glob)
 
 Add same bundle and check uniqueness.
 
   $ antigen-bundle $PLUGIN_DIR
   $ antigen-list
-  .*?/test-plugin / plugin (re)
+  */test-plugin / plugin false (glob)
 
 Add another bundle.
 
@@ -24,5 +24,5 @@ Add another bundle.
   Cloning into '.+?'\.\.\. (re)
   done.
   $ antigen-list
-  .*?/test-plugin / plugin (re)
-  .*?/test-plugin2 / plugin (re)
+  */test-plugin / plugin false (glob)
+  */test-plugin2 / plugin false (glob)
