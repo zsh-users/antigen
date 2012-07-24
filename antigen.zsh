@@ -37,9 +37,16 @@ antigen-bundle () {
 
     # Set spec values from keyword arguments, if any. The remaining arguments
     # are all assumed to be keyword arguments.
-    while [[ $1 == --*=* ]]; do
-        local arg_name="$(echo "$1" | cut -d= -f1 | sed 's/^--//')"
-        local arg_value="$(echo "$1" | cut -d= -f2)"
+    while [[ $1 == --* ]]; do
+        local arg="${1#--}"
+
+        if [[ $arg != *=* ]]; then
+            arg="$arg=true"
+        fi
+
+        local arg_name="${arg%\=*}"
+        local arg_value="${arg#*\=}"
+
         eval "local $arg_name='$arg_value'"
         shift
     done
