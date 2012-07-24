@@ -29,12 +29,6 @@ antigen-bundle () {
         i=$(($i + 1))
     done
 
-    # Check if url is just the plugin name. Super short syntax.
-    if [[ "$url" != */* ]]; then
-        loc="plugins/$url"
-        url="$ANTIGEN_DEFAULT_REPO_URL"
-    fi
-
     # Set spec values from keyword arguments, if any. The remaining arguments
     # are all assumed to be keyword arguments.
     while [[ $1 == --* ]]; do
@@ -50,6 +44,12 @@ antigen-bundle () {
         eval "local $arg_name='$arg_value'"
         shift
     done
+
+    # Check if url is just the plugin name. Super short syntax.
+    if [[ "$url" != */* ]]; then
+        loc="plugins/$url"
+        url="$ANTIGEN_DEFAULT_REPO_URL"
+    fi
 
     # Resolve the url.
     url="$(-antigen-resolve-bundle-url "$url")"
