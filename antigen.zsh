@@ -34,14 +34,17 @@ antigen-bundle () {
     # Set spec values from keyword arguments, if any. The remaining arguments
     # are all assumed to be keyword arguments.
     while [[ $1 == --* ]]; do
-        # Remove the `--` at the start and replace the rest of `-`'s to `_`'s.
-        local arg="${${1#--}//-/_}"
+        # Remove the `--` at the start.
+        local arg="${1#--}"
 
         if [[ $arg != *=* ]]; then
             arg="$arg=true"
         fi
 
-        local arg_name="${arg%\=*}"
+        # Get the name of the arg and replace the `-`'s to `_`'s.
+        local arg_name="${${arg%\=*}//-/_}"
+
+        # Get the value of the arg.
         local arg_value="${arg#*\=}"
 
         eval "local $arg_name='$arg_value'"
