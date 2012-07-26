@@ -65,16 +65,24 @@ antigen-bundle () {
         url="$url|$branch"
     fi
 
+    # The `make_local_clone` variable better represents whether there should be
+    # a local clone made. If the url is a local absolute path and no_local_clone
+    # is true, then and only then, there should be no cloning taking place.
+    local make_local_clone=true
+    if [[ $url == /* && $no_local_clone == true ]]; then
+        make_local_clone=false
+    fi
+
     # Add it to the record.
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype $no_local_clone"
+    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype $make_local_clone"
 
     # Ensure a clone exists for this repo, if needed.
-    if ! [[ $url == /* && $no_local_clone == true ]]; then
+    if $make_local_clone; then
         -antigen-ensure-repo "$url"
     fi
 
     # Load the plugin.
-    -antigen-load "$url" "$loc" "$btype" "$no_local_clone"
+     -antigen-load "$url" "$loc" "$btype" "$make_local_clone"
 
 }
 
@@ -207,11 +215,11 @@ antigen-update () {
     local url="$1"
     local loc="$2"
     local btype="$3"
-    local no_local_clone="$4"
+    local make_local_clone="$4"
 
     # The full location where the plugin is located.
     local location
-    if ! [[ $url == /* && $no_local_clone == true ]]; then
+    if $make_local_clone; then
         location="$(-antigen-get-clone-dir "$url")/$loc"
     else
         location="$url"
