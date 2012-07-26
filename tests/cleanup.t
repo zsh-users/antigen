@@ -7,7 +7,7 @@ Load a plugin.
 Check the listing.
 
   $ antigen-list
-  */test-plugin / plugin false (glob)
+  */test-plugin / plugin true (glob)
 
 Clear out the bundles record.
 
