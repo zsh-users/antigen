@@ -23,7 +23,7 @@ antigen-bundle () {
     local position_args
     position_args=(url loc)
     local i=1
-    while ! [[ -z $1 || $1 == --*=* ]]; do
+    while ! [[ -z $1 || $1 == --* ]]; do
         local arg_name="${position_args[$i]}"
         local arg_value="$1"
         eval "local $arg_name='$arg_value'"
