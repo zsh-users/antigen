@@ -278,7 +278,7 @@ antigen-cleanup () {
     # Find directores in ADOTDIR/repos, that are not in the bundles record.
     local unused_clones="$(comm -13 \
         <(-antigen-echo-record \
-            | awk '{print $1}' \
+            | awk '$4 == "true" {print $1}' \
             | while read line; do
                 -antigen-get-clone-dir "$line"
             done \
