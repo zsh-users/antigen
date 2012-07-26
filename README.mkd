@@ -278,8 +278,10 @@ Used to clean up the clones of repos which are not used by any plugins. It takes
 no arguments. When this is run, it lists out the repo-clones that are available
 but are not used by any plugin *currently loaded*.
 
-This command currently cannot run in a non-interactive mode. So it won't be very
-pleasant to use it in your `.zshrc`.
+This command, by default asks for confirmation before deleting the unused
+clones. If the `--force` argument is given, then this confirmation is not asked.
+It straight away deletes all the unused clones. This option makes this command
+usable in a non-interactive fashion.
 
 ### antigen-lib
 
