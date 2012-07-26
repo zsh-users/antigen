@@ -211,11 +211,29 @@ a shell, put it in your `.zshrc`.
 
 Other keyword-only arguments accepted:
 
-`branch` &mdash; Specify the branch of the git repo to be used for this bundle.
-Please note that if you specify two plugins to be loaded from the same git repo,
-but different branches, then two separate clones of this repo will be
-maintained. This is a small implementation detail and shouldn't influence you in
-any way.
+`--branch={git-branch-name}` &mdash; Specify the branch of the git repo to be
+used for this bundle (without the braces of course). The default is whatever
+branch the clone comes with, which is usually `master`. For example,
+
+    antigen-bundle github-user/repo --branch=develop
+
+This will get the plugin as in the branch `develop`.
+
+Note that if you specify two plugins to be loaded from the same git repo, but
+different branches, then two separate clones of this repo will be maintained.
+This is a small implementation detail and shouldn't influence you in any way.
+
+`--no-local-clone` &mdash; This command can be useful if you are developing a
+plugin and already have a clone on your local file system. If this argument is
+not given, even if the given repo url is a local path, a clone is made in the
+`$ADOTDIR/repos`, and the plugin is loaded from that clone. But, if you give
+this argument, the plugin is sourced straight from the repo location, without
+creating a clone. For example,
+
+    antigen-bundle /absolute/path/to/the/plugin --no-local-clone
+
+Note that if the repo url is *not* an absolute local path, this argument has no
+effect.
 
 ### antigen-bundles
 
