@@ -69,7 +69,7 @@ antigen-bundle () {
     # a local clone made. If the url is a local absolute path and no_local_clone
     # is true, then and only then, there should be no cloning taking place.
     local make_local_clone=true
-    if [[ $url == /* && $no_local_clone == true ]]; then
+    if [[ $url == /* && ( $no_local_clone == true || ! -d $url/.git ) ]]; then
         make_local_clone=false
     fi
 
