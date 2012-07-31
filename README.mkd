@@ -203,7 +203,7 @@ You can also specify a local directory on your file system as a bundle. In this
 case, make sure the path you give is the absolute path (i.e., starts with a
 `/`). Relative paths are not supported. If the repo you gave is a local
 directory path, then it is not necessary that this path is a git repo. Please
-refer to the notes on `--no-local-repo` below.
+refer to the notes on `--no-local-clone` below.
 
 In addition to the above discussed arguments, `antigen-bundle` also takes a
 `btype` keyword-only argument, that is used internally. You shouldn't be
@@ -238,8 +238,10 @@ creating a clone. For example,
 
     antigen-bundle /absolute/path/to/the/plugin --no-local-clone
 
-Note that if the repo url is *not* an absolute local path, this argument has no
-effect.
+Note that if the repo url is *not* an absolute local path or a branch has been
+specified with the `--branch` option, this argument has no effect. That is,
+for this option to have any affect, the repo url must be an absolute local path
+and no `--branch` should be specified.
 
 Also, if the local path given as the url is not a git repo, then this
 argument is forced as it doesn't makes sense to *clone* something that's not a

@@ -66,10 +66,13 @@ antigen-bundle () {
     fi
 
     # The `make_local_clone` variable better represents whether there should be
-    # a local clone made. If the url is a local absolute path and no_local_clone
-    # is true, then and only then, there should be no cloning taking place.
+    # a local clone made. For cloning to be avoided, firstly, the `$url` should
+    # be an absolute local path and `$branch` should be empty. In addition to
+    # these two conditions, either the `--no-local-clone` option should be
+    # given, or `$url` should not a git repo.
     local make_local_clone=true
-    if [[ $url == /* && ( $no_local_clone == true || ! -d $url/.git ) ]]; then
+    if [[ $url == /* && -z $branch \
+            && ( $no_local_clone == true || ! -d $url/.git ) ]]; then
         make_local_clone=false
     fi
 
@@ -82,7 +85,7 @@ antigen-bundle () {
     fi
 
     # Load the plugin.
-     -antigen-load "$url" "$loc" "$btype" "$make_local_clone"
+    -antigen-load "$url" "$loc" "$btype" "$make_local_clone"
 
 }
 
