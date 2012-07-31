@@ -1,3 +1,8 @@
+Firstly, no plugins, nothing to cleanup.
+
+  $ antigen-cleanup --force
+  You don't have any bundles.
+
 Load a plugin.
 
   $ antigen-bundle $PLUGIN_DIR
@@ -8,6 +13,11 @@ Check the listing.
 
   $ antigen-list
   */test-plugin / plugin true (glob)
+
+Nothing should be available for cleanup.
+
+  $ antigen-cleanup --force
+  You don't have any unidentified bundles.
 
 Clear out the bundles record.
 
