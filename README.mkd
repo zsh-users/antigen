@@ -43,7 +43,7 @@ utilities as small scripts all the time. Antigen is compatible with all of them.
 The plugins and scripts don't need any special handling to be compatible with
 antigen.
 
-Another example, [kennethreitz's autoenv](autoenv). Just a bundle command away.
+Another example, [kennethreitz's autoenv][autoenv]. Just a bundle command away.
 
     antigen-bundle kennethreitz/autoenv
 
