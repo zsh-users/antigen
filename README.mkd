@@ -439,7 +439,7 @@ mentioned above.
 
 ## Running the tests
 
-All the tests are in the `tests` folder and are run using the [cram]() test
+All the tests are in the `tests` folder and are run using the [cram][] test
 system.  Once you have cram installed, you can run the tests as
 
     make
@@ -492,7 +492,7 @@ please consider opening an [issue][] first so we can discuss it out.
 
 Any comments/suggestions/feedback welcome. Please join the discussion on the
 [reddit page][] of this project. Also, follow me on twitter,
-[@sharat87](twitter).
+[@sharat87][twitter].
 
 [Vundle]: https://github.com/gmarik/vundle
 [page on themes]: https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
