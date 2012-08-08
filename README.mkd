@@ -5,9 +5,10 @@ plugins, called bundles. The concept is pretty much the same as bundles in a
 typical vim+pathogen setup. Antigen is to zsh, what [Vundle][] is to vim.
 
 Please note that this is a very new project and can be considered beta at best.
-That said, I am using antigen full time now on my work machine. Also, please
-read the commit comments of the changesets when you pull a new version of
-antigen.
+That said, I am using antigen full time now on my work machine.
+
+Note: Please read the commit comments of the changesets when you pull a new
+version of antigen.
 
 ## Show off
 
@@ -29,14 +30,15 @@ running
 
     antigen-bundle zsh-users/zsh-syntax-highlighting
 
-Now let it do its thing and once its done and you're back at your prompt, try
-and type a command. See that? Colors!
+Now let it do its thing and once you're back at your prompt, try and type a
+command. See that? Colors!
 
 So, you do git? ruby? git and ruby? There are lots of awesome plugins over at
 oh-my-zsh. Treat yourself to some.
 
     antigen-bundle robbyrussell/oh-my-zsh plugins/ruby
-    antigen-bundle robbyrussell/oh-my-zsh plugins/git
+    # Or for the lazy,
+    antigen-bundle git
 
 There are lots of plugins out there in the wild and people are writing zsh
 utilities as small scripts all the time. Antigen is compatible with all of them.
@@ -51,7 +53,7 @@ And boom! you have all the autoenv goodness. Just remember how you used to do
 these before antigen, clone it, modify your bashrc to source it, load a new
 terminal, all just to test it out. Duh!
 
-The side effect of this is that you can tell antigen to grab just about anything
+A subtle aspect of this is that you can tell antigen to grab just about anything
 from anyone's `dotfiles` repo, as long as it is in a directory under any repo on
 github.
 
@@ -73,7 +75,7 @@ and continue until you're tired. At which point you can come back to this page
 
 ## Usage
 
-So, now that you're here, I'll assume you are convinced and want antigen running
+So, now that you're here, I suppose you are convinced and want antigen running
 your shell all the time. Sweet. Let's do it.
 
 First, clone this repo, probably as a submodule if you have your dotfiles in a
@@ -112,11 +114,11 @@ syntax for the `antigen-bundle` command is discussed further down on this page.
 ## Motivation
 
 If you use zsh and [oh-my-zsh][], you know that having many different plugins
-that are developed by many different authors in a single (sub)repo is not a very
+that are developed by many different authors in a single (sub)repo is not very
 easy to maintain. There are some really fantastic plugins and utilities in
 oh-my-zsh, but having them all in a single repo doesn't really scale well. And I
 admire robbyrussell's efforts for reviewing and merging the gigantic number of
-pull requests the project gets. It needs a better way of plugin management.
+pull requests the project gets. We need a better way of plugin management.
 
 This was discussed on [a][1] [few][2] [issues][3], but it doesn't look like
 there was any progress made. So, I'm trying to start this off with antigen,
@@ -130,20 +132,23 @@ shell script expert (far from it).
 Inspired by vundle, antigen can pull oh-my-zsh style plugins from various github
 repositories. You are not limited to use plugins from the oh-my-zsh repository
 only and you don't need to maintain your own fork and pull from upstream every
-now and then.
+now and then. I actually encourage you to grab plugins and scripts from various
+sources, straight from the authors, before they even submit it to oh-my-zsh as a
+pull request.
 
 Antigen also lets you switch the prompt theme with one command, just like that
 
     bundle-theme candy
 
-and your prompt is changed, just for this session of course.
+and your prompt is changed, just for this session of course (unless you put this
+line in your `.zshrc`).
 
 ## Commands
 
 The following are the commands provided by antigen. Note that the `-` in the
-following commands is kind of optional. You can write `antigen-bundle ...` as
-`antigen bundle` and get away with it. For more details see the help on
-`antigen` command further down in this section.
+following commands can be replaced with a space. You can write `antigen-bundle
+...` as `antigen bundle ...` and get away with it. For more details see the help
+on `antigen` command further down in this section.
 
 ### antigen-bundle
 
@@ -152,7 +157,7 @@ given plugin. The simplest usage follows the following syntax.
 
     antigen-bundle <plugin-name>
 
-This will install the `plugins/<name>` directory from [robbyrussell's
+This will install and load the `plugins/<name>` directory from [robbyrussell's
 oh-my-zsh][oh-my-zsh] (can be changed by setting `ANTIGEN_DEFAULT_REPO_URL`).
 
 However, the above is just syntax sugar for the extended syntax of the
@@ -205,15 +210,9 @@ case, make sure the path you give is the absolute path (i.e., starts with a
 directory path, then it is not necessary that this path is a git repo. Please
 refer to the notes on `--no-local-clone` below.
 
-In addition to the above discussed arguments, `antigen-bundle` also takes a
-`btype` keyword-only argument, that is used internally. You shouldn't be
-concerned with this argument, its only used internally and will probably go away
-in the future.  It indicates whether the bundle is a theme or a simple plugin.
-
-You can use this `antigen-bundle` command not just from your `.zshrc`, but also
-from your shell environment. This allows you to install plugins on the fly and
-try them out. Of course if you want a bundle to be available every time you open
-a shell, put it in your `.zshrc`.
+This command can also be used from your shell environment. This allows you to
+install plugins on the fly and try them out. Of course if you want a bundle to
+be available every time you open a shell, put it in your `.zshrc`.
 
 Other keyword-only arguments accepted:
 
@@ -250,6 +249,11 @@ dotfiles repo. For example,
 
     antigen-bundle $HOME/dotfiles/oh-my-zsh/custom
 
+In addition to the above discussed arguments, `antigen-bundle` also takes a
+`btype` keyword-only argument, that is used internally. You shouldn't be
+concerned with this argument, its only used internally and will probably go away
+in the future.  It indicates whether the bundle is a theme or a simple plugin.
+
 ### antigen-bundles
 
 If you have a fair number of bundles, using the `antigen-bundle` command can
@@ -261,14 +265,14 @@ you would give to the `antigen-bundle` command, one per line, into the
 `antigen-bundles` command. The easiest way to do this, is using the heredoc
 syntax.
 
-    antigen-bundles <<EOF
+    antigen-bundles <<EOBUNDLES
     # Guess what to install when running an unknown command.
     command-not-found
 
     # The heroku tool helper plugin.
     heroku
 
-    EOF
+    EOBUNDLES
 
 This is equivalent to
 
@@ -302,14 +306,22 @@ updating the bundles you are using with antigen.
 Use this command to list out the currently *loaded* plugins. Keep in mind that
 this includes any bundles installed on-the-fly.
 
-Takes no arguments. Gives out the repo url and the plugin's location under the
-repo.
+Takes no arguments. Gives out four entries per line of output, denoting the
+following fields of each bundle.
+
+    <repo-url> <loc> <btype> <has-local-clone?>
+
+The `btype` field is an internal detail, that specifies if the bundle is a
+`plugin` or a `theme`.
+
+The final field is `true` or `false` reflecting whether there is a local clone
+for this bundle.
 
 ### antigen-cleanup
 
-Used to clean up the clones of repos which are not used by any plugins. It takes
-no arguments. When this is run, it lists out the repo-clones that are available
-but are not used by any plugin *currently loaded*.
+Used to clean up the clones of repos which are not used by any plugins currently
+loaded. It takes no arguments. When run, it lists out the repo-clones that are
+available but are not used by any plugin *currently loaded*.
 
 This command, by default asks for confirmation before deleting the unused
 clones. If the `--force` argument is given, then this confirmation is not asked.
@@ -322,11 +334,12 @@ This is a shortcut to
 
     antigen-bundle --loc=lib
 
-So, it basically installs the oh-my-zsh's library as a bundle. Please note that
-this assumes that the `ANTIGEN_DEFAULT_REPO_URL` is set to the oh-my-zsh repo or
-a fork of that repo. If you want to specify the `url` too, then you can't use
-the `antigen-lib` short cut. You have to do that directly with the
-`antigen-bundle` command.
+So, it basically installs the oh-my-zsh's library as a bundle.
+
+Please note that this assumes that the `ANTIGEN_DEFAULT_REPO_URL` is set to the
+oh-my-zsh repo or a fork of that repo. If you want to specify the `url` too,
+then you can't use the `antigen-lib` short cut. You have to do that directly
+with the `antigen-bundle` command.
 
 This is present only for legacy reasons and *might* (or might not) be removed in
 the future.
@@ -351,6 +364,10 @@ support getting themes from other repos as well in the future.
 You can use this command to change your theme on the fly in your shell. Go on,
 try out a few themes in your shell before you set it in your `.zshrc`.
 
+**Note**: Some themes use functions that are loaded by `antigen-lib`. So, to
+avoid any trouble, run `antigen-lib` if you haven't already before experimenting
+with themes. If you have `antigen-lib` in your `.zshrc`, you're covered.
+
 ### antigen-apply
 
 You have to add this command after defining all bundles you need, in your zshrc.
@@ -358,12 +375,12 @@ The completions defined by your bundles will be loaded at this step.
 
 It is possible to load completions as and when a bundle is specified with the
 bundle command, in which case this command would not be necessary. But loading
-the completions is a time-consuming process and your shell will start noticeably
-slow if you have a good number of bundle specifications.
+the completions is a time-consuming process, so if the completions were loaded
+at every call to `antigen-bundle`, your shell will start noticeably slow when
+you have a good number of bundle specifications.
 
-However, if you're a zsh expert and can suggest a way so that this would not be
-necessary, I am very interested in discussing it. Please open up an issue with
-your details. Thanks.
+However, if you can suggest a way so that this would not be necessary, I am very
+interested in discussing it. Please open up an issue with your details. Thanks.
 
 ### antigen-help
 
@@ -377,8 +394,8 @@ looks good as output on the command line.
 
 ### antigen
 
-This is a parent command that mainly exists for convenience. The idea is the
-following two are the same.
+This is a parent command that mainly exists for convenience. This exists so the
+following two can be the same.
 
     antigen-list
     antigen list
@@ -439,7 +456,7 @@ functionality of antigen.
 ## Notes on writing plugins
 
 If you are just going to write a single `.sh` file with the goodness you want to
-create, just forget about this and go do that. Antigen will work just find with
+create, just forget about this and go do that. Antigen will work just fine with
 such a plugin.
 
 If you want to know how antigen loads the plugins, do continue.
@@ -457,8 +474,11 @@ currently defined.
 
 No matter which (or none) of the above happen to be sourced, this plugin
 directory is added to the zsh's function path (`$fpath`) so that any completions
-in it are loaded. One exception to this rule is that if this plugin is a prompt
-theme. In which case the theme script is just sourced and nothing else is done.
+in it are loaded.
+
+One exception to this rule is that if this plugin is a theme. In which case the
+theme script is just sourced and nothing else is done. Not even adding to
+`$fpath`.
 
 ## Meta
 
