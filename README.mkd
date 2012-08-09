@@ -81,7 +81,7 @@ your shell all the time. Sweet. Let's do it.
 First, clone this repo, probably as a submodule if you have your dotfiles in a
 git repo,
 
-    git clone https://github.com/sharat87/antigen.git
+    git clone https://github.com/zsh-users/antigen.git
 
 The usage should be very familiar to you if you use Vundle. A typical `.zshrc`
 might look like this
