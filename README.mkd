@@ -500,7 +500,7 @@ Any comments/suggestions/feedback welcome. Please join the discussion on the
 [autoenv]: https://github.com/kennethreitz/autoenv
 [oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh
 [cram]: https://bitheap.org/cram/
-[issue]: https://github.com/sharat87/antigen/issues
+[issue]: https://github.com/zsh-users/antigen/issues
 [license]: http://mit.sharats.me
 [reddit page]: http://www.reddit.com/r/commandline/comments/u4f26/antigen_a_plugin_manager_for_zsh_shell/
 [twitter]: http://twitter.com/sharat87
