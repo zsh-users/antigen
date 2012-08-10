@@ -95,7 +95,7 @@ antigen-bundle () {
 
     local url="$1"
 
-    # Expand short github url syntax: `username/reponame`
+    # Expand short github url syntax: `username/reponame`.
     if [[ $url != git://* && \
             $url != https://* && \
             $url != /* && \
@@ -211,6 +211,7 @@ antigen-update () {
         fi
     fi
 
+    # Remove the temporary git wrapper function.
     unfunction -- --plugin-git
 
 }
@@ -238,7 +239,7 @@ antigen-update () {
 
     else
 
-        # Source the plugin script
+        # Source the plugin script.
         # FIXME: I don't know. Looks very very ugly. Needs a better
         # implementation once tests are ready.
         local script_loc="$(ls "$location" | grep -m1 '\.plugin\.zsh$')"
@@ -333,7 +334,7 @@ antigen-apply () {
 }
 
 antigen-list () {
-    # List all currently installed bundles
+    # List all currently installed bundles.
     if [[ -z "$_ANTIGEN_BUNDLE_RECORD" ]]; then
         echo "You don't have any bundles." >&2
         return 1
@@ -365,12 +366,12 @@ antigen () {
 }
 
 -antigen-env-setup () {
-    # Pre-startup initializations
+    # Pre-startup initializations.
     -set-default ANTIGEN_DEFAULT_REPO_URL \
         https://github.com/robbyrussell/oh-my-zsh.git
     -set-default ADOTDIR $HOME/.antigen
 
-    # Load the compinit module
+    # Load the compinit module.
     autoload -U compinit
 
     # Without the following, `compdef` function is not defined.
