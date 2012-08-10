@@ -440,13 +440,15 @@ mentioned above.
 ## Running the tests
 
 All the tests are in the `tests` folder and are run using the [cram][] test
-system.  Once you have cram installed, you can run the tests as
+system. The latest version on that website, as of today is v0.5, which does not
+have the `--shell` argument which is required to run our tests. So, to get the
+correct version of cram, run
+
+    pip install -r requirements.txt
+
+With that, once you have cram installed, you can run the tests as
 
     make
-
-or
-
-    make tests
 
 If you are making a feature addition, I'd really appreciate if you can add a
 test for your feature. Even if you can add a test for an existing feature, that
