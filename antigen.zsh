@@ -192,11 +192,11 @@ antigen-update () {
         git clone "${url%|*}" "$clone_dir"
     elif $update; then
         # Save current revision.
-        old_rev="$(--plugin-git rev-parse HEAD)"
+        local old_rev="$(--plugin-git rev-parse HEAD)"
         # Pull changes if update requested.
         --plugin-git pull
         # Get the new revision.
-        new_rev="$(--plugin-git rev-parse HEAD)"
+        local new_rev="$(--plugin-git rev-parse HEAD)"
     fi
 
     # If its a specific branch that we want, checkout that branch.
