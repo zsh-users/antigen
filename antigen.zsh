@@ -202,7 +202,11 @@ antigen-update () {
 
     # If its a specific branch that we want, checkout that branch.
     if [[ $url == *\|* ]]; then
-        --plugin-git checkout "${url#*|}"
+        local current_branch=${$(--plugin-git symbolic-ref HEAD)##refs/heads/}
+        local requested_branch="${url#*|}"
+        # Only do the checkout when we are not already on the branch
+        [[ $requested_branch != $current_branch ]] &&
+        --plugin-git checkout $requested_branch
     fi
 
     if ! [[ -z $old_rev || $old_rev == $new_rev ]]; then

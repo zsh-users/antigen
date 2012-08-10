@@ -25,6 +25,10 @@ Load plugin from b1.
   $ hehe
   hehe from b1
 
+Does not say 'Already on b1' on each session startup.
+
+  $ antigen-bundle $PLUGIN_DIR --branch=b1
+
 Load plugin from master.
 
   $ antigen-bundle $PLUGIN_DIR
