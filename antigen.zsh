@@ -71,8 +71,8 @@ antigen-bundle () {
     # these two conditions, either the `--no-local-clone` option should be
     # given, or `$url` should not a git repo.
     local make_local_clone=true
-    if [[ $url == /* && -z $branch \
-            && ( $no_local_clone == true || ! -d $url/.git ) ]]; then
+    if [[ $url == /* && -z $branch &&
+            ( $no_local_clone == true || ! -d $url/.git ) ]]; then
         make_local_clone=false
     fi
 
@@ -97,9 +97,9 @@ antigen-bundle () {
     local url="$1"
 
     # Expand short github url syntax: `username/reponame`.
-    if [[ $url != git://* && \
-            $url != https://* && \
-            $url != /* && \
+    if [[ $url != git://* &&
+            $url != https://* &&
+            $url != /* &&
             $url != git@github.com:*/*
             ]]; then
         url="https://github.com/${url%.git}.git"
@@ -124,10 +124,10 @@ antigen-bundles () {
 
 antigen-update () {
     # Update your bundles, i.e., `git pull` in all the plugin repos.
-    -antigen-echo-record \
-        | awk '{print $1}' \
-        | sort -u \
-        | while read url; do
+    -antigen-echo-record |
+        awk '{print $1}' |
+        sort -u |
+        while read url; do
             echo "**** Pulling $url"
             -antigen-ensure-repo --update --verbose "$url"
             echo
@@ -288,12 +288,12 @@ antigen-cleanup () {
 
     # Find directores in ADOTDIR/repos, that are not in the bundles record.
     local unused_clones="$(comm -13 \
-        <(-antigen-echo-record \
-            | awk '$4 == "true" {print $1}' \
-            | while read line; do
+        <(-antigen-echo-record |
+            awk '$4 == "true" {print $1}' |
+            while read line; do
                 -antigen-get-clone-dir "$line"
-            done \
-            | sort -u) \
+            done |
+            sort -u) \
         <(ls -d "$ADOTDIR/repos/"* | sort -u))"
 
     if [[ -z $unused_clones ]]; then
@@ -302,11 +302,11 @@ antigen-cleanup () {
     fi
 
     echo 'You have clones for the following repos, but are not used.'
-    echo "$unused_clones" \
-        | while read line; do
+    echo "$unused_clones" |
+        while read line; do
             -antigen-get-clone-url "$line"
-        done \
-        | sed -e 's/^/  /' -e 's/|/, branch /'
+        done |
+        sed -e 's/^/  /' -e 's/|/, branch /'
 
     if $force || (echo -n '\nDelete them all? [y/N] '; read -q); then
         echo
