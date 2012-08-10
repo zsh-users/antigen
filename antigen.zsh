@@ -2,7 +2,7 @@
 
 # Each line in this string has the following entries separated by a space
 # character.
-# <repo-url>, <plugin-location>, <bundle-type>
+# <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
 # FIXME: Is not kept local by zsh!
 local _ANTIGEN_BUNDLE_RECORD=""
 
