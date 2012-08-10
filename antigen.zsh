@@ -181,33 +181,29 @@ antigen-update () {
     # Get the clone's directory as per the given repo url and branch.
     local url="$1"
     local clone_dir="$(-antigen-get-clone-dir $url)"
+    Git () { eval git --git-dir=$clone_dir/.git --work-tree=$clone_dir "$@" }
 
     # Clone if it doesn't already exist.
     if [[ ! -d $clone_dir ]]; then
         git clone "${url%|*}" "$clone_dir"
     elif $update; then
         # Save current revision.
-        old_rev="$(git --git-dir "$clone_dir/.git" --work-tree "$clone_dir" \
-            rev-parse HEAD)"
+        old_rev="$(Git rev-parse HEAD)"
         # Pull changes if update requested.
-        git --git-dir "$clone_dir/.git" --work-tree "$clone_dir" \
-            pull
+        Git pull
         # Get the new revision.
-        new_rev="$(git --git-dir "$clone_dir/.git" --work-tree "$clone_dir" \
-            rev-parse HEAD)"
+        new_rev="$(Git rev-parse HEAD)"
     fi
 
     # If its a specific branch that we want, checkout that branch.
     if [[ $url == *\|* ]]; then
-        git --git-dir "$clone_dir/.git" --work-tree "$clone_dir" \
-            checkout "${url#*|}"
+        Git checkout "${url#*|}"
     fi
 
     if ! [[ -z $old_rev || $old_rev == $new_rev ]]; then
         echo Updated from ${old_rev:0:7} to ${new_rev:0:7}.
         if $verbose; then
-            git --git-dir "$clone_dir/.git" --work-tree "$clone_dir" \
-                log --oneline --reverse --no-merges --stat '@{1}..'
+            Git log --oneline --reverse --no-merges --stat '@{1}..'
         fi
     fi
 
