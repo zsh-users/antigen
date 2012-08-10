@@ -181,31 +181,37 @@ antigen-update () {
     # Get the clone's directory as per the given repo url and branch.
     local url="$1"
     local clone_dir="$(-antigen-get-clone-dir $url)"
-    Git () { eval git --git-dir=$clone_dir/.git --work-tree=$clone_dir "$@" }
+
+    # A temporary function wrapping the `git` command with repeated arguments.
+    --plugin-git () {
+        eval git --git-dir=$clone_dir/.git --work-tree=$clone_dir "$@"
+    }
 
     # Clone if it doesn't already exist.
     if [[ ! -d $clone_dir ]]; then
         git clone "${url%|*}" "$clone_dir"
     elif $update; then
         # Save current revision.
-        old_rev="$(Git rev-parse HEAD)"
+        old_rev="$(--plugin-git rev-parse HEAD)"
         # Pull changes if update requested.
-        Git pull
+        --plugin-git pull
         # Get the new revision.
-        new_rev="$(Git rev-parse HEAD)"
+        new_rev="$(--plugin-git rev-parse HEAD)"
     fi
 
     # If its a specific branch that we want, checkout that branch.
     if [[ $url == *\|* ]]; then
-        Git checkout "${url#*|}"
+        --plugin-git checkout "${url#*|}"
     fi
 
     if ! [[ -z $old_rev || $old_rev == $new_rev ]]; then
         echo Updated from ${old_rev:0:7} to ${new_rev:0:7}.
         if $verbose; then
-            Git log --oneline --reverse --no-merges --stat '@{1}..'
+            --plugin-git log --oneline --reverse --no-merges --stat '@{1}..'
         fi
     fi
+
+    unfunction -- --plugin-git
 
 }
 
