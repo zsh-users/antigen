@@ -21,7 +21,7 @@ antigen-bundle () {
 
     # Parse the given arguments. (Will overwrite the above values).
     eval "$(-antigen-parse-args \
-            'url?,loc?;branch:?,no-local-clone?,btype:?' \
+            'url?, loc? ; branch:?, no-local-clone?, btype:?' \
             "$@")"
 
     # Check if url is just the plugin name. Super short syntax.
@@ -364,6 +364,9 @@ antigen () {
 
     local spec="$1"
     shift
+
+    # Sanitize the spec
+    spec="$(echo "$spec" | tr '\n' ' ' | sed -r 's/\s+//g')"
 
     local code=''
 

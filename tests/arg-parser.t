@@ -1,6 +1,7 @@
 Helper alias.
 
-  $ alias parse='-antigen-parse-args "url?,loc?;btype:?,no-local-clone?"'
+  $ alias parse='-antigen-parse-args "url?, loc?;
+  >   btype:?, no-local-clone?"'
 
 No arguments (since all are specified as optional).
 
