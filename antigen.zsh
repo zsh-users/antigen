@@ -391,6 +391,11 @@ antigen () {
         local name="${${name_spec%\?}%:}"
         local value="$1"
 
+        if echo "$code" | grep -qm1 "^local $name="; then
+            echo "Argument '$name' repeated with the value '$value'". >&2
+            return
+        fi
+
         --add-var $name "$value"
 
         shift
@@ -416,6 +421,11 @@ antigen () {
         else
             local name="${arg%\=*}"
             local value="${arg#*=}"
+        fi
+
+        if echo "$code" | grep -qm1 "^local $name="; then
+            echo "Argument '$name' repeated with the value '$value'". >&2
+            return
         fi
 
         # The specification for this argument, used for validations.

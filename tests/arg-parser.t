@@ -52,3 +52,13 @@ Positional argument as a keyword argument.
 
   $ parse --url=some-url
   local url='some-url'
+
+Repeated keyword arguments.
+
+  $ parse --url=url1 --url=url2
+  Argument 'url' repeated with the value 'url2'.
+
+Repeated, once as positional and once more as keyword.
+
+  $ parse url1 --url=url2
+  Argument 'url' repeated with the value 'url2'.
