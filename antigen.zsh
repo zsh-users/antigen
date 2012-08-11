@@ -19,37 +19,10 @@ antigen-bundle () {
     local no_local_clone=false
     local btype=plugin
 
-    # Set spec values based on the positional arguments.
-    local position_args
-    position_args=(url loc)
-    local i=1
-    while ! [[ -z $1 || $1 == --* ]]; do
-        local arg_name="${position_args[$i]}"
-        local arg_value="$1"
-        eval "local $arg_name='$arg_value'"
-        shift
-        i=$(($i + 1))
-    done
-
-    # Set spec values from keyword arguments, if any. The remaining arguments
-    # are all assumed to be keyword arguments.
-    while [[ $1 == --* ]]; do
-        # Remove the `--` at the start.
-        local arg="${1#--}"
-
-        if [[ $arg != *=* ]]; then
-            arg="$arg=true"
-        fi
-
-        # Get the name of the arg and replace the `-`'s to `_`'s.
-        local arg_name="${${arg%\=*}//-/_}"
-
-        # Get the value of the arg.
-        local arg_value="${arg#*\=}"
-
-        eval "local $arg_name='$arg_value'"
-        shift
-    done
+    # Parse the given arguments. (Will overwrite the above values).
+    eval "$(-antigen-parse-args \
+            'url?,loc?;branch:?,no-local-clone?,btype:?' \
+            "$@")"
 
     # Check if url is just the plugin name. Super short syntax.
     if [[ "$url" != */* ]]; then
