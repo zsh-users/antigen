@@ -1,4 +1,4 @@
-# Antigen
+# Antigen <sup>&beta;</sup>
 
 Antigen is a small set of functions that help you easily manage your shell (zsh)
 plugins, called bundles. The concept is pretty much the same as bundles in a
