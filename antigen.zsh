@@ -102,7 +102,7 @@ antigen-update () {
         sort -u |
         while read url; do
             echo "**** Pulling $url"
-            -antigen-ensure-repo --update --verbose "$url"
+            -antigen-ensure-repo "$url" --update --verbose
             echo
         done
 }
@@ -141,19 +141,17 @@ antigen-update () {
     # and branch, it is pull-ed, i.e., updated.
 
     # Argument defaults.
+    # The url. No sane default for this, so just empty.
+    local url=
     # Check if we have to update.
     local update=false
     # Verbose output.
     local verbose=false
 
-    # Load any boolean arguments specified.
-    while [[ $1 == --* ]]; do
-        eval "local '${1#--}=true'"
-        shift
-    done
+    eval "$(-antigen-parse-args 'url ; update?, verbose?' "$@")"
+    shift $#
 
     # Get the clone's directory as per the given repo url and branch.
-    local url="$1"
     local clone_dir="$(-antigen-get-clone-dir $url)"
 
     # A temporary function wrapping the `git` command with repeated arguments.
