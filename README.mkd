@@ -492,9 +492,9 @@ please consider opening an [issue][] first so we can discuss it out.
 
 ### Feedback please
 
-Any comments/suggestions/feedback welcome. Please join the discussion on the
-[reddit page][] of this project. Also, follow me on twitter,
-[@sharat87][twitter].
+Any comments/suggestions/feedback welcome. Please say hello to me
+([@sharat87][twitter]) on twitter. Or open an issue to discuss something
+(anything!) about the project ;).
 
 [Vundle]: https://github.com/gmarik/vundle
 [page on themes]: https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
@@ -504,5 +504,4 @@ Any comments/suggestions/feedback welcome. Please join the discussion on the
 [cram]: https://bitheap.org/cram/
 [issue]: https://github.com/zsh-users/antigen/issues
 [license]: http://mit.sharats.me
-[reddit page]: http://www.reddit.com/r/commandline/comments/u4f26/antigen_a_plugin_manager_for_zsh_shell/
 [twitter]: http://twitter.com/sharat87
