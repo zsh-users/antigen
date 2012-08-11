@@ -110,14 +110,8 @@ antigen-update () {
 -antigen-get-clone-dir () {
     # Takes a repo url and gives out the path that this url needs to be cloned
     # to. Doesn't actually clone anything.
-    # TODO: Memoize?
-
-    # The url given.
-    local url="$1"
-
-    # Echo the full path to the clone directory.
     echo -n $ADOTDIR/repos/
-    echo "$url" | sed \
+    echo "$1" | sed \
         -e 's./.-SLASH-.g' \
         -e 's.:.-COLON-.g' \
         -e 's.|.-PIPE-.g'
@@ -126,7 +120,6 @@ antigen-update () {
 -antigen-get-clone-url () {
     # Takes a repo's clone dir and gives out the repo's original url that was
     # used to create the given directory path.
-    # TODO: Memoize?
     echo "$1" | sed \
         -e "s:^$ADOTDIR/repos/::" \
         -e 's.-SLASH-./.g' \
