@@ -423,7 +423,10 @@ antigen () {
         i=$(($i + 1))
     done
 
-    local keyword_args="$(echo "$spec" | cut -d\; -f2 | tr , '\n')"
+    local keyword_args="$(
+            echo "$positional_args" | tr , '\n' | sed -r 's/(\??)$/:\1/'
+            echo "$spec" | cut -d\; -f2 | tr , '\n'
+            )"
     local keyword_args_count="$(echo $keyword_args | awk -F, '{print NF}')"
 
     # Set spec values from keyword arguments, if any. The remaining arguments

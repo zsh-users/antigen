@@ -46,3 +46,8 @@ Provide value for keyword argument, that shouldn't be there.
 
   $ parse --no-local-clone=yes
   No argument required for 'no-local-clone', but provided 'yes'.
+
+Positional argument as a keyword argument.
+
+  $ parse --url=some-url
+  local url='some-url'
