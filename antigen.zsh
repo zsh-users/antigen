@@ -97,14 +97,36 @@ antigen-bundles () {
 
 antigen-update () {
     # Update your bundles, i.e., `git pull` in all the plugin repos.
+
+    date > $ADOTDIR/revert-info
+
     -antigen-echo-record |
         awk '{print $1}' |
         sort -u |
         while read url; do
             echo "**** Pulling $url"
+            (dir="$(-antigen-get-clone-dir "$url")"
+                echo -n "$dir:"
+                cd "$dir"
+                git rev-parse HEAD) >> $ADOTDIR/revert-info
             -antigen-ensure-repo "$url" --update --verbose
             echo
         done
+}
+
+antigen-revert () {
+    if ! [[ -f $ADOTDIR/revert-info ]]; then
+        echo 'No revert information available. Cannot revert.' >&2
+    fi
+
+    cat $ADOTDIR/revert-info | sed '1!p' | while read line; do
+        dir="$(echo "$line" | cut -d: -f1)"
+        git --git-dir="$dir/.git" --work-tree="$dir" \
+            checkout "$(echo "$line" | cut -d: -f2)" 2> /dev/null
+    done
+
+    echo "Reverted to state before running -update on $(
+            cat $ADOTDIR/revert-info | sed -n 1p)."
 }
 
 -antigen-get-clone-dir () {
