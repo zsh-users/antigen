@@ -301,6 +301,17 @@ real quirky.
 **Please note**: This command is not for updating *antigen* itself. Its for
 updating the bundles you are using with antigen.
 
+### antigen-revert <sup>&alpha;</sup>
+
+Reverts the state of all your plugins to how they were before the last
+`antigen-update`. This command is currently experimental, so don't rely too much
+on it. There is a test for it, and it passes, so it should work fine though.
+
+Takes no options.
+
+Insider detail: The information for reverting is stored in
+`$ADOTDIR/revert-info` file.  If its not present, reverting is not possible.
+
 ### antigen-list
 
 Use this command to list out the currently *loaded* plugins. Keep in mind that
