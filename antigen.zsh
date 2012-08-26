@@ -379,7 +379,7 @@ antigen () {
     shift
 
     # Sanitize the spec
-    spec="$(echo "$spec" | tr '\n' ' ' | sed -r 's/\s+//g')"
+    spec="$(echo "$spec" | tr '\n' ' ' | sed 's/[[:space:]]//g')"
 
     local code=''
 
