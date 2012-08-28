@@ -38,7 +38,8 @@
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
         </div>
 
-        <h1>Antigen</h1>
+        <h1>Antigen <sup>β</sup>
+</h1>
 
 <p>Antigen is a small set of functions that help you easily manage your shell (zsh)
 plugins, called bundles. The concept is pretty much the same as bundles in a
@@ -361,6 +362,18 @@ real quirky.</p>
 <p><strong>Please note</strong>: This command is not for updating <em>antigen</em> itself. Its for
 updating the bundles you are using with antigen.</p>
 
+<h3>antigen-revert <sup>α</sup>
+</h3>
+
+<p>Reverts the state of all your plugins to how they were before the last
+<code>antigen-update</code>. This command is currently experimental, so don't rely too much
+on it. There is a test for it, and it passes, so it should work fine though.</p>
+
+<p>Takes no options.</p>
+
+<p>Insider detail: The information for reverting is stored in
+<code>$ADOTDIR/revert-info</code> file.  If its not present, reverting is not possible.</p>
+
 <h3>antigen-list</h3>
 
 <p>Use this command to list out the currently <em>loaded</em> plugins. Keep in mind that
@@ -509,14 +522,16 @@ mentioned above.</p>
 <h2>Running the tests</h2>
 
 <p>All the tests are in the <code>tests</code> folder and are run using the <a href="https://bitheap.org/cram/">cram</a> test
-system.  Once you have cram installed, you can run the tests as</p>
+system. The latest version on that website, as of today is v0.5, which does not
+have the <code>--shell</code> argument which is required to run our tests. So, to get the
+correct version of cram, run</p>
 
-<pre><code>make
+<pre><code>pip install -r requirements.txt
 </code></pre>
 
-<p>or</p>
+<p>With that, once you have cram installed, you can run the tests as</p>
 
-<pre><code>make tests
+<pre><code>make
 </code></pre>
 
 <p>If you are making a feature addition, I'd really appreciate if you can add a
@@ -557,13 +572,13 @@ theme script is just sourced and nothing else is done. Not even adding to
 
 <p>Antigen is licensed with the <a href="http://mit.sharats.me">MIT License</a>. To contribute, just fork,
 make changes and send a pull request. If its a rather long/complicated change,
-please consider opening an <a href="https://github.com/sharat87/antigen/issues">issue</a> first so we can discuss it out.</p>
+please consider opening an <a href="https://github.com/zsh-users/antigen/issues">issue</a> first so we can discuss it out.</p>
 
 <h3>Feedback please</h3>
 
-<p>Any comments/suggestions/feedback welcome. Please join the discussion on the
-<a href="http://www.reddit.com/r/commandline/comments/u4f26/antigen_a_plugin_manager_for_zsh_shell/">reddit page</a> of this project. Also, follow me on twitter,
-<a href="http://twitter.com/sharat87">@sharat87</a>.</p>
+<p>Any comments/suggestions/feedback welcome. Please say hello to me
+(<a href="http://twitter.com/sharat87">@sharat87</a>) on twitter. Or open an issue to discuss something
+(anything!) about the project ;).</p>
       </section>
 
     </div>
