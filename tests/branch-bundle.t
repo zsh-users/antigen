@@ -8,7 +8,7 @@ Branch b1.
   > EOF
   $ pg commit -am 'Change for b1'
   \[b1 [a-f0-9]{7}\] Change for b1 (re)
-   1 file changed, 1 insertion(+), 1 deletion(-)
+   1 files? changed, 1 insertions?\(\+\), 1 deletions?\(-\)
 
 Go back to master.
 
