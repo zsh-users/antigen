@@ -1,5 +1,9 @@
 language: python
 python:
   - "2.7"
+before_script: 
+  - "sudo apt-get install zsh"
+  - "git config --global user.name test"
+  - "git config --global user.email test@test.test"
 install: "pip install -r requirements.txt --use-mirrors"
-script: make tests
+script: "make tests"
