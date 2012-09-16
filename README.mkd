@@ -468,9 +468,13 @@ functionality of antigen.
 
 ## Notes on writing plugins
 
-If you are just going to write a single `.sh` file with the goodness you want to
-create, just forget about this and go do that. Antigen will work just fine with
-such a plugin.
+Most shell utilities/plugins are made up of just one file. For a plugin called
+`awesomeness`, create a `awesomeness.plugin.zsh` and code away.
+
+That said, even if you write a single file as a `.sh` file with the goodness you
+want to create, antigen will work just fine with it. The `*.plugin.zsh` way is
+recommended by antigen, because it is widely used because of the [oh-my-zsh][]
+project.
 
 If you want to know how antigen loads the plugins, do continue.
 
