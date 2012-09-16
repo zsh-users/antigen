@@ -516,3 +516,21 @@ antigen () {
 }
 
 -antigen-env-setup
+
+# Setup antigen's autocompletion
+_antigen(){
+  compadd \
+    bundle\
+    bundles\
+    update\
+    revert\
+    list\
+    cleanup\
+    lib\
+    theme\
+    apply\
+    help
+
+}
+
+compdef _antigen antigen
