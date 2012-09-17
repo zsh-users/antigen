@@ -41,6 +41,8 @@
         <h1>Antigen <sup>β</sup>
 </h1>
 
+<p><a href="http://travis-ci.org/zsh-users/antigen"><img src="https://secure.travis-ci.org/zsh-users/antigen.png" alt="Build Status"></a></p>
+
 <p>Antigen is a small set of functions that help you easily manage your shell (zsh)
 plugins, called bundles. The concept is pretty much the same as bundles in a
 typical vim+pathogen setup. Antigen is to zsh, what <a href="https://github.com/gmarik/vundle">Vundle</a> is to vim.</p>
@@ -541,9 +543,13 @@ functionality of antigen.</p>
 
 <h2>Notes on writing plugins</h2>
 
-<p>If you are just going to write a single <code>.sh</code> file with the goodness you want to
-create, just forget about this and go do that. Antigen will work just fine with
-such a plugin.</p>
+<p>Most shell utilities/plugins are made up of just one file. For a plugin called
+<code>awesomeness</code>, create a <code>awesomeness.plugin.zsh</code> and code away.</p>
+
+<p>That said, even if you write a single file as a <code>.sh</code> file with the goodness you
+want to create, antigen will work just fine with it. The <code>*.plugin.zsh</code> way is
+recommended by antigen, because it is widely used because of the <a href="https://github.com/robbyrussell/oh-my-zsh">oh-my-zsh</a>
+project.</p>
 
 <p>If you want to know how antigen loads the plugins, do continue.</p>
 
