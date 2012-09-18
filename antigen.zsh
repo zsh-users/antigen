@@ -515,22 +515,21 @@ antigen () {
     eval "test -z \"\$$arg_name\" && export $arg_name='$arg_value'"
 }
 
--antigen-env-setup
-
 # Setup antigen's autocompletion
-_antigen(){
-  compadd \
-    bundle\
-    bundles\
-    update\
-    revert\
-    list\
-    cleanup\
-    lib\
-    theme\
-    apply\
-    help
-
+_antigen () {
+    compadd \
+        bundle\
+        bundles\
+        update\
+        revert\
+        list\
+        cleanup\
+        lib\
+        theme\
+        apply\
+        help
 }
 
 compdef _antigen antigen
+
+-antigen-env-setup
