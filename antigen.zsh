@@ -505,6 +505,8 @@ antigen () {
 
     # Without the following, `compdef` function is not defined.
     compinit -i
+
+    compdef _antigen antigen
 }
 
 # Same as `export $1=$2`, but will only happen if the name specified by `$1` is
@@ -529,7 +531,5 @@ _antigen () {
         apply\
         help
 }
-
-compdef _antigen antigen
 
 -antigen-env-setup
