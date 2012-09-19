@@ -17,6 +17,7 @@ mkdir "$PLUGIN_DIR"
 alias pg='git --git-dir "$PLUGIN_DIR/.git" --work-tree "$PLUGIN_DIR"'
 
 echo 'alias hehe="echo hehe"' > "$PLUGIN_DIR"/aliases.zsh
+echo 'export PS1="prompt>"' > "$PLUGIN_DIR"/silly.zsh-theme
 
 {
     pg init

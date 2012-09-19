@@ -49,6 +49,11 @@ antigen-bundle () {
         make_local_clone=false
     fi
 
+    # Add the theme extension to `loc`, if this is a theme.
+    if [[ $btype == theme && $loc != *.zsh-theme ]]; then
+        loc="$loc.zsh-theme"
+    fi
+
     # Add it to the record.
     _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
     _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD $make_local_clone"
@@ -313,8 +318,18 @@ antigen-lib () {
 }
 
 antigen-theme () {
-    local name="${1:-robbyrussell}"
-    antigen-bundle --loc=themes/$name.zsh-theme --btype=theme
+
+    if [[ "$1" != */* && "$1" != --* ]]; then
+        # The first argument is just a name of the plugin, to be picked up from
+        # the default repo.
+        local name="${1:-robbyrussell}"
+        antigen-bundle --loc=themes/$name --btype=theme
+
+    else
+        antigen-bundle "$@" --btype=theme
+
+    fi
+
 }
 
 antigen-apply () {
