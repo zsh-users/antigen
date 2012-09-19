@@ -64,8 +64,13 @@ And themes? How would you like a fancy new prompt for yourself?
     antigen-theme funky
 
 No? Not your taste? There are many themes available to you, check out the
-oh-my-zsh's [page on themes][]. (You can currently only install themes from
-robbyrussell's, i.e., the canonical oh-my-zsh repo).
+oh-my-zsh's [page on themes][].
+
+You can install themes from unofficial repos too!
+
+    antigen-theme XsErG/zsh-themes themes/lazyuser
+
+See? It's easy!
 
 Note: Many of those plugins and especially themes, assume you have the core
 library of oh-my-zsh loaded. So, if you want to experiment further, issue a
