@@ -437,8 +437,20 @@ want to use.</p>
 <pre><code>antigen-theme fox
 </code></pre>
 
-<p>Currently, themes are pulled from robbyrussell's oh-my-zsh repo, but it will
-support getting themes from other repos as well in the future.</p>
+<p>This will get the theme file located at <code>themes/fox.zsh-theme</code> in the repo
+specified by <code>ANTIGEN_DEFAULT_REPO_URL</code>.</p>
+
+<p>To pull themes from other repositories, use <code>antigen-theme</code> just like
+<code>antigen-bundle</code>. Exactly the same, just make sure the <code>url</code> and <code>loc</code>
+combination point to a theme file, having a <code>.zsh-theme</code> extension.</p>
+
+<p>For example,</p>
+
+<pre><code>antigen-theme robbyrussell/oh-my-zsh themes/apple
+</code></pre>
+
+<p>Will pull the apple theme from the canonical oh-my-zsh repo. Also, note that the
+<code>.zsh-theme</code> extension is not present. It can be given, its optional.</p>
 
 <p>You can use this command to change your theme on the fly in your shell. Go on,
 try out a few themes in your shell before you set it in your <code>.zshrc</code>.</p>
@@ -446,6 +458,9 @@ try out a few themes in your shell before you set it in your <code>.zshrc</code>
 <p><strong>Note</strong>: Some themes use functions that are loaded by <code>antigen-lib</code>. So, to
 avoid any trouble, run <code>antigen-lib</code> if you haven't already before experimenting
 with themes. If you have <code>antigen-lib</code> in your <code>.zshrc</code>, you're covered.</p>
+
+<p><strong>Note</strong>: Do <em>not</em> provide the <code>--btype</code> argument to <code>antigen-theme</code>. Its an
+internal argument.</p>
 
 <h3>antigen-apply</h3>
 
