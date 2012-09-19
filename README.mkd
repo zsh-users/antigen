@@ -371,8 +371,19 @@ want to use.
 
     antigen-theme fox
 
-Currently, themes are pulled from robbyrussell's oh-my-zsh repo, but it will
-support getting themes from other repos as well in the future.
+This will get the theme file located at `themes/fox.zsh-theme` in the repo
+specified by `ANTIGEN_DEFAULT_REPO_URL`.
+
+To pull themes from other repositories, use `antigen-theme` just like
+`antigen-bundle`. Exactly the same, just make sure the `url` and `loc`
+combination point to a theme file, having a `.zsh-theme` extension.
+
+For example,
+
+    antigen-theme robbyrussell/oh-my-zsh themes/apple
+
+Will pull the apple theme from the canonical oh-my-zsh repo. Also, note that the
+`.zsh-theme` extension is not present. It can be given, its optional.
 
 You can use this command to change your theme on the fly in your shell. Go on,
 try out a few themes in your shell before you set it in your `.zshrc`.
@@ -380,6 +391,9 @@ try out a few themes in your shell before you set it in your `.zshrc`.
 **Note**: Some themes use functions that are loaded by `antigen-lib`. So, to
 avoid any trouble, run `antigen-lib` if you haven't already before experimenting
 with themes. If you have `antigen-lib` in your `.zshrc`, you're covered.
+
+**Note**: Do *not* provide the `--btype` argument to `antigen-theme`. Its an
+internal argument.
 
 ### antigen-apply
 
