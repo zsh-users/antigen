@@ -349,6 +349,43 @@ antigen-list () {
     fi
 }
 
+antigen-snapshot () {
+
+    local snapshot_file="${1:-antigen-shapshot}"
+
+    # The snapshot content lines are pairs of repo-url and git version hash, in
+    # the form:
+    #   <version-hash> <repo-url>
+    local snapshot_content="$(-antigen-echo-record | sed 's/ .*$//' | sort -u |
+        while read url; do
+            dir="$(-antigen-get-clone-dir "$url")"
+            version_hash="$(cd "$dir" && git rev-parse HEAD)"
+            echo "$version_hash $dir"
+        done)"
+
+    {
+        # The first line in the snapshot file is for metadata, in the form:
+        #   key='value'; key='value'; key='value';
+        # Where `key`s are valid shell variable names.
+
+        # Snapshot version. Has no relation to antigen version. If the snapshot
+        # file format changes, this number can be incremented.
+        echo -n "version='1';"
+
+        # Snapshot creation date+time.
+        echo -n " created_on='$(date)';"
+
+        # Add a checksum with the md5 checksum of all the snapshot lines.
+        local checksum="$(echo "$snapshot_content" | md5sum)"
+        echo -n " checksum='${checksum%% *}';"
+
+        # A newline after the metadata and then the snapshot lines.
+        echo "\n$snapshot_content"
+
+    } > "$snapshot_file"
+
+}
+
 antigen-help () {
     cat <<EOF
 Antigen is a plugin management system for zsh. It makes it easy to grab awesome
