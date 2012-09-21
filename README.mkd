@@ -415,6 +415,29 @@ you have a good number of bundle specifications.
 However, if you can suggest a way so that this would not be necessary, I am very
 interested in discussing it. Please open up an issue with your details. Thanks.
 
+### antigen-snapshot <sup>&alpha;</sup>
+
+Creates a snapshot of all the clones you currently have *active* including the
+git version hash they are at and save it to a snapshot file. *Active* means, the
+clones for those listed by `antigen-cleanup` are not included in the snapshot.
+
+Takes one optional argument, the file name in which the snapshot is to be saved.
+Defaults to `antigen-snapshot`.
+
+**Note**: The snapshot currently *only* contains the details of those bundles
+that have a clone. That is, bundles that have `--no-local-clone` set or are
+directly sourced from your file system (without a git repo), are not recorded
+in the snapshot file.
+
+### antigen-restore <sup>&alpha;</sup>
+
+Restore the bundles state as specified in the snapshot. Takes one required
+argument, the snapshot file name to read.
+
+Although it restores the clones of the repos specified in the snapshot file, any
+other clones present in your environment are not touched. This behavior may
+change in the future.
+
 ### antigen-help
 
 This exists so that there can be some help right in the command line. Currently
