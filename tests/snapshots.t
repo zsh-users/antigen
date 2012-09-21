@@ -18,5 +18,21 @@ See the contents of the snapshot file.
 
   $ cat snapshot-file
   version='1'; created_on='*'; checksum='*'; (glob)
-  .{40} .*-test-plugin (re)
-  .{40} .*-test-plugin2 (re)
+  .{40} .*/test-plugin (re)
+  .{40} .*/test-plugin2 (re)
+
+Reset the antigen's bundle record and run cleanup.
+
+  $ unset _ANTIGEN_BUNDLE_RECORD
+  $ antigen-cleanup --force | grep '^Deleting' | wc -l
+  2
+
+Restore from the snapshot.
+
+  $ ls dot-antigen/repos | wc -l
+  0
+  $ antigen-restore snapshot-file
+  Restoring from snapshot-file... done.
+  Please open a new shell to get the restored changes.
+  $ ls dot-antigen/repos | wc -l
+  2

@@ -358,9 +358,9 @@ antigen-snapshot () {
     #   <version-hash> <repo-url>
     local snapshot_content="$(-antigen-echo-record | sed 's/ .*$//' | sort -u |
         while read url; do
-            dir="$(-antigen-get-clone-dir "$url")"
-            version_hash="$(cd "$dir" && git rev-parse HEAD)"
-            echo "$version_hash $dir"
+            local dir="$(-antigen-get-clone-dir "$url")"
+            local version_hash="$(cd "$dir" && git rev-parse HEAD)"
+            echo "$version_hash $url"
         done)"
 
     {
@@ -384,6 +384,40 @@ antigen-snapshot () {
 
     } > "$snapshot_file"
 
+}
+
+antigen-restore () {
+
+    if [[ $# == 0 ]]; then
+        echo 'Please provide a snapshot file to restore from.' >&2
+        return 1
+    fi
+
+    local snapshot_file="$1"
+
+    # TODO: Before doing anything with the snapshot file, verify its checksum.
+    # If it fails, notify this to the user and confirm if restore should
+    # proceed.
+
+    echo -n "Restoring from $snapshot_file..."
+
+    sed -n '1!p' "$snapshot_file" |
+        while read line; do
+
+            local version_hash="${line%% *}"
+            local url="${line##* }"
+            local clone_dir="$(-antigen-get-clone-dir "$url")"
+
+            if [[ ! -d $clone_dir ]]; then
+                git clone "$url" "$clone_dir" > /dev/null
+            fi
+
+            (cd "$clone_dir" && git checkout $version_hash) 2> /dev/null
+
+        done
+
+    echo ' done.'
+    echo 'Please open a new shell to get the restored changes.'
 }
 
 antigen-help () {
