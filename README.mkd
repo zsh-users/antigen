@@ -556,6 +556,7 @@ Any comments/suggestions/feedback welcome. Please say hello to me
 ([@sharat87][twitter]) on twitter. Or open an issue to discuss something
 (anything!) about the project ;).
 
+
 [Vundle]: https://github.com/gmarik/vundle
 [page on themes]: https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 [syntax highlighting plugin]: https://github.com/zsh-users/zsh-syntax-highlighting
