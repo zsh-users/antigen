@@ -4,40 +4,32 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Antigen by zsh-users</title>
+
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
+    <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/zsh-users/antigen">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/zsh-users/antigen/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/zsh-users/antigen/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
-
     <div class="wrapper">
+      <header>
+        <h1 class="header">Antigen</h1>
+        <p class="header">A plugin manager for zsh, inspired by oh-my-zsh and vundle.</p>
 
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/zsh-users/antigen/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/zsh-users/antigen/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/zsh-users/antigen">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/zsh-users">zsh-users</a></p>
+
+
+      </header>
       <section>
-        <div id="title">
-          <h1>Antigen</h1>
-          <p>A plugin manager for zsh, inspired by oh-my-zsh and vundle.</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/zsh-users">zsh-users</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
-        </div>
-
         <h1>Antigen <sup>β</sup>
 </h1>
 
@@ -483,6 +475,31 @@ you have a good number of bundle specifications.</p>
 <p>However, if you can suggest a way so that this would not be necessary, I am very
 interested in discussing it. Please open up an issue with your details. Thanks.</p>
 
+<h3>antigen-snapshot <sup>α</sup>
+</h3>
+
+<p>Creates a snapshot of all the clones you currently have <em>active</em> including the
+git version hash they are at and save it to a snapshot file. <em>Active</em> means, the
+clones for those listed by <code>antigen-cleanup</code> are not included in the snapshot.</p>
+
+<p>Takes one optional argument, the file name in which the snapshot is to be saved.
+Defaults to <code>antigen-snapshot</code>.</p>
+
+<p><strong>Note</strong>: The snapshot currently <em>only</em> contains the details of those bundles
+that have a clone. That is, bundles that have <code>--no-local-clone</code> set or are
+directly sourced from your file system (without a git repo), are not recorded
+in the snapshot file.</p>
+
+<h3>antigen-restore <sup>α</sup>
+</h3>
+
+<p>Restore the bundles state as specified in the snapshot. Takes one required
+argument, the snapshot file name to read.</p>
+
+<p>Although it restores the clones of the repos specified in the snapshot file, any
+other clones present in your environment are not touched. This behavior may
+change in the future.</p>
+
 <h3>antigen-help</h3>
 
 <p>This exists so that there can be some help right in the command line. Currently
@@ -608,10 +625,12 @@ please consider opening an <a href="https://github.com/zsh-users/antigen/issues"
 (<a href="http://twitter.com/sharat87">@sharat87</a>) on twitter. Or open an issue to discuss something
 (anything!) about the project ;).</p>
       </section>
-
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-              <script type="text/javascript">
+		          <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
