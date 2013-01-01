@@ -176,7 +176,8 @@ antigen-revert () {
 
     # A temporary function wrapping the `git` command with repeated arguments.
     --plugin-git () {
-        eval git --git-dir=$clone_dir/.git --work-tree=$clone_dir "$@"
+        eval git --no-pager \
+            --git-dir=$clone_dir/.git --work-tree=$clone_dir "$@"
     }
 
     # Clone if it doesn't already exist.
