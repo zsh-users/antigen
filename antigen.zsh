@@ -241,9 +241,9 @@ antigen-revert () {
         # implementation once tests are ready.
         local script_loc="$(ls "$location" | grep -m1 '\.plugin\.zsh$')"
 
-        if [[ -f $script_loc ]]; then
+        if [[ -f $location/$script_loc ]]; then
             # If we have a `*.plugin.zsh`, source it.
-            source "$script_loc"
+            source "$location/$script_loc"
 
         elif [[ ! -z "$(ls "$location" | grep -m1 '\.zsh$')" ]]; then
             # If there is no `*.plugin.zsh` file, source *all* the `*.zsh`
