@@ -338,7 +338,6 @@ antigen-apply () {
     # TODO: Only load completions if there are any changes to the bundle
     # repositories.
     compinit -i
-    compdef _antigen antigen
 }
 
 antigen-list () {
@@ -591,8 +590,13 @@ antigen () {
         https://github.com/robbyrussell/oh-my-zsh.git
     -set-default ADOTDIR $HOME/.antigen
 
-    # Load the compinit module.
+    # Load the compinit module. Required for `compdef` to be defined, which is
+    # used by many plugins to define completions.
     autoload -U compinit
+    compinit -i
+
+    # Setup antigen's own completion.
+    compdef _antigen antigen
 }
 
 # Same as `export $1=$2`, but will only happen if the name specified by `$1` is
