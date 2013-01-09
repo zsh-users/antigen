@@ -7,6 +7,10 @@
 local _ANTIGEN_BUNDLE_RECORD=""
 local _ANTIGEN_INSTALL_DIR="$(dirname $0)"
 
+# Used to defer compinit/compdef
+typeset -a __deferred_compdefs
+compdef () { __deferred_compdefs[$(($#__deferred_compdefs+1))]=$* }
+
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -392,9 +396,12 @@ antigen-theme () {
 
 antigen-apply () {
     # Initialize completion.
-    # TODO: Only load completions if there are any changes to the bundle
-    # repositories.
-    compinit -i
+    local cd
+    for cd in $__deferred_compdefs; do
+        compdef $cd
+    done
+    unset __deferred_compdefs
+    compdef _antigen antigen
 }
 
 antigen-list () {
