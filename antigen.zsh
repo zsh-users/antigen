@@ -338,6 +338,7 @@ antigen-apply () {
     # TODO: Only load completions if there are any changes to the bundle
     # repositories.
     compinit -i
+    compdef _antigen antigen
 }
 
 antigen-list () {
@@ -592,11 +593,6 @@ antigen () {
 
     # Load the compinit module.
     autoload -U compinit
-
-    # Without the following, `compdef` function is not defined.
-    compinit -i
-
-    compdef _antigen antigen
 }
 
 # Same as `export $1=$2`, but will only happen if the name specified by `$1` is
