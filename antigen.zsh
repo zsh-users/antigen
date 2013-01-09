@@ -7,6 +7,10 @@
 local _ANTIGEN_BUNDLE_RECORD=""
 local _ANTIGEN_INSTALL_DIR="$(dirname $0)"
 
+# Used to defer compinit/compdef
+typeset -a __deferred_compdefs
+compdef () { __deferred_compdefs[$(($#__deferred_compdefs+1))]=$* }
+
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -398,7 +402,15 @@ antigen-apply () {
     # Initialize completion.
     # TODO: Only load completions if there are any changes to the bundle
     # repositories.
+    autoload -U compinit
     compinit -i
+
+    local cd
+    for cd in ${__deferred_compdefs}; do
+        compdef $cd
+    done
+    unset __deferred_compdefs
+    compdef _antigen antigen
 }
 
 antigen-list () {
@@ -659,11 +671,6 @@ antigen () {
     -set-default ANTIGEN_DEFAULT_REPO_URL \
         https://github.com/robbyrussell/oh-my-zsh.git
     -set-default ADOTDIR $HOME/.antigen
-
-    # Load the compinit module. Required for `compdef` to be defined, which is
-    # used by many plugins to define completions.
-    autoload -U compinit
-    compinit -i
 
     # Setup antigen's own completion.
     compdef _antigen antigen
