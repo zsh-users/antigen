@@ -224,7 +224,7 @@ antigen-revert () {
     fi
     local type="$3"
     local cloned="$4"
-    local plugin=$(echo $location|cut -d '/' -f 2)
+    local plugin=$(basename $location)
 
     case $type in
         (theme) source "$location";;
