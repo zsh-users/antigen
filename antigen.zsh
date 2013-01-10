@@ -216,51 +216,37 @@ antigen-revert () {
 -antigen-load () {
 
     local url="$1"
-    local loc="$2"
-    local btype="$3"
-    local make_local_clone="$4"
-
     # The full location where the plugin is located.
-    local location
-    if $make_local_clone; then
-        location="$(-antigen-get-clone-dir "$url")/$loc"
+    if $cloned; then
+        local location="$(-antigen-get-clone-dir "$url")/$2"
     else
-        location="$url"
+        local location="$url"
     fi
+    local type="$3"
+    local cloned="$4"
+    local plugin=$(basename $location)
 
-    if [[ $btype == theme ]]; then
+    case $type in
+        (theme) source "$location";;
+        (*)
+            # Source the plugin if we find it.  If not, source *.{zsh,sh,bash} in that order.
+            if [[ -f $location/$plugin.plugin.zsh ]]; then
+                source $location/$plugin.plugin.zsh
 
-        # Of course, if its a theme, the location would point to the script
-        # file.
-        source "$location"
+            elif [[ $(echo $location/* | grep -c "\.zsh$") > 0 ]]; then
+                for script in $location/*.zsh; do source $script; done
 
-    else
+            elif [[ $(echo $location/* | grep -c "\.sh$") > 0 ]]; then
+                for script in $location/*.sh; do source $script; done
 
-        # Source the plugin script.
-        # FIXME: I don't know. Looks very very ugly. Needs a better
-        # implementation once tests are ready.
-        local script_loc="$(ls "$location" | grep -m1 '\.plugin\.zsh$')"
+            elif [[ $(echo $location/* | grep -c "\.bash$") > 0 ]]; then
+                for script in $location/*.bash; do source $script; done
+            fi
 
-        if [[ -f $location/$script_loc ]]; then
-            # If we have a `*.plugin.zsh`, source it.
-            source "$location/$script_loc"
-
-        elif ls "$location" | grep -qm1 '\.zsh$'; then
-            # If there is no `*.plugin.zsh` file, source *all* the `*.zsh`
-            # files.
-            for script ($location/*.zsh(N)) source "$script"
-
-        elif ls "$location" | grep -qm1 '\.sh$'; then
-            # If there are no `*.zsh` files either, we look for and source any
-            # `*.sh` files instead.
-            for script ($location/*.sh(N)) source "$script"
-
-        fi
-
-        # Add to $fpath, for completion(s).
-        fpath=($location $fpath)
-
-    fi
+            # Add to $fpath, for completion(s).
+            fpath=($location $fpath)
+            ;;
+    esac
 
 }
 
