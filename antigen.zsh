@@ -9,7 +9,7 @@ local _ANTIGEN_INSTALL_DIR="$(dirname $0)"
 
 # Used to defer compinit/compdef
 typeset -a __deferred_compdefs
-compdef () { __deferred_compdefs[$(($#__deferred_compdefs+1))]=$* }
+compdef () { __deferred_compdefs=(${__deferred_compdefs} "${*}") }
 
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
