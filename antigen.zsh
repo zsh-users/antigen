@@ -216,35 +216,37 @@ antigen-revert () {
 -antigen-load () {
 
     local url="$1"
-    local loc="$2"
-    local btype="$3"
-    local make_local_clone="$4"
-
     # The full location where the plugin is located.
-    local location
-    if $make_local_clone; then
-        location="$(-antigen-get-clone-dir "$url")/$loc"
+    if $cloned; then
+        local location="$(-antigen-get-clone-dir "$url")/$2"
     else
-        location="$url"
+        local location="$url"
     fi
+    local type="$3"
+    local cloned="$4"
+    local plugin=$(echo $location|cut -d '/' -f 2)
 
-    if [[ $btype == theme ]]; then
+    case $type in
+        (theme) source "$location";;
+        (*)
+            # Source the plugin if we find it.  If not, source *.{zsh,sh,bash} in that order.
+            if [[ -f $location/$plugin.plugin.zsh ]]; then
+                source $location/$plugin.plugin.zsh
 
-        # Of course, if its a theme, the location would point to the script
-        # file.
-        source "$location"
+            elif [[ $(echo $location/* | grep -c "\.zsh$") > 0 ]]; then
+                for script in $location/*.zsh; do source $script; done
 
-    else
-        if [[ $(echo $location/* | grep -c "\.zsh$") > 0 ]]; then
-            for script in $location/*.zsh; do source "$script"; done
+            elif [[ $(echo $location/* | grep -c "\.sh$") > 0 ]]; then
+                for script in $location/*.sh; do source $script; done
 
-        elif [[ $(echo $location/* | grep -c "\(\.sh|\.bash\)$") > 0 ]]; then
-            for script in $location/*.{sh,bash}; do source "$script"; done
-        fi
+            elif [[ $(echo $location/* | grep -c "\.bash$") > 0 ]]; then
+                for script in $location/*.bash; do source $script; done
+            fi
 
-        # Add to $fpath, for completion(s).
-        fpath=($location $fpath)
-    fi
+            # Add to $fpath, for completion(s).
+            fpath=($location $fpath)
+            ;;
+    esac
 
 }
 
