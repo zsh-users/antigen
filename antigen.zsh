@@ -140,9 +140,9 @@ antigen-revert () {
     echo -n $ADOTDIR/repos/
     # prezto pmodload workaround
     if [[ "$1" == "https://github.com/sorin-ionescu/prezto.git" ]];then
-        echo -n .zprezto
+        echo .zprezto
     else
-        echo -n "$1" | sed \
+        echo "$1" | sed \
         -e 's./.-SLASH-.g' \
         -e 's.:.-COLON-.g' \
         -e 's.|.-PIPE-.g'
@@ -155,9 +155,9 @@ antigen-revert () {
     
     # prezto pmodload workaround
     if [[ "$1" == ".zprezto" ]];then
-        echo -n https://github.com/sorin-ionescu/prezto.git
+        echo https://github.com/sorin-ionescu/prezto.git
     else
-        echo -n "$1" | sed \
+        echo "$1" | sed \
         -e "s:^$ADOTDIR/repos/::" \
         -e 's.-SLASH-./.g' \
         -e 's.-COLON-.:.g' \
