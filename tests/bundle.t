@@ -1,7 +1,7 @@
 Load plugin from master.
 
   $ antigen-bundle $PLUGIN_DIR
-  Cloning into '.+?'\.\.\. (re)
+  Cloning into '*'... (glob)
   done.
   $ hehe
   hehe
@@ -16,3 +16,18 @@ Confirm there is still only one repository.
 
   $ ls $ADOTDIR/repos | wc -l
   1
+
+Load a prezto style module. Should only source the `init.zsh` present in the
+module.
+
+  $ antigen-bundle $PLUGIN_DIR2
+  Cloning into '*'... (glob)
+  done.
+  $ hehe2
+  hehe2
+
+The alias defined in the other zsh file should not be available.
+
+  $ unsourced-alias
+  zsh: command not found: unsourced-alias
+  [127]

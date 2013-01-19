@@ -33,7 +33,8 @@ mkdir "$PLUGIN_DIR2"
 # A wrapper function over `git` to work with the test plugin repo.
 alias pg2='git --git-dir "$PLUGIN_DIR2/.git" --work-tree "$PLUGIN_DIR2"'
 
-echo 'alias hehe2="echo hehe2"' > "$PLUGIN_DIR2"/aliases.zsh
+echo 'alias hehe2="echo hehe2"' > "$PLUGIN_DIR2"/init.zsh
+echo 'alias unsourced-alias="echo unsourced-alias"' > "$PLUGIN_DIR2"/aliases.zsh
 
 {
     pg2 init
