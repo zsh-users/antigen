@@ -339,7 +339,7 @@ antigen-lib () {
     antigen-bundle --loc=lib
 }
 
-antigen-prezto-lib() {
+antigen-prezto-lib () {
     antigen-bundle sorin-ionescu/prezto
     export ZDOTDIR=$ADOTDIR/repos/
 }
