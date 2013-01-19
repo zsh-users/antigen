@@ -138,30 +138,36 @@ antigen-revert () {
     # Takes a repo url and gives out the path that this url needs to be cloned
     # to. Doesn't actually clone anything.
     echo -n $ADOTDIR/repos/
-    # prezto pmodload workaround
-    if [[ "$1" == "https://github.com/sorin-ionescu/prezto.git" ]];then
+
+    if [[ "$1" == "https://github.com/sorin-ionescu/prezto.git" ]]; then
+        # Prezto's directory *has* to be `.zprezto`.
         echo .zprezto
+
     else
         echo "$1" | sed \
-        -e 's./.-SLASH-.g' \
-        -e 's.:.-COLON-.g' \
-        -e 's.|.-PIPE-.g'
+            -e 's./.-SLASH-.g' \
+            -e 's.:.-COLON-.g' \
+            -e 's.|.-PIPE-.g'
+
     fi
 }
 
 -antigen-get-clone-url () {
     # Takes a repo's clone dir and gives out the repo's original url that was
     # used to create the given directory path.
-    
-    # prezto pmodload workaround
-    if [[ "$1" == ".zprezto" ]];then
+
+    if [[ "$1" == ".zprezto" ]]; then
+        # Prezto's (in `.zprezto`), is assumed to be from `sorin-ionescu`'s
+        # remote.
         echo https://github.com/sorin-ionescu/prezto.git
+
     else
         echo "$1" | sed \
-        -e "s:^$ADOTDIR/repos/::" \
-        -e 's.-SLASH-./.g' \
-        -e 's.-COLON-.:.g' \
-        -e 's.-PIPE-.|.g'
+            -e "s:^$ADOTDIR/repos/::" \
+            -e 's.-SLASH-./.g' \
+            -e 's.-COLON-.:.g' \
+            -e 's.-PIPE-.|.g'
+
     fi
 }
 
@@ -251,15 +257,14 @@ antigen-revert () {
         # FIXME: I don't know. Looks very very ugly. Needs a better
         # implementation once tests are ready.
         local script_loc="$(ls "$location" | grep -m1 '\.plugin\.zsh$')"
-        local init_loc="$(ls "$location" | grep -m1 '\.init\.zsh$')"
 
         if [[ -f $location/$script_loc ]]; then
             # If we have a `*.plugin.zsh`, source it.
             source "$location/$script_loc"
-        
-        elif [[ -f $location/$init_loc ]]; then
-            # If we have a `*.init.zsh`, source it.
-            source "$location/$init_loc"    
+
+        elif [[ -f $location/init.zsh ]]; then
+            # If we have a `init.zsh`, source it.
+            source "$location/init.zsh"
 
         elif ls "$location" | grep -qm1 '\.zsh$'; then
             # If there is no `*.plugin.zsh` file, source *all* the `*.zsh`
