@@ -370,6 +370,16 @@ Use
 in  your `.zshrc`, before any `antigen-bundle` declarations. It takes no
 arguments.
 
+### antigen-prezto-lib <sup>&alpha;</sup>
+
+This is (almost, but not quite) the same as doing,
+
+    antigen-bundle sorin-ionescu/prezto
+
+That is, initializes the canonical repo of the prezto framework. Please note
+that prezto support is very new and experimental in antigen. If you find any
+bugs, please report over on github issues.
+
 ### antigen-theme
 
 Used for switching the prompt theme. Invoke it with the name of the theme you
@@ -524,7 +534,12 @@ project.
 If you want to know how antigen loads the plugins, do continue.
 
 Firstly, antigen looks for a `*.plugin.zsh` file in the plugin directory. If
-present, it will source *only* this script. Nothing else is sourced.
+present, it will source *only* this script. Nothing else is sourced. This is for
+oh-my-zsh style plugins.
+
+Secondly, it looks for a `init.zsh` file in the plugin directory. If present, it
+will source *only* this script. Nothing else is sourced. This is for prezto
+style modules.
 
 Otherwise, it looks for `*.zsh` files and if there are any, *all* of them are
 sourced. The order in which they are sourced is not currently defined. Please
