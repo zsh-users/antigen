@@ -3,9 +3,12 @@ Firstly, no plugins, nothing to cleanup.
   $ antigen-cleanup --force
   You don't have any bundles.
 
-Load a plugin.
+Load the plugins.
 
   $ antigen-bundle $PLUGIN_DIR
+  Cloning into '*'... (glob)
+  done.
+  $ antigen-bundle $PLUGIN_DIR2
   Cloning into '*'... (glob)
   done.
 
@@ -13,6 +16,7 @@ Check the listing.
 
   $ antigen-list
   */test-plugin / plugin true (glob)
+  */test-plugin2 / plugin true (glob)
 
 Nothing should be available for cleanup.
 
@@ -32,16 +36,18 @@ Check the listing, after clearing the record.
 Confirm the plugin directory exists.
 
   $ ls dot-antigen/repos | wc -l
-  1
+  2
 
 Do the cleanup.
 
   $ antigen-cleanup --force
   You have clones for the following repos, but are not used.
     */test-plugin (glob)
+    */test-plugin2 (glob)
   
   
   Deleting clone for */test-plugin... done. (glob)
+  Deleting clone for */test-plugin2... done. (glob)
 
 Check the listing, after cleanup.
 
