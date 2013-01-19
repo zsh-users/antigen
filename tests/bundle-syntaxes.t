@@ -1,70 +1,106 @@
-Skip test.
-
-  $ exit 80
-
 Test helper and mock functions.
 
-  $ git () {
-  >     echo git "$@"
-  > }
+  $ ANTIGEN_DEFAULT_REPO_URL=gh-user/repo
+
   $ b () {
-  >     bundle "$@"
-  >     bundle-list | tail -1
+  >     antigen-bundle "$@"
+  > }
+
+  $ -antigen-ensure-repo () {}
+
+  $ -antigen-load () {
+  >     echo "url:    $1"
+  >     echo "dir:    $2"
+  >     echo "is a:   $3"
+  >     echo "clone?: $4"
   > }
 
 Short and sweet.
 
   $ b lol
-  plugin-name https://github.com/robbyrussell/oh-my-zsh.git plugins/plugin-name
+  url:    https://github.com/gh-user/repo.git
+  dir:    plugins/lol
+  is a:   plugin
+  clone?: true
 
 Short repo url.
 
   $ b github-username/repo-name
-  repo-name https://github.com/github-username/repo-name.git /
+  url:    https://github.com/github-username/repo-name.git
+  dir:    /
+  is a:   plugin
+  clone?: true
 
 Short repo url with `.git` suffix.
 
   $ b github-username/repo-name.git
-  repo-name https://github.com/github-username/repo-name.git /
+  url:    https://github.com/github-username/repo-name.git
+  dir:    /
+  is a:   plugin
+  clone?: true
 
 Long repo url.
 
   $ b https://github.com/user/repo.git
-  repo https://github.com/user/repo.git /
+  url:    https://github.com/user/repo.git
+  dir:    /
+  is a:   plugin
+  clone?: true
 
 Long repo url with missing `.git` suffix (should'nt add the suffix).
 
   $ b https://github.com/user/repo
-  repo https://github.com/user/repo /
+  url:    https://github.com/user/repo
+  dir:    /
+  is a:   plugin
+  clone?: true
 
 Short repo with location.
 
   $ b user/plugin path/to/plugin
-  plugin https://github.com/user/plugin.git path/to/plugin
+  url:    https://github.com/user/plugin.git
+  dir:    path/to/plugin
+  is a:   plugin
+  clone?: true
 
 Keyword arguments, in respective places.
 
   $ b --url=user/repo --loc=path/of/plugin
-  plugin-name https://github.com/user/repo.git path/of/plugin
+  url:    https://github.com/user/repo.git
+  dir:    path/of/plugin
+  is a:   plugin
+  clone?: true
 
 Keyword arguments, in respective places, with full repo url.
 
   $ b --url=https://github.com/user/repo.git --loc=plugin/path
-  name https://github.com/user/repo.git plugin/path
+  url:    https://github.com/user/repo.git
+  dir:    plugin/path
+  is a:   plugin
+  clone?: true
 
 Keyword arguments, in reversed order.
 
   $ b --loc=path/of/plugin --url=user/repo
-  plugin-name https://github.com/user/repo.git path/of/plugin
+  url:    https://github.com/user/repo.git
+  dir:    path/of/plugin
+  is a:   plugin
+  clone?: true
 
 Mixed positional and keyword arguments, and skip `loc`.
 
   $ b user/repo --loc=plugin/loc
-  plugin https://github.com/user/repo.git plugin/loc
+  url:    https://github.com/user/repo.git
+  dir:    plugin/loc
+  is a:   plugin
+  clone?: true
 
 Just `loc`, using keyword arguments.
 
   $ b --loc=plugin/path
-  path https://github.com/robbyrussell/oh-my-zsh.git plugin/path
+  url:    https://github.com/gh-user/repo.git
+  dir:    plugin/path
+  is a:   plugin
+  clone?: true
 
 TODO: Error reporting with erroneous arguments or usage with incorrect syntax.
