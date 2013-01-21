@@ -199,12 +199,17 @@ antigen-revert () {
 
     # Clone if it doesn't already exist.
     if [[ ! -d $clone_dir ]]; then
-        git clone "${url%|*}" "$clone_dir"
+        git clone --recursive "${url%|*}" "$clone_dir"
     elif $update; then
         # Save current revision.
         local old_rev="$(--plugin-git rev-parse HEAD)"
         # Pull changes if update requested.
         --plugin-git pull
+        # update submodules
+        pushd
+        cd "$clone_dir"
+        git submodule update --recursive
+        popd
         # Get the new revision.
         local new_rev="$(--plugin-git rev-parse HEAD)"
     fi
