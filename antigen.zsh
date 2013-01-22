@@ -211,7 +211,10 @@ antigen-revert () {
         # Pull changes if update requested.
         --plugin-git pull
         # Update submodules.
-        --plugin-git submodule update --recursive
+        pushd
+        cd "$clone_dir"
+        git submodule update --recursive
+        popd
         # Get the new revision.
         local new_rev="$(--plugin-git rev-parse HEAD)"
     fi
