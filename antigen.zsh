@@ -106,15 +106,20 @@ antigen-update () {
     date > $ADOTDIR/revert-info
 
     -antigen-echo-record |
-        awk '{print $1}' |
+        awk '$4 == "true" {print $1}' |
         sort -u |
         while read url; do
             echo "**** Pulling $url"
-            (dir="$(-antigen-get-clone-dir "$url")"
-                echo -n "$dir:"
-                cd "$dir"
-                git rev-parse HEAD) >> $ADOTDIR/revert-info
+
+            local clone_dir="$(-antigen-get-clone-dir "$url")"
+            if [[ -d "$clone_dir" ]]; then
+                (echo -n "$clone_dir:"
+                    cd "$clone_dir"
+                    git rev-parse HEAD) >> $ADOTDIR/revert-info
+            fi
+
             -antigen-ensure-repo "$url" --update --verbose
+
             echo
         done
 }
