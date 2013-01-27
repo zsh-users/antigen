@@ -273,8 +273,9 @@ antigen-revert () {
             source "$location/$script_loc"
 
         elif [[ -f $location/init.zsh ]]; then
-            # If we have a `init.zsh`, source it.
-            source "$location/init.zsh"
+            # If we have a `init.zsh`, pmodload the module.
+            local module="$(echo $loc|sed -e 's/^modules\///')" #remove modules/ from loc to find module name
+            pmodload "$module"
 
         elif ls "$location" | grep -qm1 '\.zsh$'; then
             # If there is no `*.plugin.zsh` file, source *all* the `*.zsh`
