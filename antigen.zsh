@@ -209,19 +209,10 @@ antigen-revert () {
         # Save current revision.
         local old_rev="$(--plugin-git rev-parse HEAD)"
         # Pull changes if update requested.
-        --plugin-git pull
-        # If pull failed then try to pull directly from the clone directory
-        # In older version (1.8) of git the previous command seems not to work
-        if [ $? -ne 0 ]; then
-            pushd > /dev/null
-            git pull
-            popd > /dev/null
-        fi
+        (cd "$clone_dir" && git pull --no-pager)
+        #--plugin-git pull
         # Update submodules.
-        pushd > /dev/null
-        cd "$clone_dir"
-        git submodule update --recursive
-        popd > /dev/null
+        (cd "$clone_dir" && git submodule update --recursive)
         # Get the new revision.
         local new_rev="$(--plugin-git rev-parse HEAD)"
     fi
