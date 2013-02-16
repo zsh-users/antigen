@@ -5,6 +5,7 @@
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
 # FIXME: Is not kept local by zsh!
 local _ANTIGEN_BUNDLE_RECORD=""
+local _ANTIGEN_INSTALL_DIR="$(dirname $0)"
 
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
@@ -209,12 +210,10 @@ antigen-revert () {
         # Save current revision.
         local old_rev="$(--plugin-git rev-parse HEAD)"
         # Pull changes if update requested.
-        --plugin-git pull
+        (cd "$clone_dir" && git --no-pager pull)
+        #--plugin-git pull
         # Update submodules.
-        pushd
-        cd "$clone_dir"
-        git submodule update --recursive
-        popd
+        (cd "$clone_dir" && git submodule update --recursive)
         # Get the new revision.
         local new_rev="$(--plugin-git rev-parse HEAD)"
     fi
@@ -293,6 +292,19 @@ antigen-revert () {
 
     fi
 
+}
+
+antigen-selfupdate () {
+    # Initiate subshell
+    (
+        cd $_ANTIGEN_INSTALL_DIR
+        # Sanity checks
+        if [ ! -d .git ]; then
+            echo "antigen is not under git CVS"
+            return 1
+        fi
+        git pull
+    )
 }
 
 antigen-cleanup () {
@@ -645,16 +657,17 @@ antigen () {
 
 # Setup antigen's autocompletion
 _antigen () {
-    compadd \
-        bundle\
-        bundles\
-        update\
-        revert\
-        list\
-        cleanup\
-        lib\
-        theme\
-        apply\
+    compadd        \
+        bundle     \
+        bundles    \
+        update     \
+        revert     \
+        list       \
+        cleanup    \
+        lib        \
+        selfupdate \
+        theme      \
+        apply      \
         help
 }
 
