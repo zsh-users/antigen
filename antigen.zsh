@@ -293,7 +293,6 @@ antigen-revert () {
 }
 
 antigen-selfupdate () {
-    # Initiate subshell
     (
         cd $_ANTIGEN_INSTALL_DIR
         # Sanity checks
@@ -631,6 +630,15 @@ antigen () {
 }
 
 -antigen-env-setup () {
+
+    # Helper function: Same as `export $1=$2`, but will only happen if the name
+    # specified by `$1` is not already set.
+    -set-default () {
+        local arg_name="$1"
+        local arg_value="$2"
+        eval "test -z \"\$$arg_name\" && export $arg_name='$arg_value'"
+    }
+
     # Pre-startup initializations.
     -set-default ANTIGEN_DEFAULT_REPO_URL \
         https://github.com/robbyrussell/oh-my-zsh.git
@@ -643,14 +651,9 @@ antigen () {
 
     # Setup antigen's own completion.
     compdef _antigen antigen
-}
 
-# Same as `export $1=$2`, but will only happen if the name specified by `$1` is
-# not already set.
--set-default () {
-    local arg_name="$1"
-    local arg_value="$2"
-    eval "test -z \"\$$arg_name\" && export $arg_name='$arg_value'"
+    # Remove private functions.
+    unfunction -- -set-default
 }
 
 # Setup antigen's autocompletion
