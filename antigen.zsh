@@ -199,8 +199,7 @@ antigen-revert () {
 
     # A temporary function wrapping the `git` command with repeated arguments.
     --plugin-git () {
-        eval git --no-pager \
-            --git-dir=$clone_dir/.git --work-tree=$clone_dir "$@"
+        (cd "$clone_dir" && git --no-pager "$@")
     }
 
     # Clone if it doesn't already exist.
@@ -210,10 +209,9 @@ antigen-revert () {
         # Save current revision.
         local old_rev="$(--plugin-git rev-parse HEAD)"
         # Pull changes if update requested.
-        (cd "$clone_dir" && git --no-pager pull)
-        #--plugin-git pull
+        --plugin-git pull
         # Update submodules.
-        (cd "$clone_dir" && git submodule update --recursive)
+        --plugin-git submodule update --recursive
         # Get the new revision.
         local new_rev="$(--plugin-git rev-parse HEAD)"
     fi
