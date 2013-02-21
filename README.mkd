@@ -307,7 +307,8 @@ that may not be immediately apparent. Let's just say it can make your shell act
 real quirky.
 
 **Please note**: This command is not for updating *antigen* itself. Its for
-updating the bundles you are using with antigen.
+updating the bundles you are using with antigen. To update your copy of antigen,
+use the `selfupdate` command described further below.
 
 ### antigen-revert <sup>&alpha;</sup>
 
@@ -447,6 +448,14 @@ argument, the snapshot file name to read.
 Although it restores the clones of the repos specified in the snapshot file, any
 other clones present in your environment are not touched. This behavior may
 change in the future.
+
+### antigen-selfupdate
+
+Use this command to update your copy of antigen. It basically does a `git pull`
+on your antigen's clone, *if* it is a git clone. Otherwise, it doesn't do
+anything.
+
+Takes no options.
 
 ### antigen-help
 
