@@ -361,7 +361,8 @@ that may not be immediately apparent. Let's just say it can make your shell act
 real quirky.</p>
 
 <p><strong>Please note</strong>: This command is not for updating <em>antigen</em> itself. Its for
-updating the bundles you are using with antigen.</p>
+updating the bundles you are using with antigen. To update your copy of antigen,
+use the <code>selfupdate</code> command described further below.</p>
 
 <h3>antigen-revert <sup>α</sup>
 </h3>
@@ -427,6 +428,18 @@ the future.</p>
 
 <p>in  your <code>.zshrc</code>, before any <code>antigen-bundle</code> declarations. It takes no
 arguments.</p>
+
+<h3>antigen-prezto-lib <sup>α</sup>
+</h3>
+
+<p>This is (almost, but not quite) the same as doing,</p>
+
+<pre><code>antigen-bundle sorin-ionescu/prezto
+</code></pre>
+
+<p>That is, initializes the canonical repo of the prezto framework. Please note
+that prezto support is very new and experimental in antigen. If you find any
+bugs, please report over on github issues.</p>
 
 <h3>antigen-theme</h3>
 
@@ -499,6 +512,14 @@ argument, the snapshot file name to read.</p>
 <p>Although it restores the clones of the repos specified in the snapshot file, any
 other clones present in your environment are not touched. This behavior may
 change in the future.</p>
+
+<h3>antigen-selfupdate</h3>
+
+<p>Use this command to update your copy of antigen. It basically does a <code>git pull</code>
+on your antigen's clone, <em>if</em> it is a git clone. Otherwise, it doesn't do
+anything.</p>
+
+<p>Takes no options.</p>
 
 <h3>antigen-help</h3>
 
@@ -593,7 +614,12 @@ project.</p>
 <p>If you want to know how antigen loads the plugins, do continue.</p>
 
 <p>Firstly, antigen looks for a <code>*.plugin.zsh</code> file in the plugin directory. If
-present, it will source <em>only</em> this script. Nothing else is sourced.</p>
+present, it will source <em>only</em> this script. Nothing else is sourced. This is for
+oh-my-zsh style plugins.</p>
+
+<p>Secondly, it looks for a <code>init.zsh</code> file in the plugin directory. If present, it
+will source <em>only</em> this script. Nothing else is sourced. This is for prezto
+style modules.</p>
 
 <p>Otherwise, it looks for <code>*.zsh</code> files and if there are any, <em>all</em> of them are
 sourced. The order in which they are sourced is not currently defined. Please
