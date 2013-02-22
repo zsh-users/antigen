@@ -275,11 +275,11 @@ antigen-revert () {
         elif [[ -f $location/init.zsh ]]; then
             # If we have a `init.zsh`
             if (( $+functions[pmodload] )); then
-                # if pmodload is defined pmodload the module.
-                local module="$(echo $loc|sed -e 's/^modules\///')" #remove modules/ from loc to find module name
-                pmodload "$module"
+                # If pmodload is defined pmodload the module. Remove `modules/`
+                # from loc to find module name.
+                pmodload "${loc#modules/}"
             else
-                # otherwise source it.
+                # Otherwise source it.
                 source "$location/init.zsh"
             fi
 
