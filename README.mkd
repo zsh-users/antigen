@@ -350,19 +350,22 @@ usable in a non-interactive fashion.
 
 ### antigen-lib
 
-This is a shortcut to
+This is (almost) the same as
 
     antigen-bundle --loc=lib
 
 So, it basically installs the oh-my-zsh's library as a bundle.
+
+One other thing it does is that some oh-my-zsh plugins expect a `$ZSH` set to
+the full path of the oh-my-zsh clone being used. This is also set to the
+correct path, if not already set to something else.
 
 Please note that this assumes that the `ANTIGEN_DEFAULT_REPO_URL` is set to the
 oh-my-zsh repo or a fork of that repo. If you want to specify the `url` too,
 then you can't use the `antigen-lib` short cut. You have to do that directly
 with the `antigen-bundle` command.
 
-This is present only for legacy reasons and *might* (or might not) be removed in
-the future.
+This is present to ease dealing with oh-my-zsh plugins.
 
 Use
 

@@ -364,6 +364,9 @@ antigen-cleanup () {
 }
 
 antigen-lib () {
+    if [[ -z "$ZSH" ]]; then
+        export ZSH="$(-antigen-get-clone-dir "$ANTIGEN_DEFAULT_REPO_URL")"
+    fi
     antigen-bundle --loc=lib
 }
 
