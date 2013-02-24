@@ -146,7 +146,7 @@ pull request.
 
 Antigen also lets you switch the prompt theme with one command, just like that
 
-    bundle-theme candy
+    antigen-theme candy
 
 and your prompt is changed, just for this session of course (unless you put this
 line in your `.zshrc`).
