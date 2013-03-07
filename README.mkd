@@ -120,6 +120,8 @@ Open your zsh with this zshrc and you should see all the bundles you defined
 here, getting installed. Once its done, you are ready to roll. The complete
 syntax for the `antigen-bundle` command is discussed further down on this page.
 
+You can find more examples in the wiki: [Antigen in the wild][wild].
+
 ## Motivation
 
 If you use zsh and [oh-my-zsh][], you know that having many different plugins
@@ -587,6 +589,7 @@ Any comments/suggestions/feedback welcome. Please say hello to me
 
 [Vundle]: https://github.com/gmarik/vundle
 [page on themes]: https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
+[wild]: https://github.com/zsh-users/antigen/wiki/In-the-wild
 [syntax highlighting plugin]: https://github.com/zsh-users/zsh-syntax-highlighting
 [autoenv]: https://github.com/kennethreitz/autoenv
 [f-autoenv]: https://github.com/sharat87/autoenv
