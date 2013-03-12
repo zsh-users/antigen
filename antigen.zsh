@@ -126,18 +126,22 @@ antigen-update () {
 }
 
 antigen-revert () {
-    if ! [[ -f $ADOTDIR/revert-info ]]; then
+    if [[ -f $ADOTDIR/revert-info ]]; then
+        cat $ADOTDIR/revert-info | sed '1!p' | while read line; do
+            dir="$(echo "$line" | cut -d: -f1)"
+            git --git-dir="$dir/.git" --work-tree="$dir" \
+                checkout "$(echo "$line" | cut -d: -f2)" 2> /dev/null
+
+        done
+
+        echo "Reverted to state before running -update on $(
+                cat $ADOTDIR/revert-info | sed -n 1p)."
+
+    else 
         echo 'No revert information available. Cannot revert.' >&2
     fi
 
-    cat $ADOTDIR/revert-info | sed '1!p' | while read line; do
-        dir="$(echo "$line" | cut -d: -f1)"
-        git --git-dir="$dir/.git" --work-tree="$dir" \
-            checkout "$(echo "$line" | cut -d: -f2)" 2> /dev/null
-    done
 
-    echo "Reverted to state before running -update on $(
-            cat $ADOTDIR/revert-info | sed -n 1p)."
 }
 
 -antigen-get-clone-dir () {
@@ -225,7 +229,7 @@ antigen-revert () {
             --plugin-git checkout $requested_branch
     fi
 
-    if ! [[ -z $old_rev || $old_rev == $new_rev ]]; then
+    if [[ -n $old_rev && $old_rev != $new_rev ]]; then
         echo Updated from ${old_rev:0:7} to ${new_rev:0:7}.
         if $verbose; then
             --plugin-git log --oneline --reverse --no-merges --stat '@{1}..'
@@ -541,7 +545,7 @@ antigen () {
 
     # Set spec values based on the positional arguments.
     local i=1
-    while ! [[ -z $1 || $1 == --* ]]; do
+    while [[ -n $1 && $1 != --* ]]; do
 
         if (( $i > $positional_args_count )); then
             echo "Only $positional_args_count positional arguments allowed." >&2
