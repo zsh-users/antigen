@@ -5,7 +5,7 @@
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
 # FIXME: Is not kept local by zsh!
 local _ANTIGEN_BUNDLE_RECORD=""
-local _ANTIGEN_INSTALL_DIR="$(dirname $0)"
+local _ANTIGEN_INSTALL_DIR="$( cd "$( dirname "$0" )" && pwd )"
 
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
