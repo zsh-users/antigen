@@ -85,13 +85,14 @@ utilities as small scripts all the time. Antigen is compatible with all of them.
 The plugins and scripts don't need any special handling to be compatible with
 antigen.</p>
 
-<p>Another example, <a href="https://github.com/kennethreitz/autoenv">kennethreitz's autoenv</a>. Just a bundle command away.</p>
+<p>Another example, <a href="https://github.com/kennethreitz/autoenv">kennethreitz's autoenv</a> (or <a href="https://github.com/sharat87/autoenv">my fork</a> of
+it). Just a bundle command away.</p>
 
-<pre><code>antigen-bundle kennethreitz/autoenv
+<pre><code>antigen-bundle sharat87/autoenv
 </code></pre>
 
 <p>And boom! you have all the autoenv goodness. Just remember how you used to do
-these before antigen, clone it, modify your bashrc to source it, load a new
+these before antigen, clone it, modify your zshrc to source it, load a new
 terminal, all just to test it out. Duh!</p>
 
 <p>A subtle aspect of this is that you can tell antigen to grab just about anything
@@ -163,6 +164,8 @@ antigen-apply
 here, getting installed. Once its done, you are ready to roll. The complete
 syntax for the <code>antigen-bundle</code> command is discussed further down on this page.</p>
 
+<p>You can find more examples in the wiki: <a href="https://github.com/zsh-users/antigen/wiki/In-the-wild">Antigen in the wild</a>.</p>
+
 <h2>Motivation</h2>
 
 <p>If you use zsh and <a href="https://github.com/robbyrussell/oh-my-zsh">oh-my-zsh</a>, you know that having many different plugins
@@ -186,7 +189,7 @@ pull request.</p>
 
 <p>Antigen also lets you switch the prompt theme with one command, just like that</p>
 
-<pre><code>bundle-theme candy
+<pre><code>antigen-theme candy
 </code></pre>
 
 <p>and your prompt is changed, just for this session of course (unless you put this
@@ -406,20 +409,23 @@ usable in a non-interactive fashion.</p>
 
 <h3>antigen-lib</h3>
 
-<p>This is a shortcut to</p>
+<p>This is (almost) the same as</p>
 
 <pre><code>antigen-bundle --loc=lib
 </code></pre>
 
 <p>So, it basically installs the oh-my-zsh's library as a bundle.</p>
 
+<p>One other thing it does is that some oh-my-zsh plugins expect a <code>$ZSH</code> set to
+the full path of the oh-my-zsh clone being used. This is also set to the
+correct path, if not already set to something else.</p>
+
 <p>Please note that this assumes that the <code>ANTIGEN_DEFAULT_REPO_URL</code> is set to the
 oh-my-zsh repo or a fork of that repo. If you want to specify the <code>url</code> too,
 then you can't use the <code>antigen-lib</code> short cut. You have to do that directly
 with the <code>antigen-bundle</code> command.</p>
 
-<p>This is present only for legacy reasons and <em>might</em> (or might not) be removed in
-the future.</p>
+<p>This is present to ease dealing with oh-my-zsh plugins.</p>
 
 <p>Use</p>
 
