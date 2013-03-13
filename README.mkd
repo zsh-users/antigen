@@ -53,7 +53,7 @@ it). Just a bundle command away.
     antigen-bundle sharat87/autoenv
 
 And boom! you have all the autoenv goodness. Just remember how you used to do
-these before antigen, clone it, modify your bashrc to source it, load a new
+these before antigen, clone it, modify your zshrc to source it, load a new
 terminal, all just to test it out. Duh!
 
 A subtle aspect of this is that you can tell antigen to grab just about anything
