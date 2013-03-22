@@ -271,7 +271,7 @@ antigen-revert () {
         # Source the plugin script.
         # FIXME: I don't know. Looks very very ugly. Needs a better
         # implementation once tests are ready.
-        local script_loc="$(ls "$location" | grep -m1 '\.plugin\.zsh$')"
+        local script_loc="$(ls "$location" | grep '\.plugin\.zsh$' | head -n1)"
 
         if [[ -f $location/$script_loc ]]; then
             # If we have a `*.plugin.zsh`, source it.
@@ -288,12 +288,12 @@ antigen-revert () {
                 source "$location/init.zsh"
             fi
 
-        elif ls "$location" | grep -qm1 '\.zsh$'; then
+        elif ls "$location" | grep -l '\.zsh$' &> /dev/null; then
             # If there is no `*.plugin.zsh` file, source *all* the `*.zsh`
             # files.
             for script ($location/*.zsh(N)) source "$script"
 
-        elif ls "$location" | grep -qm1 '\.sh$'; then
+        elif ls "$location" | grep -l '\.sh$' &> /dev/null; then
             # If there are no `*.zsh` files either, we look for and source any
             # `*.sh` files instead.
             for script ($location/*.sh(N)) source "$script"
@@ -573,7 +573,7 @@ antigen () {
         local name="${${name_spec%\?}%:}"
         local value="$1"
 
-        if echo "$code" | grep -qm1 "^local $name="; then
+        if echo "$code" | grep -l "^local $name=" &> /dev/null; then
             echo "Argument '$name' repeated with the value '$value'". >&2
             return
         fi
@@ -615,13 +615,13 @@ antigen () {
             local value="${arg#*=}"
         fi
 
-        if echo "$code" | grep -qm1 "^local $name="; then
+        if echo "$code" | grep -l "^local $name=" &> /dev/null; then
             echo "Argument '$name' repeated with the value '$value'". >&2
             return
         fi
 
         # The specification for this argument, used for validations.
-        local arg_line="$(echo "$keyword_args" | grep -m1 "^$name:\??\?")"
+        local arg_line="$(echo "$keyword_args" | grep "^$name:\??\?" | head -n1)"
 
         # Validate argument and value.
         if [[ -z $arg_line ]]; then
@@ -629,12 +629,12 @@ antigen () {
             echo "Unknown argument '$name'." >&2
             return
 
-        elif (echo "$arg_line" | grep -qm1 ':') && [[ -z $value ]]; then
+        elif (echo "$arg_line" | grep -l ':' &> /dev/null) && [[ -z $value ]]; then
             # This argument needs a value, but is not provided.
             echo "Required argument for '$name' not provided." >&2
             return
 
-        elif (echo "$arg_line" | grep -vqm1 ':') && [[ ! -z $value ]]; then
+        elif (echo "$arg_line" | grep -vl ':' &> /dev/null) && [[ ! -z $value ]]; then
             # This argument doesn't need a value, but is provided.
             echo "No argument required for '$name', but provided '$value'." >&2
             return
