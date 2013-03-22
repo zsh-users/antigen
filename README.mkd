@@ -277,13 +277,12 @@ you would give to the `antigen-bundle` command, one per line, into the
 syntax.
 
     antigen-bundles <<EOB
-    # Guess what to install when running an unknown command.
-    command-not-found
+      # Guess what to install when running an unknown command.
+      command-not-found
 
-    # The heroku tool helper plugin.
-    heroku
-
-    EOB
+      # The heroku tool helper plugin.
+      heroku
+    eoB
 
 This is equivalent to
 
