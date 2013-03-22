@@ -372,12 +372,13 @@ antigen-cleanup () {
 }
 
 antigen-use () {
-    if [[ $1 == "oh-my-zsh" ]]; then
+    if [[ $1 == oh-my-zsh ]]; then
         antigen-lib $@
-    elif [[ $1 == "prezto" ]]; then
+    elif [[ $1 == prezto ]]; then
         antigen-prezto-lib $@
     else
-        echo 'Antigen currently supports only following libraries:' >&2
+        echo 'Usage: antigen-use <library-name>' >&2
+        echo 'Where <library-name> is any one of the following:' >&2
         echo ' * oh-my-zsh' >&2
         echo ' * prezto' >&2
         return 1
