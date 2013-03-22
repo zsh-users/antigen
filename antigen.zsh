@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 
 # Each line in this string has the following entries separated by a space
 # character.
