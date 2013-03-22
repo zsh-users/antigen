@@ -12,88 +12,13 @@ That said, I am using antigen full time now on my work machine.
 Note: Please read the commit comments of the changesets when you pull a new
 version of antigen.
 
-## Show off
-
-> Enough talk. Let's fight!
->   -- Po, Kung-fu Panda.
-
-You're going to experience antigen right in your open shell. No `.zshrc`
-tweaking and reading the rest of this documentation. Kinda like an ice-cream
-sample, if you will.
-
-Get and load antigen.
-
-    curl https://raw.github.com/zsh-users/antigen/master/antigen.zsh > antigen.zsh
-    source antigen.zsh
-
-There. You now have all the antigen goodies. Let's try install some plugins. How
-about some color to start with. Get the [syntax highlighting plugin][] by
-running
-
-    antigen-bundle zsh-users/zsh-syntax-highlighting
-
-Now let it do its thing and once you're back at your prompt, try and type a
-command. See that? Colors!
-
-So, you do git? ruby? git and ruby? There are lots of awesome plugins over at
-oh-my-zsh. Treat yourself to some.
-
-    antigen-bundle robbyrussell/oh-my-zsh plugins/ruby
-    # Or for the lazy,
-    antigen-bundle git
-
-There are lots of plugins out there in the wild and people are writing zsh
-utilities as small scripts all the time. Antigen is compatible with all of them.
-The plugins and scripts don't need any special handling to be compatible with
-antigen.
-
-Another example, [kennethreitz's autoenv][autoenv] (or [my fork][f-autoenv] of
-it). Just a bundle command away.
-
-    antigen-bundle sharat87/autoenv
-
-And boom! you have all the autoenv goodness. Just remember how you used to do
-these before antigen, clone it, modify your zshrc to source it, load a new
-terminal, all just to test it out. Duh!
-
-A subtle aspect of this is that you can tell antigen to grab just about anything
-from anyone's `dotfiles` repo, as long as it is in a directory under any repo on
-github.
-
-And themes? How would you like a fancy new prompt for yourself?
-
-    antigen-theme funky
-
-No? Not your taste? There are many themes available to you, check out the
-oh-my-zsh's [page on themes][].
-
-You can install themes from unofficial repos too!
-
-    antigen-theme XsErG/zsh-themes themes/lazyuser
-
-See? It's easy! To see how that works, refer to the section on the
-`antigen-theme` command further down.
-
-Note: Many of those plugins and especially themes, assume you have the core
-library of oh-my-zsh loaded. So, if you want to experiment further, issue a
-
-    antigen-lib
-
-and continue until you're tired. At which point you can come back to this page
-;)
-
 ## Usage
 
-So, now that you're here, I suppose you are convinced and want antigen running
-your shell all the time. Sweet. Let's do it.
-
-First, clone this repo, probably as a submodule if you have your dotfiles in a
-git repo,
+First, clone this repo, or make it submodule or your dotfiles:
 
     git clone https://github.com/zsh-users/antigen.git
 
-The usage should be very familiar to you if you use Vundle. A typical `.zshrc`
-might look like this
+Then, put further documented commands in your `~/.zshrc`:
 
     source /path-to-antigen-clone/antigen.zsh
 
