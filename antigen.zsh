@@ -621,7 +621,7 @@ antigen () {
         fi
 
         # The specification for this argument, used for validations.
-        local arg_line="$(echo "$keyword_args" | grep "^$name:\??\?" | head -n1)"
+        local arg_line="$(echo "$keyword_args" | egrep "^$name:?\??" | head -n1)"
 
         # Validate argument and value.
         if [[ -z $arg_line ]]; then
