@@ -365,8 +365,8 @@ correct path, if not already set to something else.
 
 Please note that this assumes that the `ANTIGEN_DEFAULT_REPO_URL` is set to the
 oh-my-zsh repo or a fork of that repo. If you want to specify the `url` too,
-then you can't use the `antigen-use oh-my-zsh` short cut. You have to do that directly
-with the `antigen-bundle` command.
+then you can't use the `antigen-use oh-my-zsh` short cut. You have to do that
+directly with the `antigen-bundle` command.
 
 This is present to ease dealing with oh-my-zsh plugins.
 
@@ -411,9 +411,10 @@ Will pull the apple theme from the canonical oh-my-zsh repo. Also, note that the
 You can use this command to change your theme on the fly in your shell. Go on,
 try out a few themes in your shell before you set it in your `.zshrc`.
 
-**Note**: Some themes use functions that are loaded by `antigen-use oh-my-zsh`. So, to
-avoid any trouble, run `antigen-use oh-my-zsh` if you haven't already before experimenting
-with themes. If you have `antigen-use oh-my-zsh` in your `.zshrc`, you're covered.
+**Note**: Some themes use functions that are loaded by `antigen-use oh-my-zsh`.
+So, to avoid any trouble, run `antigen-use oh-my-zsh` if you haven't already
+before experimenting with themes. If you have `antigen-use oh-my-zsh` in your
+`.zshrc`, you're covered.
 
 **Note**: Do *not* provide the `--btype` argument to `antigen-theme`. Its an
 internal argument.
