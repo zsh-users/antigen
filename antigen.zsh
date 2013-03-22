@@ -371,6 +371,19 @@ antigen-cleanup () {
     fi
 }
 
+antigen-use () {
+    if [[ $1 == "oh-my-zsh" ]]; then
+        antigen-lib $@
+    elif [[ $1 == "prezto" ]]; then
+        antigen-prezto-lib $@
+    else
+        echo 'Antigen currently supports only following libraries:' >&2
+        echo ' * oh-my-zsh' >&2
+        echo ' * prezto' >&2
+        return 1
+    fi
+}
+
 antigen-lib () {
     if [[ -z "$ZSH" ]]; then
         export ZSH="$(-antigen-get-clone-dir "$ANTIGEN_DEFAULT_REPO_URL")"

@@ -77,7 +77,7 @@ See? It's easy! To see how that works, refer to the section on the
 Note: Many of those plugins and especially themes, assume you have the core
 library of oh-my-zsh loaded. So, if you want to experiment further, issue a
 
-    antigen-lib
+    antigen-use oh-my-zsh
 
 and continue until you're tired. At which point you can come back to this page
 ;)
@@ -98,7 +98,7 @@ might look like this
     source /path-to-antigen-clone/antigen.zsh
 
     # Load the oh-my-zsh's library.
-    antigen-lib
+    antigen-use oh-my-zsh
 
     # Bundles from the default repo (robbyrussell's oh-my-zsh).
     antigen-bundle git
@@ -351,7 +351,7 @@ clones. If the `--force` argument is given, then this confirmation is not asked.
 It straight away deletes all the unused clones. This option makes this command
 usable in a non-interactive fashion.
 
-### antigen-lib
+### antigen-use oh-my-zsh
 
 This is (almost) the same as
 
@@ -365,19 +365,19 @@ correct path, if not already set to something else.
 
 Please note that this assumes that the `ANTIGEN_DEFAULT_REPO_URL` is set to the
 oh-my-zsh repo or a fork of that repo. If you want to specify the `url` too,
-then you can't use the `antigen-lib` short cut. You have to do that directly
+then you can't use the `antigen-use oh-my-zsh` short cut. You have to do that directly
 with the `antigen-bundle` command.
 
 This is present to ease dealing with oh-my-zsh plugins.
 
 Use
 
-    antigen-lib
+    antigen-use oh-my-zsh
 
 in  your `.zshrc`, before any `antigen-bundle` declarations. It takes no
 arguments.
 
-### antigen-prezto-lib <sup>&alpha;</sup>
+### antigen-use prezto <sup>&alpha;</sup>
 
 This is (almost, but not quite) the same as doing,
 
@@ -411,9 +411,9 @@ Will pull the apple theme from the canonical oh-my-zsh repo. Also, note that the
 You can use this command to change your theme on the fly in your shell. Go on,
 try out a few themes in your shell before you set it in your `.zshrc`.
 
-**Note**: Some themes use functions that are loaded by `antigen-lib`. So, to
-avoid any trouble, run `antigen-lib` if you haven't already before experimenting
-with themes. If you have `antigen-lib` in your `.zshrc`, you're covered.
+**Note**: Some themes use functions that are loaded by `antigen-use oh-my-zsh`. So, to
+avoid any trouble, run `antigen-use oh-my-zsh` if you haven't already before experimenting
+with themes. If you have `antigen-use oh-my-zsh` in your `.zshrc`, you're covered.
 
 **Note**: Do *not* provide the `--btype` argument to `antigen-theme`. Its an
 internal argument.
