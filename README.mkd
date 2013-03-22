@@ -276,14 +276,14 @@ you would give to the `antigen-bundle` command, one per line, into the
 `antigen-bundles` command. The easiest way to do this, is using the heredoc
 syntax.
 
-    antigen-bundles <<EOBUNDLES
+    antigen-bundles <<EOB
     # Guess what to install when running an unknown command.
     command-not-found
 
     # The heroku tool helper plugin.
     heroku
 
-    EOBUNDLES
+    EOB
 
 This is equivalent to
 
