@@ -531,8 +531,13 @@ EOF
 # function, you can write `antigen-bundle` as `antigen bundle` and so on.
 antigen () {
     local cmd="$1"
-    shift
-    "antigen-$cmd" "$@"
+    [[ ! -z "$cmd" ]] && shift
+
+    if functions "antigen-$cmd" > /dev/null; then
+        "antigen-$cmd" "$@"
+    else
+        echo "Unknown action: $cmd"
+    fi
 }
 
 -antigen-parse-args () {
