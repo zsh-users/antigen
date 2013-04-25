@@ -10,6 +10,9 @@ before_script:
   # Show the git version being used to test.
   - "git --version"
 
+  # Show the zsh version being used to test.
+  - "zsh --version"
+
   # Install zsh.
   - "sudo apt-get install zsh"
 
