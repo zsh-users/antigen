@@ -18,18 +18,18 @@ before_script:
   - "git config --global user.email test@test.test"
 
 install:
+  # Add PPA if needed
+  - "./.travis-ci.sh"
   # Install python requirements.
   - "pip install -r requirements.txt --use-mirrors"
   # Install zsh.
   - "sudo apt-get install zsh"
-  # Add PPA if needed
-  - 'if [ "$PPA" != "none" ]; then sudo apt-add-repository -y "$PPA"; sudo apt-get update -qq; fi'
 
 # Run the tests.
 script: "make tests"
 
 env:
   # Default zsh
-  - PPA = "none"
+  - PPA="none"
   # zsh 5 PPA
-  - PPA = "ppa:brainpower/testing"
+  - PPA="ppa:brainpower/testing"
