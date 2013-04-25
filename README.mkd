@@ -348,7 +348,17 @@ clones. If the `--force` argument is given, then this confirmation is not asked.
 It straight away deletes all the unused clones. This option makes this command
 usable in a non-interactive fashion.
 
-### antigen use oh-my-zsh
+### antigen use
+
+This command lets you load any (supported) zsh pre-packaged framework, like
+oh-my-zsh. Usage is
+
+    antigen use oh-my-zsh
+
+Additional arguments may be present depending on the framework you are
+`use`-ing. Here are the supported frameworks.
+
+#### oh-my-zsh
 
 This is (almost) the same as
 
@@ -365,16 +375,14 @@ oh-my-zsh repo or a fork of that repo. If you want to specify the `url` too,
 then you can't use the `antigen use oh-my-zsh` short cut. You have to do that
 directly with the `antigen bundle` command.
 
-This is present to ease dealing with oh-my-zsh plugins.
-
 Use
 
     antigen use oh-my-zsh
 
-in  your `.zshrc`, before any `antigen bundle` declarations. It takes no
+in  your `.zshrc`, before any `antigen bundle` declarations. It takes no further
 arguments.
 
-### antigen use prezto <sup>&alpha;</sup>
+#### prezto
 
 This is (almost, but not quite) the same as doing,
 
@@ -383,6 +391,8 @@ This is (almost, but not quite) the same as doing,
 That is, initializes the canonical repo of the prezto framework. Please note
 that prezto support is very new and experimental in antigen. If you find any
 bugs, please report over on github issues.
+
+Takes no further arguments.
 
 ### antigen theme
 
