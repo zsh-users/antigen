@@ -5,6 +5,20 @@ language: python
 python:
   - "2.7"
 
+env:
+  # Default zsh
+  - PPA="none"
+  # zsh 5 PPA
+  - PPA="ppa:brainpower/testing"
+
+install:
+  # Add PPA if needed
+  - "./.travis-ci.sh"
+  # Install python requirements.
+  - "pip install -r requirements.txt --use-mirrors"
+  # Install zsh.
+  - "sudo apt-get install zsh"
+
 before_script:
 
   # Show the git version being used to test.
@@ -17,19 +31,5 @@ before_script:
   - "git config --global user.name test"
   - "git config --global user.email test@test.test"
 
-install:
-  # Add PPA if needed
-  - "./.travis-ci.sh"
-  # Install python requirements.
-  - "pip install -r requirements.txt --use-mirrors"
-  # Install zsh.
-  - "sudo apt-get install zsh"
-
 # Run the tests.
 script: "make tests"
-
-env:
-  # Default zsh
-  - PPA="none"
-  # zsh 5 PPA
-  - PPA="ppa:brainpower/testing"
