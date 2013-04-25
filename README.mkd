@@ -556,9 +556,11 @@ theme script is just sourced and nothing else is done. Not even adding to
 
 ### Helping out
 
-Antigen is licensed with the [MIT License][license]. To contribute, just fork,
-make changes and send a pull request. If its a rather long/complicated change,
-please consider opening an [issue][] first so we can discuss it out.
+Antigen is licensed with the [MIT License][license].
+
+To contribute, please read the [contributing wiki page][contributing] before
+sending pull requests. If its a long/complicated change, please consider opening
+an [issue][] first so we can discuss it out. Thanks!
 
 ### Feedback please
 
@@ -577,4 +579,5 @@ Any comments/suggestions/feedback welcome. Please say hello to me
 [cram]: https://bitheap.org/cram/
 [issue]: https://github.com/zsh-users/antigen/issues
 [license]: http://mit.sharats.me
+[contributing]: https://github.com/zsh-users/antigen/wiki/Contributing
 [twitter]: http://twitter.com/sharat87
