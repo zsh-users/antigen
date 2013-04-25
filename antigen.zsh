@@ -1,4 +1,8 @@
-#!/bin/zsh
+# Antigen: A simple plugin manager for zsh
+# Authors: Shrikant Sharat Kandula
+#          and Contributors <https://github.com/zsh-users/antigen/contributors>
+# Homepage: http://antigen.sharats.me
+# License: MIT License <mitl.sharats.me>
 
 # Each line in this string has the following entries separated by a space
 # character.
