@@ -13,15 +13,15 @@ before_script:
   # Show the zsh version being used to test.
   - "zsh --version"
 
-  # Install zsh.
-  - "sudo apt-get install zsh"
-
   # Test config for git.
   - "git config --global user.name test"
   - "git config --global user.email test@test.test"
 
-# Install python requirements.
-install: "pip install -r requirements.txt --use-mirrors"
+install:
+  # Install python requirements.
+  - "pip install -r requirements.txt --use-mirrors"
+  # Install zsh.
+  - "sudo apt-get install zsh"
 
 # Run the tests.
 script: "make tests"
