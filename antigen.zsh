@@ -546,7 +546,7 @@ EOF
 antigen () {
     local cmd="$1"
     if [[ -z "$cmd" ]]; then
-        echo 'Please give a command to run.' >&2
+        echo 'Antigen: Please give a command to run.' >&2
         return 1
     fi
     shift
@@ -554,7 +554,7 @@ antigen () {
     if functions "antigen-$cmd" > /dev/null; then
         "antigen-$cmd" "$@"
     else
-        echo "Unknown command: $cmd"
+        echo "Antigen: Unknown command: $cmd" >&2
     fi
 }
 
