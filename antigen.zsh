@@ -398,8 +398,8 @@ antigen-use () {
 }
 
 # For backwards compatibility.
-antigen-lib () { -antigen-use-oh-my-zsh }
-antigen-prezto-lib () { -antigen-use-prezto }
+antigen-lib () { -antigen-use-oh-my-zsh; echo "'antigen-lib' is deprecated and will soon be removed. Use 'antigen-use oh-my-zsh' instead."}
+antigen-prezto-lib () { -antigen-use-prezto; echo "'antigen-prezto-lib' is deprecated and will soon be removed. Use 'antigen-use prezto' instead."}
 
 antigen-theme () {
 
