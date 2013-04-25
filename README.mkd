@@ -552,6 +552,18 @@ One exception to this rule is that if this plugin is a theme. In which case the
 theme script is just sourced and nothing else is done. Not even adding to
 `$fpath`.
 
+## A note on external zsh plugins
+
+Antigen downloads zsh scripts and sources them, according to your
+specifications. As such, these scripts are capable of doing some *real* damage
+to your system. If you are only downloading scripts from oh-my-zsh and/or
+prezto, you're probably fine, since there is a second level of manual checking
+before a script gets into the framework.
+
+But, if you are adding a script from any other source, please check the source
+code of the plugin to see its not doing anything malicious, before adding it to
+your `.zshrc`.
+
 ## Meta
 
 ### Helping out
