@@ -295,6 +295,9 @@ lines and those starting with a `#` are ignored. The rest are passed to
 with the `antigen-bundle` command. See the source if you want to really
 understand how it works. Its a very small function.
 
+*Note*: Indenting the contents inside the EOBUNDLES heredoc is not required for
+antigen-bundles to work. Its allowed (and encouraged) to improve readability.
+
 ### antigen-update
 
 This is something you might not want to put in your `.zshrc`. Instead, run it
