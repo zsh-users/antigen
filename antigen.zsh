@@ -531,12 +531,16 @@ EOF
 # function, you can write `antigen-bundle` as `antigen bundle` and so on.
 antigen () {
     local cmd="$1"
-    [[ ! -z "$cmd" ]] && shift
+    if [[ -z "$cmd" ]]; then
+        echo 'Please give a command to run.' >&2
+        return 1
+    fi
+    shift
 
     if functions "antigen-$cmd" > /dev/null; then
         "antigen-$cmd" "$@"
     else
-        echo "Unknown action: $cmd"
+        echo "Unknown command: $cmd"
     fi
 }
 
