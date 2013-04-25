@@ -1,4 +1,4 @@
-# Using python for running the tests, using `cram` test framework.
+# Using python for running the tests, using the `cram` test framework.
 language: python
 
 # Python version to run tests with.
