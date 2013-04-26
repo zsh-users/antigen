@@ -19,7 +19,7 @@ before_script:
 
 install:
   # Add PPA if needed
-  - "./.travis-ci.sh"
+  - "./travis-ppa.sh"
   # Install python requirements.
   - "pip install -r requirements.txt --use-mirrors"
   # Install zsh.
