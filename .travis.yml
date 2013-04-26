@@ -1,9 +1,15 @@
-# Using python for running the tests, using `cram` test framework.
+# Using python for running the tests, using the `cram` test framework.
 language: python
 
 # Python version to run tests with.
 python:
   - "2.7"
+
+env:
+  # Default zsh
+  - PPA="none"
+  # zsh 5 PPA
+  - PPA="ppa:brainpower/testing"
 
 before_script:
 
@@ -27,9 +33,3 @@ install:
 
 # Run the tests.
 script: "make tests"
-
-env:
-  # Default zsh
-  - PPA="none"
-  # zsh 5 PPA
-  - PPA="ppa:brainpower/testing"
