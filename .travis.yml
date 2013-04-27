@@ -1,24 +1,35 @@
-# Using python for running the tests, using `cram` test framework.
+# Using python for running the tests, using the `cram` test framework.
 language: python
 
 # Python version to run tests with.
 python:
   - "2.7"
 
+env:
+  # Default zsh
+  - PPA="none"
+  # zsh 5 PPA
+  - PPA="ppa:brainpower/testing"
+
 before_script:
 
   # Show the git version being used to test.
   - "git --version"
 
-  # Install zsh.
-  - "sudo apt-get install zsh"
+  # Show the zsh version being used to test.
+  - "zsh --version"
 
   # Test config for git.
   - "git config --global user.name test"
   - "git config --global user.email test@test.test"
 
-# Install python requirements.
-install: "pip install -r requirements.txt --use-mirrors"
+install:
+  # Add PPA if needed
+  - "./travis-ppa.sh"
+  # Install python requirements.
+  - "pip install -r requirements.txt --use-mirrors"
+  # Install zsh.
+  - "sudo apt-get install zsh"
 
 # Run the tests.
 script: "make tests"
