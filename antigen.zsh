@@ -736,10 +736,12 @@ _antigen () {
         revert     \
         list       \
         cleanup    \
-        lib        \
+        use        \
         selfupdate \
         theme      \
         apply      \
+        snapshot   \
+        restore    \
         help
 }
 
