@@ -71,8 +71,8 @@ You can install themes from unofficial repos too!
 
     antigen theme XsErG/zsh-themes themes/lazyuser
 
-See? It's easy! To see how that works, refer to the section on the
-`antigen theme` command further down.
+See? It's easy! To see how that works, refer to [the section on the
+`antigen theme` command further down](#antigen-theme).
 
 Note: Many of those plugins and especially themes, assume you have the core
 library of oh-my-zsh loaded. So, if you want to experiment further, issue a
