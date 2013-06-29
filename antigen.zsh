@@ -302,7 +302,15 @@ antigen-revert () {
             # `*.sh` files instead.
             for script ($location/*.sh(N)) source "$script"
 
+        elif echo "$location" | grep -l 'zsh-users-SLASH-zsh-completions\.git' &> /dev/null; then
+            # If the location indicates zsh-users/zsh-completions
+            # then add 'src'
+            location+='src'
+
         fi
+
+        # Substitute // with /
+        location=`echo "$location" | sed -e 's.//./.g'`
 
         # Add to $fpath, for completion(s).
         fpath=($location $fpath)
