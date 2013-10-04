@@ -3,3 +3,6 @@ tests/.zcompdump
 
 # Test failure reports
 tests/*.t.err
+
+# Ignore the repos folder
+repos/
