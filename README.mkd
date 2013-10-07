@@ -415,6 +415,10 @@ For example,
 Will pull the apple theme from the canonical oh-my-zsh repo. Also, note that the
 `.zsh-theme` extension is not present. It can be given, its optional.
 
+To get themes from arbitrary git repos (such as gists) use,
+
+    antigen theme https://gist.github.com/3750104.git agnoster
+
 You can use this command to change your theme on the fly in your shell. Go on,
 try out a few themes in your shell before you set it in your `.zshrc`.
 
