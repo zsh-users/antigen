@@ -419,6 +419,9 @@ To get themes from arbitrary git repos (such as gists) use,
 
     antigen theme https://gist.github.com/3750104.git agnoster
 
+in which case there is a file called `agnoster.zsh-theme` present in the gist at
+https://gist.github.com/3750104.
+
 You can use this command to change your theme on the fly in your shell. Go on,
 try out a few themes in your shell before you set it in your `.zshrc`.
 
