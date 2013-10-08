@@ -6,3 +6,6 @@ tests/*.t.err
 
 # Ignore the repos folder
 repos/
+
+# Ignore the revert-info file
+revert-info
