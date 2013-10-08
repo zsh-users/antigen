@@ -1,2 +1,1 @@
-# Published version of cram v0.5 does not have the --shell option.
-https://bitbucket.org/brodie/cram/get/6158305.tar.bz2
+cram==0.6
