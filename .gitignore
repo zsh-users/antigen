@@ -4,8 +4,7 @@ tests/.zcompdump
 # Test failure reports
 tests/*.t.err
 
-# Ignore the repos folder
+# If the $ADOTDIR is the same as the antigen's clone directory itself, the
+# following would be shown as untracked.
 repos/
-
-# Ignore the revert-info file
 revert-info
