@@ -433,6 +433,9 @@ before experimenting with themes. If you have `antigen use oh-my-zsh` in your
 **Note**: Do *not* provide the `--btype` argument to `antigen theme`. Its an
 internal argument.
 
+*For the interested, you can read more details on the purpose & workings of the
+`theme` command on the comments of issue #78.*
+
 ### antigen apply
 
 You have to add this command after defining all bundles you need, in your zshrc.
