@@ -1,4 +1,4 @@
-# Antigen <sup>&beta;</sup>
+# Antigen <sup>v1</sup>
 
 [![Build Status](https://secure.travis-ci.org/zsh-users/antigen.png)](http://travis-ci.org/zsh-users/antigen)
 
@@ -6,8 +6,8 @@ Antigen is a small set of functions that help you easily manage your shell (zsh)
 plugins, called bundles. The concept is pretty much the same as bundles in a
 typical vim+pathogen setup. Antigen is to zsh, what [Vundle][] is to vim.
 
-Please note that this is a very new project and can be considered beta at best.
-That said, I am using antigen full time now on my work machine.
+Antigen has reached a certain level of stability and has been used in the wild
+for around a couple of years. If you face any problems, please open an issue.
 
 Note: Please read the commit comments of the changesets when you pull a new
 version of antigen.
