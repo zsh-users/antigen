@@ -15,9 +15,6 @@ local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 typeset -a __deferred_compdefs
 compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
 
-# bsd/osx md5 v.s. linux md5sum
-chksum() { (md5sum; test $? = 127 && md5) 2>/dev/null | cut -d' ' -f1 }
-
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -499,7 +496,9 @@ antigen-snapshot () {
         echo -n " created_on='$(date)';"
 
         # Add a checksum with the md5 checksum of all the snapshot lines.
+        chksum() { (md5sum; test $? = 127 && md5) 2>/dev/null | cut -d' ' -f1 }
         local checksum="$(echo "$snapshot_content" | chksum)"
+        unset -f chksum;
         echo -n " checksum='${checksum%% *}';"
 
         # A newline after the metadata and then the snapshot lines.
