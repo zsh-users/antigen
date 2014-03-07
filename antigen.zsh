@@ -89,6 +89,8 @@ antigen-bundle () {
     # Expand short github url syntax: `username/reponame`.
     if [[ $url != git://* &&
             $url != https://* &&
+            $url != http://* &&
+            $url != ssh://* &&
             $url != /* &&
             $url != git@github.com:*/*
             ]]; then
