@@ -32,4 +32,4 @@ install:
   - "sudo apt-get install zsh"
 
 # Run the tests.
-script: "make tests"
+script: "make tests PYENV="
