@@ -1,13 +1,7 @@
 Load a couple of plugins.
 
-  $ antigen-bundle $PLUGIN_DIR
-  Cloning into '*'... (glob)
-  done.
-  Checking connectivity... done
-  $ antigen-bundle $PLUGIN_DIR2
-  Cloning into '*'... (glob)
-  done.
-  Checking connectivity... done
+  $ antigen-bundle $PLUGIN_DIR &> /dev/null
+  $ antigen-bundle $PLUGIN_DIR2 &> /dev/null
 
 Create a snapshot file.
 

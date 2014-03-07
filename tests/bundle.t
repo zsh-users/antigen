@@ -1,9 +1,6 @@
 Load plugin from master.
 
-  $ antigen-bundle $PLUGIN_DIR
-  Cloning into '*'... (glob)
-  done.
-  Checking connectivity... done
+  $ antigen-bundle $PLUGIN_DIR &> /dev/null
   $ hehe
   hehe
 
@@ -21,10 +18,7 @@ Confirm there is still only one repository.
 Load a prezto style module. Should only source the `init.zsh` present in the
 module.
 
-  $ antigen-bundle $PLUGIN_DIR2
-  Cloning into '*'... (glob)
-  done.
-  Checking connectivity... done
+  $ antigen-bundle $PLUGIN_DIR2 &> /dev/null
   $ hehe2
   hehe2
 

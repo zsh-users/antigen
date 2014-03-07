@@ -14,10 +14,7 @@ Confirm no clone is made.
 
 Load the plugin with a clone.
 
-  $ antigen-bundle $PLUGIN_DIR
-  Cloning into '*'... (glob)
-  done.
-  Checking connectivity... done
+  $ antigen-bundle $PLUGIN_DIR &> /dev/null
 
 Empty the record.
 

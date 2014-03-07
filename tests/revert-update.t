@@ -1,9 +1,6 @@
 Load and test plugin.
 
-  $ antigen-bundle $PLUGIN_DIR
-  Cloning into '.+?'\.\.\. (re)
-  done.
-  Checking connectivity... done
+  $ antigen-bundle $PLUGIN_DIR &> /dev/null
   $ hehe
   hehe
 

@@ -6,10 +6,7 @@ Empty initial listing.
 
 Add a bundle.
 
-  $ antigen-bundle $PLUGIN_DIR
-  Cloning into '.+?'\.\.\. (re)
-  done.
-  Checking connectivity... done
+  $ antigen-bundle $PLUGIN_DIR &> /dev/null
   $ antigen-list
   */test-plugin / plugin true (glob)
 
@@ -21,10 +18,7 @@ Add same bundle and check uniqueness.
 
 Add another bundle.
 
-  $ antigen-bundle $PLUGIN_DIR2
-  Cloning into '.+?'\.\.\. (re)
-  done.
-  Checking connectivity... done
+  $ antigen-bundle $PLUGIN_DIR2 &> /dev/null
   $ antigen-list
   */test-plugin / plugin true (glob)
   */test-plugin2 / plugin true (glob)
