@@ -531,10 +531,10 @@ antigen-restore () {
             local clone_dir="$(-antigen-get-clone-dir "$url")"
 
             if [[ ! -d $clone_dir ]]; then
-                git clone "$url" "$clone_dir" > /dev/null
+                git clone "$url" "$clone_dir" &> /dev/null
             fi
 
-            (cd "$clone_dir" && git checkout $version_hash) 2> /dev/null
+            (cd "$clone_dir" && git checkout $version_hash) &> /dev/null
 
         done
 
