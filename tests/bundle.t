@@ -3,6 +3,7 @@ Load plugin from master.
   $ antigen-bundle $PLUGIN_DIR
   Cloning into '*'... (glob)
   done.
+  Checking connectivity... done
   $ hehe
   hehe
 
@@ -23,6 +24,7 @@ module.
   $ antigen-bundle $PLUGIN_DIR2
   Cloning into '*'... (glob)
   done.
+  Checking connectivity... done
   $ hehe2
   hehe2
 

@@ -3,6 +3,7 @@ Load plugin.
   $ antigen-bundle $PLUGIN_DIR
   Cloning into '.+?'\.\.\. (re)
   done.
+  Checking connectivity... done
   $ hehe
   hehe
 

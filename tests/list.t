@@ -9,6 +9,7 @@ Add a bundle.
   $ antigen-bundle $PLUGIN_DIR
   Cloning into '.+?'\.\.\. (re)
   done.
+  Checking connectivity... done
   $ antigen-list
   */test-plugin / plugin true (glob)
 
@@ -23,6 +24,7 @@ Add another bundle.
   $ antigen-bundle $PLUGIN_DIR2
   Cloning into '.+?'\.\.\. (re)
   done.
+  Checking connectivity... done
   $ antigen-list
   */test-plugin / plugin true (glob)
   */test-plugin2 / plugin true (glob)

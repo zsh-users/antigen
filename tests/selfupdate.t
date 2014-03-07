@@ -23,6 +23,7 @@ Create a normal repository cloning from host
   $ git clone $TEST_HOST $TEST_NORMAL
   Cloning into * (glob)
   done.
+  Checking connectivity... done
 
 Create a submodule repository cloning from host
 
@@ -33,6 +34,7 @@ Create a submodule repository cloning from host
   $ git submodule add $TEST_HOST antigen
   Cloning into 'antigen'...
   done.
+  Checking connectivity... done
   $ git commit -m "1"
   [master (root-commit) ???????] 1 (glob)
    2 files changed, 4 insertions(+)

@@ -17,6 +17,7 @@ Load the plugin with a clone.
   $ antigen-bundle $PLUGIN_DIR
   Cloning into '*'... (glob)
   done.
+  Checking connectivity... done
 
 Empty the record.
 

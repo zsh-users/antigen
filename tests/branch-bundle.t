@@ -20,6 +20,7 @@ Load plugin from b1.
   $ antigen-bundle $PLUGIN_DIR --branch=b1
   Cloning into '.+?'\.\.\. (re)
   done.
+  Checking connectivity... done
   Switched to a new branch 'b1'
   Branch b1 set up to track remote branch b1 from origin.
   $ hehe
@@ -34,5 +35,6 @@ Load plugin from master.
   $ antigen-bundle $PLUGIN_DIR
   Cloning into '.+?'\.\.\. (re)
   done.
+  Checking connectivity... done
   $ hehe
   hehe

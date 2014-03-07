@@ -3,9 +3,11 @@ Load a couple of plugins.
   $ antigen-bundle $PLUGIN_DIR
   Cloning into '*'... (glob)
   done.
+  Checking connectivity... done
   $ antigen-bundle $PLUGIN_DIR2
   Cloning into '*'... (glob)
   done.
+  Checking connectivity... done
 
 Create a snapshot file.
 
