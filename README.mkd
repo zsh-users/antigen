@@ -6,6 +6,8 @@ Antigen is a small set of functions that help you easily manage your shell (zsh)
 plugins, called bundles. The concept is pretty much the same as bundles in a
 typical vim+pathogen setup. Antigen is to zsh, what [Vundle][] is to vim.
 
+> [Donate to Antigen](https://gum.co/antigen)
+
 Antigen has reached a certain level of stability and has been used in the wild
 for around a couple of years. If you face any problems, please open an issue.
 
@@ -583,6 +585,9 @@ Antigen is licensed with the [MIT License][license].
 To contribute, please read the [contributing wiki page][contributing] before
 sending pull requests. If its a long/complicated change, please consider opening
 an [issue][] first so we can discuss it out. Thanks!
+
+You may also wish to [donate to the project](https://gum.co/antigen). Thank you
+so much!
 
 ### Feedback please
 
