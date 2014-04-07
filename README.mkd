@@ -97,7 +97,7 @@ git repo,
 The usage should be very familiar to you if you use Vundle. A typical `.zshrc`
 might look like this
 
-    source /path-to-antigen clone/antigen.zsh
+    source /path-to-antigen-clone/antigen.zsh
 
     # Load the oh-my-zsh's library.
     antigen use oh-my-zsh
