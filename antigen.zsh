@@ -311,6 +311,9 @@ antigen-revert () {
 
     fi
 
+    # send stats for themes and plugins
+    -antigen-send-stats $location $btype
+
 }
 
 # Update (with `git pull`) antigen itself.
@@ -394,6 +397,10 @@ antigen-use () {
         echo ' * prezto' >&2
         return 1
     fi
+
+
+    # send stats for the library in use
+    -antigen-send-stats $1 "library"
 }
 
 -antigen-use-oh-my-zsh () {
@@ -755,3 +762,26 @@ _antigen () {
 }
 
 -antigen-env-setup
+
+# Syntaxes
+#   -antigen-send-stats <url> <btype>
+-antigen-send-stats () {
+    # spec arguments' default values.
+    local url="$1"
+    local btype="$2"
+
+    echo "debug: ${btype}.${url}"
+
+    # TODO:
+    # 1. check that the person has opted in
+    # 2. check if this plugin has updated stats this month
+    #    - if not, send monthly stats and update the DB file
+    # 3. check if this plugin has updated stats ever
+    #    - if not, send monthly and ever stats and update the DB file
+
+    # ever stats
+    echo "${btype}.${url}:+1|g" | nc -u -w0 127.0.0.1 8125 &
+
+    # monthly stats
+    echo "${btype}.${url}.${YYYYMM}:+1|g" | nc -u -w0 127.0.0.1 8125 &
+}
