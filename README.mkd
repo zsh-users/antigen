@@ -595,6 +595,10 @@ Any comments/suggestions/feedback welcome. Please say hello to me
 ([@sharat87][twitter]) on twitter. Or open an issue to discuss something
 (anything!) about the project ;).
 
+### Alternatives to antigen
+
+  * [antigen-hs] - An antigen-inspired zsh plugin manager that tries to do work statically and only on manual invocation, minimizing the zsh startup time. Antigen-hs is much more minimalistic and convention over configuration than antigen.
+
 
 [Vundle]: https://github.com/gmarik/vundle
 [page on themes]: https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
@@ -608,3 +612,4 @@ Any comments/suggestions/feedback welcome. Please say hello to me
 [license]: http://mit.sharats.me
 [contributing]: https://github.com/zsh-users/antigen/wiki/Contributing
 [twitter]: http://twitter.com/sharat87
+[antigen-hs]: https://github.com/Tarrasch/antigen-hs
