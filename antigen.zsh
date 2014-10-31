@@ -266,10 +266,7 @@ antigen-revert () {
         location="$url"
     fi
 
-    if [[ $btype == theme ]]; then
-
-        # Of course, if its a theme, the location would point to the script
-        # file.
+    if [[ -f "$location" ]]; then
         source "$location"
 
     else
