@@ -263,7 +263,7 @@ antigen-revert () {
     if $make_local_clone; then
         location="$(-antigen-get-clone-dir "$url")/$loc"
     else
-        location="$url"
+        location="$url/$loc"
     fi
 
     if [[ $btype == theme ]]; then
