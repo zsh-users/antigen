@@ -177,7 +177,8 @@ where `<url>` is the repository url and it defaults to [robbyrussell's
 oh-my-zsh][oh-my-zsh] repo (can be changed by setting `ANTIGEN_DEFAULT_REPO_URL`
 discussed further down). `<loc>` is the path under this repository which has the
 zsh plugin. This is typically the directory that contains a `*.plugin.zsh` file,
-but it could contain a completion file or just many `*.zsh` files to be sourced.
+but it could contain a completion file or just many `*.zsh` files to be sourced,
+or it could simply be a file (with any extension) that you want to source.
 `<loc>` defaults to `/`, which indicates the repository itself is a plugin.
 
 An example invocation would be
