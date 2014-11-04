@@ -73,7 +73,7 @@ antigen-bundle () {
     fi
 
     # Load the plugin.
-    -antigen-load "$url" "$loc" "$btype" "$make_local_clone"
+    -antigen-load "$url" "$loc" "$make_local_clone"
 
 }
 
@@ -255,8 +255,7 @@ antigen-revert () {
 
     local url="$1"
     local loc="$2"
-    local btype="$3"
-    local make_local_clone="$4"
+    local make_local_clone="$3"
 
     # The full location where the plugin is located.
     local location
