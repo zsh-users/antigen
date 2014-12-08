@@ -314,7 +314,8 @@ antigen-revert () {
 # "what's new" message.
 antigen-selfupdate () {
     ( cd $ANTIGEN_INSTALL_DIR
-        if [[ ! ( -d .git || -f .git ) ]]; then
+        git rev-parse &> /dev/null
+        if [[ $? -ne 0 ]]; then
             echo "Your copy of antigen doesn't appear to be a git clone. " \
                 "The 'selfupdate' command cannot work in this case."
             return 1
