@@ -9,7 +9,7 @@
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
 # FIXME: Is not kept local by zsh!
 local _ANTIGEN_BUNDLE_RECORD=""
-local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
+_ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Used to defer compinit/compdef
 typeset -a __deferred_compdefs
@@ -147,7 +147,7 @@ antigen-revert () {
         echo "Reverted to state before running -update on $(
                 cat $ADOTDIR/revert-info | sed -n 1p)."
 
-    else 
+    else
         echo 'No revert information available. Cannot revert.' >&2
     fi
 
@@ -314,7 +314,8 @@ antigen-revert () {
 # "what's new" message.
 antigen-selfupdate () {
     ( cd $_ANTIGEN_INSTALL_DIR
-        if [[ ! ( -d .git || -f .git ) ]]; then
+        git rev-parse &> /dev/null
+        if [[ $? -ne 0 ]]; then
             echo "Your copy of antigen doesn't appear to be a git clone. " \
                 "The 'selfupdate' command cannot work in this case."
             return 1
