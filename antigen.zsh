@@ -293,12 +293,12 @@ antigen-revert () {
         elif ls "$location" | grep -l '\.zsh$' &> /dev/null; then
             # If there is no `*.plugin.zsh` file, source *all* the `*.zsh`
             # files.
-            for script ($location/*.zsh(N)) source "$script"
+            for script ($location/*.zsh(N)) { source "$script" }
 
         elif ls "$location" | grep -l '\.sh$' &> /dev/null; then
             # If there are no `*.zsh` files either, we look for and source any
             # `*.sh` files instead.
-            for script ($location/*.sh(N)) source "$script"
+            for script ($location/*.sh(N)) { source "$script" }
 
         fi
 
