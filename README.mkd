@@ -603,6 +603,7 @@ Any comments/suggestions/feedback welcome. Please say hello to me
 
 [Vundle]: https://github.com/gmarik/vundle
 [page on themes]: https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
+[Awesome-zsh-plugins](https://github.com/unixorn/awesome-zsh-plugins) - list of zsh plugins inspired by the various awesome-* lists
 [wild]: https://github.com/zsh-users/antigen/wiki/In-the-wild
 [syntax highlighting plugin]: https://github.com/zsh-users/zsh-syntax-highlighting
 [autoenv]: https://github.com/kennethreitz/autoenv
