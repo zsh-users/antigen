@@ -596,6 +596,10 @@ Any comments/suggestions/feedback welcome. Please say hello to me
 ([@sharat87][twitter]) on twitter. Or open an issue to discuss something
 (anything!) about the project ;).
 
+### More plugins
+
+The [awesome-zsh-plugins](https://github.com/unixorn/awesome-zsh-plugins) list is a directory of plugins and themes that you may find useful.
+
 ### Alternatives to antigen
 
   * [antigen-hs] - An antigen-inspired zsh plugin manager that tries to do work statically and only on manual invocation, minimizing the zsh startup time. Antigen-hs is much more minimalistic and emphasizes convention over configuration more strongly than antigen.
