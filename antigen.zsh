@@ -147,7 +147,7 @@ antigen-revert () {
         echo "Reverted to state before running -update on $(
                 cat $ADOTDIR/revert-info | sed -n 1p)."
 
-    else 
+    else
         echo 'No revert information available. Cannot revert.' >&2
     fi
 
@@ -260,10 +260,12 @@ antigen-revert () {
     # The full location where the plugin is located.
     local location
     if $make_local_clone; then
-        location="$(-antigen-get-clone-dir "$url")/$loc"
+        location="$(-antigen-get-clone-dir "$url")/"
     else
-        location="$url/$loc"
+        location="$url/"
     fi
+
+    [[ $loc != "/" ]] && location="$location$loc"
 
     if [[ -f "$location" ]]; then
         source "$location"
