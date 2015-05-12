@@ -598,7 +598,7 @@ Any comments/suggestions/feedback welcome. Please say hello to me
 
 ### Alternatives to antigen
 
-  * [antigen-hs] - An antigen-inspired zsh plugin manager that tries to do work statically and only on manual invocation, minimizing the zsh startup time. Antigen-hs is much more minimalistic and convention over configuration than antigen.
+  * [antigen-hs] - An antigen-inspired zsh plugin manager that tries to do work statically and only on manual invocation, minimizing the zsh startup time. Antigen-hs is much more minimalistic and emphasizes convention over configuration more strongly than antigen.
 
 
 [Vundle]: https://github.com/gmarik/vundle
