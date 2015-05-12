@@ -598,17 +598,23 @@ Any comments/suggestions/feedback welcome. Please say hello to me
 
 ### More plugins
 
-The [awesome-zsh-plugins](https://github.com/unixorn/awesome-zsh-plugins) list is a directory of plugins and themes that you may find useful.
+The [awesome-zsh-plugins][] list is a directory of plugins and themes that you may
+find useful.
 
 ### Alternatives to antigen
 
-  * [antigen-hs] - An antigen-inspired zsh plugin manager that tries to do work statically and only on manual invocation, minimizing the zsh startup time. Antigen-hs is much more minimalistic and emphasizes convention over configuration more strongly than antigen.
-  * [zgen](https://github.com/tarjoilija/zgen) - Another antigen-inspired zsh plugin manager that sets up a static load file for a fast startup.  Has no external dependencies, as it's written in pure zsh.
+  * [antigen-hs][] - An antigen-inspired zsh plugin manager that tries to do work
+    statically and only on manual invocation, minimizing the zsh startup time.
+    Antigen-hs is much more minimalistic and emphasizes convention over
+    configuration more strongly than antigen.
+  * [zgen][] - Another antigen-inspired zsh plugin manager that sets up a static
+    load file for a fast startup. Has no external dependencies, as it's written
+    in pure zsh.
 
 
 [Vundle]: https://github.com/gmarik/vundle
 [page on themes]: https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-[Awesome-zsh-plugins](https://github.com/unixorn/awesome-zsh-plugins) - list of zsh plugins inspired by the various awesome-* lists
+[awesome-zsh-plugins]: https://github.com/unixorn/awesome-zsh-plugins
 [wild]: https://github.com/zsh-users/antigen/wiki/In-the-wild
 [syntax highlighting plugin]: https://github.com/zsh-users/zsh-syntax-highlighting
 [autoenv]: https://github.com/kennethreitz/autoenv
@@ -620,3 +626,4 @@ The [awesome-zsh-plugins](https://github.com/unixorn/awesome-zsh-plugins) list i
 [contributing]: https://github.com/zsh-users/antigen/wiki/Contributing
 [twitter]: http://twitter.com/sharat87
 [antigen-hs]: https://github.com/Tarrasch/antigen-hs
+[zgen]: https://github.com/tarjoilija/zgen
