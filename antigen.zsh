@@ -457,6 +457,13 @@ antigen-list () {
     if [[ -z "$_ANTIGEN_BUNDLE_RECORD" ]]; then
         echo "You don't have any bundles." >&2
         return 1
+    # List all currently installed bundle absolute paths.
+    elif [[ -n "$1" && "$1" == "--path" ]]; then
+        -antigen-echo-record |
+            awk '$4 == "true" {print $1}' |
+            while read line; do
+                -antigen-get-clone-dir "$line"
+            done | sort -u
     else
         -antigen-echo-record | sort -u
     fi

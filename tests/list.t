@@ -22,3 +22,9 @@ Add another bundle.
   $ antigen-list
   */test-plugin / plugin true (glob)
   */test-plugin2 / plugin true (glob)
+
+List all bundle paths.
+
+  $ antigen-list --path
+  *t-SLASH-test-plugin (glob)
+  *t-SLASH-test-plugin2 (glob)

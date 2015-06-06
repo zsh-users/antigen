@@ -329,8 +329,8 @@ Insider detail: The information for reverting is stored in
 Use this command to list out the currently *loaded* plugins. Keep in mind that
 this includes any bundles installed on-the-fly.
 
-Takes no arguments. Gives out four entries per line of output, denoting the
-following fields of each bundle.
+Gives out four entries per line of output, denoting the following fields of
+each bundle.
 
     <repo-url> <loc> <btype> <has-local-clone?>
 
@@ -339,6 +339,8 @@ The `btype` field is an internal detail, that specifies if the bundle is a
 
 The final field is `true` or `false` reflecting whether there is a local clone
 for this bundle.
+
+If the `--path` argument is given, lists all bundle absolute paths.
 
 ### antigen cleanup
 
