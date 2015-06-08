@@ -737,20 +737,55 @@ antigen () {
 
 # Setup antigen's autocompletion
 _antigen () {
-    compadd        \
-        bundle     \
-        bundles    \
-        update     \
-        revert     \
-        list       \
-        cleanup    \
-        use        \
-        selfupdate \
-        theme      \
-        apply      \
-        snapshot   \
-        restore    \
-        help
+  local -a _1st_arguments
+  _1st_arguments=(
+    'bundle:Install and load the given plugin'
+    'bundles:Bulk define bundles'
+    'update:Update all bundles'
+    'revert:Revert the state of all bundles to how they were before the last antigen update'
+    'list:List out the currently loaded bundles'
+    'cleanup:Clean up the clones of repos which are not used by any bundles currently loaded'
+    'use:Load any (supported) zsh pre-packaged framework'
+    'theme:Switch the prompt theme'
+    'apply:Load all bundle completions'
+    'snapshot:Create a snapshot of all the active clones'
+    'restore:Restore the bundles state as specified in the snapshot'
+    'selfupdate:Update antigen itself'
+    'help:Print help message'
+  )
+
+  __bundle() {
+    _arguments \
+      '--loc=[Path to the location <path-to/location>]' \
+      '--url=[Path to the repository <github-account/repository>]' \
+      '--branch=[Git branch name]' \
+      '--no-local-clone[Do not create a clone]' \
+  }
+
+  __cleanup() {
+    _arguments \
+      '--force[Do not ask for confirmation]'
+  }
+
+  _arguments '*:: :->command'
+
+  if (( CURRENT == 1 )); then
+    _describe -t commands "antigen command" _1st_arguments
+    return
+  fi
+
+  local -a _command_args
+  case "$words[1]" in
+    bundle)
+      __bundle
+      ;;
+    use)
+      compadd "$@" "oh-my-zsh" "prezto"
+      ;;
+    cleanup)
+      __cleanup
+      ;;
+  esac
 }
 
 -antigen-env-setup
