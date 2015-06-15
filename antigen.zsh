@@ -756,11 +756,11 @@ _antigen () {
 
   __bundle() {
     _arguments \
-      '--loc=[Path to the location <path-to/location>]' \
-      '--url=[Path to the repository <github-account/repository>]' \
-      '--branch=[Git branch name]' \
+      '--loc[Path to the location <path-to/location>]' \
+      '--url[Path to the repository <github-account/repository>]' \
+      '--branch[Git branch name]' \
       '--no-local-clone[Do not create a clone]' \
-      '--btype=[Indicates whether the bundle is a theme or a simple plugin]'
+      '--btype[Indicates whether the bundle is a theme or a simple plugin]'
   }
 
   __cleanup() {
