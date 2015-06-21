@@ -15,6 +15,9 @@ local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 typeset -a __deferred_compdefs
 compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
 
+# load ext system
+source "$ADOTDIR/ext/extsys.zsh"
+
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
