@@ -16,7 +16,7 @@ typeset -a __deferred_compdefs
 compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
 
 # load ext system
-source "$ADOTDIR/ext/extsys.zsh"
+source "$_ANTIGEN_INSTALL_DIR/ext/extsys.zsh"
 
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]

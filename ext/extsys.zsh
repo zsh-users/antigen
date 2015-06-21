@@ -12,7 +12,7 @@
 #
 # Usage:
 #
-#       antigen ext ext-name # loads (ie, sources) the given extension from $ADOTDIR/ext/
+#       antigen ext ext-name # loads (ie, sources) the given extension from $_ANTIGEN_INSTALL_DIR/ext/
 #
 # These are only meant to be run inside extension definitions:
 #
@@ -144,7 +144,7 @@ function -ext-compadd () {
 # it the extension is not found it logs the error and moves along
 function antigen-ext () {
     local extension_name="$1"
-    local extension_path="$ADOTDIR/ext/$1.zsh"
+    local extension_path="$_ANTIGEN_INSTALL_DIR/ext/$1.zsh"
     -ext-log loading extension "$extension_name" from $extension_path
     if [ -e "$extension_path" ]; then
         source "$extension_path"
