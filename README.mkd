@@ -264,6 +264,8 @@ In addition to the above discussed arguments, `antigen bundle` also takes a
 concerned with this argument, its only used internally and will probably go away
 in the future.  It indicates whether the bundle is a theme or a simple plugin.
 
+For details on what constitutes a valid bundle and how Antigen handles different types of bundles, see the [Notes on writing plugins](#notes-on-writing-plugins) section.
+
 ### antigen bundles
 
 If you have a fair number of bundles, using the `antigen bundle` command can
@@ -392,7 +394,28 @@ This is (almost, but not quite) the same as doing,
 
     antigen bundle sorin-ionescu/prezto
 
-That is, initializes the canonical repo of the prezto framework. Please note
+That is, it initializes the canonical repo of the prezto framework, with the addition that it also alters the value of the shell parameter `ZDOTDIR`. This will affect how Zsh locates and loads your startup, login, and logout scripts. It is **highly** recommended that you save the original value and reset it after calling `antigen use prezto`. Your .zshrc file could look like this:
+
+    _zdotdir_set=${+parameters[ZDOTDIR]}
+    if (( _zdotdir_set )); then
+        _old_zdotdir=$ZDOTDIR
+    fi
+    
+    antigen use prezto
+    antigen use sorin-ionescu/prezto modules/helper  # required for Git module
+    antigen use sorin-ionescu/prezto modules/editor
+    antigen use sorin-ionescu/prezto modules/git
+    antigen use sorin-ionescu/prezto modules/prompt
+    
+    if (( _zdotdir_set )); then
+        ZDOTDIR=$_old_zdotdir
+    else
+        unset ZDOTDIR
+        unset _old_zdotdir
+    fi;
+    unset _zdotdir_set
+
+Please note
 that prezto support is very new and experimental in antigen. If you find any
 bugs, please report over on github issues.
 
@@ -546,9 +569,7 @@ Firstly, antigen looks for a `*.plugin.zsh` file in the plugin directory. If
 present, it will source *only* this script. Nothing else is sourced. This is for
 oh-my-zsh style plugins.
 
-Secondly, it looks for a `init.zsh` file in the plugin directory. If present, it
-will source *only* this script. Nothing else is sourced. This is for prezto
-style modules.
+Secondly, it looks for a `init.zsh` file in the plugin directory. If present, Prezto will attempt to load the plugin with `pmodload`, removing "`modules/`" from the beginning of the plugin path if present. If `pmodload` is not available, Antigen will source *only* `init.zsh` and nothing else. This is for Prezto-style modules.
 
 Otherwise, it looks for `*.zsh` files and if there are any, *all* of them are
 sourced. The order in which they are sourced is not currently defined. Please
