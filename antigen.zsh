@@ -129,8 +129,8 @@ antigen-update () {
                     git rev-parse HEAD) >> $ADOTDIR/revert-info
             fi
 
-            update=true verbose=true \
-                -antigen-ensure-repo "$url" $update $verbose
+            # update=true verbose=true
+            -antigen-ensure-repo "$url" true true
 
             echo
         done
