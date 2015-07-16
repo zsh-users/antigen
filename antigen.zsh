@@ -208,6 +208,8 @@ antigen-revert () {
     # Verbose output.
     local verbose=${3:-false}
 
+    shift $#
+
     # Get the clone's directory as per the given repo url and branch.
     local clone_dir="$(-antigen-get-clone-dir $url)"
 
