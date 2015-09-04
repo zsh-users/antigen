@@ -152,6 +152,52 @@ antigen-revert () {
     fi
 }
 
+antigen-env () {
+    while (($#)); do
+        -antigen-env-internal "$(-antigen-get-clone-dir "$(-antigen-resolve-bundle-url "$1")")"
+        shift
+    done
+}
+
+-antigen-env-internal () {
+    # Remove trailing slash to avoid confusion
+    local location="$(readlink -m "$1")"
+
+    if ! [[ "$ANTIGEN_PLUGINS_ENVED" =~ "$location" ]]; then
+        local env_script="$(-antigen-get-env-script "$location")"
+        if [[ ! -z "$env_script" ]]; then
+            ANTIGEN_THIS_PLUGIN_DIR="$location"
+            source "$env_script"
+            unset ANTIGEN_THIS_PLUGIN_DIR
+        fi
+        export ANTIGEN_PLUGINS_ENVED="$ANTIGEN_PLUGINS_ENVED:$location"
+    fi
+}
+
+-antigen-get-env-script () {
+    local location="$1"
+
+    if [[ -d $location ]]; then
+        local script_loc="$(ls "$location" | grep '\.plugin\.env\.sh$' | head -n1)"
+        if [[ -f $location/$script_loc ]]; then
+            # If we have a `*.plugin.env.sh`, report that it should be sourced
+            echo "$location/$script_loc"
+        fi
+    fi
+}
+
+-antigen-get-env-scripts-and-locations () {
+    while (($#)); do
+        local location="$(readlink -m "$(-antigen-get-clone-dir "$(-antigen-resolve-bundle-url "$1")")")"
+        local env_script="$(-antigen-get-env-script "$location")"
+        if [[ ! -z "$env_script" ]] &&
+               ! [[ "$ANTIGEN_PLUGINS_ENVED" =~ "$location" ]]; then
+            echo "$location|$env_script"
+        fi
+        shift
+    done
+}
+
 -antigen-get-clone-dir () {
     # Takes a repo url and gives out the path that this url needs to be cloned
     # to. Doesn't actually clone anything.
@@ -269,6 +315,10 @@ antigen-revert () {
         source "$location"
 
     else
+
+        # Source the plugin's environments variables, if not already done by
+        # antigen-env.
+        -antigen-env-internal "$location"
 
         # Source the plugin script.
         # FIXME: I don't know. Looks very very ugly. Needs a better
@@ -742,6 +792,7 @@ _antigen () {
         bundles    \
         update     \
         revert     \
+        env        \
         list       \
         cleanup    \
         use        \
