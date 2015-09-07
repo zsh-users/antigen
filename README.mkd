@@ -325,6 +325,32 @@ Takes no options.
 Insider detail: The information for reverting is stored in
 `$ADOTDIR/revert-info` file.  If its not present, reverting is not possible.
 
+### antigen env
+
+Some plugins set environment variables at login time, e.g. to add commands to
+your `PATH` so they are available to all the programs in your session, not just
+those started from an interactive shell. Call `antigen env` on those plugins
+from your `.profile` to set everything up:
+
+    antigen env <url>
+
+You still need to call `antigen bundle` in your `.zshrc`, as usual, for these
+plugins.
+
+A typical `.profile` might look like this
+
+    # Note that .profile is often sourced by /bin/sh, so it has to be POSIX
+    # shell compatible. Unfortunately, this also means we have to explicitly
+    # tell antigen where it is using this environment variable.
+    export ANTIGEN_INSTALL_DIR=/path-to-antigen-clone
+    . "$ANTIGEN_INSTALL_DIR/antigen-env.sh"
+
+    antigen env zsh-users/zsh-syntax-highlighting
+
+If you don't care about setting environment variables at login time, just use
+`antigen bundle` as normal, and antigen will make sure those packages are set
+up correctly by the time you get to an interactive shell.
+
 ### antigen list
 
 Use this command to list out the currently *loaded* plugins. Keep in mind that
@@ -565,6 +591,15 @@ in it are loaded.
 One exception to this rule is that if this plugin is a theme. In which case the
 theme script is just sourced and nothing else is done. Not even adding to
 `$fpath`.
+
+If your plugin sets the `PATH` or other environment variables, consider
+setting these in a separate `*.plugin.env.sh` file. This lets the variables
+be set at login using `antigen env`, so they are visible to all the programs in
+a graphical session, not just the ones started from an interactive shell. The
+only caveat is that `*.plugin.env.sh` must be POSIX-shell compatible. Anything
+which is only relevant to interactive shells (such as aliases) should go in the
+usual files. The `*.plugin.env.sh` will still be loaded for interactive shells,
+even if you don't use `antigen env`.
 
 ## A note on external zsh plugins
 
