@@ -29,6 +29,7 @@ EOF
         . "$script"
         unset ANTIGEN_THIS_PLUGIN_DIR
         export ANTIGEN_PLUGINS_ENVED="$ANTIGEN_PLUGINS_ENVED:$plugin"
+        export ANTIGEN_SCRIPTS_ENVED="$ANTIGEN_SCRIPTS_ENVED:$script"
     done < "$tmp"
 
     rm "$tmp"
