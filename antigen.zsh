@@ -302,8 +302,10 @@ antigen-revert () {
 
         fi
 
-        # Add to $fpath, for completion(s).
-        fpath=($location $fpath)
+        # Add to $fpath, for completion(s), if not in there already
+        if [[ $#fpath[(r)$location] == 0 ]]; then
+            fpath=($location $fpath)
+        fi
 
     fi
 
