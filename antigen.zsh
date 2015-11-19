@@ -337,7 +337,7 @@ antigen-cleanup () {
         force=true
     fi
 
-    if [[ ! -d "$ADOTDIR/repos" || -z "$(ls "$ADOTDIR/repos/")" ]]; then
+    if [[ ! -d "$ADOTDIR/repos" || -z "$(\ls "$ADOTDIR/repos/")" ]]; then
         echo "You don't have any bundles."
         return 0
     fi
@@ -350,7 +350,7 @@ antigen-cleanup () {
                 -antigen-get-clone-dir "$line"
             done |
             sort -u) \
-        <(ls -d "$ADOTDIR/repos/"* | sort -u))"
+        <(\ls -d "$ADOTDIR/repos/"* | sort -u))"
 
     if [[ -z $unused_clones ]]; then
         echo "You don't have any unidentified bundles."
