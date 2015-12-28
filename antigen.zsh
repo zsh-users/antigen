@@ -444,7 +444,11 @@ antigen-apply () {
     # Load the compinit module. This will readefine the `compdef` function to
     # the one that actually initializes completions.
     autoload -U compinit
-    compinit -i
+    if [[ -z $ANTIGEN_COMPDUMPFILE ]]; then
+        compinit -i
+    else
+        compinit -i -d $ANTIGEN_COMPDUMPFILE
+    fi
 
     # Apply all `compinit`s that have been deferred.
     eval "$(for cdef in $__deferred_compdefs; do
