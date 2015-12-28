@@ -114,7 +114,7 @@ antigen-bundles () {
 antigen-update () {
     # Update your bundles, i.e., `git pull` in all the plugin repos.
 
-    date > $ADOTDIR/revert-info
+    date >! $ADOTDIR/revert-info
 
     -antigen-echo-record |
         awk '$4 == "true" {print $1}' |
