@@ -11,6 +11,8 @@ typical vim+pathogen setup. Antigen is to zsh, what [Vundle][] is to vim.
 Antigen has reached a certain level of stability and has been used in the wild
 for around a couple of years. If you face any problems, please open an issue.
 
+Antigen works with zsh versions >=4.3 and 5.x.
+
 Note: Please read the commit comments of the changesets when you pull a new
 version of antigen.
 
