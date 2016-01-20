@@ -266,7 +266,12 @@ antigen-revert () {
     [[ $loc != "/" ]] && location="$location$loc"
 
     if [[ -f "$location" ]]; then
-        source "$location"
+        if [[ ${$(<$location)[1]} == "#compdef" ]]; then
+            # Add directory to $fpath, for completion(s).
+            fpath=(${location:h} $fpath)
+        else
+            source "$location"
+        fi
 
     else
 
