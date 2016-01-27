@@ -405,8 +405,8 @@ antigen-use () {
 }
 
 -antigen-use-prezto () {
+    export ZDOTDIR=$ADOTDIR/repos
     antigen-bundle sorin-ionescu/prezto
-    export ZDOTDIR=$ADOTDIR/repos/
 }
 
 # For backwards compatibility.
