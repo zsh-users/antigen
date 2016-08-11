@@ -402,13 +402,13 @@ That is, it initializes the canonical repo of the prezto framework, with the add
     if (( _zdotdir_set )); then
         _old_zdotdir=$ZDOTDIR
     fi
-    
+
     antigen use prezto
-    antigen use sorin-ionescu/prezto modules/helper  # required for Git module
-    antigen use sorin-ionescu/prezto modules/editor
-    antigen use sorin-ionescu/prezto modules/git
-    antigen use sorin-ionescu/prezto modules/prompt
-    
+    antigen bundle sorin-ionescu/prezto modules/helper  # required for Git module
+    antigen bundle sorin-ionescu/prezto modules/editor
+    antigen bundle sorin-ionescu/prezto modules/git
+    antigen bundle sorin-ionescu/prezto modules/prompt
+
     if (( _zdotdir_set )); then
         ZDOTDIR=$_old_zdotdir
     else
