@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.3] - 2016-08-20
+### Changed
+- [#172] Fix TravisCI configuration 
+
 ## [1.0.2] - 2016-08-11
 ### Changed
 - [#168] Update README.md example code thanks to @chadmoore
