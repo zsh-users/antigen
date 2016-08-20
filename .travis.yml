@@ -27,7 +27,7 @@ install:
   # Add PPA if needed
   - "./travis-ppa.sh"
   # Install python requirements.
-  - "pip install -r requirements.txt --use-mirrors"
+  - "pip install -r requirements.txt"
   # Install zsh.
   - "sudo apt-get install zsh"
 
