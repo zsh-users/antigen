@@ -248,7 +248,7 @@ antigen-revert () {
     fi
 
     if [[ -n $old_rev && $old_rev != $new_rev ]]; then
-        echo Updated from ${old_rev:0:7} to ${new_rev:0:7}.
+        echo Updated from $old_rev[0,7] to $new_rev[0,7].
         if $verbose; then
             --plugin-git log --oneline --reverse --no-merges --stat '@{1}..'
         fi
