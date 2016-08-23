@@ -5,7 +5,7 @@
     <title>Antigen by zsh-users</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
@@ -20,7 +20,7 @@
 
     <section class="main-content">
       <h1>
-<a id="antigen-v1" class="anchor" href="#antigen-v1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Antigen <sup>v1</sup>
+<a id="antigen-v1" class="anchor" href="#antigen-v1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Antigen <sup>v1</sup>
 </h1>
 
 <p><a href="http://travis-ci.org/zsh-users/antigen"><img src="https://secure.travis-ci.org/zsh-users/antigen.png" alt="Build Status"></a></p>
@@ -36,11 +36,13 @@ typical vim+pathogen setup. Antigen is to zsh, what <a href="https://github.com/
 <p>Antigen has reached a certain level of stability and has been used in the wild
 for around a couple of years. If you face any problems, please open an issue.</p>
 
+<p>Antigen works with zsh versions &gt;=4.3 and 5.x.</p>
+
 <p>Note: Please read the commit comments of the changesets when you pull a new
 version of antigen.</p>
 
 <h2>
-<a id="show-off" class="anchor" href="#show-off" aria-hidden="true"><span class="octicon octicon-link"></span></a>Show off</h2>
+<a id="show-off" class="anchor" href="#show-off" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Show off</h2>
 
 <blockquote>
 <p>Enough talk. Let's fight!
@@ -121,7 +123,7 @@ library of oh-my-zsh loaded. So, if you want to experiment further, issue a</p>
 ;)</p>
 
 <h2>
-<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
 
 <p>So, now that you're here, I suppose you are convinced and want antigen running
 your shell all the time. Sweet. Let's do it.</p>
@@ -164,7 +166,7 @@ syntax for the <code>antigen bundle</code> command is discussed further down on 
 <p>You can find more examples in the wiki: <a href="https://github.com/zsh-users/antigen/wiki/In-the-wild">Antigen in the wild</a>.</p>
 
 <h2>
-<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Motivation</h2>
+<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Motivation</h2>
 
 <p>If you use zsh and <a href="https://github.com/robbyrussell/oh-my-zsh">oh-my-zsh</a>, you know that having many different plugins
 that are developed by many different authors in a single (sub)repo is not very
@@ -194,10 +196,10 @@ pull request.</p>
 line in your <code>.zshrc</code>).</p>
 
 <h2>
-<a id="commands" class="anchor" href="#commands" aria-hidden="true"><span class="octicon octicon-link"></span></a>Commands</h2>
+<a id="commands" class="anchor" href="#commands" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Commands</h2>
 
 <h3>
-<a id="antigen-bundle" class="anchor" href="#antigen-bundle" aria-hidden="true"><span class="octicon octicon-link"></span></a>antigen bundle</h3>
+<a id="antigen-bundle" class="anchor" href="#antigen-bundle" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen bundle</h3>
 
 <p>This command tells antigen to install (if not already installed) and load the
 given plugin. The simplest usage follows the following syntax.</p>
@@ -312,8 +314,10 @@ dotfiles repo. For example,</p>
 concerned with this argument, its only used internally and will probably go away
 in the future.  It indicates whether the bundle is a theme or a simple plugin.</p>
 
+<p>For details on what constitutes a valid bundle and how Antigen handles different types of bundles, see the <a href="#notes-on-writing-plugins">Notes on writing plugins</a> section.</p>
+
 <h3>
-<a id="antigen-bundles" class="anchor" href="#antigen-bundles" aria-hidden="true"><span class="octicon octicon-link"></span></a>antigen bundles</h3>
+<a id="antigen-bundles" class="anchor" href="#antigen-bundles" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen bundles</h3>
 
 <p>If you have a fair number of bundles, using the <code>antigen bundle</code> command can
 look cumbersome. You can use the <code>antigen bundles</code> command to <em>bulk</em> define
@@ -349,7 +353,7 @@ understand how it works. Its a very small function.</p>
 antigen-bundles to work. Its allowed (and encouraged) to improve readability.</p>
 
 <h3>
-<a id="antigen-update" class="anchor" href="#antigen-update" aria-hidden="true"><span class="octicon octicon-link"></span></a>antigen update</h3>
+<a id="antigen-update" class="anchor" href="#antigen-update" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen update</h3>
 
 <p>This is something you might not want to put in your <code>.zshrc</code>. Instead, run it
 occasionally to update all your plugins. It doesn't take any arguments.</p>
@@ -368,7 +372,7 @@ updating the bundles you are using with antigen. To update your copy of antigen,
 use the <code>selfupdate</code> command described further below.</p>
 
 <h3>
-<a id="antigen-revert-α" class="anchor" href="#antigen-revert-%CE%B1" aria-hidden="true"><span class="octicon octicon-link"></span></a>antigen revert <sup>α</sup>
+<a id="antigen-revert-α" class="anchor" href="#antigen-revert-%CE%B1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen revert <sup>α</sup>
 </h3>
 
 <p>Reverts the state of all your plugins to how they were before the last
@@ -381,7 +385,7 @@ on it. There is a test for it, and it passes, so it should work fine though.</p>
 <code>$ADOTDIR/revert-info</code> file.  If its not present, reverting is not possible.</p>
 
 <h3>
-<a id="antigen-list" class="anchor" href="#antigen-list" aria-hidden="true"><span class="octicon octicon-link"></span></a>antigen list</h3>
+<a id="antigen-list" class="anchor" href="#antigen-list" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen list</h3>
 
 <p>Use this command to list out the currently <em>loaded</em> plugins. Keep in mind that
 this includes any bundles installed on-the-fly.</p>
@@ -399,7 +403,7 @@ following fields of each bundle.</p>
 for this bundle.</p>
 
 <h3>
-<a id="antigen-cleanup" class="anchor" href="#antigen-cleanup" aria-hidden="true"><span class="octicon octicon-link"></span></a>antigen cleanup</h3>
+<a id="antigen-cleanup" class="anchor" href="#antigen-cleanup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen cleanup</h3>
 
 <p>Used to clean up the clones of repos which are not used by any plugins currently
 loaded. It takes no arguments. When run, it lists out the repo-clones that are
@@ -411,7 +415,7 @@ It straight away deletes all the unused clones. This option makes this command
 usable in a non-interactive fashion.</p>
 
 <h3>
-<a id="antigen-use" class="anchor" href="#antigen-use" aria-hidden="true"><span class="octicon octicon-link"></span></a>antigen use</h3>
+<a id="antigen-use" class="anchor" href="#antigen-use" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen use</h3>
 
 <p>This command lets you load any (supported) zsh pre-packaged framework, like
 oh-my-zsh. Usage is</p>
@@ -423,7 +427,7 @@ oh-my-zsh. Usage is</p>
 <code>use</code>-ing. Here are the supported frameworks.</p>
 
 <h4>
-<a id="oh-my-zsh" class="anchor" href="#oh-my-zsh" aria-hidden="true"><span class="octicon octicon-link"></span></a>oh-my-zsh</h4>
+<a id="oh-my-zsh" class="anchor" href="#oh-my-zsh" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>oh-my-zsh</h4>
 
 <p>This is (almost) the same as</p>
 
@@ -450,21 +454,43 @@ directly with the <code>antigen bundle</code> command.</p>
 arguments.</p>
 
 <h4>
-<a id="prezto" class="anchor" href="#prezto" aria-hidden="true"><span class="octicon octicon-link"></span></a>prezto</h4>
+<a id="prezto" class="anchor" href="#prezto" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>prezto</h4>
 
 <p>This is (almost, but not quite) the same as doing,</p>
 
 <pre><code>antigen bundle sorin-ionescu/prezto
 </code></pre>
 
-<p>That is, initializes the canonical repo of the prezto framework. Please note
+<p>That is, it initializes the canonical repo of the prezto framework, with the addition that it also alters the value of the shell parameter <code>ZDOTDIR</code>. This will affect how Zsh locates and loads your startup, login, and logout scripts. It is <strong>highly</strong> recommended that you save the original value and reset it after calling <code>antigen use prezto</code>. Your .zshrc file could look like this:</p>
+
+<pre><code>_zdotdir_set=${+parameters[ZDOTDIR]}
+if (( _zdotdir_set )); then
+    _old_zdotdir=$ZDOTDIR
+fi
+
+antigen use prezto
+antigen bundle sorin-ionescu/prezto modules/helper  # required for Git module
+antigen bundle sorin-ionescu/prezto modules/editor
+antigen bundle sorin-ionescu/prezto modules/git
+antigen bundle sorin-ionescu/prezto modules/prompt
+
+if (( _zdotdir_set )); then
+    ZDOTDIR=$_old_zdotdir
+else
+    unset ZDOTDIR
+    unset _old_zdotdir
+fi;
+unset _zdotdir_set
+</code></pre>
+
+<p>Please note
 that prezto support is very new and experimental in antigen. If you find any
 bugs, please report over on github issues.</p>
 
 <p>Takes no further arguments.</p>
 
 <h3>
-<a id="antigen-theme" class="anchor" href="#antigen-theme" aria-hidden="true"><span class="octicon octicon-link"></span></a>antigen theme</h3>
+<a id="antigen-theme" class="anchor" href="#antigen-theme" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen theme</h3>
 
 <p>Used for switching the prompt theme. Invoke it with the name of the theme you
 want to use.</p>
@@ -510,7 +536,7 @@ internal argument.</p>
 <code>theme</code> command on the comments of issue #78.</em></p>
 
 <h3>
-<a id="antigen-apply" class="anchor" href="#antigen-apply" aria-hidden="true"><span class="octicon octicon-link"></span></a>antigen apply</h3>
+<a id="antigen-apply" class="anchor" href="#antigen-apply" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen apply</h3>
 
 <p>You have to add this command after defining all bundles you need, in your zshrc.
 The completions defined by your bundles will be loaded at this step.</p>
@@ -525,7 +551,7 @@ you have a good number of bundle specifications.</p>
 interested in discussing it. Please open up an issue with your details. Thanks.</p>
 
 <h3>
-<a id="antigen-snapshot-α" class="anchor" href="#antigen-snapshot-%CE%B1" aria-hidden="true"><span class="octicon octicon-link"></span></a>antigen snapshot <sup>α</sup>
+<a id="antigen-snapshot-α" class="anchor" href="#antigen-snapshot-%CE%B1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen snapshot <sup>α</sup>
 </h3>
 
 <p>Creates a snapshot of all the clones you currently have <em>active</em> including the
@@ -541,7 +567,7 @@ directly sourced from your file system (without a git repo), are not recorded
 in the snapshot file.</p>
 
 <h3>
-<a id="antigen-restore-α" class="anchor" href="#antigen-restore-%CE%B1" aria-hidden="true"><span class="octicon octicon-link"></span></a>antigen restore <sup>α</sup>
+<a id="antigen-restore-α" class="anchor" href="#antigen-restore-%CE%B1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen restore <sup>α</sup>
 </h3>
 
 <p>Restore the bundles state as specified in the snapshot. Takes one required
@@ -552,7 +578,7 @@ other clones present in your environment are not touched. This behavior may
 change in the future.</p>
 
 <h3>
-<a id="antigen-selfupdate" class="anchor" href="#antigen-selfupdate" aria-hidden="true"><span class="octicon octicon-link"></span></a>antigen selfupdate</h3>
+<a id="antigen-selfupdate" class="anchor" href="#antigen-selfupdate" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen selfupdate</h3>
 
 <p>Use this command to update your copy of antigen. It basically does a <code>git pull</code>
 on your antigen's clone, <em>if</em> it is a git clone. Otherwise, it doesn't do
@@ -561,7 +587,7 @@ anything.</p>
 <p>Takes no options.</p>
 
 <h3>
-<a id="antigen-help" class="anchor" href="#antigen-help" aria-hidden="true"><span class="octicon octicon-link"></span></a>antigen help</h3>
+<a id="antigen-help" class="anchor" href="#antigen-help" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen help</h3>
 
 <p>This exists so that there can be some help right in the command line. Currently
 it doesn't provide much help other than redirecting you to the project page for
@@ -572,7 +598,7 @@ help in the future.</p>
 looks good as output on the command line.</p>
 
 <h2>
-<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h2>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h2>
 
 <p>The following environment variables can be set to customize the behavior of
 antigen. Make sure you set them <em>before</em> source-ing <code>antigen.zsh</code>.</p>
@@ -590,7 +616,7 @@ were used previously but are now removed. Please use <code>ADOTDIR</code> instea
 mentioned above.</p>
 
 <h2>
-<a id="running-the-tests" class="anchor" href="#running-the-tests" aria-hidden="true"><span class="octicon octicon-link"></span></a>Running the tests</h2>
+<a id="running-the-tests" class="anchor" href="#running-the-tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running the tests</h2>
 
 <p>All the tests are in the <code>tests</code> folder and are run using the <a href="https://bitheap.org/cram/">cram</a> test
 system. The latest version on that website, as of today is v0.5, which does not
@@ -611,7 +637,7 @@ would be great as the tests are currently seriously lagging behind the full
 functionality of antigen.</p>
 
 <h2>
-<a id="notes-on-writing-plugins" class="anchor" href="#notes-on-writing-plugins" aria-hidden="true"><span class="octicon octicon-link"></span></a>Notes on writing plugins</h2>
+<a id="notes-on-writing-plugins" class="anchor" href="#notes-on-writing-plugins" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Notes on writing plugins</h2>
 
 <p>Most shell utilities/plugins are made up of just one file. For a plugin called
 <code>awesomeness</code>, create a <code>awesomeness.plugin.zsh</code> and code away.</p>
@@ -627,9 +653,7 @@ project.</p>
 present, it will source <em>only</em> this script. Nothing else is sourced. This is for
 oh-my-zsh style plugins.</p>
 
-<p>Secondly, it looks for a <code>init.zsh</code> file in the plugin directory. If present, it
-will source <em>only</em> this script. Nothing else is sourced. This is for prezto
-style modules.</p>
+<p>Secondly, it looks for a <code>init.zsh</code> file in the plugin directory. If present, Prezto will attempt to load the plugin with <code>pmodload</code>, removing "<code>modules/</code>" from the beginning of the plugin path if present. If <code>pmodload</code> is not available, Antigen will source <em>only</em> <code>init.zsh</code> and nothing else. This is for Prezto-style modules.</p>
 
 <p>Otherwise, it looks for <code>*.zsh</code> files and if there are any, <em>all</em> of them are
 sourced. The order in which they are sourced is not currently defined. Please
@@ -648,7 +672,7 @@ theme script is just sourced and nothing else is done. Not even adding to
 <code>$fpath</code>.</p>
 
 <h2>
-<a id="a-note-on-external-zsh-plugins" class="anchor" href="#a-note-on-external-zsh-plugins" aria-hidden="true"><span class="octicon octicon-link"></span></a>A note on external zsh plugins</h2>
+<a id="a-note-on-external-zsh-plugins" class="anchor" href="#a-note-on-external-zsh-plugins" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>A note on external zsh plugins</h2>
 
 <p>Antigen downloads zsh scripts and sources them, according to your
 specifications. As such, these scripts are capable of doing some <em>real</em> damage
@@ -661,10 +685,10 @@ code of the plugin to see its not doing anything malicious, before adding it to
 your <code>.zshrc</code>.</p>
 
 <h2>
-<a id="meta" class="anchor" href="#meta" aria-hidden="true"><span class="octicon octicon-link"></span></a>Meta</h2>
+<a id="meta" class="anchor" href="#meta" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Meta</h2>
 
 <h3>
-<a id="helping-out" class="anchor" href="#helping-out" aria-hidden="true"><span class="octicon octicon-link"></span></a>Helping out</h3>
+<a id="helping-out" class="anchor" href="#helping-out" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Helping out</h3>
 
 <p>Antigen is licensed with the <a href="http://mit.sharats.me">MIT License</a>.</p>
 
@@ -676,20 +700,20 @@ an <a href="https://github.com/zsh-users/antigen/issues">issue</a> first so we c
 so much!</p>
 
 <h3>
-<a id="feedback-please" class="anchor" href="#feedback-please" aria-hidden="true"><span class="octicon octicon-link"></span></a>Feedback please</h3>
+<a id="feedback-please" class="anchor" href="#feedback-please" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Feedback please</h3>
 
 <p>Any comments/suggestions/feedback welcome. Please say hello to me
 (<a href="http://twitter.com/sharat87">@sharat87</a>) on twitter. Or open an issue to discuss something
 (anything!) about the project ;).</p>
 
 <h3>
-<a id="more-plugins" class="anchor" href="#more-plugins" aria-hidden="true"><span class="octicon octicon-link"></span></a>More plugins</h3>
+<a id="more-plugins" class="anchor" href="#more-plugins" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>More plugins</h3>
 
 <p>The <a href="https://github.com/unixorn/awesome-zsh-plugins">awesome-zsh-plugins</a> list is a directory of plugins and themes that you may
 find useful.</p>
 
 <h3>
-<a id="alternatives-to-antigen" class="anchor" href="#alternatives-to-antigen" aria-hidden="true"><span class="octicon octicon-link"></span></a>Alternatives to antigen</h3>
+<a id="alternatives-to-antigen" class="anchor" href="#alternatives-to-antigen" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Alternatives to antigen</h3>
 
 <ul>
 <li>
@@ -724,4 +748,3 @@ in pure zsh.</li>
 
   </body>
 </html>
-
