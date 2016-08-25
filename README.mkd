@@ -27,7 +27,7 @@ sample, if you will.
 
 Get and load antigen.
 
-    curl -L https://raw.githubusercontent.com/zsh-users/antigen/master/antigen.zsh > antigen.zsh
+    curl https://cdn.rawgit.com/zsh-users/antigen/master/antigen.zsh > antigen.zsh
     source antigen.zsh
 
 There. You now have all the antigen goodies. Let's try install some plugins. How
