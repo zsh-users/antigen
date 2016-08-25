@@ -520,6 +520,28 @@ help in the future.
 I could use some help here as I'm not that good at writing documentation that
 looks good as output on the command line.
 
+## Installation
+
+Install Antigen from our main repository for the latests and greatests version available:
+
+    curl https://cdn.rawgit.com/zsh-users/antigen/master/antigen.zsh > antigen.zsh
+
+Or using your system package manager:
+
+### Apt
+
+    apt-get install zsh-antigen
+
+### Brew
+
+    brew install antigen
+
+### AUR
+
+    yaourt -S antigen-git
+
+Remember that your package manager may install an older Antigen version.
+
 ## Configuration
 
 The following environment variables can be set to customize the behavior of
