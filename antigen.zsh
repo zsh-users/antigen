@@ -739,6 +739,8 @@ antigen () {
     -set-default ADOTDIR $HOME/.antigen
 
     # Setup antigen's own completion.
+    autoload -U compinit
+    compinit -C
     compdef _antigen antigen
 
     # Remove private functions.
