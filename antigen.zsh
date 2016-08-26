@@ -11,6 +11,12 @@
 local _ANTIGEN_BUNDLE_RECORD=""
 local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# Do not load anything if anything is no available.
+if ! which git &> /dev/null; then
+    echo 'Antigen: Please install git to use Antigen.' >&2
+    return 1
+fi
+
 # Used to defer compinit/compdef
 typeset -a __deferred_compdefs
 compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
@@ -745,6 +751,7 @@ antigen () {
 
     # Remove private functions.
     unfunction -- -set-default
+
 }
 
 # Setup antigen's autocompletion
