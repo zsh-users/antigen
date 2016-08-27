@@ -11,6 +11,12 @@
 local _ANTIGEN_BUNDLE_RECORD=""
 local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# Do not load anything if anything is no available.
+if ! which git &> /dev/null; then
+    echo 'Antigen: Please install git to use Antigen.' >&2
+    return 1
+fi
+
 # Used to defer compinit/compdef
 typeset -a __deferred_compdefs
 compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
@@ -242,7 +248,7 @@ antigen-revert () {
     fi
 
     if [[ -n $old_rev && $old_rev != $new_rev ]]; then
-        echo Updated from ${old_rev:0:7} to ${new_rev:0:7}.
+        echo Updated from $old_rev[0,7] to $new_rev[0,7].
         if $verbose; then
             --plugin-git log --oneline --reverse --no-merges --stat '@{1}..'
         fi
@@ -739,10 +745,13 @@ antigen () {
     -set-default ADOTDIR $HOME/.antigen
 
     # Setup antigen's own completion.
+    autoload -U compinit
+    compinit -C
     compdef _antigen antigen
 
     # Remove private functions.
     unfunction -- -set-default
+
 }
 
 # Setup antigen's autocompletion

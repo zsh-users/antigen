@@ -1,6 +1,10 @@
 # Antigen <sup>v1</sup>
 
-[![Build Status](https://secure.travis-ci.org/zsh-users/antigen.png)](http://travis-ci.org/zsh-users/antigen)
+### A plugin manager for zsh, inspired by oh-my-zsh and vundle. 
+
+[![Build Status](https://img.shields.io/travis/zsh-users/antigen/master.svg?label=stable)](http://travis-ci.org/zsh-users/antigen) [![Build Status](https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=next)](http://travis-ci.org/zsh-users/antigen)
+
+[Installation](#installation) | [Configuration](#configuration) | [Bug tracker](https://github.com/zsh-users/antigen/issues) | [Discussions](https://trello.com/b/P0xrGgfT/antigen) | [Chat](https://gitter.im/antigen-zsh/develop) | [License](http://mit.sharats.me/)
 
 Antigen is a small set of functions that help you easily manage your shell (zsh)
 plugins, called bundles. The concept is pretty much the same as bundles in a
@@ -27,7 +31,7 @@ sample, if you will.
 
 Get and load antigen.
 
-    curl -L https://raw.githubusercontent.com/zsh-users/antigen/master/antigen.zsh > antigen.zsh
+    curl https://cdn.rawgit.com/zsh-users/antigen/v1.0.4/antigen.zsh > antigen.zsh
     source antigen.zsh
 
 There. You now have all the antigen goodies. Let's try install some plugins. How
@@ -519,6 +523,28 @@ help in the future.
 
 I could use some help here as I'm not that good at writing documentation that
 looks good as output on the command line.
+
+## Installation
+
+Install Antigen from our main repository for the latests and greatests version available:
+
+    curl https://cdn.rawgit.com/zsh-users/antigen/v1.0.4/antigen.zsh > antigen.zsh
+
+Or using your system package manager:
+
+### Apt
+
+    apt-get install zsh-antigen
+
+### Brew
+
+    brew install antigen
+
+### AUR
+
+    yaourt -S antigen-git
+
+Remember that your package manager may install an older Antigen version.
 
 ## Configuration
 
