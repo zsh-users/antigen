@@ -23,7 +23,12 @@
 <a id="antigen-v1" class="anchor" href="#antigen-v1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Antigen <sup>v1</sup>
 </h1>
 
-<p><a href="http://travis-ci.org/zsh-users/antigen"><img src="https://secure.travis-ci.org/zsh-users/antigen.png" alt="Build Status"></a></p>
+<h3>
+<a id="a-plugin-manager-for-zsh-inspired-by-oh-my-zsh-and-vundle" class="anchor" href="#a-plugin-manager-for-zsh-inspired-by-oh-my-zsh-and-vundle" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>A plugin manager for zsh, inspired by oh-my-zsh and vundle.</h3>
+
+<p><a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/master.svg?label=stable" alt="Build Status"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=next" alt="Build Status"></a></p>
+
+<p><a href="#installation">Installation</a> | <a href="#configuration">Configuration</a> | <a href="https://github.com/zsh-users/antigen/issues">Bug tracker</a> | <a href="https://trello.com/b/P0xrGgfT/antigen">Discussions</a> | <a href="https://gitter.im/antigen-zsh/develop">Chat</a> | <a href="http://mit.sharats.me/">License</a></p>
 
 <p>Antigen is a small set of functions that help you easily manage your shell (zsh)
 plugins, called bundles. The concept is pretty much the same as bundles in a
@@ -55,7 +60,7 @@ sample, if you will.</p>
 
 <p>Get and load antigen.</p>
 
-<pre><code>curl -L https://raw.githubusercontent.com/zsh-users/antigen/master/antigen.zsh &gt; antigen.zsh
+<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.0.4/antigen.zsh &gt; antigen.zsh
 source antigen.zsh
 </code></pre>
 
@@ -596,6 +601,36 @@ help in the future.</p>
 
 <p>I could use some help here as I'm not that good at writing documentation that
 looks good as output on the command line.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Install Antigen from our main repository for the latests and greatests version available:</p>
+
+<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.0.4/antigen.zsh &gt; antigen.zsh
+</code></pre>
+
+<p>Or using your system package manager:</p>
+
+<h3>
+<a id="apt" class="anchor" href="#apt" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Apt</h3>
+
+<pre><code>apt-get install zsh-antigen
+</code></pre>
+
+<h3>
+<a id="brew" class="anchor" href="#brew" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Brew</h3>
+
+<pre><code>brew install antigen
+</code></pre>
+
+<h3>
+<a id="aur" class="anchor" href="#aur" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>AUR</h3>
+
+<pre><code>yaourt -S antigen-git
+</code></pre>
+
+<p>Remember that your package manager may install an older Antigen version.</p>
 
 <h2>
 <a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h2>
