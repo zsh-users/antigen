@@ -2,14 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.0.4] - 2016-09-27
+## [1.0.4] - 2016-08-27
 ### Added
 - [#188] Add CONTRIBUTING.md to documentation
 - [#183] Update README.md to use rawgit in examples
 - [#182] Add Gitter, Trello and Travis CI badges
 
 ### Changed
-- [#171] Continuous integration against multiple Zsh versions #171 
+- [#171] Continuous integration against multiple Zsh versions
 
 ### Fixed
 - [#170] Check git dependency on sourcing
