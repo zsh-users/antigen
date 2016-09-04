@@ -1,0 +1,36 @@
+antigen bundles <<EOBUNDLES
+  git
+  command-not-found
+  colored-man-pages
+  #zsh-users/zsh-autosuggestions
+  zsh-users/zsh-completions
+  #jimhester/per-directory-history
+  #zsh-users/zsh-syntax-highlighting
+  zsh-users/zsh-history-substring-search
+  desyncr/vagrant-zsh-completion
+  felixr/docker-zsh-completion
+  #paoloantinori/hhighlighter h.sh
+  bbenne10/goenv
+  bric3/nice-exit-code
+  caarlos0/zsh-add-upstream
+  caarlos0/zsh-git-fetch-merge
+  caarlos0/zsh-git-sync
+  caarlos0/zsh-mkc
+  peterhurford/git-it-on.zsh
+  caarlos0/jvm.git
+  caarlos0/zsh-open-pr
+  junegunn/fzf
+  mafredri/zsh-async
+  mollifier/cd-gitroot
+  oz/safe-paste # comment appended to the line
+  caarlos0/ports
+  djui/alias-tips
+  supercrabtree/k
+  Tarrasch/zsh-autoenv
+  Tarrasch/zsh-bd
+  Tarrasch/zsh-colors
+EOBUNDLES
+
+antigen theme pure
+
+antigen apply
