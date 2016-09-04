@@ -1,0 +1,17 @@
+antigen bundles <<EOBUNDLES
+  git
+  command-not-found
+  colored-man-pages
+  #zsh-users/zsh-autosuggestions
+  zsh-users/zsh-completions
+  #jimhester/per-directory-history
+  #zsh-users/zsh-syntax-highlighting
+  zsh-users/zsh-history-substring-search
+  desyncr/vagrant-zsh-completion
+  felixr/docker-zsh-completion
+  #paoloantinori/hhighlighter h.sh
+EOBUNDLES
+
+antigen theme desyncr/powerlevel9k powerlevel9k --branch=dritter/prezto
+
+antigen apply

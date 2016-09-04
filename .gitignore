@@ -8,3 +8,6 @@ tests/*.t.err
 # following would be shown as untracked.
 repos/
 revert-info
+
+# Cache directory for ext/zcache
+.cache/
