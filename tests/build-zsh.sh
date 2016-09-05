@@ -40,4 +40,6 @@ make -j5
 
 make install
 
+chsh -s $(which bash)
+
 cd -
