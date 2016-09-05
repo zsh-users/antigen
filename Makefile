@@ -5,6 +5,7 @@ TESTS ?= tests
 PREFIX ?= /usr/local
 SHELL ?= zsh
 PROJECT ?= .
+BIN ?= ${PROJECT}/bin
 
 itests:
 	${MAKE} tests CRAM_OPTS=-i
@@ -17,11 +18,11 @@ stats:
 	for i in $$(seq 1 10); do /usr/bin/time -f "#$$i \t%es real \t%Us user \t%Ss system \t%x status" "${SHELL}" -ic exit; done
 
 install:
-	mkdir -p ${PREFIX}/share && cp ${PROJECT}/antigen.zsh ${PROJECT}/share/antigen.zsh
+	mkdir -p ${PREFIX}/share && cp ${BIN}/antigen.zsh ${PROJECT}/share/antigen.zsh
 
 build:
-	  sed -e '/source.*\/ext\/.*\.zsh.*/d' ${PROJECT}/src/antigen.zsh > ${PROJECT}/antigen.zsh
-		cat ${PROJECT}/src/ext/*.zsh >> ${PROJECT}/antigen.zsh
+	sed -e '/source.*\/ext\/.*\.zsh.*/d' ${PROJECT}/src/antigen.zsh > ${BIN}/antigen.zsh
+	cat ${PROJECT}/src/ext/*.zsh >> ${BIN}/antigen.zsh
 
 clean:
 	rm -f ${PROJECT}/share/antigen.zsh
