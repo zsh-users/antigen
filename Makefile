@@ -19,7 +19,11 @@ stats:
 install:
 	mkdir -p ${PREFIX}/share && cp ${PROJECT}/antigen.zsh ${PROJECT}/share/antigen.zsh
 
+build:
+	  sed -e '/source.*\/ext\/.*\.zsh.*/d' ${PROJECT}/src/antigen.zsh > ${PROJECT}/antigen.zsh
+		cat ${PROJECT}/src/ext/*.zsh >> ${PROJECT}/antigen.zsh
+
 clean:
 	rm -f ${PROJECT}/share/antigen.zsh
 
-all: clean install
+all: clean build install
