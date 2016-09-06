@@ -24,7 +24,10 @@ build:
 	sed -e '/source.*\/ext\/.*\.zsh.*/d' ${PROJECT}/src/antigen.zsh > ${BIN}/antigen.zsh
 	cat ${PROJECT}/src/ext/*.zsh >> ${BIN}/antigen.zsh
 
+release:
+	git describe --abbrev=0 --tags > ${PROJECT}/VERSION
+	
 clean:
 	rm -f ${PROJECT}/share/antigen.zsh
 
-all: clean build install
+all: clean release build install
