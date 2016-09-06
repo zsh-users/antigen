@@ -216,7 +216,7 @@ antigen-revert () {
 }
 
 -antigen-bundle-short-name () {
-    echo "$@" | sed -r "s|.*/(.*/.*).git.*$|\1|"
+    echo "$@" | sed -E "s|.*/(.*/.*).git.*$|\1|"
 }
 
 -antigen-ensure-repo () {
@@ -271,11 +271,11 @@ antigen-revert () {
     fi
 
     if $install_or_update; then
-        local took=$(echo $(date +'%s')-$start | bc -l)
+        local took=$(( $(date +'%s') - $start ))
         if [[ $success -eq 0 ]]; then
-            echo "Done. Took ${took}s."
+            printf "Done. Took %ds." $took
         else
-            echo "Error! See $_ANTIGEN_LOG_PATH.";
+            echo -n "Error! See $_ANTIGEN_LOG_PATH.";
         fi
     fi
 

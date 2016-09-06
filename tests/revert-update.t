@@ -33,7 +33,6 @@ Run antigen's update.
 
   $ antigen-update
   Updating */test-plugin... Done. Took *s. (glob)
-  
 
 Confirm we have the new version.
 
