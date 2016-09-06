@@ -273,7 +273,7 @@ antigen-revert () {
     if $install_or_update; then
         local took=$(( $(date +'%s') - $start ))
         if [[ $success -eq 0 ]]; then
-            printf "Done. Took %.2fs.\n" $took
+            printf "Done. Took %ds." $took
         else
             echo -n "Error! See $_ANTIGEN_LOG_PATH.";
         fi
