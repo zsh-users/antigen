@@ -11,3 +11,6 @@ revert-info
 
 # Cache directory for ext/zcache
 .cache/
+
+# Default antigen.log location
+*.log
