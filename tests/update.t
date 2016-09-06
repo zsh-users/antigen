@@ -17,7 +17,7 @@ Run antigen's update.
 
   $ antigen-update
   Updating */test-plugin... Done. Took *s. (glob)
-  
+
 
 Confirm there is still only one repository.
 
@@ -33,4 +33,3 @@ Run update again, with no changes in the origin repo.
 
   $ antigen-update
   Updating */test-plugin... Done. Took *s. (glob)
-  
