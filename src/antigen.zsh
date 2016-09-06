@@ -138,8 +138,10 @@ antigen-bundles () {
 
 antigen-update () {
     # Update your bundles, i.e., `git pull` in all the plugin repos.
-
     date >! $ADOTDIR/revert-info
+
+    # Clear log
+    :> $_ANTIGEN_LOG_PATH
 
     -antigen-echo-record |
         awk '$4 == "true" {print $1}' |
@@ -242,7 +244,7 @@ antigen-revert () {
 
     # A temporary function wrapping the `git` command with repeated arguments.
     --plugin-git () {
-        (cd "$clone_dir" && git --no-pager "$@" 2&>1 >> $_ANTIGEN_LOG_PATH)
+        (cd "$clone_dir" &>> $_ANTIGEN_LOG_PATH && git --no-pager "$@" &>> $_ANTIGEN_LOG_PATH)
     }
 
     # Clone if it doesn't already exist.
@@ -252,7 +254,7 @@ antigen-revert () {
     if [[ ! -d $clone_dir ]]; then
         install_or_update=true
         echo -n "Installing $(-antigen-bundle-short-name $url)... "
-        git clone --recursive "${url%|*}" "$clone_dir" 2&>1 >> $_ANTIGEN_LOG_PATH
+        git clone --recursive "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
         success=$?
     elif $update; then
         install_or_update=true
@@ -270,8 +272,11 @@ antigen-revert () {
 
     if $install_or_update; then
         local took=$(echo $(date +'%s')-$start | bc -l)
-        [[ $success ]] && echo -n "Done. " || echo -n "Error. ";
-        echo "Took ${took}s."
+        if [[ $success -eq 0 ]]; then
+            echo "Done. Took ${took}s."
+        else
+            echo "Error! See $_ANTIGEN_LOG_PATH.";
+        fi
     fi
 
     # If its a specific branch that we want, checkout that branch.
@@ -310,6 +315,10 @@ antigen-revert () {
   fi
 
   [[ $loc != "/" ]] && location="$location$loc"
+
+  if [[ ! -f "$location" && ! -d "$location" ]]; then
+      return 1
+  fi
 
   if [[ -f "$location" ]]; then
       sources="$location"
