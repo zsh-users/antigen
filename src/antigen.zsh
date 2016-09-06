@@ -611,7 +611,13 @@ antigen-help () {
 Antigen is a plugin management system for zsh. It makes it easy to grab awesome
 shell scripts and utilities, put up on github. For further details and complete
 documentation, visit the project's page at 'http://antigen.sharats.me'.
+
 EOF
+    antigen-version
+}
+
+antigen-version () {
+    echo "Antigen $(cat $_ANTIGEN_INSTALL_DIR/VERSION)"
 }
 
 # Load zcache extension if not already loaded
