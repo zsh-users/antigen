@@ -144,8 +144,6 @@ antigen-update () {
         awk '$4 == "true" {print $1}' |
         sort -u |
         while read url; do
-            echo "**** Pulling $url"
-
             local clone_dir="$(-antigen-get-clone-dir "$url")"
             if [[ -d "$clone_dir" ]]; then
                 (echo -n "$clone_dir:"
@@ -214,6 +212,10 @@ antigen-revert () {
     fi
 }
 
+-antigen-bundle-short-name () {
+    echo "$@" | sed -r "s|.*/(.*/.*).git.*$|\1|"
+}
+
 -antigen-ensure-repo () {
 
     # Ensure that a clone exists for the given repo url and branch. If the first
@@ -239,21 +241,36 @@ antigen-revert () {
 
     # A temporary function wrapping the `git` command with repeated arguments.
     --plugin-git () {
-        (cd "$clone_dir" && git --no-pager "$@")
+        (cd "$clone_dir" && git --no-pager "$@" 2&>1 >> antigen.log)
     }
 
     # Clone if it doesn't already exist.
+    local start=$(date +'%s')
+    local install_or_update=false
+    local success=false
     if [[ ! -d $clone_dir ]]; then
-        git clone --recursive "${url%|*}" "$clone_dir"
+        install_or_update=true
+        echo -n "Installing $(-antigen-bundle-short-name $url)... "
+        git clone --recursive "${url%|*}" "$clone_dir" 2&>1 >> antigen.log
+        success=$?
     elif $update; then
+        install_or_update=true
+        echo -n "Updating $(-antigen-bundle-short-name $url)... "
         # Save current revision.
         local old_rev="$(--plugin-git rev-parse HEAD)"
         # Pull changes if update requested.
         --plugin-git pull
         # Update submodules.
         --plugin-git submodule update --recursive
+        success=$?
         # Get the new revision.
         local new_rev="$(--plugin-git rev-parse HEAD)"
+    fi
+
+    if $install_or_update; then
+        local took=$(echo $(date +'%s')-$start | bc -l)
+        [[ $success ]] && echo -n "Done. " || echo -n "Error. ";
+        echo "Took ${took}s."
     fi
 
     # If its a specific branch that we want, checkout that branch.
