@@ -16,17 +16,7 @@ Update the plugin.
 Run antigen's update.
 
   $ antigen-update
-  **** Pulling */test-plugin (glob)
-  From */test-plugin (glob)
-     ???????..???????  master     -> origin/master (glob)
-  Updating ???????..??????? (glob)
-  Fast-forward
-   aliases.zsh |\s+2 \+- (re)
-   1 file changed, 1 insertion(+), 1 deletion(-)
-  Updated from ??????? to ???????. (glob)
-  ??????? Updated message (glob)
-   aliases.zsh |\s+2 \+- (re)
-   1 file changed, 1 insertion(+), 1 deletion(-)
+  Updating */test-plugin... Done. Took *s. (glob)
   
 
 Confirm there is still only one repository.
@@ -42,6 +32,5 @@ The new alias should not activate.
 Run update again, with no changes in the origin repo.
 
   $ antigen-update
-  **** Pulling */test-plugin (glob)
-  Already up-to-date.
+  Updating */test-plugin... Done. Took *s. (glob)
   

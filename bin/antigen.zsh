@@ -10,6 +10,7 @@
 local _ANTIGEN_BUNDLE_RECORD=""
 local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
+local _ANTIGEN_LOG_PATH=${_ANTIGEN_LOG_PATH:-antigen.log}
 local _ZCACHE_EXTENSION_ACTIVE=false
 local _ZCACHE_EXTENSION_LOADED=false
 
@@ -241,7 +242,7 @@ antigen-revert () {
 
     # A temporary function wrapping the `git` command with repeated arguments.
     --plugin-git () {
-        (cd "$clone_dir" && git --no-pager "$@" 2&>1 >> antigen.log)
+        (cd "$clone_dir" && git --no-pager "$@" 2&>1 >> $_ANTIGEN_LOG_PATH)
     }
 
     # Clone if it doesn't already exist.
@@ -251,7 +252,7 @@ antigen-revert () {
     if [[ ! -d $clone_dir ]]; then
         install_or_update=true
         echo -n "Installing $(-antigen-bundle-short-name $url)... "
-        git clone --recursive "${url%|*}" "$clone_dir" 2&>1 >> antigen.log
+        git clone --recursive "${url%|*}" "$clone_dir" 2&>1 >> $_ANTIGEN_LOG_PATH
         success=$?
     elif $update; then
         install_or_update=true
@@ -260,9 +261,9 @@ antigen-revert () {
         local old_rev="$(--plugin-git rev-parse HEAD)"
         # Pull changes if update requested.
         --plugin-git pull
+        success=$?
         # Update submodules.
         --plugin-git submodule update --recursive
-        success=$?
         # Get the new revision.
         local new_rev="$(--plugin-git rev-parse HEAD)"
     fi
