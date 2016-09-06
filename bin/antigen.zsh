@@ -156,8 +156,6 @@ antigen-update () {
 
             # update=true verbose=true
             -antigen-ensure-repo "$url" true true
-
-            echo
         done
 }
 
@@ -273,7 +271,7 @@ antigen-revert () {
     if $install_or_update; then
         local took=$(( $(date +'%s') - $start ))
         if [[ $success -eq 0 ]]; then
-            printf "Done. Took %ds." $took
+            printf "Done. Took %ds.\n" $took
         else
             echo -n "Error! See $_ANTIGEN_LOG_PATH.";
         fi
