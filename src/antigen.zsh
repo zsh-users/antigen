@@ -535,9 +535,9 @@ antigen-snapshot () {
     # The snapshot content lines are pairs of repo-url and git version hash, in
     # the form:
     #   <version-hash> <repo-url>
-    local snapshot_content="$(-antigen-echo-record |
-        grep 'true$' |
-        sed 's/ .*$//' |
+    local snapshot_content="$(
+        -antigen-echo-record |
+        awk '$4 == "true" {print $1}' |
         sort -u |
         while read url; do
             local dir="$(-antigen-get-clone-dir "$url")"
