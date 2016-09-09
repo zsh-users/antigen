@@ -38,7 +38,7 @@ compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
           'url?, loc? ; branch:?, no-local-clone?, btype:?' \
           "$@")"
 
-  # +Check if url is just the plugin name. Super short syntax.
+  # Check if url is just the plugin name. Super short syntax.
   if [[ "$url" != */* ]]; then
       loc="plugins/$url"
       url="$ANTIGEN_DEFAULT_REPO_URL"
