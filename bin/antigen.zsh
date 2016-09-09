@@ -10,6 +10,7 @@
 local _ANTIGEN_BUNDLE_RECORD=""
 local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
+local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
 local _ANTIGEN_LOG_PATH=${_ANTIGEN_LOG_PATH:-$_ANTIGEN_INSTALL_DIR/antigen.log}
 local _ZCACHE_EXTENSION_ACTIVE=false
 local _ZCACHE_EXTENSION_LOADED=false
@@ -827,8 +828,10 @@ antigen () {
 
     # Setup antigen's own completion.
     autoload -Uz compinit
-    #compinit -C
-    compdef _antigen antigen
+    if $_ANTIGEN_COMP_ENABLED; then
+        compinit -C
+        compdef _antigen antigen
+    fi
 
     # Remove private functions.
     unfunction -- -set-default
