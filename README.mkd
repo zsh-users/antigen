@@ -409,11 +409,12 @@ That is, it initializes the canonical repo of the prezto framework,  Your .zshrc
     antigen bundle sorin-ionescu/prezto modules/editor
     antigen bundle sorin-ionescu/prezto modules/git
     antigen bundle sorin-ionescu/prezto modules/prompt
+    antigen apply
 
 Please note that Prezto support is new and experimental. If you find any bugs, please
 report over on github issues.
 Also note that due to how Prezto is implemented Antigen has to alter `ZDOTDIR`
-environment variable, which is restored immediatly after `Antigen apply`.
+environment variable, which is restored immediately after `antigen apply` command.
 
 ### antigen theme
 
