@@ -396,36 +396,25 @@ arguments.
 
 #### prezto
 
-This is (almost, but not quite) the same as doing,
+Use
 
-    antigen bundle sorin-ionescu/prezto
+    antigen use prezto 
 
-That is, it initializes the canonical repo of the prezto framework, with the addition that it also alters the value of the shell parameter `ZDOTDIR`. This will affect how Zsh locates and loads your startup, login, and logout scripts. It is **highly** recommended that you save the original value and reset it after calling `antigen use prezto`. Your .zshrc file could look like this:
+in  your `.zshrc`, before any `antigen bundle` declarations. It takes no further arguments.
 
-    _zdotdir_set=${+parameters[ZDOTDIR]}
-    if (( _zdotdir_set )); then
-        _old_zdotdir=$ZDOTDIR
-    fi
+That is, it initializes the canonical repo of the prezto framework,  Your .zshrc file could look like this:
 
     antigen use prezto
     antigen bundle sorin-ionescu/prezto modules/helper  # required for Git module
     antigen bundle sorin-ionescu/prezto modules/editor
     antigen bundle sorin-ionescu/prezto modules/git
     antigen bundle sorin-ionescu/prezto modules/prompt
+    antigen apply
 
-    if (( _zdotdir_set )); then
-        ZDOTDIR=$_old_zdotdir
-    else
-        unset ZDOTDIR
-        unset _old_zdotdir
-    fi;
-    unset _zdotdir_set
-
-Please note
-that prezto support is very new and experimental in antigen. If you find any
-bugs, please report over on github issues.
-
-Takes no further arguments.
+Please note that Prezto support is new and experimental. If you find any bugs, please
+report over on github issues.
+Also note that due to how Prezto is implemented Antigen has to alter `ZDOTDIR`
+environment variable, which is restored immediately after `antigen apply` command.
 
 ### antigen theme
 
