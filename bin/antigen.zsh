@@ -244,12 +244,6 @@ antigen-revert () {
     --plugin-git () {
         (cd "$clone_dir" &>> $_ANTIGEN_LOG_PATH && git --no-pager "$@" &>> $_ANTIGEN_LOG_PATH)
     }
-    
-    local branch=master
-    if [[ $url == *\|* ]]; then
-        # Get the clone's branch
-        branch="${url#*|}"
-    fi
 
     # Clone if it doesn't already exist.
     local start=$(date +'%s')
@@ -261,6 +255,11 @@ antigen-revert () {
         git clone --recursive "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
         success=$?
     elif $update; then
+        local branch=master
+        if [[ $url == *\|* ]]; then
+            # Get the clone's branch
+            branch="${url#*|}"
+        fi
         install_or_update=true
         echo -n "Updating $(-antigen-bundle-short-name $url)... "
         # Save current revision.
