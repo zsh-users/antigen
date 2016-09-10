@@ -51,7 +51,7 @@ Use selfupdate from normal repository
      ???????..???????  master     -> origin/master (glob)
   Updating ???????..??????? (glob)
   Fast-forward
-   ver | 2 +-
+   ver |*2 +- (glob)
    1 file changed, 1 insertion(+), 1 deletion(-)
   $ _ANTIGEN_INSTALL_DIR=$TEST_NORMAL antigen-selfupdate
   Already up-to-date.
@@ -63,7 +63,7 @@ Use selfupdate from submodule repository
      ???????..???????  master     -> origin/master (glob)
   Updating ???????..??????? (glob)
   Fast-forward
-   ver | 2 +-
+   ver |*2 +- (glob)
    1 file changed, 1 insertion(+), 1 deletion(-)
   $ _ANTIGEN_INSTALL_DIR=$TEST_SUBMODULE/antigen antigen-selfupdate
   Already up-to-date.

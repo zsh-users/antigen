@@ -2,7 +2,7 @@
 
 ### A plugin manager for zsh, inspired by oh-my-zsh and vundle. 
 
-[![Build Status](https://img.shields.io/travis/zsh-users/antigen/master.svg?label=stable)](http://travis-ci.org/zsh-users/antigen) [![Build Status](https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=next)](http://travis-ci.org/zsh-users/antigen)
+[![Latest](https://img.shields.io/github/release/zsh-users/antigen.svg?label=latest)](https://github.com/zsh-users/antigen/releases/latest) [![Build Status](https://img.shields.io/travis/zsh-users/antigen/master.svg?label=stable)](http://travis-ci.org/zsh-users/antigen) [![Build Status](https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=next)](http://travis-ci.org/zsh-users/antigen)
 
 [Installation](#installation) | [Configuration](#configuration) | [Bug tracker](https://github.com/zsh-users/antigen/issues) | [Discussions](https://trello.com/b/P0xrGgfT/antigen) | [Chat](https://gitter.im/antigen-zsh/develop) | [License](http://mit.sharats.me/)
 
@@ -11,6 +11,8 @@ plugins, called bundles. The concept is pretty much the same as bundles in a
 typical vim+pathogen setup. Antigen is to zsh, what [Vundle][] is to vim.
 
 > [Donate to Antigen](https://gum.co/antigen)
+
+[![https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce](https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce.png)](https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce)
 
 Antigen has reached a certain level of stability and has been used in the wild
 for around a couple of years. If you face any problems, please open an issue.
@@ -31,7 +33,7 @@ sample, if you will.
 
 Get and load antigen.
 
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.0.4/antigen.zsh > antigen.zsh
+    curl https://cdn.rawgit.com/zsh-users/antigen/v1.1.0/bin/antigen.zsh > antigen.zsh
     source antigen.zsh
 
 There. You now have all the antigen goodies. Let's try install some plugins. How
@@ -396,36 +398,25 @@ arguments.
 
 #### prezto
 
-This is (almost, but not quite) the same as doing,
+Use
 
-    antigen bundle sorin-ionescu/prezto
+    antigen use prezto 
 
-That is, it initializes the canonical repo of the prezto framework, with the addition that it also alters the value of the shell parameter `ZDOTDIR`. This will affect how Zsh locates and loads your startup, login, and logout scripts. It is **highly** recommended that you save the original value and reset it after calling `antigen use prezto`. Your .zshrc file could look like this:
+in  your `.zshrc`, before any `antigen bundle` declarations. It takes no further arguments.
 
-    _zdotdir_set=${+parameters[ZDOTDIR]}
-    if (( _zdotdir_set )); then
-        _old_zdotdir=$ZDOTDIR
-    fi
+That is, it initializes the canonical repo of the prezto framework,  Your .zshrc file could look like this:
 
     antigen use prezto
     antigen bundle sorin-ionescu/prezto modules/helper  # required for Git module
     antigen bundle sorin-ionescu/prezto modules/editor
     antigen bundle sorin-ionescu/prezto modules/git
     antigen bundle sorin-ionescu/prezto modules/prompt
+    antigen apply
 
-    if (( _zdotdir_set )); then
-        ZDOTDIR=$_old_zdotdir
-    else
-        unset ZDOTDIR
-        unset _old_zdotdir
-    fi;
-    unset _zdotdir_set
-
-Please note
-that prezto support is very new and experimental in antigen. If you find any
-bugs, please report over on github issues.
-
-Takes no further arguments.
+Please note that Prezto support is new and experimental. If you find any bugs, please
+report over on github issues.
+Also note that due to how Prezto is implemented Antigen has to alter `ZDOTDIR`
+environment variable, which is restored immediately after `antigen apply` command.
 
 ### antigen theme
 
@@ -528,7 +519,7 @@ looks good as output on the command line.
 
 Install Antigen from our main repository for the latests and greatests version available:
 
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.0.4/antigen.zsh > antigen.zsh
+    curl https://cdn.rawgit.com/zsh-users/antigen/v1.1.0/bin/antigen.zsh > antigen.zsh
 
 Or using your system package manager:
 

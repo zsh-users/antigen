@@ -32,18 +32,7 @@ Confirm we currently have the old version.
 Run antigen's update.
 
   $ antigen-update
-  **** Pulling */test-plugin (glob)
-  From */test-plugin (glob)
-     ???????..???????  master     -> origin/master (glob)
-  Updating ???????..??????? (glob)
-  Fast-forward
-   aliases.zsh |\s+2 \+- (re)
-   1 file changed, 1 insertion(+), 1 deletion(-)
-  Updated from ??????? to ???????. (glob)
-  ??????? Updated message (glob)
-   aliases.zsh |\s+2 +- (re)
-   1 file changed, 1 insertion(+), 1 deletion(-)
-  
+  Updating */test-plugin... Done. Took *s. (glob)
 
 Confirm we have the new version.
 
