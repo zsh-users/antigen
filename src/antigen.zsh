@@ -634,7 +634,7 @@ EOF
 }
 
 antigen-version () {
-    echo "Antigen $(cat $_ANTIGEN_INSTALL_DIR/VERSION)"
+    echo "Antigen {{ANTIGEN_VERSION}}"
 }
 
 # Load zcache extension if not already loaded

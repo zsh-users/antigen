@@ -20,6 +20,7 @@ install:
 build:
 	sed -e '/source.*\/ext\/.*\.zsh.*/d' ${PROJECT}/src/antigen.zsh > ${BIN}/antigen.zsh
 	cat ${PROJECT}/src/ext/*.zsh >> ${BIN}/antigen.zsh
+	sed "s/{{ANTIGEN_VERSION}}/$$(cat ${PROJECT}/VERSION)/" -i ${BIN}/antigen.zsh
 
 release:
 	git describe --abbrev=0 --tags > ${PROJECT}/VERSION
