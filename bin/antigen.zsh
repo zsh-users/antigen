@@ -237,7 +237,7 @@ antigen-revert () {
     local verbose=${3:-false}
 
     shift $#
-
+    
     # Get the clone's directory as per the given repo url and branch.
     local clone_dir="$(-antigen-get-clone-dir $url)"
 
@@ -256,12 +256,18 @@ antigen-revert () {
         git clone --recursive "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
         success=$?
     elif $update; then
+        local branch=master
+        if [[ $url == *\|* ]]; then
+            # Get the clone's branch
+            branch="${url#*|}"
+        fi
         install_or_update=true
         echo -n "Updating $(-antigen-bundle-short-name $url)... "
         # Save current revision.
         local old_rev="$(--plugin-git rev-parse HEAD)"
         # Pull changes if update requested.
-        --plugin-git pull
+        --plugin-git checkout $branch
+        --plugin-git pull origin $branch
         success=$?
         # Update submodules.
         --plugin-git submodule update --recursive
