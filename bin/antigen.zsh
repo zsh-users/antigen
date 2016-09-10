@@ -634,7 +634,7 @@ EOF
 }
 
 antigen-version () {
-    echo "Antigen v1.0.4"
+    echo "Antigen v1.1.0"
 }
 
 # Load zcache extension if not already loaded
