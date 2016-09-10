@@ -864,13 +864,13 @@ _antigen () {
 
   if $_ANTIGEN_CACHE_ENABLED; then
       _1st_arguments+=(
-      'cache-reset:Clears bundle cache',
+      'cache-reset:Clears bundle cache'
       'init:Load Antigen configuration from file'
       )
   fi
 
   _1st_arguments+=(
-  'help:Show this message',
+  'help:Show this message'
   'version:Display Antigen version'
   )
 
