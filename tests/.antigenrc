@@ -10,8 +10,27 @@ antigen bundles <<EOBUNDLES
   desyncr/vagrant-zsh-completion
   felixr/docker-zsh-completion
   #paoloantinori/hhighlighter h.sh
+  bbenne10/goenv
+  bric3/nice-exit-code
+  caarlos0/zsh-add-upstream
+  caarlos0/zsh-git-fetch-merge
+  caarlos0/zsh-git-sync
+  caarlos0/zsh-mkc
+  peterhurford/git-it-on.zsh
+  caarlos0/jvm.git
+  caarlos0/zsh-open-pr
+  junegunn/fzf
+  mafredri/zsh-async
+  mollifier/cd-gitroot
+  oz/safe-paste # comment appended to the line
+  caarlos0/ports
+  djui/alias-tips
+  supercrabtree/k
+  Tarrasch/zsh-autoenv
+  Tarrasch/zsh-bd
+  Tarrasch/zsh-colors
 EOBUNDLES
 
-antigen theme desyncr/powerlevel9k powerlevel9k --branch=dritter/prezto
+antigen theme pure
 
 antigen apply
