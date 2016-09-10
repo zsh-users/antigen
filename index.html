@@ -26,7 +26,7 @@
 <h3>
 <a id="a-plugin-manager-for-zsh-inspired-by-oh-my-zsh-and-vundle" class="anchor" href="#a-plugin-manager-for-zsh-inspired-by-oh-my-zsh-and-vundle" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>A plugin manager for zsh, inspired by oh-my-zsh and vundle.</h3>
 
-<p><a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/master.svg?label=stable" alt="Build Status"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=next" alt="Build Status"></a></p>
+<p><a href="https://github.com/zsh-users/antigen/releases/latest"><img src="https://img.shields.io/github/release/zsh-users/antigen.svg?label=latest" alt="Latest"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/master.svg?label=stable" alt="Build Status"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=next" alt="Build Status"></a></p>
 
 <p><a href="#installation">Installation</a> | <a href="#configuration">Configuration</a> | <a href="https://github.com/zsh-users/antigen/issues">Bug tracker</a> | <a href="https://trello.com/b/P0xrGgfT/antigen">Discussions</a> | <a href="https://gitter.im/antigen-zsh/develop">Chat</a> | <a href="http://mit.sharats.me/">License</a></p>
 
@@ -37,6 +37,8 @@ typical vim+pathogen setup. Antigen is to zsh, what <a href="https://github.com/
 <blockquote>
 <p><a href="https://gum.co/antigen">Donate to Antigen</a></p>
 </blockquote>
+
+<p><a href="https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce"><img src="https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce.png" alt="https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce"></a></p>
 
 <p>Antigen has reached a certain level of stability and has been used in the wild
 for around a couple of years. If you face any problems, please open an issue.</p>
@@ -60,7 +62,7 @@ sample, if you will.</p>
 
 <p>Get and load antigen.</p>
 
-<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.0.4/antigen.zsh &gt; antigen.zsh
+<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.1.0/bin/antigen.zsh &gt; antigen.zsh
 source antigen.zsh
 </code></pre>
 
@@ -461,38 +463,27 @@ arguments.</p>
 <h4>
 <a id="prezto" class="anchor" href="#prezto" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>prezto</h4>
 
-<p>This is (almost, but not quite) the same as doing,</p>
+<p>Use</p>
 
-<pre><code>antigen bundle sorin-ionescu/prezto
+<pre><code>antigen use prezto 
 </code></pre>
 
-<p>That is, it initializes the canonical repo of the prezto framework, with the addition that it also alters the value of the shell parameter <code>ZDOTDIR</code>. This will affect how Zsh locates and loads your startup, login, and logout scripts. It is <strong>highly</strong> recommended that you save the original value and reset it after calling <code>antigen use prezto</code>. Your .zshrc file could look like this:</p>
+<p>in  your <code>.zshrc</code>, before any <code>antigen bundle</code> declarations. It takes no further arguments.</p>
 
-<pre><code>_zdotdir_set=${+parameters[ZDOTDIR]}
-if (( _zdotdir_set )); then
-    _old_zdotdir=$ZDOTDIR
-fi
+<p>That is, it initializes the canonical repo of the prezto framework,  Your .zshrc file could look like this:</p>
 
-antigen use prezto
+<pre><code>antigen use prezto
 antigen bundle sorin-ionescu/prezto modules/helper  # required for Git module
 antigen bundle sorin-ionescu/prezto modules/editor
 antigen bundle sorin-ionescu/prezto modules/git
 antigen bundle sorin-ionescu/prezto modules/prompt
-
-if (( _zdotdir_set )); then
-    ZDOTDIR=$_old_zdotdir
-else
-    unset ZDOTDIR
-    unset _old_zdotdir
-fi;
-unset _zdotdir_set
+antigen apply
 </code></pre>
 
-<p>Please note
-that prezto support is very new and experimental in antigen. If you find any
-bugs, please report over on github issues.</p>
-
-<p>Takes no further arguments.</p>
+<p>Please note that Prezto support is new and experimental. If you find any bugs, please
+report over on github issues.
+Also note that due to how Prezto is implemented Antigen has to alter <code>ZDOTDIR</code>
+environment variable, which is restored immediately after <code>antigen apply</code> command.</p>
 
 <h3>
 <a id="antigen-theme" class="anchor" href="#antigen-theme" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen theme</h3>
@@ -607,7 +598,7 @@ looks good as output on the command line.</p>
 
 <p>Install Antigen from our main repository for the latests and greatests version available:</p>
 
-<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.0.4/antigen.zsh &gt; antigen.zsh
+<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.1.0/bin/antigen.zsh &gt; antigen.zsh
 </code></pre>
 
 <p>Or using your system package manager:</p>
