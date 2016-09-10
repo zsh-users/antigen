@@ -634,7 +634,7 @@ EOF
 }
 
 antigen-version () {
-    echo "Antigen $(cat $_ANTIGEN_INSTALL_DIR/VERSION)"
+    echo "Antigen {{ANTIGEN_VERSION}}"
 }
 
 # Load zcache extension if not already loaded
@@ -863,9 +863,17 @@ _antigen () {
     'selfupdate:Update antigen itself'
   );
 
-  $_ANTIGEN_CACHE_ENABLED && _1st_arguments+=('cache-reset:Clears bundle cache')
+  if $_ANTIGEN_CACHE_ENABLED; then
+      _1st_arguments+=(
+      'cache-reset:Clears bundle cache'
+      'init:Load Antigen configuration from file'
+      )
+  fi
 
-  _1st_arguments+=('help:Show this message')
+  _1st_arguments+=(
+  'help:Show this message'
+  'version:Display Antigen version'
+  )
 
   __bundle() {
     _arguments \
