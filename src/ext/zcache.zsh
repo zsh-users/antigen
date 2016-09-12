@@ -41,6 +41,7 @@ local -a _ZCACHE_BUNDLES
     local -a _extensions_paths
     local -a _bundles_meta
     local _payload=''
+    local location
 
     _payload+="#-- START ZCACHE GENERATED FILE\NL"
     _payload+="#-- GENERATED: $(date)\NL"
@@ -54,11 +55,20 @@ local -a _ZCACHE_BUNDLES
                 _payload+="#-- SOURCE: $line\NL"
                 _payload+=$(-zcache-process-source "$line")
                 _payload+="\NL;#-- END SOURCE\NL"
-            elif [[ -d "$line" ]]; then
-                _extensions_paths+=("$line")
             fi
         done
+
+        if $make_local_clone; then
+            location="$(-antigen-get-clone-dir "$url")/$loc"
+        else
+            location="$url/"
+        fi
+        # Add to $fpath, for completion(s), if not in there already
+        if (( ! ${_extensions_paths[(I)$location]} )); then
+            _extensions_paths+=($location)
+        fi
     done
+
     _payload+="fpath+=(${(j: :)_extensions_paths});\NL"
     _payload+="unset __ZCACHE_FILE_PATH\NL"
     # \NL (\n) prefix is for backward compatibility
