@@ -369,11 +369,15 @@ antigen-revert () {
   local src
 
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone"); do
-      if [[ -f "$location" ]]; then
-        source "$src"
+      if [[ -d "$src" ]]; then
+          if (( ! ${fpath[(I)$location]} )); then
+              fpath=($location $fpath)
+          fi
+      else
+          source "$src"
       fi
   done
-  
+
   local location
   if $make_local_clone; then
       location="$(-antigen-get-clone-dir "$url")/$loc"

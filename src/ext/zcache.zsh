@@ -55,6 +55,8 @@ local -a _ZCACHE_BUNDLES
                 _payload+="#-- SOURCE: $line\NL"
                 _payload+=$(-zcache-process-source "$line")
                 _payload+="\NL;#-- END SOURCE\NL"
+            elif [[ -d "$line" ]]; then
+                _extensions_paths+=("$line")
             fi
         done
 
