@@ -11,7 +11,7 @@ New environment variables:
   - `_ANTIGEN_COMP_ENABLED`: Flag to enable/disable Antigen own completions
   `compinit`, which adds `~0.02s` to load time.
 
-  - `_ANTIGEN_CACHE_ENABLED`: Flat to enable/disable cache system.
+  - `_ANTIGEN_CACHE_ENABLED`: Flag to enable/disable cache system.
 
 New commands:
 
