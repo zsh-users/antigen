@@ -561,11 +561,11 @@ system. The latest version on that website, as of today is v0.5, which does not
 have the `--shell` argument which is required to run our tests. So, to get the
 correct version of cram, run
 
-    pip install -r requirements.txt
+    pip install cram==0.0.6
 
 With that, once you have cram installed, you can run the tests as
 
-    make
+    make tests PYENV= SHELL=zsh
 
 If you are making a feature addition, I'd really appreciate if you can add a
 test for your feature. Even if you can add a test for an existing feature, that
