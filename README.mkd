@@ -561,7 +561,7 @@ system. The latest version on that website, as of today is v0.5, which does not
 have the `--shell` argument which is required to run our tests. So, to get the
 correct version of cram, run
 
-    pip install -r cram==0.0.6
+    pip install cram==0.0.6
 
 With that, once you have cram installed, you can run the tests as
 
