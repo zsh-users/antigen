@@ -15,7 +15,7 @@ local -a _ZCACHE_BUNDLES
 # Returns
 #   Returns the cached sources without $0 and ${0} references
 -zcache-process-source () {
-    cat "$1"     \
+    cat "$1" \
         | sed $'/\${0/i\\\n__ZCACHE_FILE_PATH=\''$1$'\'\n' \
         | sed -e "s/\${0/\${__ZCACHE_FILE_PATH/" \
         | sed $'/\$0/i\\\n__ZCACHE_FILE_PATH=\''$1$'\'\n' \
@@ -78,7 +78,7 @@ local -a _ZCACHE_BUNDLES
     _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
-    echo -E $_payload | sed 's/\\NL/\'$'\n/g' >>! $_ZCACHE_PAYLOAD_PATH
+    /bin/echo -E $_payload | sed 's/\\NL/\'$'\n/g' >>! $_ZCACHE_PAYLOAD_PATH
     echo "${(j:\n:)_bundles_meta}" >>! $_ZCACHE_META_PATH
 }
 
