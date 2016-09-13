@@ -27,3 +27,8 @@ The alias defined in the other zsh file should not be available.
   $ unsourced-alias
   zsh: command not found: unsourced-alias
   [127]
+
+Fpath should be updated correctly.
+
+  $ echo ${(j:\n:)fpath} | grep -Pco test-plugin
+  2
