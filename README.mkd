@@ -565,7 +565,7 @@ correct version of cram, run
 
 With that, once you have cram installed, you can run the tests as
 
-    make PYENV= SHELL=zsh
+    make tests PYENV= SHELL=zsh
 
 If you are making a feature addition, I'd really appreciate if you can add a
 test for your feature. Even if you can add a test for an existing feature, that
