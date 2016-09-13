@@ -59,6 +59,14 @@ Respect escape sequences.
   $ cat $_ZCACHE_PAYLOAD_PATH | grep prompt
   alias prompt="\e]$ >\a\n"
 
+Cache is saved correctly.
+
+  $ cat $_ZCACHE_PAYLOAD_PATH | wc -l
+  17
+
+  $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pzc 'hehe2"\nalias prompt'
+  1
+
 Can clear cache correctly.
 
   $ antigen cache-reset
