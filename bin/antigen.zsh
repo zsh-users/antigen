@@ -1004,7 +1004,7 @@ local -a _ZCACHE_BUNDLES
     _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
-    /bin/echo -E $_payload | sed 's/\\NL/\'$'\n/g' >>! $_ZCACHE_PAYLOAD_PATH
+    echo -E $_payload | sed 's/\\NL/\'$'\n/g' >>! $_ZCACHE_PAYLOAD_PATH
     echo "${(j:\n:)_bundles_meta}" >>! $_ZCACHE_META_PATH
 }
 
