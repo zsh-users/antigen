@@ -62,7 +62,7 @@ sample, if you will.</p>
 
 <p>Get and load antigen.</p>
 
-<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.1.0/bin/antigen.zsh &gt; antigen.zsh
+<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.1.1/bin/antigen.zsh &gt; antigen.zsh
 source antigen.zsh
 </code></pre>
 
@@ -598,7 +598,7 @@ looks good as output on the command line.</p>
 
 <p>Install Antigen from our main repository for the latests and greatests version available:</p>
 
-<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.1.0/bin/antigen.zsh &gt; antigen.zsh
+<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.1.1/bin/antigen.zsh &gt; antigen.zsh
 </code></pre>
 
 <p>Or using your system package manager:</p>
@@ -649,12 +649,12 @@ system. The latest version on that website, as of today is v0.5, which does not
 have the <code>--shell</code> argument which is required to run our tests. So, to get the
 correct version of cram, run</p>
 
-<pre><code>pip install -r requirements.txt
+<pre><code>pip install cram==0.0.6
 </code></pre>
 
 <p>With that, once you have cram installed, you can run the tests as</p>
 
-<pre><code>make
+<pre><code>make tests PYENV= SHELL=zsh
 </code></pre>
 
 <p>If you are making a feature addition, I'd really appreciate if you can add a
