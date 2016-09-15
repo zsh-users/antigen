@@ -5,7 +5,7 @@
 export ADOTDIR="$PWD/dot-antigen"
 
 export _ANTIGEN_CACHE_PATH="$TESTDIR/.cache"
-export _ANTIGEN_CACHE_ENABLED=false
+export _ANTIGEN_CACHE_ENABLED=true
 
 test -f "$TESTDIR/.zcompdump" && rm "$TESTDIR/.zcompdump"
 
