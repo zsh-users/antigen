@@ -62,9 +62,15 @@ Respect escape sequences.
 Cache is saved correctly.
 
   $ cat $_ZCACHE_PAYLOAD_PATH | wc -l
-  17
+  18
 
   $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pzc 'hehe2"\nalias prompt'
+  1
+
+Cache version matches antigen version.
+
+  $ ANTIGEN_VERSION=$(antigen version | sed 's/Antigen //')
+  $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pzc "$ANTIGEN_VERSION"
   1
 
 Can clear cache correctly.
