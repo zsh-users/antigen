@@ -67,6 +67,11 @@ Cache is saved correctly.
   $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pzc 'hehe2"\nalias prompt'
   1
 
+  $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pc 'local root=\${__ZCACHE_FILE_PATH:A:h}'
+  1
+
+  $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pc 'echo \$root/\$0'
+
 Cache version matches antigen version.
 
   $ ANTIGEN_VERSION=$(antigen version | sed 's/Antigen //')

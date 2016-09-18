@@ -935,6 +935,8 @@ local -a _ZCACHE_BUNDLES
 #
 # This is needed otherwise plugins trying to source from a different path
 # will break as those are now located at $_ZCACHE_PAYLOAD_PATH
+# 
+# This does avoid function-context $0 references.
 #
 # Usage
 #   -zcache-process-source "/path/to/source"
@@ -943,8 +945,8 @@ local -a _ZCACHE_BUNDLES
 #   Returns the cached sources without $0 and ${0} references
 -zcache-process-source () {
     cat "$1" | sed -Ee '/\{$/,/^\}/!{
-            /\$.?0/i\\n_ZCACHE_FILE_PATH="'$1'"
-            s/\$(.?)0/\$\1_ZCACHE_FILE_PATH/
+            /\$.?0/i\\n__ZCACHE_FILE_PATH="'$1'"
+            s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/
         }'
 }
 
