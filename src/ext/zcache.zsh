@@ -8,6 +8,8 @@ local -a _ZCACHE_BUNDLES
 #
 # This is needed otherwise plugins trying to source from a different path
 # will break as those are now located at $_ZCACHE_PAYLOAD_PATH
+# 
+# This does avoid function-context $0 references.
 #
 # Usage
 #   -zcache-process-source "/path/to/source"
@@ -15,11 +17,10 @@ local -a _ZCACHE_BUNDLES
 # Returns
 #   Returns the cached sources without $0 and ${0} references
 -zcache-process-source () {
-    cat "$1" \
-        | sed $'/\${0/i\\\n__ZCACHE_FILE_PATH=\''$1$'\'\n' \
-        | sed -e "s/\${0/\${__ZCACHE_FILE_PATH/" \
-        | sed $'/\$0/i\\\n__ZCACHE_FILE_PATH=\''$1$'\'\n' \
-        | sed -e "s/\$0/\$__ZCACHE_FILE_PATH/"
+    cat "$1" | sed -Ee '/\{$/,/^\}/!{
+            /\$.?0/i\\n__ZCACHE_FILE_PATH="'$1'"
+            s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/
+        }'
 }
 
 # Generates cache from listed bundles.
@@ -45,6 +46,7 @@ local -a _ZCACHE_BUNDLES
 
     _payload+="#-- START ZCACHE GENERATED FILE\NL"
     _payload+="#-- GENERATED: $(date)\NL"
+    _payload+='#-- ANTIGEN {{ANTIGEN_VERSION}}\NL'
     for bundle in $_ZCACHE_BUNDLES; do
         # -antigen-load-list "$url" "$loc" "$make_local_clone"
         eval "$(-antigen-parse-bundle ${=bundle})"
@@ -76,6 +78,7 @@ local -a _ZCACHE_BUNDLES
     # \NL (\n) prefix is for backward compatibility
     _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
     _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
+    _payload+="export _ZCACHE_CACHE_VERSION={{ANTIGEN_VERSION}}\NL"
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
     echo -E $_payload | sed 's/\\NL/\'$'\n/g' >>! $_ZCACHE_PAYLOAD_PATH
