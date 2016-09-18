@@ -62,15 +62,24 @@ Respect escape sequences.
 Cache is saved correctly.
 
   $ cat $_ZCACHE_PAYLOAD_PATH | wc -l
-  19
+  25
 
   $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pzc 'hehe2"\nalias prompt'
+  1
+
+  $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pc 'local root=\${__ZCACHE_FILE_PATH}'
+  1
+
+  $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pc 'echo \$root/\$0'
   1
 
 Cache version matches antigen version.
 
   $ ANTIGEN_VERSION=$(antigen version | sed 's/Antigen //')
   $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pzc "$ANTIGEN_VERSION"
+  1
+
+  $ if [[ "$ANTIGEN_VERSION" == "$_ZCACHE_CACHE_VERSION" ]]; then echo 1; else echo 0; fi
   1
 
 Can clear cache correctly.
