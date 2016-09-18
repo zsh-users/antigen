@@ -62,7 +62,7 @@ Respect escape sequences.
 Cache is saved correctly.
 
   $ cat $_ZCACHE_PAYLOAD_PATH | wc -l
-  19
+  25
 
   $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pzc 'hehe2"\nalias prompt'
   1
@@ -71,6 +71,7 @@ Cache is saved correctly.
   1
 
   $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pc 'echo \$root/\$0'
+  1
 
 Cache version matches antigen version.
 
