@@ -15,11 +15,10 @@ local -a _ZCACHE_BUNDLES
 # Returns
 #   Returns the cached sources without $0 and ${0} references
 -zcache-process-source () {
-    cat "$1" \
-        | sed $'/\${0/i\\\n__ZCACHE_FILE_PATH=\''$1$'\'\n' \
-        | sed -e "s/\${0/\${__ZCACHE_FILE_PATH/" \
-        | sed $'/\$0/i\\\n__ZCACHE_FILE_PATH=\''$1$'\'\n' \
-        | sed -e "s/\$0/\$__ZCACHE_FILE_PATH/"
+    cat "$1" | sed -Ee '/\{$/,/^\}/!{
+            /\$.?0/i\\n_ZCACHE_FILE_PATH="'$1'"
+            s/\$(.?)0/\$\1_ZCACHE_FILE_PATH/
+        }'
 }
 
 # Generates cache from listed bundles.
