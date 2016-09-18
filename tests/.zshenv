@@ -38,7 +38,7 @@ alias pg2='git --git-dir "$PLUGIN_DIR2/.git" --work-tree "$PLUGIN_DIR2"'
 
 echo 'alias hehe2="echo hehe2"' > "$PLUGIN_DIR2"/init.zsh
 echo -E 'alias prompt="\e]$ >\a\n"' >> "$PLUGIN_DIR2"/init.zsh
-echo 'local root=${0:A:h}' >> "$PLUGIN_DIR2"/init.zsh
+echo 'local root=${0}' >> "$PLUGIN_DIR2"/init.zsh
 echo 'function root_source () {
         echo $root/$0
     }' >> "$PLUGIN_DIR2"/init.zsh
