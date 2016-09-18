@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.2] - 2016-09-16
+
+### Changed
+- [#234] Cache process-source function now handles function-context
+- [#233] Antigen selfupdate command now clears cache automatically
+ 
+### Fixed
+- [#219] Issue with zsh-navigation-tools plugin and powerlevel9k theme
+- [#230] Issue with stalled cache
+
+Thanks @xasx, @ilkka, @NelsonBrandao and everyone who reported
+issues and provided feedback.
+
 ## [1.1.1] - 2016-09-13
 
 ### Changed
@@ -13,7 +26,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [#224] Update README.md
 
 Thanks @xasx, @azu and @mikeys
-
 
 ## [1.1.0] - 2016-09-10 
 
