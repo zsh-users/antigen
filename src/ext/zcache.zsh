@@ -45,6 +45,7 @@ local -a _ZCACHE_BUNDLES
 
     _payload+="#-- START ZCACHE GENERATED FILE\NL"
     _payload+="#-- GENERATED: $(date)\NL"
+    _payload+='#-- ANTIGEN {{ANTIGEN_VERSION}}\NL'
     for bundle in $_ZCACHE_BUNDLES; do
         # -antigen-load-list "$url" "$loc" "$make_local_clone"
         eval "$(-antigen-parse-bundle ${=bundle})"
@@ -76,6 +77,7 @@ local -a _ZCACHE_BUNDLES
     # \NL (\n) prefix is for backward compatibility
     _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
     _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
+    _payload+="export _ZCACHE_CACHE_VERSION={{ANTIGEN_VERSION}}\NL"
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
     echo -E $_payload | sed 's/\\NL/\'$'\n/g' >>! $_ZCACHE_PAYLOAD_PATH

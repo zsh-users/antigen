@@ -406,6 +406,7 @@ antigen-selfupdate () {
             git checkout master
         fi
         git pull
+        $_ANTIGEN_CACHE_ENABLED && antigen-cache-reset &>> /dev/null
     )
 }
 
