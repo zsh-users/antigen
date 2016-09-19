@@ -62,7 +62,7 @@ Respect escape sequences.
 Cache is saved correctly.
 
   $ cat $_ZCACHE_PAYLOAD_PATH | wc -l
-  25
+  24
 
   $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pzc 'hehe2"\nalias prompt'
   1
