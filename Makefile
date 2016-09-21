@@ -41,7 +41,7 @@ release: build
 publish:
 	# Build release commit
 	git add .
-	git commit -m 'Build release ' $$(cat ${PROJECT}/VERSION)
+	git commit -m "Build release $$(cat ${PROJECT}/VERSION)"
 	git push release/$$(cat ${PROJECT}/VERSION)
 
 clean:
