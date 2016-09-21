@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.3] - 2016-09-20
+
+### Changed
+- [#236] Add Makefile release and publish tasks
+ 
+### Fixed
+- [#239] Issue with BSD sed (MacOS, FreeBSD) 
+
+Thanks @pawelad, @laurenbenichou, @zawadzkip and everyone who reported
+issues and provided feedback.
+
 ## [1.1.2] - 2016-09-16
 
 ### Changed
