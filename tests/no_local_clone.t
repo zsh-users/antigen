@@ -9,7 +9,7 @@ Check if the plugin is loaded correctly.
 
 Confirm no clone is made.
 
-  $ test -d dot-antigen
+  $ test -d "$ADOTDIR/repos"
   [1]
 
 Load the plugin with a clone.

@@ -3,8 +3,8 @@
 # See cram's documentation for some of the variables used below.
 
 export ADOTDIR="$PWD/dot-antigen"
+[[ ! -d "$ADOTDIR" ]] && mkdir -p "$ADOTDIR"
 
-export _ANTIGEN_CACHE_PATH="$TESTDIR/.cache"
 export _ANTIGEN_CACHE_ENABLED=true
 
 test -f "$TESTDIR/.zcompdump" && rm "$TESTDIR/.zcompdump"
