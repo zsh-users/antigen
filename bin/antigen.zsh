@@ -11,7 +11,6 @@ local _ANTIGEN_BUNDLE_RECORD=""
 local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
 local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
-local _ANTIGEN_LOG_PATH=${_ANTIGEN_LOG_PATH:-$_ANTIGEN_INSTALL_DIR/antigen.log}
 local _ZCACHE_EXTENSION_ACTIVE=false
 local _ZCACHE_EXTENSION_LOADED=false
 
@@ -846,6 +845,7 @@ antigen () {
     -set-default ANTIGEN_DEFAULT_REPO_URL \
         https://github.com/robbyrussell/oh-my-zsh.git
     -set-default ADOTDIR $HOME/.antigen
+    -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
 
     # Setup antigen's own completion.
     autoload -Uz compinit
@@ -925,7 +925,7 @@ _antigen () {
 }
 
 -antigen-env-setup
-export _ZCACHE_PATH="${_ANTIGEN_CACHE_PATH:-$_ANTIGEN_INSTALL_DIR/.cache}"
+export _ZCACHE_PATH="${_ANTIGEN_CACHE_PATH:-$ADOTDIR/.cache}"
 export _ZCACHE_PAYLOAD_PATH="$_ZCACHE_PATH/.zcache-payload"
 export _ZCACHE_META_PATH="$_ZCACHE_PATH/.zcache-meta"
 export _ZCACHE_EXTENSION_LOADED=true

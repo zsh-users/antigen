@@ -1,4 +1,4 @@
-export _ZCACHE_PATH="${_ANTIGEN_CACHE_PATH:-$_ANTIGEN_INSTALL_DIR/.cache}"
+export _ZCACHE_PATH="${_ANTIGEN_CACHE_PATH:-$ADOTDIR/.cache}"
 export _ZCACHE_PAYLOAD_PATH="$_ZCACHE_PATH/.zcache-payload"
 export _ZCACHE_META_PATH="$_ZCACHE_PATH/.zcache-meta"
 export _ZCACHE_EXTENSION_LOADED=true

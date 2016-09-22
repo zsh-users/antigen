@@ -2,14 +2,10 @@ antigen bundles <<EOBUNDLES
   git
   command-not-found
   colored-man-pages
-  #zsh-users/zsh-autosuggestions
   zsh-users/zsh-completions
-  #jimhester/per-directory-history
-  #zsh-users/zsh-syntax-highlighting
   zsh-users/zsh-history-substring-search
   desyncr/vagrant-zsh-completion
   felixr/docker-zsh-completion
-  #paoloantinori/hhighlighter h.sh
   bbenne10/goenv
   bric3/nice-exit-code
   caarlos0/zsh-add-upstream
@@ -24,13 +20,21 @@ antigen bundles <<EOBUNDLES
   mollifier/cd-gitroot
   oz/safe-paste # comment appended to the line
   caarlos0/ports
-  djui/alias-tips
   supercrabtree/k
-  Tarrasch/zsh-autoenv
   Tarrasch/zsh-bd
   Tarrasch/zsh-colors
+  heroku
+  unixorn/git-extra-commands
+  rimraf/k
+  gitfast
+  jsontools
+  github
+  git-extras
+  web-search
+  grunt
+  chrissicool/zsh-256color
+  pass
+  sprunge
 EOBUNDLES
-
-antigen theme pure
 
 antigen apply

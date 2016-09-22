@@ -14,6 +14,7 @@ cache:
 env:
   global:
     - ANTIGEN=$TRAVIS_BUILD_DIR
+    - ADOTDIR=$TRAVIS_BUILD_DIR
     - ZSH_REMOTE_URL=https://github.com/zsh-users/zsh.git
     - BUILDS_PATH=$HOME/.zsh-builds
     - ZSH_SOURCE=$HOME/zsh
