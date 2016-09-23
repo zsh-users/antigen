@@ -28,7 +28,7 @@ env:
 
 install:
   # Install python requirements.
-  - "pip install cram==0.6"
+  - "make deps"
 
   # Install zsh versions from source.
   - "./tests/build-zsh.sh $ZSH_VERSION $BUILDS_PATH $ZSH_SOURCE"

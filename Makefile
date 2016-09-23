@@ -20,8 +20,8 @@ install:
 build:
 	cp ${PROJECT}/src/antigen.zsh ${BIN}/antigen.zsh
 	cat ${PROJECT}/src/ext/*.zsh >> ${BIN}/antigen.zsh
-	sed -i "/source.*\/ext\/.*\.zsh.*/d" ${BIN}/antigen.zsh
-	sed -i'' "s/{{ANTIGEN_VERSION}}/$$(cat ${PROJECT}/VERSION)/" ${BIN}/antigen.zsh
+	sed "/source.*\/ext\/.*\.zsh.*/d" ${BIN}/antigen.zsh > ${BIN}/antigen.zsh
+	sed "s/{{ANTIGEN_VERSION}}/$$(cat ${PROJECT}/VERSION)/" ${BIN}/antigen.zsh > ${BIN}/antigen.zsh
 
 release: build
 	# Move to release branch
@@ -47,11 +47,10 @@ publish:
 clean:
 	rm -f ${PREFIX}/share/antigen.zsh
 
+deps:
+	pip install cram==0.6.*
+
 stats:
-	cp ${PROJECT}/tests/.zshrc ${HOME}/.zshrc
-	${SHELL} -ic exit
-	rm -f /tmp/mtime
-	for x in {1..20}; do /usr/bin/time -f "real %e user %U sys %S" -a -o /tmp/mtime ${SHELL} -ic exit; tail -1 /tmp/mtime; done	
-	awk '{ et += $$2; ut += $$4; st += $$6; count++ } END {  printf "Average:\nreal %.3f user %.3f sys %.3f\n", et/count, ut/count, st/count }' /tmp/mtime
+	${PROJECT}/tests/stats.sh "${PROJECT}" "${SHELL}"
 
 all: clean build install
