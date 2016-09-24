@@ -44,9 +44,9 @@ before_script:
   # Show zsh version being deployed.
   - "$BUILDS_PATH/$ZSH_VERSION/zsh --version"
   
-  - echo "_ANTIGNE_INTERACTIVE: $_ANTIGEN_INTERACTIVE"
-  - echo "ZSH_EVAL_CONTEXT: $ZSH_EVAL_CONTEXT"
-  - [[ -o interactive ]] && echo "Interactive" || echo "Non-interactive"
+  - "echo _ANTIGNE_INTERACTIVE: $_ANTIGEN_INTERACTIVE"
+  - "echo ZSH_EVAL_CONTEXT: $ZSH_EVAL_CONTEXT"
+  - "[[ -o interactive ]] && echo Interactive || echo Non-interactive"
 
 # Run the tests.
 script:
