@@ -48,7 +48,7 @@ local -a _ZCACHE_BUNDLES
     _payload+="#-- GENERATED: $(date)\NL"
     _payload+='#-- ANTIGEN {{ANTIGEN_VERSION}}\NL'
     for bundle in $_ZCACHE_BUNDLES; do
-        antigen-bundle $bundle
+        eval antigen-bundle $bundle
         # -antigen-load-list "$url" "$loc" "$make_local_clone"
         eval "$(-antigen-parse-bundle ${=bundle})"
         _bundles_meta+=("$url $loc $btype $make_local_clone $branch")
@@ -102,7 +102,7 @@ local -a _ZCACHE_BUNDLES
         antigen-$subcommand $@
     elif [[ "$cmd" == "antigen-bundle" ]]; then
         shift 1
-        _ZCACHE_BUNDLES+=(${(j: :)@})
+        _ZCACHE_BUNDLES+=("${(j: :)@}")
     elif [[ "$cmd" == "antigen-apply" ]]; then
         zcache-done
     else
@@ -281,7 +281,12 @@ antigen-init () {
     done
 }
 
+[[ $_ANTIGEN_INTERACTIVE == true ]] || \
+    [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]] || \
+        [[ -z "$ZSH_EVAL_CONTEXT" && -o interactive ]] \
+    && export _ANTIGEN_INTERACTIVE=true
+
 # Refusing to run in interactive mode
-if ! $_ANTIGEN_INTERACTIVE && ! [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" || -o interactive ]]; then
+if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_INTERACTIVE == false ]]; then
     zcache-start
 fi
