@@ -171,7 +171,7 @@ local -a _ZCACHE_BUNDLES
 # Returns
 #   Nothing
 zcache-start () {
-    if [[ $_ZCACHE_EXTENSION_ACTIVE ]]; then
+    if (( $_ZCACHE_EXTENSION_ACTIVE )); then
         return
     fi
 
@@ -281,7 +281,7 @@ antigen-init () {
     done
 }
 
- # Refusing to run in interactive mode
-if [[ ! $_ANTIGEN_INTERACTIVE && ! "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
+# Refusing to run in interactive mode
+if ! $_ANTIGEN_INTERACTIVE && ! [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" || -o interactive ]]; then
     zcache-start
 fi
