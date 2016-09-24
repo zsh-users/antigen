@@ -21,11 +21,6 @@ Check if they are both applied.
   $ hehe2
   hehe2
 
-Cache extension is loaded.
-
-  $ echo $_ZCACHE_EXTENSION_LOADED
-  true
-
 Cache is loaded.
 
   $ echo $_ZCACHE_CACHE_LOADED

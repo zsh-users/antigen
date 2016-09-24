@@ -86,9 +86,14 @@ antigen-bundle () {
     local branch=
     local no_local_clone=false
     local btype=plugin
+    
+    if [[ -z "$1" ]]; then
+        echo "Must provide a bundle url or name."
+        return 1
+    fi
 
     eval "$(-antigen-parse-bundle "$@")"
-
+    
     # Add it to the record.
     _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
     _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD $make_local_clone"
