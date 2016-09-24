@@ -11,8 +11,7 @@ local _ANTIGEN_BUNDLE_RECORD=""
 local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
 local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
-local _ZCACHE_EXTENSION_ACTIVE=false
-local _ZCACHE_EXTENSION_LOADED=false
+local _ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
 
 # Do not load anything if git is no available.
 if ! which git &> /dev/null; then
@@ -651,26 +650,9 @@ antigen-version () {
     echo "Antigen {{ANTIGEN_VERSION}}"
 }
 
-# Load zcache extension if not already loaded
--antigen-load-extension () {
-    if ! $_ZCACHE_EXTENSION_LOADED; then
-        #_ZCACHE_EXTENSION_LOADED is set to true in zcache.zsh
-        source "$_ANTIGEN_INSTALL_DIR/ext/zcache.zsh"
-    fi
-
-    if ! $_ZCACHE_EXTENSION_ACTIVE; then
-       zcache-start
-       _ZCACHE_EXTENSION_ACTIVE=true
-    fi
-}
-
 # A syntax sugar to avoid the `-` when calling antigen commands. With this
 # function, you can write `antigen-bundle` as `antigen bundle` and so on.
 antigen () {
-    if $_ANTIGEN_CACHE_ENABLED; then
-        -antigen-load-extension
-    fi
-
     local cmd="$1"
     if [[ -z "$cmd" ]]; then
         echo 'Antigen: Please give a command to run.' >&2

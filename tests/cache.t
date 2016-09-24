@@ -1,5 +1,7 @@
 Enable extension.
-  $ export _ANTIGEN_CACHE_ENABLED=true
+
+  $ unset _ZCACHE_EXTENSION_ACTIVE
+  $ zcache-start # forces non-interactive mode
   $ antigen cache-reset
   Done. Please open a new shell to see the changes.
 
@@ -7,9 +9,9 @@ Enable extension.
   You don't have any bundles.
   [1]
 
-Add multiple bundles.
+Add multiple bundles
 
-  $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen-bundles &> /dev/null
+  $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen-bundles
   $ antigen apply &> /dev/null
 
 Check if they are both applied.
