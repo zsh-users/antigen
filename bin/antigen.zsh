@@ -1073,13 +1073,33 @@ local -a _ZCACHE_BUNDLES
         eval "function -zcache-$(functions -- $function)"
         $function () { -zcache-antigen-hook $0 "$@" }
     done
-    
-    eval "function -zcache-$(functions -- antigen-update)"
-    # TODO check this hook is not removed accidentally
-    antigen-update () {
-        -zcache-antigen-update "$@"
-        antigen-cache-reset
-    }
+}
+
+# Updates _ANTIGEN_INTERACTIVE environment variable to reflect
+# if antigen is running in an interactive shell or from sourcing.
+#
+# This function check ZSH_EVAL_CONTEXT if available or functrace otherwise.
+# If _ANTIGEN_INTERACTIVE is set to true it won't re-check again.
+#
+# Usage
+#   -zcache-interactive-mode
+#
+# Returns
+#   Either true or false depending if we are running in interactive mode
+-zcache-interactive-mode () {
+    # Check if we are in any way running in interactive mode
+    if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
+        if [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
+            _ANTIGEN_INTERACTIVE=true
+        elif [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
+            zmodload zsh/parameter
+            if [[ "${functrace[$#functrace]%:*}" == "zsh" ]]; then
+                _ANTIGEN_INTERACTIVE=true
+            fi
+        fi
+    fi
+
+    return _ANTIGEN_INTERACTIVE
 }
 
 # Starts zcache execution.
@@ -1093,12 +1113,17 @@ local -a _ZCACHE_BUNDLES
 # Returns
 #   Nothing
 zcache-start () {
-    if (( $_ZCACHE_EXTENSION_ACTIVE )); then
+    if [[ $_ZCACHE_EXTENSION_ACTIVE == true ]]; then
         return
     fi
 
     [[ ! -d "$_ZCACHE_PATH" ]] && mkdir -p "$_ZCACHE_PATH"
     -zcache-hook-antigen
+
+    # Avoid running in interactive mode. This handles an specific case
+    # where antigen is sourced from file (eval context) but antigen commands
+    # are issued from toplevel (interactively).
+    zle -N zle-line-init zcache-done
     _ZCACHE_EXTENSION_ACTIVE=true
 }
 
@@ -1117,12 +1142,17 @@ zcache-done () {
     ! zcache-cache-exists && -zcache-generate-cache
     zcache-load-cache
 
-    unfunction -- -zcache-generate-cache -zcache-antigen-hook -zcache-unhook-antigen \
-    -zcache-hook-antigen zcache-start zcache-done -zcache-antigen -zcache-antigen-apply \
-    -zcache-antigen-bundle -zcache-process-source
-
+    zle -D zle-line-init
     unset _ZCACHE_BUNDLES
     unset _ZCACHE_EXTENSION_ACTIVE
+    
+    unfunction -- ${(Mok)functions:#-zcache*}
+
+    eval "function -zcache-$(functions -- antigen-update)"
+    antigen-update () {
+        -zcache-antigen-update "$@"
+        antigen-cache-reset
+    }
 }
 
 # Returns true if cache is available.
@@ -1203,18 +1233,7 @@ antigen-init () {
     done
 }
 
-# Check if we are in any way running in interactive mode
-if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
-    if [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
-        _ANTIGEN_INTERACTIVE=true
-    elif [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
-        zmodload zsh/parameter
-        if [[ "${functrace[$#functrace]%:*}" == "zsh" ]]; then
-            _ANTIGEN_INTERACTIVE=true
-        fi
-    fi
-fi
-
+-zcache-interactive-mode # Updates _ANTIGEN_INTERACTIVE
 # Refusing to run in interactive mode
 if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_INTERACTIVE == false ]]; then
     zcache-start
