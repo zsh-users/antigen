@@ -1196,11 +1196,12 @@ antigen-init () {
     done
 }
 
+# Check if we are in any way running in interactive mode
 if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
     if [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
         _ANTIGEN_INTERACTIVE=true
     elif [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
-        zmodlod zsh/parameter
+        zmodload zsh/parameter
         if [[ "${functrace[$#functrace]%:*}" == "zsh" ]]; then
             _ANTIGEN_INTERACTIVE=true
         fi
