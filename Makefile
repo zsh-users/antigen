@@ -8,6 +8,11 @@ PROJECT ?= $$PWD
 BIN ?= ${PROJECT}/bin
 CRAM_OPTS ?= '-v'
 
+define ised
+	sed $(1) $(2) > "$(2).1"
+	mv "$(2).1" "$(2)"
+endef
+
 itests:
 	${MAKE} tests CRAM_OPTS=-i
 
@@ -20,8 +25,8 @@ install:
 build:
 	cp ${PROJECT}/src/antigen.zsh ${BIN}/antigen.zsh
 	cat ${PROJECT}/src/ext/*.zsh >> ${BIN}/antigen.zsh
-	sed "/source.*\/ext\/.*\.zsh.*/d" ${BIN}/antigen.zsh > ${BIN}/antigen.zsh
-	sed "s/{{ANTIGEN_VERSION}}/$$(cat ${PROJECT}/VERSION)/" ${BIN}/antigen.zsh > ${BIN}/antigen.zsh
+	$(call ised,"/source.*\/ext\/.*\.zsh.*/d",${BIN}/antigen.zsh)
+	$(call ised,"s/{{ANTIGEN_VERSION}}/$$(cat ${PROJECT}/VERSION)/",${BIN}/antigen.zsh)
 
 release: build
 	# Move to release branch
