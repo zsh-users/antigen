@@ -652,7 +652,7 @@ EOF
 }
 
 antigen-version () {
-    echo "Antigen v1.1.3"
+    echo "Antigen v1.1.4"
 }
 
 # A syntax sugar to avoid the `-` when calling antigen commands. With this
@@ -961,7 +961,7 @@ local -a _ZCACHE_BUNDLES
 
     _payload+="#-- START ZCACHE GENERATED FILE\NL"
     _payload+="#-- GENERATED: $(date)\NL"
-    _payload+='#-- ANTIGEN v1.1.3\NL'
+    _payload+='#-- ANTIGEN v1.1.4\NL'
     for bundle in $_ZCACHE_BUNDLES; do
         # -antigen-load-list "$url" "$loc" "$make_local_clone"
         eval "$(-antigen-parse-bundle ${=bundle})"
@@ -995,7 +995,7 @@ local -a _ZCACHE_BUNDLES
     # \NL (\n) prefix is for backward compatibility
     _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
     _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
-    _payload+="export _ZCACHE_CACHE_VERSION=v1.1.3\NL"
+    _payload+="export _ZCACHE_CACHE_VERSION=v1.1.4\NL"
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
     echo -E $_payload | sed 's/\\NL/\'$'\n/g' >>! $_ZCACHE_PAYLOAD_PATH
