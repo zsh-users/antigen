@@ -281,10 +281,17 @@ antigen-init () {
     done
 }
 
-[[ $_ANTIGEN_INTERACTIVE == true ]] || \
-    [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]] || \
-        [[ -z "$ZSH_EVAL_CONTEXT" && -o interactive ]] \
-    && export _ANTIGEN_INTERACTIVE=true
+# Check if we are in any way running in interactive mode
+if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
+    if [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
+        _ANTIGEN_INTERACTIVE=true
+    elif [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
+        zmodlod zsh/parameter
+        if [[ "${functrace[$#functrace]%:*}" == "zsh" ]]; then
+            _ANTIGEN_INTERACTIVE=true
+        fi
+    fi
+fi
 
 # Refusing to run in interactive mode
 if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_INTERACTIVE == false ]]; then
