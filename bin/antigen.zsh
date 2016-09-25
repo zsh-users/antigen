@@ -1137,14 +1137,16 @@ zcache-start () {
 # Returns
 #   Nothing
 zcache-done () {
-    -zcache-unhook-antigen
-
-    ! zcache-cache-exists && -zcache-generate-cache
-    zcache-load-cache
-
-    zle -D zle-line-init
-    unset _ZCACHE_BUNDLES
+    if [[ -z $_ZCACHE_EXTENSION_ACTIVE ]]; then
+        return 1
+    fi
     unset _ZCACHE_EXTENSION_ACTIVE
+    
+    -zcache-unhook-antigen
+    if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
+        ! zcache-cache-exists && -zcache-generate-cache
+        zcache-load-cache
+    fi
     
     unfunction -- ${(Mok)functions:#-zcache*}
 
@@ -1153,6 +1155,9 @@ zcache-done () {
         -zcache-antigen-update "$@"
         antigen-cache-reset
     }
+    
+    zle -D zle-line-init
+    unset _ZCACHE_BUNDLES
 }
 
 # Returns true if cache is available.
