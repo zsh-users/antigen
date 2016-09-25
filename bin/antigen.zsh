@@ -1018,8 +1018,10 @@ local -a _ZCACHE_BUNDLES
     local subcommand="$2"
 
     if [[ "$cmd" == "antigen" ]]; then
-        shift 2
-        antigen-$subcommand $@
+        if [[ ! -z "$subcommand" ]]; then
+            shift 2
+        fi
+        -zcache-antigen $subcommand $@
     elif [[ "$cmd" == "antigen-bundle" ]]; then
         shift 1
         _ZCACHE_BUNDLES+=("${(j: :)@}")
