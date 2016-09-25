@@ -954,7 +954,7 @@ local -a _ZCACHE_BUNDLES
 # Returns
 #   Nothing. Generates _ZCACHE_META_PATH and _ZCACHE_PAYLOAD_PATH
 -zcache-generate-cache () {
-    local -a _extensions_paths
+    local -aU _extensions_paths
     local -a _bundles_meta
     local _payload=''
     local location
@@ -963,29 +963,34 @@ local -a _ZCACHE_BUNDLES
     _payload+="#-- GENERATED: $(date)\NL"
     _payload+='#-- ANTIGEN v1.1.3\NL'
     for bundle in $_ZCACHE_BUNDLES; do
-        eval antigen-bundle $bundle
         # -antigen-load-list "$url" "$loc" "$make_local_clone"
         eval "$(-antigen-parse-bundle ${=bundle})"
         _bundles_meta+=("$url $loc $btype $make_local_clone $branch")
-        # url=$(-antigen-get-clone-dir "$url")
+
+        if $make_local_clone; then
+            -antigen-ensure-repo "$url"
+        fi
+
         -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
             if [[ -f "$line" ]]; then
                 _payload+="#-- SOURCE: $line\NL"
                 _payload+=$(-zcache-process-source "$line")
                 _payload+="\NL;#-- END SOURCE\NL"
-            elif [[ -d "$line" ]]; then
-                _extensions_paths+=("$line")
             fi
         done
 
-        # TODO Review this. Add tests.
-        # Add to $fpath, for completion(s), if not in there already
-        if (( ! ${_extensions_paths[(I)$loc]} )); then
-            _extensions_paths+=($loc)
+        if $make_local_clone; then
+            location="$(-antigen-get-clone-dir "$url")/$loc"
+        else
+            location="$url/"
+        fi
+
+        if [[ -d "$location" ]]; then
+            _extensions_paths+=($location)
         fi
     done
 
-    _payload+="fpath+=(${(j: :)_extensions_paths});\NL"
+    _payload+="fpath+=(${_extensions_paths[@]})\NL"
     _payload+="unset __ZCACHE_FILE_PATH\NL"
     # \NL (\n) prefix is for backward compatibility
     _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
@@ -1013,8 +1018,10 @@ local -a _ZCACHE_BUNDLES
     local subcommand="$2"
 
     if [[ "$cmd" == "antigen" ]]; then
-        shift 2
-        antigen-$subcommand $@
+        if [[ ! -z "$subcommand" ]]; then
+            shift 2
+        fi
+        -zcache-antigen $subcommand $@
     elif [[ "$cmd" == "antigen-bundle" ]]; then
         shift 1
         _ZCACHE_BUNDLES+=("${(j: :)@}")
@@ -1066,13 +1073,33 @@ local -a _ZCACHE_BUNDLES
         eval "function -zcache-$(functions -- $function)"
         $function () { -zcache-antigen-hook $0 "$@" }
     done
-    
-    eval "function -zcache-$(functions -- antigen-update)"
-    # TODO check this hook is not removed accidentally
-    antigen-update () {
-        -zcache-antigen-update "$@"
-        antigen-cache-reset
-    }
+}
+
+# Updates _ANTIGEN_INTERACTIVE environment variable to reflect
+# if antigen is running in an interactive shell or from sourcing.
+#
+# This function check ZSH_EVAL_CONTEXT if available or functrace otherwise.
+# If _ANTIGEN_INTERACTIVE is set to true it won't re-check again.
+#
+# Usage
+#   -zcache-interactive-mode
+#
+# Returns
+#   Either true or false depending if we are running in interactive mode
+-zcache-interactive-mode () {
+    # Check if we are in any way running in interactive mode
+    if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
+        if [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
+            _ANTIGEN_INTERACTIVE=true
+        elif [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
+            zmodload zsh/parameter
+            if [[ "${functrace[$#functrace]%:*}" == "zsh" ]]; then
+                _ANTIGEN_INTERACTIVE=true
+            fi
+        fi
+    fi
+
+    return _ANTIGEN_INTERACTIVE
 }
 
 # Starts zcache execution.
@@ -1086,12 +1113,17 @@ local -a _ZCACHE_BUNDLES
 # Returns
 #   Nothing
 zcache-start () {
-    if (( $_ZCACHE_EXTENSION_ACTIVE )); then
+    if [[ $_ZCACHE_EXTENSION_ACTIVE == true ]]; then
         return
     fi
 
     [[ ! -d "$_ZCACHE_PATH" ]] && mkdir -p "$_ZCACHE_PATH"
     -zcache-hook-antigen
+
+    # Avoid running in interactive mode. This handles an specific case
+    # where antigen is sourced from file (eval context) but antigen commands
+    # are issued from toplevel (interactively).
+    zle -N zle-line-init zcache-done
     _ZCACHE_EXTENSION_ACTIVE=true
 }
 
@@ -1110,12 +1142,17 @@ zcache-done () {
     ! zcache-cache-exists && -zcache-generate-cache
     zcache-load-cache
 
-    unfunction -- -zcache-generate-cache -zcache-antigen-hook -zcache-unhook-antigen \
-    -zcache-hook-antigen zcache-start zcache-done -zcache-antigen -zcache-antigen-apply \
-    -zcache-antigen-bundle -zcache-process-source
-
+    zle -D zle-line-init
     unset _ZCACHE_BUNDLES
     unset _ZCACHE_EXTENSION_ACTIVE
+    
+    unfunction -- ${(Mok)functions:#-zcache*}
+
+    eval "function -zcache-$(functions -- antigen-update)"
+    antigen-update () {
+        -zcache-antigen-update "$@"
+        antigen-cache-reset
+    }
 }
 
 # Returns true if cache is available.
@@ -1196,18 +1233,7 @@ antigen-init () {
     done
 }
 
-# Check if we are in any way running in interactive mode
-if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
-    if [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
-        _ANTIGEN_INTERACTIVE=true
-    elif [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
-        zmodload zsh/parameter
-        if [[ "${functrace[$#functrace]%:*}" == "zsh" ]]; then
-            _ANTIGEN_INTERACTIVE=true
-        fi
-    fi
-fi
-
+-zcache-interactive-mode # Updates _ANTIGEN_INTERACTIVE
 # Refusing to run in interactive mode
 if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_INTERACTIVE == false ]]; then
     zcache-start
