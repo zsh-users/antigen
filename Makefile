@@ -47,7 +47,7 @@ publish:
 	# Build release commit
 	git add .
 	git commit -m "Build release $$(cat ${PROJECT}/VERSION)"
-	git push release/$$(cat ${PROJECT}/VERSION)
+	git push origin release/$$(cat ${PROJECT}/VERSION)
 
 clean:
 	rm -f ${PREFIX}/share/antigen.zsh
