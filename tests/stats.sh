@@ -11,7 +11,7 @@ cp $ZSHRC $TMP
 
 cp $PROJECT/tests/.zshrc $HOME/.zshrc
 eval $CMD
-for x in {1..20}; do
+for x in $(seq 1 20); do
     /usr/bin/time -f "real %e user %U sys %S" -a -o $MTIME $CMD
     tail -1 $MTIME
 done 
