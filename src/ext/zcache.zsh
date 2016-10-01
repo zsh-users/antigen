@@ -240,10 +240,15 @@ zcache-done () {
     unset _ZCACHE_EXTENSION_ACTIVE
     
     -zcache-unhook-antigen
-    if ! zcache-cache-exists || -zcache-cache-invalidated; then
-        -zcache-generate-cache
+    
+    # Avoids seg fault on zsh 4.3.5
+    if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
+        if ! zcache-cache-exists || -zcache-cache-invalidated; then
+            -zcache-generate-cache
+        fi
+        
+        zcache-load-cache
     fi
-    zcache-load-cache
     
     if [[ $_ZCACHE_EXTENSION_CLEAN_FUNCTIONS == true ]]; then
         unfunction -- ${(Mok)functions:#-zcache*}
