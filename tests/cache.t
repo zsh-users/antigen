@@ -70,6 +70,29 @@ Cache is saved correctly.
   $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pc 'echo \$root/\$0'
   1
 
+Cache is invalidated on antigen configuration changes.
+
+  $ unset _ZCACHE_EXTENSION_ACTIVE  
+  $ zcache-start # forces non-interactive mode
+  $ antigen cache-reset
+  Done. Please open a new shell to see the changes.
+
+  $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen-bundles
+  $ antigen apply
+
+  $ unset _ZCACHE_EXTENSION_ACTIVE  
+  $ zcache-start # forces non-interactive mode
+  $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen-bundles
+  $ antigen apply
+  $ bundles=$(cat $_ZCACHE_BUNDLES_PATH)
+
+  $ unset _ZCACHE_EXTENSION_ACTIVE  
+  $ zcache-start # forces non-interactive mode
+  $ echo "$PLUGIN_DIR2\n$PLUGIN_DIR" | antigen-bundles
+  $ antigen apply
+  $ [[ "$bundles" == $(cat $_ZCACHE_BUNDLES_PATH) ]]
+  [1]
+
 Cache version matches antigen version.
 
   $ ANTIGEN_VERSION=$(antigen version | sed 's/Antigen //')

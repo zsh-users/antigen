@@ -7,6 +7,7 @@ export ADOTDIR="$PWD/dot-antigen"
 
 export _ANTIGEN_CACHE_ENABLED=true
 export _ANTIGEN_INTERACTIVE_MODE=true
+export _ZCACHE_EXTENSION_CLEAN_FUNCTIONS=false
 
 test -f "$TESTDIR/.zcompdump" && rm "$TESTDIR/.zcompdump"
 
