@@ -12,6 +12,7 @@ local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
 local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
 local _ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
+local _ANTIGEN_AUTODETECT_CONFIG_CHANGES=${_ANTIGEN_AUTODETECT_CONFIG_CHANGES:-true}
 
 # Do not load anything if git is no available.
 if ! which git &> /dev/null; then
@@ -915,7 +916,8 @@ _antigen () {
 -antigen-env-setup
 export _ZCACHE_PATH="${_ANTIGEN_CACHE_PATH:-$ADOTDIR/.cache}"
 export _ZCACHE_PAYLOAD_PATH="$_ZCACHE_PATH/.zcache-payload"
-export _ZCACHE_META_PATH="$_ZCACHE_PATH/.zcache-meta"
+export _ZCACHE_BUNDLES_PATH="$_ZCACHE_PATH/.zcache-bundles"
+export _ZCACHE_EXTENSION_CLEAN_FUNCTIONS="${_ZCACHE_EXTENSION_CLEAN_FUNCTIONS:-true}"
 export _ZCACHE_EXTENSION_ACTIVE=false
 local -a _ZCACHE_BUNDLES
 
@@ -998,8 +1000,8 @@ local -a _ZCACHE_BUNDLES
     _payload+="export _ZCACHE_CACHE_VERSION=v1.1.4\NL"
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
-    echo -E $_payload | sed 's/\\NL/\'$'\n/g' >>! $_ZCACHE_PAYLOAD_PATH
-    echo "${(j:\n:)_bundles_meta}" >>! $_ZCACHE_META_PATH
+    echo -E $_payload | sed 's/\\NL/\'$'\n/g' >>! "$_ZCACHE_PAYLOAD_PATH"
+    echo "$_ZCACHE_BUNDLES" >! "$_ZCACHE_BUNDLES_PATH"
 }
 
 # Generic hook function for various antigen-* commands.
@@ -1102,6 +1104,17 @@ local -a _ZCACHE_BUNDLES
     return _ANTIGEN_INTERACTIVE
 }
 
+# Determines if cache is up-to-date with antigen configuration
+#
+# Usage
+#   -zcache-cache-invalidated
+#
+# Returns
+#   Either true or false depending if cache is up to date
+-zcache-cache-invalidated () {
+    [[ $_ANTIGEN_AUTODETECT_CONFIG_CHANGES == true && $(cat $_ZCACHE_BUNDLES_PATH) != "$_ZCACHE_BUNDLES" ]];
+}
+
 # Starts zcache execution.
 #
 # Hooks into various antigen commands to be able to record and cache multiple
@@ -1144,11 +1157,16 @@ zcache-done () {
     
     -zcache-unhook-antigen
     if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
-        ! zcache-cache-exists && -zcache-generate-cache
+        if ! zcache-cache-exists || -zcache-cache-invalidated; then
+            -zcache-generate-cache
+        fi
+        
         zcache-load-cache
     fi
     
-    unfunction -- ${(Mok)functions:#-zcache*}
+    if [[ $_ZCACHE_EXTENSION_CLEAN_FUNCTIONS == true ]]; then
+        unfunction -- ${(Mok)functions:#-zcache*}
+    fi
 
     eval "function -zcache-$(functions -- antigen-update)"
     antigen-update () {
@@ -1192,8 +1210,10 @@ zcache-load-cache () {
 # Returns
 #   Nothing
 antigen-cache-reset () {
-    [[ -f "$_ZCACHE_META_PATH" ]] && rm "$_ZCACHE_META_PATH"
-    [[ -f "$_ZCACHE_PAYLOAD_PATH" ]] && rm "$_ZCACHE_PAYLOAD_PATH"
+    -zcache-remove-path () { [[ -f "$1" ]] && rm "$1" }
+    -zcache-remove-path "$_ZCACHE_PAYLOAD_PATH"
+    -zcache-remove-path "$_ZCACHE_BUNDLES_PATH"
+    unfunction -- -zcache-remove-path
     echo 'Done. Please open a new shell to see the changes.'
 }
 
