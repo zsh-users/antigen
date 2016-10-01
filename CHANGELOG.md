@@ -2,6 +2,29 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.4] - 2016-09-25
+
+Default cache and bundles path is now `$ADOTDIR/.cache` and `$ADOTDIR/repos`
+(it was `$_ANTIGEN_INSTALL_DIR/.cache` and `$_ANTIGEN_INSTALL_DIR/repos`).
+
+New environment variables:
+
+  - `_ANTIGEN_INTERACTIVE_MODE`: Use to force Antigen into running the caching
+  mechanism even in interactive mode (by default it deactivate caching in
+  interactive shells).
+
+### Changed
+- [#248] Enhanced caching performance
+- [#245, #244] Changed default caching and logging paths
+ 
+### Fixed
+- [#249, #240, #246] Makefile BSD compatibility
+- [#247, #228] Fix apply and antigen-apply command
+- [#251] Fix Makefile publish task
+
+Thanks @fladi, @jdkbx, @extink and everyone who reported
+issues and provided feedback.
+
 ## [1.1.3] - 2016-09-20
 
 ### Changed

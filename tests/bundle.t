@@ -1,3 +1,9 @@
+Should get a complain if no bundle is given as argument.
+
+  $ antigen-bundle
+  Must provide a bundle url or name.
+  [1]
+
 Load plugin from master.
 
   $ antigen-bundle $PLUGIN_DIR &> /dev/null

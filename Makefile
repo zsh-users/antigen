@@ -8,6 +8,11 @@ PROJECT ?= $$PWD
 BIN ?= ${PROJECT}/bin
 CRAM_OPTS ?= '-v'
 
+define ised
+	sed $(1) $(2) > "$(2).1"
+	mv "$(2).1" "$(2)"
+endef
+
 itests:
 	${MAKE} tests CRAM_OPTS=-i
 
@@ -20,8 +25,8 @@ install:
 build:
 	cp ${PROJECT}/src/antigen.zsh ${BIN}/antigen.zsh
 	cat ${PROJECT}/src/ext/*.zsh >> ${BIN}/antigen.zsh
-	sed -i "/source.*\/ext\/.*\.zsh.*/d" ${BIN}/antigen.zsh
-	sed -i'' "s/{{ANTIGEN_VERSION}}/$$(cat ${PROJECT}/VERSION)/" ${BIN}/antigen.zsh
+	$(call ised,"/source.*\/ext\/.*\.zsh.*/d",${BIN}/antigen.zsh)
+	$(call ised,"s/{{ANTIGEN_VERSION}}/$$(cat ${PROJECT}/VERSION)/",${BIN}/antigen.zsh)
 
 release: build
 	# Move to release branch
@@ -42,16 +47,15 @@ publish:
 	# Build release commit
 	git add .
 	git commit -m "Build release $$(cat ${PROJECT}/VERSION)"
-	git push release/$$(cat ${PROJECT}/VERSION)
+	git push origin release/$$(cat ${PROJECT}/VERSION)
 
 clean:
 	rm -f ${PREFIX}/share/antigen.zsh
 
+deps:
+	pip install cram==0.6.*
+
 stats:
-	cp ${PROJECT}/tests/.zshrc ${HOME}/.zshrc
-	${SHELL} -ic exit
-	rm -f /tmp/mtime
-	for x in {1..20}; do /usr/bin/time -f "real %e user %U sys %S" -a -o /tmp/mtime ${SHELL} -ic exit; tail -1 /tmp/mtime; done	
-	awk '{ et += $$2; ut += $$4; st += $$6; count++ } END {  printf "Average:\nreal %.3f user %.3f sys %.3f\n", et/count, ut/count, st/count }' /tmp/mtime
+	${PROJECT}/tests/stats.sh "${PROJECT}" "${SHELL}"
 
 all: clean build install

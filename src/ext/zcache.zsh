@@ -1,7 +1,7 @@
-export _ZCACHE_PATH="${_ANTIGEN_CACHE_PATH:-$_ANTIGEN_INSTALL_DIR/.cache}"
+export _ZCACHE_PATH="${_ANTIGEN_CACHE_PATH:-$ADOTDIR/.cache}"
 export _ZCACHE_PAYLOAD_PATH="$_ZCACHE_PATH/.zcache-payload"
 export _ZCACHE_META_PATH="$_ZCACHE_PATH/.zcache-meta"
-export _ZCACHE_EXTENSION_LOADED=true
+export _ZCACHE_EXTENSION_ACTIVE=false
 local -a _ZCACHE_BUNDLES
 
 # Clears $0 and ${0} references from cached sources.
@@ -39,7 +39,7 @@ local -a _ZCACHE_BUNDLES
 # Returns
 #   Nothing. Generates _ZCACHE_META_PATH and _ZCACHE_PAYLOAD_PATH
 -zcache-generate-cache () {
-    local -a _extensions_paths
+    local -aU _extensions_paths
     local -a _bundles_meta
     local _payload=''
     local location
@@ -51,14 +51,16 @@ local -a _ZCACHE_BUNDLES
         # -antigen-load-list "$url" "$loc" "$make_local_clone"
         eval "$(-antigen-parse-bundle ${=bundle})"
         _bundles_meta+=("$url $loc $btype $make_local_clone $branch")
-        # url=$(-antigen-get-clone-dir "$url")
+
+        if $make_local_clone; then
+            -antigen-ensure-repo "$url"
+        fi
+
         -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
             if [[ -f "$line" ]]; then
                 _payload+="#-- SOURCE: $line\NL"
                 _payload+=$(-zcache-process-source "$line")
                 _payload+="\NL;#-- END SOURCE\NL"
-            elif [[ -d "$line" ]]; then
-                _extensions_paths+=("$line")
             fi
         done
 
@@ -67,13 +69,13 @@ local -a _ZCACHE_BUNDLES
         else
             location="$url/"
         fi
-        # Add to $fpath, for completion(s), if not in there already
-        if (( ! ${_extensions_paths[(I)$location]} )); then
+
+        if [[ -d "$location" ]]; then
             _extensions_paths+=($location)
         fi
     done
 
-    _payload+="fpath+=(${(j: :)_extensions_paths});\NL"
+    _payload+="fpath+=(${_extensions_paths[@]})\NL"
     _payload+="unset __ZCACHE_FILE_PATH\NL"
     # \NL (\n) prefix is for backward compatibility
     _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
@@ -98,33 +100,22 @@ local -a _ZCACHE_BUNDLES
 #   Nothing. Updates _ZACHE_BUNDLES array.
 -zcache-antigen-hook () {
     local cmd="$1"
+    local subcommand="$2"
 
-    case "$cmd" in
-        use)
-            antigen-use "$2"
-            ;;
-        init)
-            antigen-init "$2"
-            ;;
-        theme)
-            antigen-theme "$2" "$3" "$4"
-            ;;
-        bundle)
-            antigen-bundle "$2" "$3" "$4"
-            ;;
-        apply)
-            zcache-done
-            ;;
-        *)
-            if functions "antigen-$cmd" > /dev/null; then
-                "antigen-$cmd" "$@"
-            else
-                # TODO Remove on 2.x
-                ! zcache-cache-exists && -zcache-antigen-bundle "${=@}"
-                _ZCACHE_BUNDLES+=("$*")
-            fi
-        ;;
-    esac
+    if [[ "$cmd" == "antigen" ]]; then
+        if [[ ! -z "$subcommand" ]]; then
+            shift 2
+        fi
+        -zcache-antigen $subcommand $@
+    elif [[ "$cmd" == "antigen-bundle" ]]; then
+        shift 1
+        _ZCACHE_BUNDLES+=("${(j: :)@}")
+    elif [[ "$cmd" == "antigen-apply" ]]; then
+        zcache-done
+    else
+        shift 1
+        -zcache-$cmd $@
+    fi
 }
 
 # Unhook antigen functions to be able to call antigen commands normally.
@@ -142,7 +133,7 @@ local -a _ZCACHE_BUNDLES
 # Returns
 #   Nothing
 -zcache-unhook-antigen () {
-    for function in antigen antigen-bundle antigen-apply; do
+    for function in ${(Mok)functions:#antigen*}; do
         eval "function $(functions -- -zcache-$function | sed 's/-zcache-//')"
     done
 }
@@ -163,16 +154,37 @@ local -a _ZCACHE_BUNDLES
 # Returns
 #   Nothing
 -zcache-hook-antigen () {
-    for function in antigen antigen-bundle antigen-apply; do
+    for function in ${(Mok)functions:#antigen*}; do
         eval "function -zcache-$(functions -- $function)"
-        $function () { -zcache-antigen-hook "$@" }
+        $function () { -zcache-antigen-hook $0 "$@" }
     done
+}
 
-    eval "function -zcache-$(functions -- antigen-update)"
-    antigen-update () {
-        -zcache-antigen-update "$@"
-        antigen-cache-reset
-    }
+# Updates _ANTIGEN_INTERACTIVE environment variable to reflect
+# if antigen is running in an interactive shell or from sourcing.
+#
+# This function check ZSH_EVAL_CONTEXT if available or functrace otherwise.
+# If _ANTIGEN_INTERACTIVE is set to true it won't re-check again.
+#
+# Usage
+#   -zcache-interactive-mode
+#
+# Returns
+#   Either true or false depending if we are running in interactive mode
+-zcache-interactive-mode () {
+    # Check if we are in any way running in interactive mode
+    if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
+        if [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
+            _ANTIGEN_INTERACTIVE=true
+        elif [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
+            zmodload zsh/parameter
+            if [[ "${functrace[$#functrace]%:*}" == "zsh" ]]; then
+                _ANTIGEN_INTERACTIVE=true
+            fi
+        fi
+    fi
+
+    return _ANTIGEN_INTERACTIVE
 }
 
 # Starts zcache execution.
@@ -186,8 +198,18 @@ local -a _ZCACHE_BUNDLES
 # Returns
 #   Nothing
 zcache-start () {
+    if [[ $_ZCACHE_EXTENSION_ACTIVE == true ]]; then
+        return
+    fi
+
     [[ ! -d "$_ZCACHE_PATH" ]] && mkdir -p "$_ZCACHE_PATH"
     -zcache-hook-antigen
+
+    # Avoid running in interactive mode. This handles an specific case
+    # where antigen is sourced from file (eval context) but antigen commands
+    # are issued from toplevel (interactively).
+    zle -N zle-line-init zcache-done
+    _ZCACHE_EXTENSION_ACTIVE=true
 }
 
 # Generates (if needed) and loads cache.
@@ -200,15 +222,26 @@ zcache-start () {
 # Returns
 #   Nothing
 zcache-done () {
+    if [[ -z $_ZCACHE_EXTENSION_ACTIVE ]]; then
+        return 1
+    fi
+    unset _ZCACHE_EXTENSION_ACTIVE
+    
     -zcache-unhook-antigen
+    if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
+        ! zcache-cache-exists && -zcache-generate-cache
+        zcache-load-cache
+    fi
+    
+    unfunction -- ${(Mok)functions:#-zcache*}
 
-    ! zcache-cache-exists && -zcache-generate-cache
-    zcache-load-cache
-
-    unfunction -- -zcache-generate-cache -zcache-antigen-hook -zcache-unhook-antigen \
-    -zcache-hook-antigen zcache-start zcache-done -zcache-antigen -zcache-antigen-apply \
-    -zcache-antigen-bundle -zcache-process-source
-
+    eval "function -zcache-$(functions -- antigen-update)"
+    antigen-update () {
+        -zcache-antigen-update "$@"
+        antigen-cache-reset
+    }
+    
+    zle -D zle-line-init
     unset _ZCACHE_BUNDLES
 }
 
@@ -289,3 +322,9 @@ antigen-init () {
         eval $line
     done
 }
+
+-zcache-interactive-mode # Updates _ANTIGEN_INTERACTIVE
+# Refusing to run in interactive mode
+if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_INTERACTIVE == false ]]; then
+    zcache-start
+fi
