@@ -19,7 +19,7 @@ _antigen () {
 
   if $_ANTIGEN_CACHE_ENABLED; then
       _1st_arguments+=(
-      'cache-reset:Clears bundle cache'
+      'reset:Clears antigen cache'
       'init:Load Antigen configuration from file'
       )
   fi

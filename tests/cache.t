@@ -2,7 +2,7 @@ Enable extension.
 
   $ unset _ZCACHE_EXTENSION_ACTIVE
   $ zcache-start # forces non-interactive mode
-  $ antigen cache-reset
+  $ antigen reset
   Done. Please open a new shell to see the changes.
 
   $ antigen list
@@ -74,7 +74,7 @@ Cache is invalidated on antigen configuration changes.
 
   $ unset _ZCACHE_EXTENSION_ACTIVE  
   $ zcache-start # forces non-interactive mode
-  $ antigen cache-reset &> /dev/null
+  $ antigen reset &> /dev/null
 
   $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen-bundles
   $ antigen apply
@@ -103,13 +103,19 @@ Cache version matches antigen version.
 
 Do not generate or load cache if there are no bundles.
 
-  $ antigen cache-reset &> /dev/null
+  $ antigen reset &> /dev/null
   $ ls -A $_ZCACHE_PATH | wc -l
   0
 
-Can clear cache correctly.
+Antigen cache-reset command deprecated.
 
   $ antigen cache-reset
+  Deprecated in favor of antigen reset.
+  Done. Please open a new shell to see the changes.
+
+Can clear cache correctly.
+
+  $ antigen reset
   Done. Please open a new shell to see the changes.
 
   $ ls -A $_ZCACHE_PATH | wc -l

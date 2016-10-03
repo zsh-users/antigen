@@ -101,12 +101,24 @@ zcache-load-cache () {
 #
 # Returns
 #   Nothing
-antigen-cache-reset () {
+antigen-reset () {
     -zcache-remove-path () { [[ -f "$1" ]] && rm "$1" }
     -zcache-remove-path "$_ZCACHE_PAYLOAD_PATH"
     -zcache-remove-path "$_ZCACHE_BUNDLES_PATH"
     unfunction -- -zcache-remove-path
     echo 'Done. Please open a new shell to see the changes.'
+}
+
+# Deprecated for antigen-reset command
+#
+# Usage
+#   zcache-cache-reset
+#
+# Returns
+#   Nothing
+antigen-cache-reset () {
+    echo 'Deprecated in favor of antigen reset.'
+    antigen-reset
 }
 
 # Antigen command to load antigen configuration
