@@ -23,9 +23,13 @@ install:
 	mkdir -p ${PREFIX}/share && cp ${BIN}/antigen.zsh ${PREFIX}/share/antigen.zsh
 
 build:
-	cp ${PROJECT}/src/antigen.zsh ${BIN}/antigen.zsh
+	cat ${PROJECT}/src/antigen.zsh > ${BIN}/antigen.zsh
+	cat ${PROJECT}/src/helpers/*.zsh >> ${BIN}/antigen.zsh
+	cat ${PROJECT}/src/lib/*.zsh >> ${BIN}/antigen.zsh
+	cat ${PROJECT}/src/commands/*.zsh >> ${BIN}/antigen.zsh
+	cat ${PROJECT}/src/_antigen >> ${BIN}/antigen.zsh
+	cat ${PROJECT}/src/ext/*/*.zsh >> ${BIN}/antigen.zsh
 	cat ${PROJECT}/src/ext/*.zsh >> ${BIN}/antigen.zsh
-	$(call ised,"/source.*\/ext\/.*\.zsh.*/d",${BIN}/antigen.zsh)
 	$(call ised,"s/{{ANTIGEN_VERSION}}/$$(cat ${PROJECT}/VERSION)/",${BIN}/antigen.zsh)
 
 release: build
