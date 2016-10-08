@@ -974,6 +974,10 @@ _antigen () {
             shift 2
         fi
         -zcache-antigen $subcommand $@
+    elif [[ "$cmd" == "antigen-bundles" ]]; then
+        grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+            _ZCACHE_BUNDLES+=("${(j: :)line//\#*/}")
+        done
     elif [[ "$cmd" == "antigen-bundle" ]]; then
         shift 1
         _ZCACHE_BUNDLES+=("${(j: :)@}")
