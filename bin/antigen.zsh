@@ -503,9 +503,9 @@ antigen-apply () {
     fi
 
     # Apply all `compinit`s that have been deferred.
-    eval "$(for cdef in $__deferred_compdefs; do
-                echo compdef $cdef
-            done)"
+    for cdef in "${__deferred_compdefs[@]}"; do
+        compdef "$cdef"
+    done
 
     unset __deferred_compdefs
 
@@ -979,6 +979,7 @@ _antigen () {
         _ZCACHE_BUNDLES+=("${(j: :)@}")
     elif [[ "$cmd" == "antigen-apply" ]]; then
         zcache-done
+        antigen-apply
     else
         shift 1
         -zcache-$cmd $@
@@ -1011,7 +1012,8 @@ _antigen () {
 # hooking into multiple antigen commands, either deferring it's execution
 # or dropping it.
 #
-# Afected functions are antigen, antigen-bundle and antigen-apply.
+# Afected functions are antigen* (key ones are antigen, antigen-bundle,
+# antigen-apply).
 #
 # See -zcache-unhook-antigen
 #
