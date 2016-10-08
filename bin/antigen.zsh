@@ -839,7 +839,7 @@ _antigen () {
 
   if $_ANTIGEN_CACHE_ENABLED; then
       _1st_arguments+=(
-      'cache-reset:Clears bundle cache'
+      'reset:Clears antigen cache'
       'init:Load Antigen configuration from file'
       )
   fi
@@ -990,7 +990,7 @@ _antigen () {
         -zcache-antigen $subcommand $@
     elif [[ "$cmd" == "antigen-bundles" ]]; then
         grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-            _ZCACHE_BUNDLES+=("$line")
+            _ZCACHE_BUNDLES+=("${(j: :)line}")
         done
     elif [[ "$cmd" == "antigen-bundle" ]]; then
         shift 1
