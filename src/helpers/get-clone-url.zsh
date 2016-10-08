@@ -6,13 +6,12 @@
         # Prezto's (in `.zprezto`), is assumed to be from `sorin-ionescu`'s
         # remote.
         echo https://github.com/sorin-ionescu/prezto.git
-
     else
-        echo "$1" | sed \
-            -e "s:^$ADOTDIR/repos/::" \
-            -e 's.-SLASH-./.g' \
-            -e 's.-COLON-.:.g' \
-            -e 's.-PIPE-.|.g'
-
+        local path="${1}"
+        path=${path//^\$ADOTDIR\/repos\/}
+        path=${path//-SLASH-/\/}
+        path=${path//-COLON-/\:}
+        url=${path//-PIPE-/\|}
+        echo "$url"
     fi
 }
