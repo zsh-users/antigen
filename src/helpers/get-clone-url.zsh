@@ -7,11 +7,11 @@
         # remote.
         echo https://github.com/sorin-ionescu/prezto.git
     else
-        local path="${1}"
-        path=${path//^\$ADOTDIR\/repos\/}
-        path=${path//-SLASH-/\/}
-        path=${path//-COLON-/\:}
-        url=${path//-PIPE-/\|}
+        local _path="${1}"
+        _path=${_path//^\$ADOTDIR\/repos\/}
+        _path=${_path//-SLASH-/\/}
+        _path=${_path//-COLON-/\:}
+        url=${_path//-PIPE-/\|}
         echo "$url"
     fi
 }
