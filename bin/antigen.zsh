@@ -1020,7 +1020,6 @@ zcache-done () {
     # Avoids seg fault on zsh 4.3.5
     if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
         if ! zcache-cache-exists || -zcache-cache-invalidated; then
-            echo "GENERATING CACHE"
             -zcache-generate-cache
         fi
         
