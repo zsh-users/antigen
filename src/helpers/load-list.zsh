@@ -23,7 +23,8 @@
     fi
 
     # If we have a `*.plugin.zsh`, source it.
-    local script_plugin=($location/*.plugin.zsh(N[1]))
+    local script_plugin
+    script_plugin=($location/*.plugin.zsh(N[1]))
     if [[ -f "$script_plugin" ]]; then
         echo "$script_plugin"
         return
@@ -36,7 +37,8 @@
     fi
 
     # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
-    local bundle_files=($location/*.zsh(N) $location/*.sh(N))
+    local bundle_files
+    bundle_files=($location/*.zsh(N) $location/*.sh(N))
     if [[ $#bundle_files -gt 0 ]]; then
         echo "${(j:\n:)bundle_files}"
         return

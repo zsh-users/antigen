@@ -41,7 +41,7 @@ antigen () {
     fi
 }
 -antigen-bundle-short-name () {
-    echo "$@" | sed -E "s|.*/(.*/.*).git.*$|\1|"
+    echo "$@" | sed -E "s|.*/(.*/.*)$|\1|"|sed -E "s|\.git$||g"
 }
 -antigen-get-clone-dir () {
     # Takes a repo url and gives out the path that this url needs to be cloned
@@ -101,7 +101,8 @@ antigen () {
     fi
 
     # If we have a `*.plugin.zsh`, source it.
-    local script_plugin=($location/*.plugin.zsh(N[1]))
+    local script_plugin
+    script_plugin=($location/*.plugin.zsh(N[1]))
     if [[ -f "$script_plugin" ]]; then
         echo "$script_plugin"
         return
@@ -114,7 +115,8 @@ antigen () {
     fi
 
     # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
-    local bundle_files=($location/*.zsh(N) $location/*.sh(N))
+    local bundle_files
+    bundle_files=($location/*.zsh(N) $location/*.sh(N))
     if [[ $#bundle_files -gt 0 ]]; then
         echo "${(j:\n:)bundle_files}"
         return
