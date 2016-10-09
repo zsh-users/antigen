@@ -195,5 +195,5 @@
 # Returns
 #   Either true or false depending if cache is up to date
 -zcache-cache-invalidated () {
-    [[ $_ANTIGEN_AUTODETECT_CONFIG_CHANGES == true && $(cat $_ZCACHE_BUNDLES_PATH) != "$_ZCACHE_BUNDLES" ]];
+    [[ $_ANTIGEN_AUTODETECT_CONFIG_CHANGES == true && ! -f $_ZCACHE_BUNDLES_PATH || $(cat $_ZCACHE_BUNDLES_PATH) != "$_ZCACHE_BUNDLES" ]];
 }

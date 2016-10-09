@@ -966,7 +966,7 @@ _antigen () {
 # Returns
 #   Either true or false depending if cache is up to date
 -zcache-cache-invalidated () {
-    [[ $_ANTIGEN_AUTODETECT_CONFIG_CHANGES == true && $(cat $_ZCACHE_BUNDLES_PATH) != "$_ZCACHE_BUNDLES" ]];
+    [[ $_ANTIGEN_AUTODETECT_CONFIG_CHANGES == true && ! -f $_ZCACHE_BUNDLES_PATH || $(cat $_ZCACHE_BUNDLES_PATH) != "$_ZCACHE_BUNDLES" ]];
 }
 export _ZCACHE_PATH="${_ANTIGEN_CACHE_PATH:-$ADOTDIR/.cache}"
 export _ZCACHE_PAYLOAD_PATH="$_ZCACHE_PATH/.zcache-payload"
@@ -1020,6 +1020,7 @@ zcache-done () {
     # Avoids seg fault on zsh 4.3.5
     if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
         if ! zcache-cache-exists || -zcache-cache-invalidated; then
+            echo "GENERATING CACHE"
             -zcache-generate-cache
         fi
         
