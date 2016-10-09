@@ -13,9 +13,9 @@ antigen-apply () {
     fi
 
     # Apply all `compinit`s that have been deferred.
-    eval "$(for cdef in $__deferred_compdefs; do
-                echo compdef $cdef
-            done)"
+    for cdef in "${__deferred_compdefs[@]}"; do
+        compdef "$cdef"
+    done
 
     unset __deferred_compdefs
 

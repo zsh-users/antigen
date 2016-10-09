@@ -1,56 +1,46 @@
 -antigen-load-list () {
-  local url="$1"
-  local loc="$2"
-  local make_local_clone="$3"
-  local sources=''
+    local url="$1"
+    local loc="$2"
+    local make_local_clone="$3"
 
-  # The full location where the plugin is located.
-  local location
-  if $make_local_clone; then
-      location="$(-antigen-get-clone-dir "$url")/"
-  else
-      location="$url/"
-  fi
+    # The full location where the plugin is located.
+    local location="$url/"
+    if $make_local_clone; then
+        location="$(-antigen-get-clone-dir "$url")/"
+    fi
 
-  [[ $loc != "/" ]] && location="$location$loc"
+    if [[ $loc != "/" ]]; then
+        location="$location$loc"
+    fi
 
-  if [[ ! -f "$location" && ! -d "$location" ]]; then
-      return 1
-  fi
+    if [[ ! -f "$location" && ! -d "$location" ]]; then
+        return 1
+    fi
 
-  if [[ -f "$location" ]]; then
-      sources="$location"
-  else
+    if [[ -f "$location" ]]; then
+        echo "$location"
+        return
+    fi
 
-      # Source the plugin script.
-      # FIXME: I don't know. Looks very very ugly. Needs a better
-      # implementation once tests are ready.
-      local script_loc="$(ls "$location" | grep '\.plugin\.zsh$' | head -n1)"
+    # If we have a `*.plugin.zsh`, source it.
+    local script_plugin
+    script_plugin=($location/*.plugin.zsh(N[1]))
+    if [[ -f "$script_plugin" ]]; then
+        echo "$script_plugin"
+        return
+    fi
 
-      if [[ -f $location/$script_loc ]]; then
-          # If we have a `*.plugin.zsh`, source it.
-          sources="$location/$script_loc"
+    # Otherwise source init.
+    if [[ -f $location/init.zsh ]]; then
+        echo "$location/init.zsh"
+        return
+    fi
 
-      elif [[ -f $location/init.zsh ]]; then
-          # Otherwise source it.
-          sources="$location/init.zsh"
-
-      elif ls "$location" | grep -l '\.zsh$' &> /dev/null; then
-          # If there is no `*.plugin.zsh` file, source *all* the `*.zsh`
-          # files.
-
-          for script ($location/*.zsh(N)) {
-            sources="$sources\n$script"
-          }
-
-      elif ls "$location" | grep -l '\.sh$' &> /dev/null; then
-          # If there are no `*.zsh` files either, we look for and source any
-          # `*.sh` files instead.
-          for script ($location/*.sh(N)) {
-            sources="$sources\n$script"
-          }
-      fi
-  fi
-
-  echo "$sources"
+    # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
+    local bundle_files
+    bundle_files=($location/*.zsh(N) $location/*.sh(N))
+    if [[ $#bundle_files -gt 0 ]]; then
+        echo "${(j:\n:)bundle_files}"
+        return
+    fi
 }

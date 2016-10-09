@@ -6,12 +6,11 @@
     if [[ "$1" == "https://github.com/sorin-ionescu/prezto.git" ]]; then
         # Prezto's directory *has* to be `.zprezto`.
         echo .zprezto
-
     else
-        echo "$1" | sed \
-            -e 's./.-SLASH-.g' \
-            -e 's.:.-COLON-.g' \
-            -e 's.|.-PIPE-.g'
-
+        local url="${1}"
+        url=${url//\//-SLASH-}
+        url=${url//\:/-COLON-}
+        path=${url//\|/-PIPE-}
+        echo "$path"
     fi
 }
