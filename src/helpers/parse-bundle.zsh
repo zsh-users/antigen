@@ -7,9 +7,7 @@
   local btype=plugin
 
   # Parse the given arguments. (Will overwrite the above values).
-  eval "$(-antigen-parse-args \
-          'url?, loc? ; branch:?, no-local-clone?, btype:?' \
-          "$@")"
+  eval "$(-antigen-parse-args "$@")"
 
   # Check if url is just the plugin name. Super short syntax.
   if [[ "$url" != */* ]]; then
