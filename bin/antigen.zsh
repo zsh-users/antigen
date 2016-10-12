@@ -14,7 +14,7 @@ local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
 local _ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
 local _ANTIGEN_AUTODETECT_CONFIG_CHANGES=${_ANTIGEN_AUTODETECT_CONFIG_CHANGES:-true}
 
-# Do not load anything if git is no available.
+# Do not load anything if git is not available.
 if ! which git &> /dev/null; then
     echo 'Antigen: Please install git to use Antigen.' >&2
     return 1
