@@ -9,8 +9,8 @@
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
 local _ANTIGEN_BUNDLE_RECORD=""
 local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
-local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
-local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
+export _ANTIGEN_CACHE_ENABLED=false
+local _ANTIGEN_COMP_ENABLED=true
 local _ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
 local _ANTIGEN_AUTODETECT_CONFIG_CHANGES=${_ANTIGEN_AUTODETECT_CONFIG_CHANGES:-true}
 
@@ -307,6 +307,7 @@ antigen () {
   local url="$1"
   local loc="$2"
   local make_local_clone="$3"
+  local btype="$4"
   local src
 
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone"); do
@@ -320,9 +321,13 @@ antigen () {
           # function-contexts. This is done in this particular way *only* for
           # interactive bundle/theme loading, for static loading -99.9% of the time-
           # eval and subshells are not needed.
-          eval "$(cat $src | sed -Ee '/\{$/,/^\}/!{
-                  s/^local //
-              }')"
+          if [[ "$btype" == "theme" ]]; then
+              eval "$(cat $src | sed -Ee '/\{$/,/^\}/!{
+                      s/^local //
+                  }')"
+          else
+              source "$src"
+          fi
       fi
   done
 
@@ -462,7 +467,7 @@ antigen-bundle () {
     fi
 
     # Load the plugin.
-    -antigen-load "$url" "$loc" "$make_local_clone"
+    -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
 
 }
 antigen-cleanup () {
@@ -784,16 +789,27 @@ _antigen () {
 # This does avoid function-context $0 references.
 #
 # Usage
-#   -zcache-process-source "/path/to/source"
+#   -zcache-process-source "/path/to/source" ["theme"|"plugin"]
 #
 # Returns
 #   Returns the cached sources without $0 and ${0} references
 -zcache-process-source () {
-    cat "$1" | sed -Ee '/\{$/,/^\}/!{
-            /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$1'"
-            s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/
-            s/^local //
+    local src="$1"
+    local btype="$2"
+
+    local regexp='/\{$/,/^\}/!{
+               /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
+               s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/'
+    
+    if [[ "$btype" == "theme" ]]; then
+        regexp+="
+        s/^local //"
+    fi
+
+    regexp+='
         }'
+
+    cat "$src" | sed -Ee $regexp
 }
 
 # Generates cache from listed bundles.
@@ -832,7 +848,7 @@ _antigen () {
         -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
             if [[ -f "$line" ]]; then
                 _payload+="#-- SOURCE: $line\NL"
-                _payload+=$(-zcache-process-source "$line")
+                _payload+=$(-zcache-process-source "$line" "$btype")
                 _payload+="\NL;#-- END SOURCE\NL"
             fi
         done

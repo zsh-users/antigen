@@ -2,6 +2,7 @@
   local url="$1"
   local loc="$2"
   local make_local_clone="$3"
+  local btype="$4"
   local src
 
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone"); do
@@ -15,9 +16,13 @@
           # function-contexts. This is done in this particular way *only* for
           # interactive bundle/theme loading, for static loading -99.9% of the time-
           # eval and subshells are not needed.
-          eval "$(cat $src | sed -Ee '/\{$/,/^\}/!{
-                  s/^local //
-              }')"
+          if [[ "$btype" == "theme" ]]; then
+              eval "$(cat $src | sed -Ee '/\{$/,/^\}/!{
+                      s/^local //
+                  }')"
+          else
+              source "$src"
+          fi
       fi
   done
 
