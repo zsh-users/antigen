@@ -315,7 +315,14 @@ antigen () {
               fpath=($location $fpath)
           fi
       else
-          source "$src"
+          # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
+          # This is needed to seek-and-destroy local variable definitions *outside*
+          # function-contexts. This is done in this particular way *only* for
+          # interactive bundle/theme loading, for static loading -99.9% of the time-
+          # eval and subshells are not needed.
+          eval "$(cat $src | sed -Ee '/\{$/,/^\}/!{
+                  s/^local //
+              }')"
       fi
   done
 
@@ -785,6 +792,7 @@ _antigen () {
     cat "$1" | sed -Ee '/\{$/,/^\}/!{
             /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$1'"
             s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/
+            s/^local //
         }'
 }
 

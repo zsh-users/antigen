@@ -14,6 +14,7 @@
     cat "$1" | sed -Ee '/\{$/,/^\}/!{
             /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$1'"
             s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/
+            s/^local //
         }'
 }
 
