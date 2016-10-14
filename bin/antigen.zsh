@@ -9,8 +9,8 @@
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
 local _ANTIGEN_BUNDLE_RECORD=""
 local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
-export _ANTIGEN_CACHE_ENABLED=false
-local _ANTIGEN_COMP_ENABLED=true
+local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
+local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
 local _ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
 local _ANTIGEN_AUTODETECT_CONFIG_CHANGES=${_ANTIGEN_AUTODETECT_CONFIG_CHANGES:-true}
 
