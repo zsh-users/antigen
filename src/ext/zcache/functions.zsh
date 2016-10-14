@@ -6,15 +6,27 @@
 # This does avoid function-context $0 references.
 #
 # Usage
-#   -zcache-process-source "/path/to/source"
+#   -zcache-process-source "/path/to/source" ["theme"|"plugin"]
 #
 # Returns
 #   Returns the cached sources without $0 and ${0} references
 -zcache-process-source () {
-    cat "$1" | sed -Ee '/\{$/,/^\}/!{
-            /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$1'"
-            s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/
+    local src="$1"
+    local btype="$2"
+
+    local regexp='/\{$/,/^\}/!{
+               /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
+               s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/'
+    
+    if [[ "$btype" == "theme" ]]; then
+        regexp+="
+        s/^local //"
+    fi
+
+    regexp+='
         }'
+
+    cat "$src" | sed -Ee $regexp
 }
 
 # Generates cache from listed bundles.
@@ -53,7 +65,7 @@
         -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
             if [[ -f "$line" ]]; then
                 _payload+="#-- SOURCE: $line\NL"
-                _payload+=$(-zcache-process-source "$line")
+                _payload+=$(-zcache-process-source "$line" "$btype")
                 _payload+="\NL;#-- END SOURCE\NL"
             fi
         done
