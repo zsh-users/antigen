@@ -667,7 +667,7 @@ antigen-theme () {
     # This is only needed on interactive mode
     autoload -U add-zsh-hook
     local hook
-    for hook in chpwd precmd preexec periodic zshaddhistory; do
+    for hook in chpwd precmd preexec periodic; do
         add-zsh-hook -D "${hook}" "prompt_*"
         add-zsh-hook -D "${hook}" "*_${hook}" # common in omz themes 
         add-zsh-hook -d "${hook}" "vcs_info"  # common in omz themes
