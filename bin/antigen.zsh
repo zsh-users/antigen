@@ -12,6 +12,7 @@ local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
 local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
 local _ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
+local _ANTIGEN_RESET_THEME_HOOKS=${_ANTIGEN_RESET_THEME_HOOKS:-true}
 local _ANTIGEN_AUTODETECT_CONFIG_CHANGES=${_ANTIGEN_AUTODETECT_CONFIG_CHANGES:-true}
 
 # Do not load anything if git is not available.
@@ -307,6 +308,7 @@ antigen () {
   local url="$1"
   local loc="$2"
   local make_local_clone="$3"
+  local btype="$4"
   local src
 
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone"); do
@@ -315,7 +317,18 @@ antigen () {
               fpath=($location $fpath)
           fi
       else
-          source "$src"
+          # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
+          # This is needed to seek-and-destroy local variable definitions *outside*
+          # function-contexts. This is done in this particular way *only* for
+          # interactive bundle/theme loading, for static loading -99.9% of the time-
+          # eval and subshells are not needed.
+          if [[ "$btype" == "theme" ]]; then
+              eval "$(cat $src | sed -Ee '/\{$/,/^\}/!{
+                      s/^local //
+                  }')"
+          else
+              source "$src"
+          fi
       fi
   done
 
@@ -455,7 +468,7 @@ antigen-bundle () {
     fi
 
     # Load the plugin.
-    -antigen-load "$url" "$loc" "$make_local_clone"
+    -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
 
 }
 antigen-cleanup () {
@@ -652,6 +665,10 @@ antigen-snapshot () {
 
 }
 antigen-theme () {
+    if [[ $_ANTIGEN_RESET_THEME_HOOKS == true ]]; then
+        -antigen-theme-reset-hooks
+    fi
+
     if [[ "$1" != */* && "$1" != --* ]]; then
         # The first argument is just a name of the plugin, to be picked up from
         # the default repo.
@@ -662,7 +679,22 @@ antigen-theme () {
         antigen-bundle "$@" --btype=theme
 
     fi
+}
 
+-antigen-theme-reset-hooks () {
+    # This is only needed on interactive mode
+    autoload -U add-zsh-hook is-at-least
+    local hook
+    for hook in chpwd precmd preexec periodic; do
+        # add-zsh-hook's -D option was introduced first in 4.3.6-dev and
+        # 4.3.7 first stable, 4.3.5 and below may experiment minor issues
+        # while switching themes interactively.
+        if is-at-least 4.3.7; then
+            add-zsh-hook -D "${hook}" "prompt_*"
+            add-zsh-hook -D "${hook}" "*_${hook}" # common in omz themes 
+        fi
+        add-zsh-hook -d "${hook}" "vcs_info"  # common in omz themes
+    done
 }
 antigen-update () {
     # Update your bundles, i.e., `git pull` in all the plugin repos.
@@ -777,15 +809,27 @@ _antigen () {
 # This does avoid function-context $0 references.
 #
 # Usage
-#   -zcache-process-source "/path/to/source"
+#   -zcache-process-source "/path/to/source" ["theme"|"plugin"]
 #
 # Returns
 #   Returns the cached sources without $0 and ${0} references
 -zcache-process-source () {
-    cat "$1" | sed -Ee '/\{$/,/^\}/!{
-            /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$1'"
-            s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/
+    local src="$1"
+    local btype="$2"
+
+    local regexp='/\{$/,/^\}/!{
+               /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
+               s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/'
+    
+    if [[ "$btype" == "theme" ]]; then
+        regexp+="
+        s/^local //"
+    fi
+
+    regexp+='
         }'
+
+    cat "$src" | sed -Ee $regexp
 }
 
 # Generates cache from listed bundles.
@@ -824,7 +868,7 @@ _antigen () {
         -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
             if [[ -f "$line" ]]; then
                 _payload+="#-- SOURCE: $line\NL"
-                _payload+=$(-zcache-process-source "$line")
+                _payload+=$(-zcache-process-source "$line" "$btype")
                 _payload+="\NL;#-- END SOURCE\NL"
             fi
         done
@@ -1036,7 +1080,6 @@ zcache-done () {
         antigen-cache-reset
     }
     
-    zle -D zle-line-init
     unset _ZCACHE_BUNDLES
 }
 

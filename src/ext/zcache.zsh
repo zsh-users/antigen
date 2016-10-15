@@ -66,7 +66,6 @@ zcache-done () {
         antigen-cache-reset
     }
     
-    zle -D zle-line-init
     unset _ZCACHE_BUNDLES
 }
 
