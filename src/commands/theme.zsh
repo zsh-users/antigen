@@ -1,4 +1,21 @@
 antigen-theme () {
+    if [[ $_ANTIGEN_RESET_THEME_HOOKS == true ]]; then
+        -antigen-theme-reset-hooks
+    fi
+
+    if [[ "$1" != */* && "$1" != --* ]]; then
+        # The first argument is just a name of the plugin, to be picked up from
+        # the default repo.
+        local name="${1:-robbyrussell}"
+        antigen-bundle --loc=themes/$name --btype=theme
+
+    else
+        antigen-bundle "$@" --btype=theme
+
+    fi
+}
+
+-antigen-theme-reset-hooks () {
     # This is only needed on interactive mode
     autoload -U add-zsh-hook is-at-least
     local hook
@@ -12,15 +29,4 @@ antigen-theme () {
         fi
         add-zsh-hook -d "${hook}" "vcs_info"  # common in omz themes
     done
-
-    if [[ "$1" != */* && "$1" != --* ]]; then
-        # The first argument is just a name of the plugin, to be picked up from
-        # the default repo.
-        local name="${1:-robbyrussell}"
-        antigen-bundle --loc=themes/$name --btype=theme
-
-    else
-        antigen-bundle "$@" --btype=theme
-
-    fi
 }
