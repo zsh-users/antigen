@@ -12,6 +12,9 @@
     -set-default ANTIGEN_DEFAULT_REPO_URL \
         https://github.com/robbyrussell/oh-my-zsh.git
     -set-default ADOTDIR $HOME/.antigen
+    if [[ ! -d $ADOTDIR ]]; then
+        mkdir -p $ADOTDIR
+    fi
     -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
 
     # Setup antigen's own completion.
