@@ -12,6 +12,7 @@ local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
 local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
 local _ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
+local _ANTIGEN_AUTODETECT_CONFIG_CHANGES=${_ANTIGEN_AUTODETECT_CONFIG_CHANGES:-true}
 
 # Do not load anything if git is no available.
 if ! which git &> /dev/null; then
@@ -23,6 +24,104 @@ fi
 typeset -a __deferred_compdefs
 compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
 
+# A syntax sugar to avoid the `-` when calling antigen commands. With this
+# function, you can write `antigen-bundle` as `antigen bundle` and so on.
+antigen () {
+    local cmd="$1"
+    if [[ -z "$cmd" ]]; then
+        echo 'Antigen: Please give a command to run.' >&2
+        return 1
+    fi
+    shift
+
+    if functions "antigen-$cmd" > /dev/null; then
+        "antigen-$cmd" "$@"
+    else
+        echo "Antigen: Unknown command: $cmd" >&2
+    fi
+}
+-antigen-bundle-short-name () {
+    echo "$@" | sed -E "s|.*/(.*/.*)$|\1|"|sed -E "s|\.git$||g"
+}
+-antigen-get-clone-dir () {
+    # Takes a repo url and gives out the path that this url needs to be cloned
+    # to. Doesn't actually clone anything.
+    echo -n $ADOTDIR/repos/
+
+    if [[ "$1" == "https://github.com/sorin-ionescu/prezto.git" ]]; then
+        # Prezto's directory *has* to be `.zprezto`.
+        echo .zprezto
+    else
+        local url="${1}"
+        url=${url//\//-SLASH-}
+        url=${url//\:/-COLON-}
+        path=${url//\|/-PIPE-}
+        echo "$path"
+    fi
+}
+-antigen-get-clone-url () {
+    # Takes a repo's clone dir and gives out the repo's original url that was
+    # used to create the given directory path.
+
+    if [[ "$1" == ".zprezto" ]]; then
+        # Prezto's (in `.zprezto`), is assumed to be from `sorin-ionescu`'s
+        # remote.
+        echo https://github.com/sorin-ionescu/prezto.git
+    else
+        local _path="${1}"
+        _path=${_path//^\$ADOTDIR\/repos\/}
+        _path=${_path//-SLASH-/\/}
+        _path=${_path//-COLON-/\:}
+        url=${_path//-PIPE-/\|}
+        echo "$url"
+    fi
+}
+-antigen-load-list () {
+    local url="$1"
+    local loc="$2"
+    local make_local_clone="$3"
+
+    # The full location where the plugin is located.
+    local location="$url/"
+    if $make_local_clone; then
+        location="$(-antigen-get-clone-dir "$url")/"
+    fi
+
+    if [[ $loc != "/" ]]; then
+        location="$location$loc"
+    fi
+
+    if [[ ! -f "$location" && ! -d "$location" ]]; then
+        return 1
+    fi
+
+    if [[ -f "$location" ]]; then
+        echo "$location"
+        return
+    fi
+
+    # If we have a `*.plugin.zsh`, source it.
+    local script_plugin
+    script_plugin=($location/*.plugin.zsh(N[1]))
+    if [[ -f "$script_plugin" ]]; then
+        echo "$script_plugin"
+        return
+    fi
+
+    # Otherwise source init.
+    if [[ -f $location/init.zsh ]]; then
+        echo "$location/init.zsh"
+        return
+    fi
+
+    # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
+    local bundle_files
+    bundle_files=($location/*.zsh(N) $location/*.sh(N))
+    if [[ $#bundle_files -gt 0 ]]; then
+        echo "${(j:\n:)bundle_files}"
+        return
+    fi
+}
 -antigen-parse-bundle () {
   # Bundle spec arguments' default values.
   local url="$ANTIGEN_DEFAULT_REPO_URL"
@@ -32,9 +131,7 @@ compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
   local btype=plugin
 
   # Parse the given arguments. (Will overwrite the above values).
-  eval "$(-antigen-parse-args \
-          'url?, loc? ; branch:?, no-local-clone?, btype:?' \
-          "$@")"
+  eval "$(-antigen-parse-args "$@")"
 
   # Check if url is just the plugin name. Super short syntax.
   if [[ "$url" != */* ]]; then
@@ -74,40 +171,6 @@ compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
         local btype=\""$btype\""
         "
 }
-
-# Syntaxes
-#   antigen-bundle <url> [<loc>=/]
-# Keyword only arguments:
-#   branch - The branch of the repo to use for this bundle.
-antigen-bundle () {
-    # Bundle spec arguments' default values.
-    local url="$ANTIGEN_DEFAULT_REPO_URL"
-    local loc=/
-    local branch=
-    local no_local_clone=false
-    local btype=plugin
-    
-    if [[ -z "$1" ]]; then
-        echo "Must provide a bundle url or name."
-        return 1
-    fi
-
-    eval "$(-antigen-parse-bundle "$@")"
-    
-    # Add it to the record.
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD $make_local_clone"
-
-    # Ensure a clone exists for this repo, if needed.
-    if $make_local_clone; then
-        -antigen-ensure-repo "$url"
-    fi
-
-    # Load the plugin.
-    -antigen-load "$url" "$loc" "$make_local_clone"
-
-}
-
 -antigen-resolve-bundle-url () {
     # Given an acceptable short/full form of a bundle's repo url, this function
     # echoes the full form of the repo's clone url.
@@ -127,100 +190,6 @@ antigen-bundle () {
 
     echo "$url"
 }
-
-antigen-bundles () {
-    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-    # are ignored. Everything else is given to `antigen-bundle` as is, no
-    # quoting rules applied.
-    local line
-    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-        # Using `eval` so that we can use the shell-style quoting in each line
-        # piped to `antigen-bundles`.
-        eval "antigen-bundle $line"
-    done
-}
-
-antigen-update () {
-    # Update your bundles, i.e., `git pull` in all the plugin repos.
-    date >! $ADOTDIR/revert-info
-
-    # Clear log
-    :> $_ANTIGEN_LOG_PATH
-
-    -antigen-echo-record |
-        awk '$4 == "true" {print $1}' |
-        sort -u |
-        while read url; do
-            local clone_dir="$(-antigen-get-clone-dir "$url")"
-            if [[ -d "$clone_dir" ]]; then
-                (echo -n "$clone_dir:"
-                    cd "$clone_dir"
-                    git rev-parse HEAD) >> $ADOTDIR/revert-info
-            fi
-
-            # update=true verbose=true
-            -antigen-ensure-repo "$url" true true
-        done
-}
-
-antigen-revert () {
-    if [[ -f $ADOTDIR/revert-info ]]; then
-        cat $ADOTDIR/revert-info | sed -n '1!p' | while read line; do
-            local dir="$(echo "$line" | cut -d: -f1)"
-            git --git-dir="$dir/.git" --work-tree="$dir" \
-                checkout "$(echo "$line" | cut -d: -f2)" 2> /dev/null
-        done
-
-        echo "Reverted to state before running -update on $(
-                cat $ADOTDIR/revert-info | sed -n '1p')."
-
-    else
-        echo 'No revert information available. Cannot revert.' >&2
-        return 1
-    fi
-}
-
--antigen-get-clone-dir () {
-    # Takes a repo url and gives out the path that this url needs to be cloned
-    # to. Doesn't actually clone anything.
-    echo -n $ADOTDIR/repos/
-
-    if [[ "$1" == "https://github.com/sorin-ionescu/prezto.git" ]]; then
-        # Prezto's directory *has* to be `.zprezto`.
-        echo .zprezto
-
-    else
-        echo "$1" | sed \
-            -e 's./.-SLASH-.g' \
-            -e 's.:.-COLON-.g' \
-            -e 's.|.-PIPE-.g'
-
-    fi
-}
-
--antigen-get-clone-url () {
-    # Takes a repo's clone dir and gives out the repo's original url that was
-    # used to create the given directory path.
-
-    if [[ "$1" == ".zprezto" ]]; then
-        # Prezto's (in `.zprezto`), is assumed to be from `sorin-ionescu`'s
-        # remote.
-        echo https://github.com/sorin-ionescu/prezto.git
-
-    else
-        echo "$1" | sed \
-            -e "s:^$ADOTDIR/repos/::" \
-            -e 's.-SLASH-./.g' \
-            -e 's.-COLON-.:.g' \
-            -e 's.-PIPE-.|.g'
-
-    fi
-}
-
--antigen-bundle-short-name () {
-    echo "$@" | sed -E "s|.*/(.*/.*).git.*$|\1|"
-}
-
 -antigen-ensure-repo () {
 
     # Ensure that a clone exists for the given repo url and branch. If the first
@@ -307,64 +276,33 @@ antigen-revert () {
     unfunction -- --plugin-git
 
 }
+-antigen-env-setup () {
 
--antigen-load-list () {
-  local url="$1"
-  local loc="$2"
-  local make_local_clone="$3"
-  local sources=''
+    # Helper function: Same as `export $1=$2`, but will only happen if the name
+    # specified by `$1` is not already set.
+    -set-default () {
+        local arg_name="$1"
+        local arg_value="$2"
+        eval "test -z \"\$$arg_name\" && export $arg_name='$arg_value'"
+    }
 
-  # The full location where the plugin is located.
-  local location
-  if $make_local_clone; then
-      location="$(-antigen-get-clone-dir "$url")/"
-  else
-      location="$url/"
-  fi
+    # Pre-startup initializations.
+    -set-default ANTIGEN_DEFAULT_REPO_URL \
+        https://github.com/robbyrussell/oh-my-zsh.git
+    -set-default ADOTDIR $HOME/.antigen
+    -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
 
-  [[ $loc != "/" ]] && location="$location$loc"
+    # Setup antigen's own completion.
+    autoload -Uz compinit
+    if $_ANTIGEN_COMP_ENABLED; then
+        compinit -C
+        compdef _antigen antigen
+    fi
 
-  if [[ ! -f "$location" && ! -d "$location" ]]; then
-      return 1
-  fi
+    # Remove private functions.
+    unfunction -- -set-default
 
-  if [[ -f "$location" ]]; then
-      sources="$location"
-  else
-
-      # Source the plugin script.
-      # FIXME: I don't know. Looks very very ugly. Needs a better
-      # implementation once tests are ready.
-      local script_loc="$(ls "$location" | grep '\.plugin\.zsh$' | head -n1)"
-
-      if [[ -f $location/$script_loc ]]; then
-          # If we have a `*.plugin.zsh`, source it.
-          sources="$location/$script_loc"
-
-      elif [[ -f $location/init.zsh ]]; then
-          # Otherwise source it.
-          sources="$location/init.zsh"
-
-      elif ls "$location" | grep -l '\.zsh$' &> /dev/null; then
-          # If there is no `*.plugin.zsh` file, source *all* the `*.zsh`
-          # files.
-
-          for script ($location/*.zsh(N)) {
-            sources="$sources\n$script"
-          }
-
-      elif ls "$location" | grep -l '\.sh$' &> /dev/null; then
-          # If there are no `*.zsh` files either, we look for and source any
-          # `*.sh` files instead.
-          for script ($location/*.sh(N)) {
-            sources="$sources\n$script"
-          }
-      fi
-  fi
-
-  echo "$sources"
 }
-
 -antigen-load () {
   local url="$1"
   local loc="$2"
@@ -392,27 +330,134 @@ antigen-revert () {
      fpath=($location $fpath)
   fi
 }
+-antigen-parse-args () {
+    local key
+    local value
+    local index=0
 
-# Update (with `git pull`) antigen itself.
-# TODO: Once update is finished, show a summary of the new commits, as a kind of
-# "what's new" message.
-antigen-selfupdate () {
-    ( cd $_ANTIGEN_INSTALL_DIR
-        if [[ ! ( -d .git || -f .git ) ]]; then
-            echo "Your copy of antigen doesn't appear to be a git clone. " \
-                "The 'selfupdate' command cannot work in this case."
-            return 1
-        fi
-        local head="$(git rev-parse --abbrev-ref HEAD)"
-        if [[ $head == "HEAD" ]]; then
-            # If current head is detached HEAD, checkout to master branch.
-            git checkout master
-        fi
-        git pull
-        $_ANTIGEN_CACHE_ENABLED && antigen-cache-reset &>> /dev/null
-    )
+    while [[ $# -gt 0 ]]; do
+        argkey="${1%\=*}"
+        key="${argkey//--/}"
+        value="${1#*=}"
+
+        case "$argkey" in
+            --url|--loc|--branch|--btype)
+                if [[ "$value" == "$argkey" ]]; then
+                    echo "Required argument for '$key' not provided."
+                else
+                    echo "local $key='$value'"
+                fi
+            ;;
+            --no-local-clone)
+                echo "local no_local_clone='true'"
+            ;;
+            --*)
+                echo "Unknown argument '$key'."
+            ;;
+            *)
+                value=$key
+                case $index in
+                    0) key=url ;;
+                    1) key=loc ;;
+                esac
+                let index+=1
+                echo "local $key='$value'"
+            ;;
+        esac
+
+        shift
+    done
 }
+-antigen-use-oh-my-zsh () {
+    if [[ -z "$ZSH" ]]; then
+        export ZSH="$(-antigen-get-clone-dir "$ANTIGEN_DEFAULT_REPO_URL")"
+    fi
+    if [[ -z "$ZSH_CACHE_DIR" ]]; then
+        export ZSH_CACHE_DIR="$ZSH/cache/"
+    fi
+    antigen-bundle --loc=lib
+}
+-antigen-use-prezto () {
+    _zdotdir_set=${+parameters[ZDOTDIR]}
+    if (( _zdotdir_set )); then
+        _old_zdotdir=$ZDOTDIR
+    fi
+    export ZDOTDIR=$ADOTDIR/repos/
 
+    antigen-bundle sorin-ionescu/prezto
+}
+antigen-apply () {
+
+    # Initialize completion.
+    local cdef
+
+    # Load the compinit module. This will readefine the `compdef` function to
+    # the one that actually initializes completions.
+    autoload -U compinit
+    if [[ -z $ANTIGEN_COMPDUMPFILE ]]; then
+        compinit -i
+    else
+        compinit -i -d $ANTIGEN_COMPDUMPFILE
+    fi
+
+    # Apply all `compinit`s that have been deferred.
+    for cdef in "${__deferred_compdefs[@]}"; do
+        compdef "$cdef"
+    done
+
+    unset __deferred_compdefs
+
+    if (( _zdotdir_set )); then
+        ZDOTDIR=$_old_zdotdir
+    else
+        unset ZDOTDIR
+        unset _old_zdotdir
+    fi;
+    unset _zdotdir_set
+}
+antigen-bundles () {
+    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+    # are ignored. Everything else is given to `antigen-bundle` as is, no
+    # quoting rules applied.
+    local line
+    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+        # Using `eval` so that we can use the shell-style quoting in each line
+        # piped to `antigen-bundles`.
+        eval "antigen-bundle $line"
+    done
+}
+# Syntaxes
+#   antigen-bundle <url> [<loc>=/]
+# Keyword only arguments:
+#   branch - The branch of the repo to use for this bundle.
+antigen-bundle () {
+    # Bundle spec arguments' default values.
+    local url="$ANTIGEN_DEFAULT_REPO_URL"
+    local loc=/
+    local branch=
+    local no_local_clone=false
+    local btype=plugin
+    
+    if [[ -z "$1" ]]; then
+        echo "Must provide a bundle url or name."
+        return 1
+    fi
+
+    eval "$(-antigen-parse-bundle "$@")"
+    
+    # Add it to the record.
+    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
+    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD $make_local_clone"
+
+    # Ensure a clone exists for this repo, if needed.
+    if $make_local_clone; then
+        -antigen-ensure-repo "$url"
+    fi
+
+    # Load the plugin.
+    -antigen-load "$url" "$loc" "$make_local_clone"
+
+}
 antigen-cleanup () {
 
     # Cleanup unused repositories.
@@ -462,99 +507,26 @@ antigen-cleanup () {
         echo Nothing deleted.
     fi
 }
-
-antigen-use () {
-    if [[ $1 == oh-my-zsh ]]; then
-        -antigen-use-oh-my-zsh
-    elif [[ $1 == prezto ]]; then
-        -antigen-use-prezto
-    else
-        echo 'Usage: antigen-use <library-name>' >&2
-        echo 'Where <library-name> is any one of the following:' >&2
-        echo ' * oh-my-zsh' >&2
-        echo ' * prezto' >&2
-        return 1
-    fi
+# Echo the bundle specs as in the record. The first line is not echoed since it
+# is a blank line.
+-antigen-echo-record () {
+    echo "$_ANTIGEN_BUNDLE_RECORD" | sed -n '1!p'
 }
+antigen-help () {
+    cat <<EOF
+Antigen is a plugin management system for zsh. It makes it easy to grab awesome
+shell scripts and utilities, put up on github. For further details and complete
+documentation, visit the project's page at 'http://antigen.sharats.me'.
 
--antigen-use-oh-my-zsh () {
-    if [[ -z "$ZSH" ]]; then
-        export ZSH="$(-antigen-get-clone-dir "$ANTIGEN_DEFAULT_REPO_URL")"
-    fi
-    if [[ -z "$ZSH_CACHE_DIR" ]]; then
-        export ZSH_CACHE_DIR="$ZSH/cache/"
-    fi
-    antigen-bundle --loc=lib
+EOF
+    antigen-version
 }
-
--antigen-use-prezto () {
-    _zdotdir_set=${+parameters[ZDOTDIR]}
-    if (( _zdotdir_set )); then
-        _old_zdotdir=$ZDOTDIR
-    fi
-    export ZDOTDIR=$ADOTDIR/repos/
-
-    antigen-bundle sorin-ionescu/prezto
-}
-
 # For backwards compatibility.
 antigen-lib () {
     -antigen-use-oh-my-zsh
     echo '`antigen-lib` is deprecated and will soon be removed.'
     echo 'Use `antigen-use oh-my-zsh` instead.'
 }
-
-# For backwards compatibility.
-antigen-prezto-lib () {
-    -antigen-use-prezto
-    echo '`antigen-prezto-lib` is deprecated and will soon be removed.'
-    echo 'Use `antigen-use prezto` instead.'
-}
-
-antigen-theme () {
-    if [[ "$1" != */* && "$1" != --* ]]; then
-        # The first argument is just a name of the plugin, to be picked up from
-        # the default repo.
-        local name="${1:-robbyrussell}"
-        antigen-bundle --loc=themes/$name --btype=theme
-
-    else
-        antigen-bundle "$@" --btype=theme
-
-    fi
-
-}
-
-antigen-apply () {
-
-    # Initialize completion.
-    local cdef
-
-    # Load the compinit module. This will readefine the `compdef` function to
-    # the one that actually initializes completions.
-    autoload -U compinit
-    if [[ -z $ANTIGEN_COMPDUMPFILE ]]; then
-        compinit -i
-    else
-        compinit -i -d $ANTIGEN_COMPDUMPFILE
-    fi
-
-    # Apply all `compinit`s that have been deferred.
-    eval "$(for cdef in $__deferred_compdefs; do
-                echo compdef $cdef
-            done)"
-
-    unset __deferred_compdefs
-
-    if (( _zdotdir_set )); then
-        ZDOTDIR=$_old_zdotdir
-    else
-        unset ZDOTDIR
-        unset _old_zdotdir
-    fi;
-    unset _zdotdir_set
-}
-
 antigen-list () {
     # List all currently installed bundles.
     if [[ -z "$_ANTIGEN_BUNDLE_RECORD" ]]; then
@@ -564,7 +536,80 @@ antigen-list () {
         -antigen-echo-record | sort -u
     fi
 }
+# For backwards compatibility.
+antigen-prezto-lib () {
+    -antigen-use-prezto
+    echo '`antigen-prezto-lib` is deprecated and will soon be removed.'
+    echo 'Use `antigen-use prezto` instead.'
+}
+antigen-restore () {
 
+    if [[ $# == 0 ]]; then
+        echo 'Please provide a snapshot file to restore from.' >&2
+        return 1
+    fi
+
+    local snapshot_file="$1"
+
+    # TODO: Before doing anything with the snapshot file, verify its checksum.
+    # If it fails, notify this to the user and confirm if restore should
+    # proceed.
+
+    echo -n "Restoring from $snapshot_file..."
+
+    sed -n '1!p' "$snapshot_file" |
+        while read line; do
+
+            local version_hash="${line%% *}"
+            local url="${line##* }"
+            local clone_dir="$(-antigen-get-clone-dir "$url")"
+
+            if [[ ! -d $clone_dir ]]; then
+                git clone "$url" "$clone_dir" &> /dev/null
+            fi
+
+            (cd "$clone_dir" && git checkout $version_hash) &> /dev/null
+
+        done
+
+    echo ' done.'
+    echo 'Please open a new shell to get the restored changes.'
+}
+antigen-revert () {
+    if [[ -f $ADOTDIR/revert-info ]]; then
+        cat $ADOTDIR/revert-info | sed -n '1!p' | while read line; do
+            local dir="$(echo "$line" | cut -d: -f1)"
+            git --git-dir="$dir/.git" --work-tree="$dir" \
+                checkout "$(echo "$line" | cut -d: -f2)" 2> /dev/null
+        done
+
+        echo "Reverted to state before running -update on $(
+                cat $ADOTDIR/revert-info | sed -n '1p')."
+
+    else
+        echo 'No revert information available. Cannot revert.' >&2
+        return 1
+    fi
+}
+# Update (with `git pull`) antigen itself.
+# TODO: Once update is finished, show a summary of the new commits, as a kind of
+# "what's new" message.
+antigen-selfupdate () {
+    ( cd $_ANTIGEN_INSTALL_DIR
+        if [[ ! ( -d .git || -f .git ) ]]; then
+            echo "Your copy of antigen doesn't appear to be a git clone. " \
+                "The 'selfupdate' command cannot work in this case."
+            return 1
+        fi
+        local head="$(git rev-parse --abbrev-ref HEAD)"
+        if [[ $head == "HEAD" ]]; then
+            # If current head is detached HEAD, checkout to master branch.
+            git checkout master
+        fi
+        git pull
+        $_ANTIGEN_CACHE_ENABLED && antigen-cache-reset &>> /dev/null
+    )
+}
 antigen-snapshot () {
 
     local snapshot_file="${1:-antigen-shapshot}"
@@ -606,247 +651,58 @@ antigen-snapshot () {
     } > "$snapshot_file"
 
 }
+antigen-theme () {
+    if [[ "$1" != */* && "$1" != --* ]]; then
+        # The first argument is just a name of the plugin, to be picked up from
+        # the default repo.
+        local name="${1:-robbyrussell}"
+        antigen-bundle --loc=themes/$name --btype=theme
 
-antigen-restore () {
+    else
+        antigen-bundle "$@" --btype=theme
 
-    if [[ $# == 0 ]]; then
-        echo 'Please provide a snapshot file to restore from.' >&2
-        return 1
     fi
 
-    local snapshot_file="$1"
+}
+antigen-update () {
+    # Update your bundles, i.e., `git pull` in all the plugin repos.
+    date >! $ADOTDIR/revert-info
 
-    # TODO: Before doing anything with the snapshot file, verify its checksum.
-    # If it fails, notify this to the user and confirm if restore should
-    # proceed.
+    # Clear log
+    :> $_ANTIGEN_LOG_PATH
 
-    echo -n "Restoring from $snapshot_file..."
-
-    sed -n '1!p' "$snapshot_file" |
-        while read line; do
-
-            local version_hash="${line%% *}"
-            local url="${line##* }"
+    -antigen-echo-record |
+        awk '$4 == "true" {print $1}' |
+        sort -u |
+        while read url; do
             local clone_dir="$(-antigen-get-clone-dir "$url")"
-
-            if [[ ! -d $clone_dir ]]; then
-                git clone "$url" "$clone_dir" &> /dev/null
+            if [[ -d "$clone_dir" ]]; then
+                (echo -n "$clone_dir:"
+                    cd "$clone_dir"
+                    git rev-parse HEAD) >> $ADOTDIR/revert-info
             fi
 
-            (cd "$clone_dir" && git checkout $version_hash) &> /dev/null
-
+            # update=true verbose=true
+            -antigen-ensure-repo "$url" true true
         done
-
-    echo ' done.'
-    echo 'Please open a new shell to get the restored changes.'
 }
-
-antigen-help () {
-    cat <<EOF
-Antigen is a plugin management system for zsh. It makes it easy to grab awesome
-shell scripts and utilities, put up on github. For further details and complete
-documentation, visit the project's page at 'http://antigen.sharats.me'.
-
-EOF
-    antigen-version
-}
-
-antigen-version () {
-    echo "Antigen v1.1.4"
-}
-
-# A syntax sugar to avoid the `-` when calling antigen commands. With this
-# function, you can write `antigen-bundle` as `antigen bundle` and so on.
-antigen () {
-    local cmd="$1"
-    if [[ -z "$cmd" ]]; then
-        echo 'Antigen: Please give a command to run.' >&2
+antigen-use () {
+    if [[ $1 == oh-my-zsh ]]; then
+        -antigen-use-oh-my-zsh
+    elif [[ $1 == prezto ]]; then
+        -antigen-use-prezto
+    else
+        echo 'Usage: antigen-use <library-name>' >&2
+        echo 'Where <library-name> is any one of the following:' >&2
+        echo ' * oh-my-zsh' >&2
+        echo ' * prezto' >&2
         return 1
     fi
-    shift
-
-    if functions "antigen-$cmd" > /dev/null; then
-        "antigen-$cmd" "$@"
-    else
-        echo "Antigen: Unknown command: $cmd" >&2
-    fi
 }
-
--antigen-parse-args () {
-    # An argument parsing functionality to parse arguments the *antigen* way :).
-    # Takes one first argument (called spec), which dictates how to parse and
-    # the rest of the arguments are parsed. Outputs a piece of valid shell code
-    # that can be passed to `eval` inside a function which creates the arguments
-    # and their values as local variables. Suggested use is to set the defaults
-    # to all arguments first and then eval the output of this function.
-
-    # Spec: Only long argument supported. No support for parsing short options.
-    # The spec must have two sections, separated by a `;`.
-    #       '<positional-arguments>;<keyword-only-arguments>'
-    # Positional arguments are passed as just values, like `command a b`.
-    # Keyword arguments are passed as a `--name=value` pair, like `command
-    # --arg1=a --arg2=b`.
-
-    # Each argument in the spec is separated by a `,`. Each keyword argument can
-    # end in a `:` to specifiy that this argument wants a value, otherwise it
-    # doesn't take a value. (The value in the output when the keyword argument
-    # doesn't have a `:` is `true`).
-
-    # Arguments in either section can end with a `?` (should come after `:`, if
-    # both are present), means optional. FIXME: Not yet implemented.
-
-    # See the test file, tests/arg-parser.t for (working) examples.
-
-    local spec="$1"
-    shift
-
-    # Sanitize the spec
-    spec="$(echo "$spec" | tr '\n' ' ' | sed 's/[[:space:]]//g')"
-
-    local code=''
-
-    --add-var () {
-        test -z "$code" || code="$code\n"
-        code="${code}local $1='$2'"
-    }
-
-    local positional_args="$(echo "$spec" | cut -d\; -f1)"
-    local positional_args_count="$(echo $positional_args |
-            awk -F, '{print NF}')"
-
-    # Set spec values based on the positional arguments.
-    local i=1
-    while [[ -n $1 && $1 != --* ]]; do
-
-        if (( $i > $positional_args_count )); then
-            echo "Only $positional_args_count positional arguments allowed." >&2
-            echo "Found at least one more: '$1'" >&2
-            return
-        fi
-
-        local name_spec="$(echo "$positional_args" | cut -d, -f$i)"
-        local name="${${name_spec%\?}%:}"
-        local value="$1"
-
-        if echo "$code" | grep -l "^local $name=" &> /dev/null; then
-            echo "Argument '$name' repeated with the value '$value'". >&2
-            return
-        fi
-
-        --add-var $name "$value"
-
-        shift
-        i=$(($i + 1))
-    done
-
-    local keyword_args="$(
-            # Positional arguments can double up as keyword arguments too.
-            echo "$positional_args" | tr , '\n' |
-                while read line; do
-                    if [[ $line == *\? ]]; then
-                        echo "${line%?}:?"
-                    else
-                        echo "$line:"
-                    fi
-                done
-
-            # Specified keyword arguments.
-            echo "$spec" | cut -d\; -f2 | tr , '\n'
-            )"
-    local keyword_args_count="$(echo $keyword_args | awk -F, '{print NF}')"
-
-    # Set spec values from keyword arguments, if any. The remaining arguments
-    # are all assumed to be keyword arguments.
-    while [[ $1 == --* ]]; do
-        # Remove the `--` at the start.
-        local arg="${1#--}"
-
-        # Get the argument name and value.
-        if [[ $arg != *=* ]]; then
-            local name="$arg"
-            local value=''
-        else
-            local name="${arg%\=*}"
-            local value="${arg#*=}"
-        fi
-
-        if echo "$code" | grep -l "^local $name=" &> /dev/null; then
-            echo "Argument '$name' repeated with the value '$value'". >&2
-            return
-        fi
-
-        # The specification for this argument, used for validations.
-        local arg_line="$(echo "$keyword_args" |
-                            egrep "^$name:?\??" | head -n1)"
-
-        # Validate argument and value.
-        if [[ -z $arg_line ]]; then
-            # This argument is not known to us.
-            echo "Unknown argument '$name'." >&2
-            return
-
-        elif (echo "$arg_line" | grep -l ':' &> /dev/null) &&
-                [[ -z $value ]]; then
-            # This argument needs a value, but is not provided.
-            echo "Required argument for '$name' not provided." >&2
-            return
-
-        elif (echo "$arg_line" | grep -vl ':' &> /dev/null) &&
-                [[ -n $value ]]; then
-            # This argument doesn't need a value, but is provided.
-            echo "No argument required for '$name', but provided '$value'." >&2
-            return
-
-        fi
-
-        if [[ -z $value ]]; then
-            value=true
-        fi
-
-        --add-var "${name//-/_}" "$value"
-        shift
-    done
-
-    echo "$code"
-
-    unfunction -- --add-var
-
+antigen-version () {
+    echo "Antigen v1.2.0"
 }
-
-# Echo the bundle specs as in the record. The first line is not echoed since it
-# is a blank line.
--antigen-echo-record () {
-    echo "$_ANTIGEN_BUNDLE_RECORD" | sed -n '1!p'
-}
-
--antigen-env-setup () {
-
-    # Helper function: Same as `export $1=$2`, but will only happen if the name
-    # specified by `$1` is not already set.
-    -set-default () {
-        local arg_name="$1"
-        local arg_value="$2"
-        eval "test -z \"\$$arg_name\" && export $arg_name='$arg_value'"
-    }
-
-    # Pre-startup initializations.
-    -set-default ANTIGEN_DEFAULT_REPO_URL \
-        https://github.com/robbyrussell/oh-my-zsh.git
-    -set-default ADOTDIR $HOME/.antigen
-    -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
-
-    # Setup antigen's own completion.
-    autoload -Uz compinit
-    if $_ANTIGEN_COMP_ENABLED; then
-        compinit -C
-        compdef _antigen antigen
-    fi
-
-    # Remove private functions.
-    unfunction -- -set-default
-
-}
-
+#compdef _antigen
 # Setup antigen's autocompletion
 _antigen () {
   local -a _1st_arguments
@@ -867,7 +723,7 @@ _antigen () {
 
   if $_ANTIGEN_CACHE_ENABLED; then
       _1st_arguments+=(
-      'cache-reset:Clears bundle cache'
+      'reset:Clears antigen cache'
       'init:Load Antigen configuration from file'
       )
   fi
@@ -913,12 +769,6 @@ _antigen () {
 }
 
 -antigen-env-setup
-export _ZCACHE_PATH="${_ANTIGEN_CACHE_PATH:-$ADOTDIR/.cache}"
-export _ZCACHE_PAYLOAD_PATH="$_ZCACHE_PATH/.zcache-payload"
-export _ZCACHE_META_PATH="$_ZCACHE_PATH/.zcache-meta"
-export _ZCACHE_EXTENSION_ACTIVE=false
-local -a _ZCACHE_BUNDLES
-
 # Clears $0 and ${0} references from cached sources.
 #
 # This is needed otherwise plugins trying to source from a different path
@@ -961,7 +811,7 @@ local -a _ZCACHE_BUNDLES
 
     _payload+="#-- START ZCACHE GENERATED FILE\NL"
     _payload+="#-- GENERATED: $(date)\NL"
-    _payload+='#-- ANTIGEN v1.1.4\NL'
+    _payload+='#-- ANTIGEN v1.2.0\NL'
     for bundle in $_ZCACHE_BUNDLES; do
         # -antigen-load-list "$url" "$loc" "$make_local_clone"
         eval "$(-antigen-parse-bundle ${=bundle})"
@@ -995,11 +845,11 @@ local -a _ZCACHE_BUNDLES
     # \NL (\n) prefix is for backward compatibility
     _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
     _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
-    _payload+="export _ZCACHE_CACHE_VERSION=v1.1.4\NL"
+    _payload+="export _ZCACHE_CACHE_VERSION=v1.2.0\NL"
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
-    echo -E $_payload | sed 's/\\NL/\'$'\n/g' >>! $_ZCACHE_PAYLOAD_PATH
-    echo "${(j:\n:)_bundles_meta}" >>! $_ZCACHE_META_PATH
+    echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
+    echo "$_ZCACHE_BUNDLES" >! "$_ZCACHE_BUNDLES_PATH"
 }
 
 # Generic hook function for various antigen-* commands.
@@ -1022,11 +872,16 @@ local -a _ZCACHE_BUNDLES
             shift 2
         fi
         -zcache-antigen $subcommand $@
+    elif [[ "$cmd" == "antigen-bundles" ]]; then
+        grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+            _ZCACHE_BUNDLES+=("${(j: :)line//\#*/}")
+        done
     elif [[ "$cmd" == "antigen-bundle" ]]; then
         shift 1
         _ZCACHE_BUNDLES+=("${(j: :)@}")
     elif [[ "$cmd" == "antigen-apply" ]]; then
         zcache-done
+        antigen-apply
     else
         shift 1
         -zcache-$cmd $@
@@ -1059,7 +914,8 @@ local -a _ZCACHE_BUNDLES
 # hooking into multiple antigen commands, either deferring it's execution
 # or dropping it.
 #
-# Afected functions are antigen, antigen-bundle and antigen-apply.
+# Afected functions are antigen* (key ones are antigen, antigen-bundle,
+# antigen-apply).
 #
 # See -zcache-unhook-antigen
 #
@@ -1102,6 +958,23 @@ local -a _ZCACHE_BUNDLES
     return _ANTIGEN_INTERACTIVE
 }
 
+# Determines if cache is up-to-date with antigen configuration
+#
+# Usage
+#   -zcache-cache-invalidated
+#
+# Returns
+#   Either true or false depending if cache is up to date
+-zcache-cache-invalidated () {
+    [[ $_ANTIGEN_AUTODETECT_CONFIG_CHANGES == true && ! -f $_ZCACHE_BUNDLES_PATH || $(cat $_ZCACHE_BUNDLES_PATH) != "$_ZCACHE_BUNDLES" ]];
+}
+export _ZCACHE_PATH="${_ANTIGEN_CACHE_PATH:-$ADOTDIR/.cache}"
+export _ZCACHE_PAYLOAD_PATH="$_ZCACHE_PATH/.zcache-payload"
+export _ZCACHE_BUNDLES_PATH="$_ZCACHE_PATH/.zcache-bundles"
+export _ZCACHE_EXTENSION_CLEAN_FUNCTIONS="${_ZCACHE_EXTENSION_CLEAN_FUNCTIONS:-true}"
+export _ZCACHE_EXTENSION_ACTIVE=false
+local -a _ZCACHE_BUNDLES
+
 # Starts zcache execution.
 #
 # Hooks into various antigen commands to be able to record and cache multiple
@@ -1143,12 +1016,19 @@ zcache-done () {
     unset _ZCACHE_EXTENSION_ACTIVE
     
     -zcache-unhook-antigen
+    
+    # Avoids seg fault on zsh 4.3.5
     if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
-        ! zcache-cache-exists && -zcache-generate-cache
+        if ! zcache-cache-exists || -zcache-cache-invalidated; then
+            -zcache-generate-cache
+        fi
+        
         zcache-load-cache
     fi
     
-    unfunction -- ${(Mok)functions:#-zcache*}
+    if [[ $_ZCACHE_EXTENSION_CLEAN_FUNCTIONS == true ]]; then
+        unfunction -- ${(Mok)functions:#-zcache*}
+    fi
 
     eval "function -zcache-$(functions -- antigen-update)"
     antigen-update () {
@@ -1191,10 +1071,24 @@ zcache-load-cache () {
 #
 # Returns
 #   Nothing
-antigen-cache-reset () {
-    [[ -f "$_ZCACHE_META_PATH" ]] && rm "$_ZCACHE_META_PATH"
-    [[ -f "$_ZCACHE_PAYLOAD_PATH" ]] && rm "$_ZCACHE_PAYLOAD_PATH"
+antigen-reset () {
+    -zcache-remove-path () { [[ -f "$1" ]] && rm "$1" }
+    -zcache-remove-path "$_ZCACHE_PAYLOAD_PATH"
+    -zcache-remove-path "$_ZCACHE_BUNDLES_PATH"
+    unfunction -- -zcache-remove-path
     echo 'Done. Please open a new shell to see the changes.'
+}
+
+# Deprecated for antigen-reset command
+#
+# Usage
+#   zcache-cache-reset
+#
+# Returns
+#   Nothing
+antigen-cache-reset () {
+    echo 'Deprecated in favor of antigen reset.'
+    antigen-reset
 }
 
 # Antigen command to load antigen configuration

@@ -1,12 +1,10 @@
 Helper alias.
 
-  $ alias parse='-antigen-parse-args "url?, loc?;
-  >   btype:?, no-local-clone?"'
+  $ alias parse='-antigen-parse-args '
 
 No arguments (since all are specified as optional).
 
   $ parse
-   (glob)
 
 One positional argument.
 
@@ -22,8 +20,9 @@ Two arguments.
 Three arguments.
 
   $ parse url location crap
-  Only 2 positional arguments allowed.
-  Found at least one more: 'crap'
+  local url='url'
+  local loc='location'
+  local crap='crap'
 
 Keywordo magic.
 
@@ -43,10 +42,10 @@ Missed value for keyword argument.
   $ parse --btype
   Required argument for 'btype' not provided.
 
-Provide value for keyword argument, that shouldn't be there.
+Provide value for keyword argument, but it's ignored.
 
   $ parse --no-local-clone=yes
-  No argument required for 'no-local-clone', but provided 'yes'.
+  local no_local_clone='true'
 
 Positional argument as a keyword argument.
 
@@ -56,9 +55,11 @@ Positional argument as a keyword argument.
 Repeated keyword arguments.
 
   $ parse --url=url1 --url=url2
-  Argument 'url' repeated with the value 'url2'.
+  local url='url1'
+  local url='url2'
 
 Repeated, once as positional and once more as keyword.
 
   $ parse url1 --url=url2
-  Argument 'url' repeated with the value 'url2'.
+  local url='url1'
+  local url='url2'

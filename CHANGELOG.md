@@ -2,6 +2,48 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.0] - 2016-10-09
+
+Antigen now auto-detects configuration changes. This is done by detecting
+new/removed bundles/ordering changes in configuration (bundles, themes, use etc).
+When a change is detected next time Antigen is loaded it'll rebuild cache.
+
+`cache-reset` command is now deprecated and should be used `reset` instead.
+
+`-antigen-parse-args` function was removed in favor of a more flexible, lax
+and performant implementation.
+
+The following errors are not present anymore:
+  - Positional argument count mismatch
+  - Argument repeated
+  - No argument required
+
+Positional argument count mismatch: There is no `spec` argument from now on so there is
+no definition on arguments.
+
+Argument repeated: All arguments are parsed and returned. Last value is used.
+
+No argument required: The case is `--no-local-clone` and the value passed is ignored.
+
+
+New environment variables:
+  - `_ANTIGEN_AUTODETECT_CONFIG_CHANGES`: Whether to check for configuration
+  changes (true by default).
+
+### Changed
+- [#257, #271] Remove parse-args function
+- [#255, #265, #275, #253] Refactor/clean up code
+- [#274, #267] Hook antigen-bundles command
+- [#266, #258] Deprecate cache-reset command in favor of reset
+- [#256, #264] Auto detect changes in bundling
+- [#277] Fix for antigen 1.1.4
+
+### Fixed
+- [#273] Missing antigen-apply on zcache-done
+- [#272] Fix bundle-short-name function to handle gist urls
+
+Thanks everyone who reported issues and provided feedback.
+
 ## [1.1.4] - 2016-09-25
 
 Default cache and bundles path is now `$ADOTDIR/.cache` and `$ADOTDIR/repos`

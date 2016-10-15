@@ -2,7 +2,7 @@ Enable extension.
 
   $ unset _ZCACHE_EXTENSION_ACTIVE
   $ zcache-start # forces non-interactive mode
-  $ antigen cache-reset
+  $ antigen reset
   Done. Please open a new shell to see the changes.
 
   $ antigen list
@@ -70,6 +70,28 @@ Cache is saved correctly.
   $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pc 'echo \$root/\$0'
   1
 
+Cache is invalidated on antigen configuration changes.
+
+  $ unset _ZCACHE_EXTENSION_ACTIVE  
+  $ zcache-start # forces non-interactive mode
+  $ antigen reset &> /dev/null
+
+  $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen-bundles
+  $ antigen apply
+
+  $ unset _ZCACHE_EXTENSION_ACTIVE  
+  $ zcache-start
+  $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen-bundles
+  $ antigen apply
+  $ bundles=$(cat $_ZCACHE_BUNDLES_PATH)
+
+  $ unset _ZCACHE_EXTENSION_ACTIVE  
+  $ zcache-start
+  $ echo "$PLUGIN_DIR2\n$PLUGIN_DIR" | antigen-bundles
+  $ antigen apply
+  $ [[ "$bundles" == $(cat $_ZCACHE_BUNDLES_PATH) ]]
+  [1]
+
 Cache version matches antigen version.
 
   $ ANTIGEN_VERSION=$(antigen version | sed 's/Antigen //')
@@ -79,9 +101,21 @@ Cache version matches antigen version.
   $ if [[ "$ANTIGEN_VERSION" == "$_ZCACHE_CACHE_VERSION" ]]; then echo 1; else echo 0; fi
   1
 
-Can clear cache correctly.
+Do not generate or load cache if there are no bundles.
+
+  $ antigen reset &> /dev/null
+  $ ls -A $_ZCACHE_PATH | wc -l
+  0
+
+Antigen cache-reset command deprecated.
 
   $ antigen cache-reset
+  Deprecated in favor of antigen reset.
+  Done. Please open a new shell to see the changes.
+
+Can clear cache correctly.
+
+  $ antigen reset
   Done. Please open a new shell to see the changes.
 
   $ ls -A $_ZCACHE_PATH | wc -l
