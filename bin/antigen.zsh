@@ -14,6 +14,7 @@ local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
 local _ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
 local _ANTIGEN_RESET_THEME_HOOKS=${_ANTIGEN_RESET_THEME_HOOKS:-true}
 local _ANTIGEN_AUTODETECT_CONFIG_CHANGES=${_ANTIGEN_AUTODETECT_CONFIG_CHANGES:-true}
+local _ANTIGEN_FORCE_RESET_COMPDUMP=${_ANTIGEN_FORCE_RESET_COMPDUMP:-true}
 
 # Do not load anything if git is not available.
 if ! which git &> /dev/null; then
@@ -76,6 +77,32 @@ antigen () {
         url=${_path//-PIPE-/\|}
         echo "$url"
     fi
+}
+# Updates _ANTIGEN_INTERACTIVE environment variable to reflect
+# if antigen is running in an interactive shell or from sourcing.
+#
+# This function check ZSH_EVAL_CONTEXT if available or functrace otherwise.
+# If _ANTIGEN_INTERACTIVE is set to true it won't re-check again.
+#
+# Usage
+#   -zcache-interactive-mode
+#
+# Returns
+#   Either true or false depending if we are running in interactive mode
+-antigen-interactive-mode () {
+    # Check if we are in any way running in interactive mode
+    if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
+        if [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
+            _ANTIGEN_INTERACTIVE=true
+        elif [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
+            zmodload zsh/parameter
+            if [[ "${functrace[$#functrace]%:*}" == "zsh" ]]; then
+                _ANTIGEN_INTERACTIVE=true
+            fi
+        fi
+    fi
+
+    return _ANTIGEN_INTERACTIVE
 }
 -antigen-load-list () {
     local url="$1"
@@ -171,6 +198,14 @@ antigen () {
         local make_local_clone="$make_local_clone"
         local btype=\""$btype\""
         "
+}
+# Forces to reset zcompdump file
+# Removes $ANTIGEN_COMPDUMPFILE as ${ZDOTDIR:-$HOME}/.zcompdump
+# Set $_ANTIGEN_FORCE_RESET_COMPDUMP to true to do so
+-antigen-reset-compdump () {
+    if [[ $_ANTIGEN_FORCE_RESET_COMPDUMP == true && -f $ANTIGEN_COMPDUMPFILE ]]; then
+        rm $ANTIGEN_COMPDUMPFILE
+    fi
 }
 -antigen-resolve-bundle-url () {
     # Given an acceptable short/full form of a bundle's repo url, this function
@@ -295,6 +330,7 @@ antigen () {
         mkdir -p $ADOTDIR
     fi
     -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
+    -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
 
     # Setup antigen's own completion.
     autoload -Uz compinit
@@ -402,21 +438,30 @@ antigen () {
 
     antigen-bundle sorin-ionescu/prezto
 }
+# Initialize completion
 antigen-apply () {
-
-    # Initialize completion.
-    local cdef
+    # We need to check for interactivity because if cache is configured
+    # antigen-apply is called by zcache-done, which calls -antigen-reset-compdump
+    # as well, so here we avoid to run -antigen-reset-compdump twice.
+    #
+    # We do not want to always call -antigen-reset-compdump, but only when
+    # - cache is reset
+    # - user issues antigen-apply command
+    # Here we are taking care of antigen-apply command. See zcache-done function
+    # for the former case.
+    -antigen-interactive-mode
+    if [[ $_ANTIGEN_INTERACTIVE == true ]]; then
+        # Force zcompdump reset
+        -antigen-reset-compdump
+    fi
 
     # Load the compinit module. This will readefine the `compdef` function to
     # the one that actually initializes completions.
     autoload -U compinit
-    if [[ -z $ANTIGEN_COMPDUMPFILE ]]; then
-        compinit -i
-    else
-        compinit -i -d $ANTIGEN_COMPDUMPFILE
-    fi
+    compinit -i -d $ANTIGEN_COMPDUMPFILE
 
     # Apply all `compinit`s that have been deferred.
+    local cdef
     for cdef in "${__deferred_compdefs[@]}"; do
         compdef "$cdef"
     done
@@ -428,7 +473,7 @@ antigen-apply () {
     else
         unset ZDOTDIR
         unset _old_zdotdir
-    fi;
+    fi
     unset _zdotdir_set
 }
 antigen-bundles () {
@@ -978,33 +1023,6 @@ _antigen () {
     done
 }
 
-# Updates _ANTIGEN_INTERACTIVE environment variable to reflect
-# if antigen is running in an interactive shell or from sourcing.
-#
-# This function check ZSH_EVAL_CONTEXT if available or functrace otherwise.
-# If _ANTIGEN_INTERACTIVE is set to true it won't re-check again.
-#
-# Usage
-#   -zcache-interactive-mode
-#
-# Returns
-#   Either true or false depending if we are running in interactive mode
--zcache-interactive-mode () {
-    # Check if we are in any way running in interactive mode
-    if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
-        if [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
-            _ANTIGEN_INTERACTIVE=true
-        elif [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
-            zmodload zsh/parameter
-            if [[ "${functrace[$#functrace]%:*}" == "zsh" ]]; then
-                _ANTIGEN_INTERACTIVE=true
-            fi
-        fi
-    fi
-
-    return _ANTIGEN_INTERACTIVE
-}
-
 # Determines if cache is up-to-date with antigen configuration
 #
 # Usage
@@ -1068,11 +1086,12 @@ zcache-done () {
     if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
         if ! zcache-cache-exists || -zcache-cache-invalidated; then
             -zcache-generate-cache
+            -antigen-reset-compdump
         fi
         
         zcache-load-cache
     fi
-    
+
     if [[ $_ZCACHE_EXTENSION_CLEAN_FUNCTIONS == true ]]; then
         unfunction -- ${(Mok)functions:#-zcache*}
     fi
@@ -1178,7 +1197,7 @@ antigen-init () {
     done
 }
 
--zcache-interactive-mode # Updates _ANTIGEN_INTERACTIVE
+-antigen-interactive-mode # Updates _ANTIGEN_INTERACTIVE
 # Refusing to run in interactive mode
 if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_INTERACTIVE == false ]]; then
     zcache-start

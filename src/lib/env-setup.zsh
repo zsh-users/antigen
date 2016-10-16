@@ -16,6 +16,7 @@
         mkdir -p $ADOTDIR
     fi
     -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
+    -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
 
     # Setup antigen's own completion.
     autoload -Uz compinit
