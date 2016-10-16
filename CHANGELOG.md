@@ -2,6 +2,44 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.1] - 2016-10-15
+
+Antigen now resets compdump file on `antigen-apply` or with cache resetting (be
+it with `antigen-reset` or auto-detecting changes in bundling configuration).
+This is necessary to handle completions correctly.
+Activate this functionality with `_ANTIGEN_FORCE_RESET_COMPDUMP`, defaults to `true`.
+
+Antigen previously didn't created `$ADOTDIR` explicitly, now it does so on start up.
+This directory defaults to `$HOME/.antigen` and it's used to store logs, repositories
+and cache files.
+    
+Theme switching, with `antigen-theme` command, now removes hooks applied by themes.
+This is done in order to be able to interactively switch between themes without
+issues, such as prompt broken by hooks left by previous themes.
+This functionality is actived by default and can be disabled with `_ANTIGEN_RESET_THEME_HOOKS`.
+
+New environment variables:
+    - `_ANTIGEN_FORCE_RESET_COMPDUMP`: Whether to force compdump to be reset with
+    `antigen-apply` or cache reset.
+
+    - `_ANTIGEN_RESET_THEME_HOOKS`: Whether to remove theme hooks on `antigen-theme`
+    command.
+
+### Added
+- [#289, #286] Check $ADOTDIR exists on start up
+
+### Changed
+- [#291, #281] Reset compdump on apply and cache reset
+- [#282] Fixed a simple typo in a code comment regarding git availability
+
+### Fixed
+- [#290, #283] Remove theme hooks when changing themes
+- [#288, #285] Fix keybindings hook disabled in zcache-done
+- [#284] Fix `local`s in themes
+
+Thanks @jordi9, @edqu3, @jmusal, @ming13, @kmikolaj and everyone who reported
+issues and provided feedback.
+
 ## [1.2.0] - 2016-10-09
 
 Antigen now auto-detects configuration changes. This is done by detecting
