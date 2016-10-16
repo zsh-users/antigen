@@ -5,7 +5,7 @@
 # If _ANTIGEN_INTERACTIVE is set to true it won't re-check again.
 #
 # Usage
-#   -zcache-interactive-mode
+#   -antigen-interactive-mode
 #
 # Returns
 #   Either true or false depending if we are running in interactive mode
