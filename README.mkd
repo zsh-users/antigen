@@ -651,6 +651,8 @@ find useful.
   * [zgen][] - Another antigen-inspired zsh plugin manager that sets up a static
     load file for a fast startup. Has no external dependencies, as it's written
     in pure zsh.
+  * [antibody][] - One more antigen-inspired zsh plugin manager that is made in Go
+    and uses goroutines to do things faster.
 
 
 [Vundle]: https://github.com/gmarik/vundle
@@ -668,3 +670,4 @@ find useful.
 [twitter]: http://twitter.com/sharat87
 [antigen-hs]: https://github.com/Tarrasch/antigen-hs
 [zgen]: https://github.com/tarjoilija/zgen
+[antibody]: https://github.com/getantibody/antibody
