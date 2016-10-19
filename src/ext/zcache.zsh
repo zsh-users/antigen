@@ -66,7 +66,6 @@ zcache-done () {
         -zcache-antigen-update "$@"
         antigen-cache-reset
     }
-
     unset _ZCACHE_BUNDLES
 }
 

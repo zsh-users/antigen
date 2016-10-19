@@ -53,7 +53,7 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
 
         -antigen-lazyloader () {
             for command in ${(Mok)functions:#antigen*}; do
-                eval "$command () { echo 'from lazy load'; source "$_ANTIGEN_SOURCE"; eval $command \$@ }"
+                eval "$command () { source "$_ANTIGEN_SOURCE"; eval $command \$@ }"
             done
             unfunction -- '-antigen-lazyloader'
         }
@@ -237,8 +237,7 @@ fi
 # Set $_ANTIGEN_FORCE_RESET_COMPDUMP to true to do so
 -antigen-reset-compdump () {
     if [[ $_ANTIGEN_FORCE_RESET_COMPDUMP == true && -f $ANTIGEN_COMPDUMPFILE ]]; then
-        rm $ANTIGEN_COMPDUMPFILE 
-        rm $ANTIGEN_COMPDUMPFILE.zwc &> /dev/null
+        rm $ANTIGEN_COMPDUMPFILE
     fi
 }
 -antigen-resolve-bundle-url () {
@@ -1137,7 +1136,6 @@ zcache-done () {
         -zcache-antigen-update "$@"
         antigen-cache-reset
     }
-
     unset _ZCACHE_BUNDLES
 }
 

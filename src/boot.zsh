@@ -8,7 +8,7 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
 
         -antigen-lazyloader () {
             for command in ${(Mok)functions:#antigen*}; do
-                eval "$command () { echo 'from lazy load'; source "$_ANTIGEN_SOURCE"; eval $command \$@ }"
+                eval "$command () { source "$_ANTIGEN_SOURCE"; eval $command \$@ }"
             done
             unfunction -- '-antigen-lazyloader'
         }
