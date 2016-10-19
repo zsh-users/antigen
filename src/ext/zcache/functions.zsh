@@ -17,7 +17,7 @@
     local regexp='/\{$/,/^\}/!{
                /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
                s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/'
-    
+
     if [[ "$btype" == "theme" ]]; then
         regexp+="
         s/^local //"
@@ -90,6 +90,7 @@
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
     echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
+    zcompile "$_ZCACHE_PAYLOAD_PATH"
     echo "$_ZCACHE_BUNDLES" >! "$_ZCACHE_BUNDLES_PATH"
 }
 
