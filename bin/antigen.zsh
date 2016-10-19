@@ -15,16 +15,17 @@ local _ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
 local _ANTIGEN_RESET_THEME_HOOKS=${_ANTIGEN_RESET_THEME_HOOKS:-true}
 local _ANTIGEN_AUTODETECT_CONFIG_CHANGES=${_ANTIGEN_AUTODETECT_CONFIG_CHANGES:-true}
 local _ANTIGEN_FORCE_RESET_COMPDUMP=${_ANTIGEN_FORCE_RESET_COMPDUMP:-true}
+local _ANTIGEN_FAST_BOOT_ENABLED=${_ANTIGEN_FAST_BOOT_ENABLED:-true}
 
 # Do not load anything if git is not available.
-if ! which git &> /dev/null; then
+if (( ! $+commands[git] )); then
     echo 'Antigen: Please install git to use Antigen.' >&2
     return 1
 fi
 
 # Used to defer compinit/compdef
 typeset -a __deferred_compdefs
-compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
+compdef () { __deferred_compdefs=($__deferred_compdefs "$*") } 
 
 # A syntax sugar to avoid the `-` when calling antigen commands. With this
 # function, you can write `antigen-bundle` as `antigen bundle` and so on.
@@ -42,6 +43,36 @@ antigen () {
         echo "Antigen: Unknown command: $cmd" >&2
     fi
 }
+_ANTIGEN_SOURCE="$(cd "$(dirname "$0")" && pwd)/antigen.zsh"
+_ZCACHE_PAYLOAD="${ADOTDIR:-$HOME/.antigen}/.cache/.zcache-payload"
+_ANTIGEN_COMPDUMPFILE=${ANTIGEN_COMPDUMPFILE:-$HOME/.zcompdump}
+
+if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]]; then
+    if [[ $_ZCACHE_CACHE_LOADED == false && -f "$_ZCACHE_PAYLOAD" ]]; then
+        source "$_ZCACHE_PAYLOAD"
+    
+        -antigen-selfsource () {
+            source "$_ANTIGEN_SOURCE"
+            
+            unfunction -- '-antigen-selfsource'
+        }
+        antigen-use () { }
+        antigen-theme () { }
+        antigen-bundle () { }
+        antigen-init () { }
+        antigen () {
+            if [[ "$1" == "apply" ]]; then
+                -antigen-selfsource
+            fi
+        }
+
+        antigen-apply () {
+            -antigen-selfsource
+        }
+
+        return
+    fi
+fi
 -antigen-bundle-short-name () {
     echo "$@" | sed -E "s|.*/(.*/.*)$|\1|"|sed -E "s|\.git$||g"
 }
@@ -204,7 +235,8 @@ antigen () {
 # Set $_ANTIGEN_FORCE_RESET_COMPDUMP to true to do so
 -antigen-reset-compdump () {
     if [[ $_ANTIGEN_FORCE_RESET_COMPDUMP == true && -f $ANTIGEN_COMPDUMPFILE ]]; then
-        rm $ANTIGEN_COMPDUMPFILE
+        rm $ANTIGEN_COMPDUMPFILE 
+        rm $ANTIGEN_COMPDUMPFILE.zwc &> /dev/null
     fi
 }
 -antigen-resolve-bundle-url () {
@@ -457,14 +489,17 @@ antigen-apply () {
 
     # Load the compinit module. This will readefine the `compdef` function to
     # the one that actually initializes completions.
-    autoload -U compinit
-    compinit -i -d $ANTIGEN_COMPDUMPFILE
-
-    # Apply all `compinit`s that have been deferred.
-    local cdef
-    for cdef in "${__deferred_compdefs[@]}"; do
-        compdef "$cdef"
-    done
+    autoload -Uz compinit
+    compinit -iCd $ANTIGEN_COMPDUMPFILE
+    if [[ ! -f "$_ANTIGEN_COMPDUMPFILE.zwc" ]]; then
+        # Apply all `compinit`s that have been deferred.
+        local cdef
+        for cdef in "${__deferred_compdefs[@]}"; do
+            compdef "$cdef"
+        done
+        
+        zcompile $_ANTIGEN_COMPDUMPFILE
+    fi
 
     unset __deferred_compdefs
 

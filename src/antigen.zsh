@@ -15,16 +15,17 @@ local _ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
 local _ANTIGEN_RESET_THEME_HOOKS=${_ANTIGEN_RESET_THEME_HOOKS:-true}
 local _ANTIGEN_AUTODETECT_CONFIG_CHANGES=${_ANTIGEN_AUTODETECT_CONFIG_CHANGES:-true}
 local _ANTIGEN_FORCE_RESET_COMPDUMP=${_ANTIGEN_FORCE_RESET_COMPDUMP:-true}
+local _ANTIGEN_FAST_BOOT_ENABLED=${_ANTIGEN_FAST_BOOT_ENABLED:-true}
 
 # Do not load anything if git is not available.
-if ! which git &> /dev/null; then
+if (( ! $+commands[git] )); then
     echo 'Antigen: Please install git to use Antigen.' >&2
     return 1
 fi
 
 # Used to defer compinit/compdef
 typeset -a __deferred_compdefs
-compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
+compdef () { __deferred_compdefs=($__deferred_compdefs "$*") } 
 
 # A syntax sugar to avoid the `-` when calling antigen commands. With this
 # function, you can write `antigen-bundle` as `antigen bundle` and so on.
