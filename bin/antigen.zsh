@@ -7,7 +7,7 @@
 # Each line in this string has the following entries separated by a space
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
-local _ANTIGEN_BUNDLE_RECORD=""
+#local _ANTIGEN_BUNDLE_RECORD=""
 local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
 local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
@@ -25,7 +25,7 @@ fi
 
 # Used to defer compinit/compdef
 typeset -a __deferred_compdefs
-compdef () { __deferred_compdefs=($__deferred_compdefs "$*") } 
+compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
 
 # A syntax sugar to avoid the `-` when calling antigen commands. With this
 # function, you can write `antigen-bundle` as `antigen bundle` and so on.
@@ -48,28 +48,30 @@ _ZCACHE_PAYLOAD="${ADOTDIR:-$HOME/.antigen}/.cache/.zcache-payload"
 _ANTIGEN_COMPDUMPFILE=${ANTIGEN_COMPDUMPFILE:-$HOME/.zcompdump}
 
 if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]]; then
-    if [[ $_ZCACHE_CACHE_LOADED == false && -f "$_ZCACHE_PAYLOAD" ]]; then
+    if [[ $_ZCACHE_CACHE_LOADED != true && -f "$_ZCACHE_PAYLOAD" ]]; then
         source "$_ZCACHE_PAYLOAD"
-    
-        -antigen-selfsource () {
-            source "$_ANTIGEN_SOURCE"
-            
-            unfunction -- '-antigen-selfsource'
+
+        -antigen-lazyloader () {
+            for command in ${(Mok)functions:#antigen*}; do
+                eval "$command () { echo 'from lazy load'; source "$_ANTIGEN_SOURCE"; eval $command \$@ }"
+            done
+            unfunction -- '-antigen-lazyloader'
         }
-        antigen-use () { }
-        antigen-theme () { }
-        antigen-bundle () { }
-        antigen-init () { }
+
+        # Disable antigen commands
+        for command in use bundle bundles init theme list apply cleanup help list reset restore revert snapshot selfupdate update version; do
+            eval "antigen-$command () {}"
+        done
+
         antigen () {
             if [[ "$1" == "apply" ]]; then
-                -antigen-selfsource
+                -antigen-lazyloader
             fi
         }
 
         antigen-apply () {
-            -antigen-selfsource
+            -antigen-lazyloader
         }
-
         return
     fi
 fi
@@ -367,13 +369,12 @@ fi
     # Setup antigen's own completion.
     autoload -Uz compinit
     if $_ANTIGEN_COMP_ENABLED; then
-        compinit -C
-        compdef _antigen antigen
+      compinit -C $ANTIGEN_COMPDUMPFILE
+      compdef _antigen antigen
     fi
 
     # Remove private functions.
     unfunction -- -set-default
-
 }
 -antigen-load () {
   local url="$1"
@@ -511,17 +512,6 @@ antigen-apply () {
     fi
     unset _zdotdir_set
 }
-antigen-bundles () {
-    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-    # are ignored. Everything else is given to `antigen-bundle` as is, no
-    # quoting rules applied.
-    local line
-    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-        # Using `eval` so that we can use the shell-style quoting in each line
-        # piped to `antigen-bundles`.
-        eval "antigen-bundle $line"
-    done
-}
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -553,6 +543,17 @@ antigen-bundle () {
     # Load the plugin.
     -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
 
+}
+antigen-bundles () {
+    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+    # are ignored. Everything else is given to `antigen-bundle` as is, no
+    # quoting rules applied.
+    local line
+    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+        # Using `eval` so that we can use the shell-style quoting in each line
+        # piped to `antigen-bundles`.
+        eval "antigen-bundle $line"
+    done
 }
 antigen-cleanup () {
 
@@ -1114,16 +1115,16 @@ zcache-done () {
         return 1
     fi
     unset _ZCACHE_EXTENSION_ACTIVE
-    
+
     -zcache-unhook-antigen
-    
+
     # Avoids seg fault on zsh 4.3.5
     if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
         if ! zcache-cache-exists || -zcache-cache-invalidated; then
             -zcache-generate-cache
             -antigen-reset-compdump
         fi
-        
+
         zcache-load-cache
     fi
 
@@ -1136,7 +1137,7 @@ zcache-done () {
         -zcache-antigen-update "$@"
         antigen-cache-reset
     }
-    
+
     unset _ZCACHE_BUNDLES
 }
 

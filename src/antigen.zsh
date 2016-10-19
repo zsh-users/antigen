@@ -7,7 +7,7 @@
 # Each line in this string has the following entries separated by a space
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
-local _ANTIGEN_BUNDLE_RECORD=""
+#local _ANTIGEN_BUNDLE_RECORD=""
 local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
 local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
@@ -25,7 +25,7 @@ fi
 
 # Used to defer compinit/compdef
 typeset -a __deferred_compdefs
-compdef () { __deferred_compdefs=($__deferred_compdefs "$*") } 
+compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
 
 # A syntax sugar to avoid the `-` when calling antigen commands. With this
 # function, you can write `antigen-bundle` as `antigen bundle` and so on.
