@@ -491,14 +491,14 @@ antigen-apply () {
     # the one that actually initializes completions.
     autoload -Uz compinit
     compinit -iCd $ANTIGEN_COMPDUMPFILE
-    if [[ ! -f "$_ANTIGEN_COMPDUMPFILE.zwc" ]]; then
+    if [[ ! -f "$ANTIGEN_COMPDUMPFILE.zwc" ]]; then
         # Apply all `compinit`s that have been deferred.
         local cdef
         for cdef in "${__deferred_compdefs[@]}"; do
             compdef "$cdef"
         done
-        
-        zcompile $_ANTIGEN_COMPDUMPFILE
+
+        zcompile $ANTIGEN_COMPDUMPFILE
     fi
 
     unset __deferred_compdefs
