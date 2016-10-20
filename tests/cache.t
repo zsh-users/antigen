@@ -37,7 +37,7 @@ Should have listed bundles.
   2
 
   $ ls -A $_ZCACHE_PATH | wc -l
-  2
+  3
 
 Both bundles are cached.
 
@@ -105,7 +105,7 @@ Do not generate or load cache if there are no bundles.
 
   $ antigen reset &> /dev/null
   $ ls -A $_ZCACHE_PATH | wc -l
-  0
+  1
 
 Antigen cache-reset command deprecated.
 
@@ -119,4 +119,4 @@ Can clear cache correctly.
   Done. Please open a new shell to see the changes.
 
   $ ls -A $_ZCACHE_PATH | wc -l
-  0
+  1
