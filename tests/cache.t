@@ -53,13 +53,13 @@ List command should work as expected.
 
 Respect escape sequences.
 
-  $ cat $_ZCACHE_PAYLOAD_PATH | grep prompt
+  $ cat $_ZCACHE_PAYLOAD_PATH | grep 'alias prompt'
   alias prompt="\e]$ >\a\n"
 
 Cache is saved correctly.
 
   $ cat $_ZCACHE_PAYLOAD_PATH | wc -l
-  24
+  52
 
   $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pzc 'hehe2"\nalias prompt'
   1

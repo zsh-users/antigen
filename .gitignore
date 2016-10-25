@@ -14,3 +14,6 @@ revert-info
 
 # Default antigen.log location
 *.log
+
+# Ignore compiled zsh files
+*.zwc
