@@ -21,7 +21,8 @@ endef
 
 build:
 	echo "${BANNER}" > ${BIN}/antigen.zsh
-	cat ${PROJECT}/src/antigen.zsh >> ${BIN}/antigen.zsh
+	cat ${PROJECT}/src/antigen.zsh > ${BIN}/antigen.zsh
+	cat ${PROJECT}/src/boot.zsh >> ${BIN}/antigen.zsh
 	cat ${PROJECT}/src/helpers/*.zsh >> ${BIN}/antigen.zsh
 	cat ${PROJECT}/src/lib/*.zsh >> ${BIN}/antigen.zsh
 	cat ${PROJECT}/src/commands/*.zsh >> ${BIN}/antigen.zsh

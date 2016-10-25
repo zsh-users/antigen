@@ -19,3 +19,5 @@ revert-info
 *.tar.gz
 *.tar.gz.sign
 
+# Ignore compiled zsh files
+*.zwc
