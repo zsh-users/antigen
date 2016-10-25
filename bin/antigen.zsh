@@ -720,7 +720,7 @@ antigen-apply () {
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
   autoload -Uz compinit
-  compinit -id $ANTIGEN_COMPDUMPFILE
+  compinit -iCd $ANTIGEN_COMPDUMPFILE
   if [[ ! -f "$ANTIGEN_COMPDUMPFILE.zwc" ]]; then
     # Apply all `compinit`s that have been deferred.
     local cdef
@@ -854,12 +854,6 @@ documentation, visit the project's page at 'http://antigen.sharats.me'.
 EOF
   antigen-version
 }
-# For backwards compatibility.
-antigen-lib () {
-  -antigen-use-oh-my-zsh
-  echo '`antigen-lib` is deprecated and will soon be removed.'
-  echo 'Use `antigen-use oh-my-zsh` instead.'
-}
 # List instaled bundles either in long (record) or short format
 #
 # Usage
@@ -881,12 +875,6 @@ antigen-list () {
   else
     -antigen-echo-record | sort -u
   fi
-}
-# For backwards compatibility.
-antigen-prezto-lib () {
-  -antigen-use-prezto
-  echo '`antigen-prezto-lib` is deprecated and will soon be removed.'
-  echo 'Use `antigen-use prezto` instead.'
 }
 # Remove a bundle from filesystem
 #
