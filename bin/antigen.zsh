@@ -650,12 +650,6 @@ documentation, visit the project's page at 'http://antigen.sharats.me'.
 EOF
     antigen-version
 }
-# For backwards compatibility.
-antigen-lib () {
-    -antigen-use-oh-my-zsh
-    echo '`antigen-lib` is deprecated and will soon be removed.'
-    echo 'Use `antigen-use oh-my-zsh` instead.'
-}
 antigen-list () {
     # List all currently installed bundles.
     if [[ -z "$_ANTIGEN_BUNDLE_RECORD" ]]; then
@@ -664,12 +658,6 @@ antigen-list () {
     else
         -antigen-echo-record | sort -u
     fi
-}
-# For backwards compatibility.
-antigen-prezto-lib () {
-    -antigen-use-prezto
-    echo '`antigen-prezto-lib` is deprecated and will soon be removed.'
-    echo 'Use `antigen-use prezto` instead.'
 }
 antigen-restore () {
 
