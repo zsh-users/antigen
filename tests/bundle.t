@@ -38,3 +38,12 @@ Fpath should be updated correctly.
 
   $ echo ${(j:\n:)fpath} | grep -Pco test-plugin
   2
+
+Load a binary bundle.
+
+  $ antigen-bundle $PLUGIN_DIR3 &> /dev/null
+  $ hr
+  ######
+
+  $ echo $PATH | grep test-plugin3
+  *plugin3* (glob)
