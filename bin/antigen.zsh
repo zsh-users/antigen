@@ -7,7 +7,7 @@
 # Each line in this string has the following entries separated by a space
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
-local _ANTIGEN_BUNDLE_RECORD=""
+local _ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD:-""}
 local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
 local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
@@ -15,9 +15,10 @@ local _ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
 local _ANTIGEN_RESET_THEME_HOOKS=${_ANTIGEN_RESET_THEME_HOOKS:-true}
 local _ANTIGEN_AUTODETECT_CONFIG_CHANGES=${_ANTIGEN_AUTODETECT_CONFIG_CHANGES:-true}
 local _ANTIGEN_FORCE_RESET_COMPDUMP=${_ANTIGEN_FORCE_RESET_COMPDUMP:-true}
+local _ANTIGEN_FAST_BOOT_ENABLED=${_ANTIGEN_FAST_BOOT_ENABLED:-true}
 
 # Do not load anything if git is not available.
-if ! which git &> /dev/null; then
+if (( ! $+commands[git] )); then
     echo 'Antigen: Please install git to use Antigen.' >&2
     return 1
 fi
@@ -36,12 +37,77 @@ antigen () {
     fi
     shift
 
-    if functions "antigen-$cmd" > /dev/null; then
+    if (( $+functions[antigen-$cmd] )); then
         "antigen-$cmd" "$@"
     else
         echo "Antigen: Unknown command: $cmd" >&2
     fi
 }
+# Used for lazy-loading.
+_ANTIGEN_SOURCE="$(cd "$(dirname "$0")" && pwd)/antigen.zsh"
+# Used to fastboot antigen
+_ZCACHE_PAYLOAD="${ADOTDIR:-$HOME/.antigen}/.cache/.zcache-payload"
+
+# Use this functionallity only if both CACHE and FASTBOOT options are enabled.
+if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]]; then
+    
+    # If there is cache (zcache payload), and it wasn't loaded then procced.
+    
+    # The condition "$_ZCACHE_CACHE_LOADED != true" was crafted this way because
+    # $_ZCACHE_CACHE_LOADED variable is otherwise undefined, so it seems easier to
+    # check for a known value.
+    if [[ $_ZCACHE_CACHE_LOADED != true && -f "$_ZCACHE_PAYLOAD" ]]; then
+
+        # Do load zcache payload, this has the following effects:
+        #   - _ANTIGEN_BUNDLE_RECORD is updated from cache
+        #   - _ZCACHE_CACHE_LOADED is set to TRUE
+        #   - _antigen is updated from cache
+        #   - fpath is updated from cache
+        source "$_ZCACHE_PAYLOAD"
+
+        # Lazyload wrapper
+        -antigen-lazyloader () {
+            # Be sure to have completions
+            autoload -Uz compinit
+            if $_ANTIGEN_COMP_ENABLED; then
+                compinit -iC
+                # At this point we got completions because antigen command exists
+                # and compdef does as well from zcache payload.
+                compdef _antigen antigen
+            fi
+
+            # Hook antigen functions to lazy load antigen itself
+            for command in ${(Mok)functions:#antigen*}; do
+                # Once any of the hooked functions are called and antigen is finally
+                # loaded what will happen is that antigen overwrittes the hooked functions
+                # so no other call to them will be executed, thus no need to
+                # 'unhook' or uninitialize them.
+                eval "$command () { source "$_ANTIGEN_SOURCE"; eval $command \$@ }"
+            done
+            unfunction -- '-antigen-lazyloader'
+        }
+
+        # Disable antigen commands
+        _commands=('use' 'bundle' 'bundles' 'init' 'theme' 'list' 'apply' 'cleanup' \
+         'help' 'list' 'reset' 'restore' 'revert' 'snapshot' 'selfupdate' 'update' 'version')
+        for command in $_commands; do
+            eval "antigen-$command () {}"
+        done
+
+        # On antigen apply
+        antigen () {
+            if [[ "$1" == "apply" ]]; then
+                -antigen-lazyloader
+            fi
+        }
+        # On antigen-apply
+        antigen-apply () {
+            -antigen-lazyloader
+        }
+
+        return
+    fi
+fi
 -antigen-bundle-short-name () {
     echo "$@" | sed -E "s|.*/(.*/.*)$|\1|"|sed -E "s|\.git$||g"
 }
@@ -335,13 +401,12 @@ antigen () {
     # Setup antigen's own completion.
     autoload -Uz compinit
     if $_ANTIGEN_COMP_ENABLED; then
-        compinit -C
-        compdef _antigen antigen
+      compinit -iC
+      compdef _antigen antigen
     fi
 
     # Remove private functions.
     unfunction -- -set-default
-
 }
 -antigen-load () {
   local url="$1"
@@ -457,14 +522,17 @@ antigen-apply () {
 
     # Load the compinit module. This will readefine the `compdef` function to
     # the one that actually initializes completions.
-    autoload -U compinit
-    compinit -i -d $ANTIGEN_COMPDUMPFILE
+    autoload -Uz compinit
+    compinit -iCd $ANTIGEN_COMPDUMPFILE
+    if [[ ! -f "$ANTIGEN_COMPDUMPFILE.zwc" ]]; then
+        # Apply all `compinit`s that have been deferred.
+        local cdef
+        for cdef in "${__deferred_compdefs[@]}"; do
+            compdef "$cdef"
+        done
 
-    # Apply all `compinit`s that have been deferred.
-    local cdef
-    for cdef in "${__deferred_compdefs[@]}"; do
-        compdef "$cdef"
-    done
+        zcompile $ANTIGEN_COMPDUMPFILE
+    fi
 
     unset __deferred_compdefs
 
@@ -868,7 +936,7 @@ _antigen () {
     local regexp='/\{$/,/^\}/!{
                /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
                s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/'
-    
+
     if [[ "$btype" == "theme" ]]; then
         regexp+="
         s/^local //"
@@ -931,7 +999,10 @@ _antigen () {
             _extensions_paths+=($location)
         fi
     done
-
+    
+    _payload+="\NL"
+    _payload+="$(functions -- _antigen)"
+    _payload+="\NL"
     _payload+="fpath+=(${_extensions_paths[@]})\NL"
     _payload+="unset __ZCACHE_FILE_PATH\NL"
     # \NL (\n) prefix is for backward compatibility
@@ -941,6 +1012,7 @@ _antigen () {
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
     echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
+    zcompile "$_ZCACHE_PAYLOAD_PATH"
     echo "$_ZCACHE_BUNDLES" >! "$_ZCACHE_BUNDLES_PATH"
 }
 
@@ -1079,16 +1151,16 @@ zcache-done () {
         return 1
     fi
     unset _ZCACHE_EXTENSION_ACTIVE
-    
+
     -zcache-unhook-antigen
-    
+
     # Avoids seg fault on zsh 4.3.5
     if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
         if ! zcache-cache-exists || -zcache-cache-invalidated; then
             -zcache-generate-cache
             -antigen-reset-compdump
         fi
-        
+
         zcache-load-cache
     fi
 
@@ -1101,7 +1173,6 @@ zcache-done () {
         -zcache-antigen-update "$@"
         antigen-cache-reset
     }
-    
     unset _ZCACHE_BUNDLES
 }
 
