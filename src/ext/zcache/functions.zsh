@@ -96,7 +96,10 @@
             _extensions_paths+=($location)
         fi
     done
-
+    
+    _payload+="\NL"
+    _payload+="$(functions -- _antigen)"
+    _payload+="\NL"
     _payload+="fpath+=(${_extensions_paths[@]})\NL"
     _payload+="unset __ZCACHE_FILE_PATH\NL"
     # \NL (\n) prefix is for backward compatibility
@@ -106,6 +109,7 @@
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
     echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
+    zcompile "$_ZCACHE_PAYLOAD_PATH"
     echo "$_ZCACHE_BUNDLES" >! "$_ZCACHE_BUNDLES_PATH"
 }
 

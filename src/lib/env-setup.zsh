@@ -21,11 +21,10 @@
     # Setup antigen's own completion.
     autoload -Uz compinit
     if $_ANTIGEN_COMP_ENABLED; then
-        compinit -C
-        compdef _antigen antigen
+      compinit -iC
+      compdef _antigen antigen
     fi
 
     # Remove private functions.
     unfunction -- -set-default
-
 }

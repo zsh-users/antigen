@@ -44,16 +44,16 @@ zcache-done () {
         return 1
     fi
     unset _ZCACHE_EXTENSION_ACTIVE
-    
+
     -zcache-unhook-antigen
-    
+
     # Avoids seg fault on zsh 4.3.5
     if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
         if ! zcache-cache-exists || -zcache-cache-invalidated; then
             -zcache-generate-cache
             -antigen-reset-compdump
         fi
-        
+
         zcache-load-cache
     fi
 
@@ -66,7 +66,6 @@ zcache-done () {
         -zcache-antigen-update "$@"
         antigen-reset
     }
-    
     unset _ZCACHE_BUNDLES
 }
 
