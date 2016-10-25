@@ -7,7 +7,7 @@
 # Each line in this string has the following entries separated by a space
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
-#local _ANTIGEN_BUNDLE_RECORD=""
+local _ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD:-""}
 local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
 local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
@@ -37,47 +37,74 @@ antigen () {
     fi
     shift
 
-    if functions "antigen-$cmd" > /dev/null; then
+    if (( $+functions[antigen-$cmd] )); then
         "antigen-$cmd" "$@"
     else
         echo "Antigen: Unknown command: $cmd" >&2
     fi
 }
+# Used for lazy-loading.
 _ANTIGEN_SOURCE="$(cd "$(dirname "$0")" && pwd)/antigen.zsh"
+# Used to fastboot antigen
 _ZCACHE_PAYLOAD="${ADOTDIR:-$HOME/.antigen}/.cache/.zcache-payload"
-_ANTIGEN_COMPDUMPFILE=${ANTIGEN_COMPDUMPFILE:-$HOME/.zcompdump}
 
+# Use this functionallity only if both CACHE and FASTBOOT options are enabled.
 if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]]; then
+    
+    # If there is cache (zcache payload), and it wasn't loaded then procced.
+    
+    # The condition "$_ZCACHE_CACHE_LOADED != true" was crafted this way because
+    # $_ZCACHE_CACHE_LOADED variable is otherwise undefined, so it seems easier to
+    # check for a known value.
     if [[ $_ZCACHE_CACHE_LOADED != true && -f "$_ZCACHE_PAYLOAD" ]]; then
+
+        # Do load zcache payload, this has the following effects:
+        #   - _ANTIGEN_BUNDLE_RECORD is updated from cache
+        #   - _ZCACHE_CACHE_LOADED is set to TRUE
+        #   - _antigen is updated from cache
+        #   - fpath is updated from cache
         source "$_ZCACHE_PAYLOAD"
 
+        # Lazyload wrapper
         -antigen-lazyloader () {
+            # Be sure to have completions
             autoload -Uz compinit
             if $_ANTIGEN_COMP_ENABLED; then
                 compinit -iC
+                # At this point we got completions because antigen command exists
+                # and compdef does as well from zcache payload.
                 compdef _antigen antigen
             fi
 
+            # Hook antigen functions to lazy load antigen itself
             for command in ${(Mok)functions:#antigen*}; do
+                # Once any of the hooked functions are called and antigen is finally
+                # loaded what will happen is that antigen overwrittes the hooked functions
+                # so no other call to them will be executed, thus no need to
+                # 'unhook' or uninitialize them.
                 eval "$command () { source "$_ANTIGEN_SOURCE"; eval $command \$@ }"
             done
             unfunction -- '-antigen-lazyloader'
         }
 
         # Disable antigen commands
-        for command in use bundle bundles init theme list apply cleanup help list reset restore revert snapshot selfupdate update version; do
+        local _commands=('use' 'bundle' 'bundles' 'init' 'theme' 'list' 'apply' 'cleanup' \
+         'help' 'list' 'reset' 'restore' 'revert' 'snapshot' 'selfupdate' 'update' 'version')
+        for command in $_commands; do
             eval "antigen-$command () {}"
         done
 
+        # On antigen apply
         antigen () {
             if [[ "$1" == "apply" ]]; then
                 -antigen-lazyloader
             fi
         }
-
+        # On antigen-apply
         antigen-apply () {
             -antigen-lazyloader
         }
+
         return
     fi
 fi

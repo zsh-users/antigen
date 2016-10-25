@@ -7,7 +7,7 @@
 # Each line in this string has the following entries separated by a space
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
-#local _ANTIGEN_BUNDLE_RECORD=""
+local _ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD:-""}
 local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
 local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
@@ -37,7 +37,7 @@ antigen () {
     fi
     shift
 
-    if functions "antigen-$cmd" > /dev/null; then
+    if (( $+functions[antigen-$cmd] )); then
         "antigen-$cmd" "$@"
     else
         echo "Antigen: Unknown command: $cmd" >&2
