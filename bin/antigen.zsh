@@ -52,6 +52,12 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
         source "$_ZCACHE_PAYLOAD"
 
         -antigen-lazyloader () {
+            autoload -Uz compinit
+            if $_ANTIGEN_COMP_ENABLED; then
+                compinit -iC
+                compdef _antigen antigen
+            fi
+
             for command in ${(Mok)functions:#antigen*}; do
                 eval "$command () { source "$_ANTIGEN_SOURCE"; eval $command \$@ }"
             done
@@ -368,7 +374,7 @@ fi
     # Setup antigen's own completion.
     autoload -Uz compinit
     if $_ANTIGEN_COMP_ENABLED; then
-      compinit -C $ANTIGEN_COMPDUMPFILE
+      compinit -iC
       compdef _antigen antigen
     fi
 
@@ -511,6 +517,17 @@ antigen-apply () {
     fi
     unset _zdotdir_set
 }
+antigen-bundles () {
+    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+    # are ignored. Everything else is given to `antigen-bundle` as is, no
+    # quoting rules applied.
+    local line
+    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+        # Using `eval` so that we can use the shell-style quoting in each line
+        # piped to `antigen-bundles`.
+        eval "antigen-bundle $line"
+    done
+}
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -542,17 +559,6 @@ antigen-bundle () {
     # Load the plugin.
     -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
 
-}
-antigen-bundles () {
-    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-    # are ignored. Everything else is given to `antigen-bundle` as is, no
-    # quoting rules applied.
-    local line
-    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-        # Using `eval` so that we can use the shell-style quoting in each line
-        # piped to `antigen-bundles`.
-        eval "antigen-bundle $line"
-    done
 }
 antigen-cleanup () {
 
@@ -966,7 +972,10 @@ _antigen () {
             _extensions_paths+=($location)
         fi
     done
-
+    
+    _payload+="\NL"
+    _payload+="$(functions -- _antigen)"
+    _payload+="\NL"
     _payload+="fpath+=(${_extensions_paths[@]})\NL"
     _payload+="unset __ZCACHE_FILE_PATH\NL"
     # \NL (\n) prefix is for backward compatibility

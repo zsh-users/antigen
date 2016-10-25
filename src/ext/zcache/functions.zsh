@@ -80,7 +80,10 @@
             _extensions_paths+=($location)
         fi
     done
-
+    
+    _payload+="\NL"
+    _payload+="$(functions -- _antigen)"
+    _payload+="\NL"
     _payload+="fpath+=(${_extensions_paths[@]})\NL"
     _payload+="unset __ZCACHE_FILE_PATH\NL"
     # \NL (\n) prefix is for backward compatibility

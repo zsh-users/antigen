@@ -7,6 +7,12 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
         source "$_ZCACHE_PAYLOAD"
 
         -antigen-lazyloader () {
+            autoload -Uz compinit
+            if $_ANTIGEN_COMP_ENABLED; then
+                compinit -iC
+                compdef _antigen antigen
+            fi
+
             for command in ${(Mok)functions:#antigen*}; do
                 eval "$command () { source "$_ANTIGEN_SOURCE"; eval $command \$@ }"
             done
