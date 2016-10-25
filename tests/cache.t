@@ -37,7 +37,7 @@ Should have listed bundles.
   2
 
   $ ls -A $_ZCACHE_PATH | wc -l
-  2
+  3
 
 Both bundles are cached by bundle.
 
@@ -83,7 +83,7 @@ Respect escape sequences.
   $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen-bundles > /dev/null
   $ antigen apply > /dev/null
 
-  $ cat $_ZCACHE_PAYLOAD_PATH | grep prompt
+  $ cat $_ZCACHE_PAYLOAD_PATH | grep 'alias prompt'
   alias prompt="\e]$ >\a\n"
 
 Cache is saved correctly.
@@ -135,7 +135,7 @@ Do not generate or load cache if there are no bundles.
 
   $ antigen reset &> /dev/null
   $ ls -A $_ZCACHE_PATH | wc -l
-  0
+  1
 
 Antigen cache-reset command deprecated.
 
@@ -149,4 +149,4 @@ Can clear cache correctly.
   Done. Please open a new shell to see the changes.
 
   $ ls -A $_ZCACHE_PATH | wc -l
-  0
+  1

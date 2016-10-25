@@ -19,15 +19,14 @@
   -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
   -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
 
-  # Setup antigen's own completion.
-  autoload -Uz compinit
-  if $_ANTIGEN_COMP_ENABLED; then
-    compinit -C
-    compdef _antigen antigen
-  fi
+    # Setup antigen's own completion.
+    autoload -Uz compinit
+    if $_ANTIGEN_COMP_ENABLED; then
+      compinit -iC
+      compdef _antigen antigen
+    fi
 
-  # Remove private functions.
-  unfunction -- -set-default
-
+    # Remove private functions.
+    unfunction -- -set-default
 }
 

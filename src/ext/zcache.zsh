@@ -42,34 +42,33 @@ zcache-start () {
 # Returns
 #   Nothing
 zcache-done () {
-  if [[ -z $_ZCACHE_EXTENSION_ACTIVE ]]; then
-    return 1
-  fi
-  unset _ZCACHE_EXTENSION_ACTIVE
-
-  -zcache-unhook-antigen
-
-  # Avoids seg fault on zsh 4.3.5
-  if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
-    if ! zcache-cache-exists || -zcache-cache-invalidated; then
-      -zcache-generate-cache
-      -antigen-reset-compdump
+    if [[ -z $_ZCACHE_EXTENSION_ACTIVE ]]; then
+        return 1
     fi
+    unset _ZCACHE_EXTENSION_ACTIVE
 
-    zcache-load-cache
-  fi
+    -zcache-unhook-antigen
+
+    # Avoids seg fault on zsh 4.3.5
+    if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
+        if ! zcache-cache-exists || -zcache-cache-invalidated; then
+            -zcache-generate-cache
+            -antigen-reset-compdump
+        fi
+
+        zcache-load-cache
+    fi
 
   if [[ $_ZCACHE_EXTENSION_CLEAN_FUNCTIONS == true ]]; then
     unfunction -- ${(Mok)functions:#-zcache*}
   fi
 
-  eval "function -zcache-$(functions -- antigen-update)"
-  antigen-update () {
-    -zcache-antigen-update "$@"
-    antigen-reset
-  }
-
-  unset _ZCACHE_BUNDLES
+    eval "function -zcache-$(functions -- antigen-update)"
+    antigen-update () {
+        -zcache-antigen-update "$@"
+        antigen-reset
+    }
+    unset _ZCACHE_BUNDLES
 }
 
 # Returns true if cache is available.
