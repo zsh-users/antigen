@@ -3,6 +3,8 @@ _ANTIGEN_SOURCE="$(cd "$(dirname "$0")" && pwd)/antigen.zsh"
 # Used to fastboot antigen
 _ZCACHE_PAYLOAD="${ADOTDIR:-$HOME/.antigen}/.cache/.zcache-payload"
 
+ANTIGEN_COMPDUMPFILE=${ANTIGEN_COMPDUMPFILE:-${ZDOTDIR:-$HOME}/.zcompdump}
+
 # Use this functionallity only if both CACHE and FASTBOOT options are enabled.
 if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]]; then
     
@@ -25,7 +27,8 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
             # Be sure to have completions
             autoload -Uz compinit
             if $_ANTIGEN_COMP_ENABLED; then
-                compinit -iC
+                compinit -iCd $ANTIGEN_COMPDUMPFILE
+
                 # At this point we got completions because antigen command exists
                 # and compdef does as well from zcache payload.
                 compdef _antigen antigen
