@@ -72,7 +72,7 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
             # Be sure to have completions
             autoload -Uz compinit
             if $_ANTIGEN_COMP_ENABLED; then
-                compinit -iCd $ANTIGEN_COMPDUMPFILE
+                compinit -id $ANTIGEN_COMPDUMPFILE
 
                 # At this point we got completions because antigen command exists
                 # and compdef does as well from zcache payload.
@@ -404,7 +404,7 @@ fi
     # Setup antigen's own completion.
     autoload -Uz compinit
     if $_ANTIGEN_COMP_ENABLED; then
-      compinit -iCd $ANTIGEN_COMPDUMPFILE
+      compinit -id $ANTIGEN_COMPDUMPFILE
       compdef _antigen antigen
     fi
 
@@ -526,7 +526,7 @@ antigen-apply () {
     # Load the compinit module. This will readefine the `compdef` function to
     # the one that actually initializes completions.
     autoload -Uz compinit
-    compinit -iCd $ANTIGEN_COMPDUMPFILE
+    compinit -id $ANTIGEN_COMPDUMPFILE
     if [[ ! -f "$ANTIGEN_COMPDUMPFILE.zwc" ]]; then
         # Apply all `compinit`s that have been deferred.
         local cdef
@@ -546,6 +546,17 @@ antigen-apply () {
         unset _old_zdotdir
     fi
     unset _zdotdir_set
+}
+antigen-bundles () {
+    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+    # are ignored. Everything else is given to `antigen-bundle` as is, no
+    # quoting rules applied.
+    local line
+    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+        # Using `eval` so that we can use the shell-style quoting in each line
+        # piped to `antigen-bundles`.
+        eval "antigen-bundle $line"
+    done
 }
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
@@ -578,17 +589,6 @@ antigen-bundle () {
     # Load the plugin.
     -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
 
-}
-antigen-bundles () {
-    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-    # are ignored. Everything else is given to `antigen-bundle` as is, no
-    # quoting rules applied.
-    local line
-    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-        # Using `eval` so that we can use the shell-style quoting in each line
-        # piped to `antigen-bundles`.
-        eval "antigen-bundle $line"
-    done
 }
 antigen-cleanup () {
 
