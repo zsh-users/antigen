@@ -44,11 +44,9 @@ antigen () {
     fi
 }
 # Used for lazy-loading.
-_ANTIGEN_SOURCE="$(cd "$(dirname "$0")" && pwd)/antigen.zsh"
+_ANTIGEN_SOURCE=$_ANTIGEN_INSTALL_DIR
 # Used to fastboot antigen
 _ZCACHE_PAYLOAD="${ADOTDIR:-$HOME/.antigen}/.cache/.zcache-payload"
-
-ANTIGEN_COMPDUMPFILE=${ANTIGEN_COMPDUMPFILE:-${ZDOTDIR:-$HOME}/.zcompdump}
 
 # Use this functionallity only if both CACHE and FASTBOOT options are enabled.
 if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]]; then
