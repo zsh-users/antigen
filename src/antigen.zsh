@@ -8,7 +8,7 @@
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
 local _ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD:-""}
-local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
+local _ANTIGEN_INSTALL_DIR=${0:A:h}
 local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
 local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
 local _ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
