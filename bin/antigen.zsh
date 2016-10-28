@@ -44,7 +44,7 @@ antigen () {
     fi
 }
 # Used for lazy-loading.
-_ANTIGEN_SOURCE=$_ANTIGEN_INSTALL_DIR
+_ANTIGEN_SOURCE="$_ANTIGEN_INSTALL_DIR/antigen.zsh"
 # Used to fastboot antigen
 _ZCACHE_PAYLOAD="${ADOTDIR:-$HOME/.antigen}/.cache/.zcache-payload"
 
@@ -73,7 +73,7 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
                 # loaded what will happen is that antigen overwrittes the hooked functions
                 # so no other call to them will be executed, thus no need to
                 # 'unhook' or uninitialize them.
-                eval "$command () { source "$_ANTIGEN_SOURCE/antigen.zsh"; eval $command \$@ }"
+                eval "$command () { source "$_ANTIGEN_SOURCE"; eval $command \$@ }"
             done
             unfunction -- '-antigen-lazyloader'
         }
