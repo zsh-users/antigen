@@ -4,20 +4,18 @@
 
 [![Latest](https://img.shields.io/github/release/zsh-users/antigen.svg?label=latest)](https://github.com/zsh-users/antigen/releases/latest) [![Build Status](https://img.shields.io/travis/zsh-users/antigen/master.svg?label=stable)](http://travis-ci.org/zsh-users/antigen) [![Build Status](https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=next)](http://travis-ci.org/zsh-users/antigen)
 
-[Installation](#installation) | [Configuration](#configuration) | [Bug tracker](https://github.com/zsh-users/antigen/issues) | [Discussions](https://trello.com/b/P0xrGgfT/antigen) | [Chat](https://gitter.im/antigen-zsh/develop) | [License](http://mit.sharats.me/)
+[Installation](#installation) | [Configuration](#configuration) | [Documentation](https://github.com/zsh-users/antigen/wiki) | [Bug tracker](https://github.com/zsh-users/antigen/issues) | [Discussions](https://trello.com/b/P0xrGgfT/antigen) | [Chat](https://gitter.im/antigen-zsh/develop) | [License](http://mit.sharats.me/)
 
 Antigen is a small set of functions that help you easily manage your shell (zsh)
 plugins, called bundles. The concept is pretty much the same as bundles in a
 typical vim+pathogen setup. Antigen is to zsh, what [Vundle][] is to vim.
-
-> [Donate to Antigen](https://gum.co/antigen)
 
 [![https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce](https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce.png)](https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce)
 
 Antigen has reached a certain level of stability and has been used in the wild
 for around a couple of years. If you face any problems, please open an issue.
 
-Antigen works with zsh versions >=4.3 and 5.x.
+Antigen works with zsh versions `>= 4.3.5`.
 
 Note: Please read the commit comments of the changesets when you pull a new
 version of antigen.
@@ -628,30 +626,45 @@ To contribute, please read the [contributing wiki page][contributing] before
 sending pull requests. If its a long/complicated change, please consider opening
 an [issue][] first so we can discuss it out. Thanks!
 
-You may also wish to [donate to the project](https://gum.co/antigen). Thank you
-so much!
-
 ### Feedback please
 
-Any comments/suggestions/feedback welcome. Please say hello to me
-([@sharat87][twitter]) on twitter. Or open an issue to discuss something
+Any comments/suggestions/feedback welcome. Please say hello to us on 
+[gitter](https://gitter.im/antigen-zsh/develop). Or open an issue to discuss something
 (anything!) about the project ;).
 
-### More plugins
+### Articles
 
-The [awesome-zsh-plugins][] list is a directory of plugins and themes that you may
-find useful.
+These are some external articles wrote by Antigen users.
 
-### Alternatives to antigen
+- [Awesome cmd line with antigen ( zsh plugin manager)](https://medium.com/cocoaacademymag/awesome-cmd-line-with-antigen-zsh-plugin-manager-d497574f7b5)
 
-  * [antigen-hs][] - An antigen-inspired zsh plugin manager that tries to do work
-    statically and only on manual invocation, minimizing the zsh startup time.
-    Antigen-hs is much more minimalistic and emphasizes convention over
-    configuration more strongly than antigen.
-  * [zgen][] - Another antigen-inspired zsh plugin manager that sets up a static
-    load file for a fast startup. Has no external dependencies, as it's written
-    in pure zsh.
+- [Oh-my-zsh is the Disease and Antigen is the Vaccine](http://joshldavis.com/2014/07/26/oh-my-zsh-is-a-disease-antigen-is-the-vaccine/)
 
+- [Just discovered.. zsh!](https://arteymix.github.io/2015/01/20/just-discovered-zsh.html)
+
+- [My switch to Zsh with Antigen](http://blog.namangoel.com/zsh-with-antigen)
+
+- [Antigen - vundle-like менеджер плагинов для zsh](https://neoascetic.me/antigen-zsh-plugin-manager/)
+
+- [Personalizando zsh: antigen](http://antonio-mario.com/personalizando-zsh-antigen/)
+
+- [Antigenを使おう](http://www.slideshare.net/mollifier/antigen-47698803)
+
+- [zshのプラグインマネージャーantigenでoh-my-zshの良いとこ取りをする](http://blog.glidenote.com/blog/2012/10/25/antigen/)
+
+- [NPM, antigen and ZSH pure prompt](http://stephen.yearl.us/npm-and-zsh-pure-prompt/)
+
+- [zsh with Antigen](http://mgdm.net/weblog/zsh-antigen/)
+
+- [Zsh Shell with Antigen + Oh-My-Zsh + Power Level 9k theme](https://www.youtube.com/watch?v=TIkJ5fDz2-g)
+
+- [Getting Started with ZSH](https://blogs.umass.edu/Techbytes/2014/12/01/getting-started-with-zsh/)
+
+
+### Plugins and Alternatives
+
+The [awesome-zsh-plugins][] list is a directory of plugins, themes and alternatives that
+you may find useful.
 
 [Vundle]: https://github.com/gmarik/vundle
 [page on themes]: https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
