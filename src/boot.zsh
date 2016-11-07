@@ -34,20 +34,26 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
         }
 
         # Disable antigen commands
-        _commands=('use' 'bundle' 'bundles' 'init' 'theme' 'list' 'apply' 'cleanup' \
+        _commands=('use' 'bundle' 'bundles' 'theme' 'list' 'apply' 'cleanup' \
          'help' 'list' 'reset' 'restore' 'revert' 'snapshot' 'selfupdate' 'update' 'version')
         for command in $_commands; do
             eval "antigen-$command () {}"
         done
 
-        # On antigen apply
+        # On antigen apply or init
         antigen () {
-            if [[ "$1" == "apply" ]]; then
+            if [[ "$1" == "apply" || "$1" == "init" ]]; then
                 -antigen-lazyloader
             fi
         }
+
         # On antigen-apply
         antigen-apply () {
+            -antigen-lazyloader
+        }
+
+        # On antigen-init
+        antigen-init () {
             -antigen-lazyloader
         }
 
