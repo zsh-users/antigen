@@ -51,11 +51,12 @@ zcache-done () {
     if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
         if ! zcache-cache-exists || -zcache-cache-invalidated; then
             -zcache-generate-cache
+            -antigen-reset-compdump
         fi
         
         zcache-load-cache
     fi
-    
+
     if [[ $_ZCACHE_EXTENSION_CLEAN_FUNCTIONS == true ]]; then
         unfunction -- ${(Mok)functions:#-zcache*}
     fi
@@ -66,7 +67,6 @@ zcache-done () {
         antigen-cache-reset
     }
     
-    zle -D zle-line-init
     unset _ZCACHE_BUNDLES
 }
 
@@ -162,7 +162,7 @@ antigen-init () {
     done
 }
 
--zcache-interactive-mode # Updates _ANTIGEN_INTERACTIVE
+-antigen-interactive-mode # Updates _ANTIGEN_INTERACTIVE
 # Refusing to run in interactive mode
 if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_INTERACTIVE == false ]]; then
     zcache-start

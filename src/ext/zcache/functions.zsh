@@ -6,15 +6,27 @@
 # This does avoid function-context $0 references.
 #
 # Usage
-#   -zcache-process-source "/path/to/source"
+#   -zcache-process-source "/path/to/source" ["theme"|"plugin"]
 #
 # Returns
 #   Returns the cached sources without $0 and ${0} references
 -zcache-process-source () {
-    cat "$1" | sed -Ee '/\{$/,/^\}/!{
-            /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$1'"
-            s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/
+    local src="$1"
+    local btype="$2"
+
+    local regexp='/\{$/,/^\}/!{
+               /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
+               s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/'
+    
+    if [[ "$btype" == "theme" ]]; then
+        regexp+="
+        s/^local //"
+    fi
+
+    regexp+='
         }'
+
+    cat "$src" | sed -Ee $regexp
 }
 
 # Generates cache from listed bundles.
@@ -53,7 +65,7 @@
         -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
             if [[ -f "$line" ]]; then
                 _payload+="#-- SOURCE: $line\NL"
-                _payload+=$(-zcache-process-source "$line")
+                _payload+=$(-zcache-process-source "$line" "$btype")
                 _payload+="\NL;#-- END SOURCE\NL"
             fi
         done
@@ -158,33 +170,6 @@
         eval "function -zcache-$(functions -- $function)"
         $function () { -zcache-antigen-hook $0 "$@" }
     done
-}
-
-# Updates _ANTIGEN_INTERACTIVE environment variable to reflect
-# if antigen is running in an interactive shell or from sourcing.
-#
-# This function check ZSH_EVAL_CONTEXT if available or functrace otherwise.
-# If _ANTIGEN_INTERACTIVE is set to true it won't re-check again.
-#
-# Usage
-#   -zcache-interactive-mode
-#
-# Returns
-#   Either true or false depending if we are running in interactive mode
--zcache-interactive-mode () {
-    # Check if we are in any way running in interactive mode
-    if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
-        if [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
-            _ANTIGEN_INTERACTIVE=true
-        elif [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
-            zmodload zsh/parameter
-            if [[ "${functrace[$#functrace]%:*}" == "zsh" ]]; then
-                _ANTIGEN_INTERACTIVE=true
-            fi
-        fi
-    fi
-
-    return _ANTIGEN_INTERACTIVE
 }
 
 # Determines if cache is up-to-date with antigen configuration

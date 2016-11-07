@@ -27,6 +27,6 @@ antigen-bundle () {
     fi
 
     # Load the plugin.
-    -antigen-load "$url" "$loc" "$make_local_clone"
+    -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
 
 }
