@@ -90,6 +90,8 @@
     _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
     _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
     _payload+="export _ZCACHE_CACHE_VERSION={{ANTIGEN_VERSION}}\NL"
+    _payload+="autoload -Uz compinit\NL"
+    _payload+="compinit -id $ANTIGEN_COMPDUMPFILE\NL"
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
     echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"

@@ -546,6 +546,17 @@ antigen-apply () {
     fi
     unset _zdotdir_set
 }
+antigen-bundles () {
+    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+    # are ignored. Everything else is given to `antigen-bundle` as is, no
+    # quoting rules applied.
+    local line
+    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+        # Using `eval` so that we can use the shell-style quoting in each line
+        # piped to `antigen-bundles`.
+        eval "antigen-bundle $line"
+    done
+}
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -577,17 +588,6 @@ antigen-bundle () {
     # Load the plugin.
     -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
 
-}
-antigen-bundles () {
-    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-    # are ignored. Everything else is given to `antigen-bundle` as is, no
-    # quoting rules applied.
-    local line
-    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-        # Using `eval` so that we can use the shell-style quoting in each line
-        # piped to `antigen-bundles`.
-        eval "antigen-bundle $line"
-    done
 }
 antigen-cleanup () {
 
@@ -999,6 +999,8 @@ _antigen () {
     _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
     _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
     _payload+="export _ZCACHE_CACHE_VERSION=v1.2.1\NL"
+    _payload+="autoload -Uz compinit\NL"
+    _payload+="compinit -id $ANTIGEN_COMPDUMPFILE\NL"
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
     echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
