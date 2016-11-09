@@ -68,6 +68,7 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
         #   - _ZCACHE_CACHE_LOADED is set to TRUE
         #   - _antigen is updated from cache
         #   - fpath is updated from cache
+        #   - autoload compinit && compinit -id $ANTIGEN_COMPDUMPFILE
         source "$_ZCACHE_PAYLOAD"
 
         # Lazyload wrapper
