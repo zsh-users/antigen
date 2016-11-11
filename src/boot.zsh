@@ -1,13 +1,13 @@
 # Used for lazy-loading.
-_ANTIGEN_SOURCE="$(cd "$(dirname "$0")" && pwd)/antigen.zsh"
+_ANTIGEN_SOURCE="$_ANTIGEN_INSTALL_DIR/antigen.zsh"
 # Used to fastboot antigen
 _ZCACHE_PAYLOAD="${ADOTDIR:-$HOME/.antigen}/.cache/.zcache-payload"
 
 # Use this functionallity only if both CACHE and FASTBOOT options are enabled.
 if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]]; then
-    
+
     # If there is cache (zcache payload), and it wasn't loaded then procced.
-    
+
     # The condition "$_ZCACHE_CACHE_LOADED != true" was crafted this way because
     # $_ZCACHE_CACHE_LOADED variable is otherwise undefined, so it seems easier to
     # check for a known value.
@@ -18,19 +18,11 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
         #   - _ZCACHE_CACHE_LOADED is set to TRUE
         #   - _antigen is updated from cache
         #   - fpath is updated from cache
+        #   - autoload compinit && compinit -id $ANTIGEN_COMPDUMPFILE
         source "$_ZCACHE_PAYLOAD"
 
         # Lazyload wrapper
         -antigen-lazyloader () {
-            # Be sure to have completions
-            autoload -Uz compinit
-            if $_ANTIGEN_COMP_ENABLED; then
-                compinit -iC
-                # At this point we got completions because antigen command exists
-                # and compdef does as well from zcache payload.
-                compdef _antigen antigen
-            fi
-
             # Hook antigen functions to lazy load antigen itself
             for command in ${(Mok)functions:#antigen*}; do
                 # Once any of the hooked functions are called and antigen is finally
@@ -43,20 +35,26 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
         }
 
         # Disable antigen commands
-        _commands=('use' 'bundle' 'bundles' 'init' 'theme' 'list' 'apply' 'cleanup' \
+        _commands=('use' 'bundle' 'bundles' 'theme' 'list' 'apply' 'cleanup' \
          'help' 'list' 'reset' 'restore' 'revert' 'snapshot' 'selfupdate' 'update' 'version')
         for command in $_commands; do
             eval "antigen-$command () {}"
         done
 
-        # On antigen apply
+        # On antigen apply or init
         antigen () {
-            if [[ "$1" == "apply" ]]; then
+            if [[ "$1" == "apply" || "$1" == "init" ]]; then
                 -antigen-lazyloader
             fi
         }
+
         # On antigen-apply
         antigen-apply () {
+            -antigen-lazyloader
+        }
+
+        # On antigen-init
+        antigen-init () {
             -antigen-lazyloader
         }
 
