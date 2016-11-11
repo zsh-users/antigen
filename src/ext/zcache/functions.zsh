@@ -122,6 +122,8 @@
       _payload+="export ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
     fi
     
+    _payload+="autoload -Uz compinit\NL"
+    _payload+="compinit -id $ANTIGEN_COMPDUMPFILE\NL"
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
     echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
