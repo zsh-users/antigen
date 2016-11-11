@@ -327,7 +327,7 @@ fi
     if [[ ! -d $clone_dir ]]; then
         install_or_update=true
         echo -n "Installing $(-antigen-bundle-short-name $url)... "
-        git clone --recursive "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
+        git clone $ANTIGEN_CLONE_OPTS "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
         success=$?
     elif $update; then
         local branch=master
@@ -344,7 +344,7 @@ fi
         --plugin-git pull origin $branch
         success=$?
         # Update submodules.
-        --plugin-git submodule update --recursive
+        --plugin-git submodule update $ANTIGEN_CLONE_OPTS
         # Get the new revision.
         local new_rev="$(--plugin-git rev-parse HEAD)"
     fi
@@ -395,8 +395,10 @@ fi
     if [[ ! -d $ADOTDIR ]]; then
         mkdir -p $ADOTDIR
     fi
-    -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
     -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
+
+    -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
+    -set-default _ANTIGEN_CLONE_OPTS "--recursive --depth=1"
 
     # Setup antigen's own completion.
     autoload -Uz compinit
