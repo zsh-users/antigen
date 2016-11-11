@@ -64,7 +64,7 @@ zcache-done () {
     eval "function -zcache-$(functions -- antigen-update)"
     antigen-update () {
         -zcache-antigen-update "$@"
-        antigen-cache-reset
+        antigen-reset
     }
     
     unset _ZCACHE_BUNDLES

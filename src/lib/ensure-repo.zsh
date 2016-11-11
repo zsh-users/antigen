@@ -36,7 +36,7 @@
         git clone --recursive "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
         success=$?
     elif $update; then
-        local branch=master
+        local branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
         if [[ $url == *\|* ]]; then
             # Get the clone's branch
             branch="${url#*|}"

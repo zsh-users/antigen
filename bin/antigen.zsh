@@ -264,7 +264,7 @@ antigen () {
         git clone --recursive "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
         success=$?
     elif $update; then
-        local branch=master
+        local branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
         if [[ $url == *\|* ]]; then
             # Get the clone's branch
             branch="${url#*|}"
@@ -1099,7 +1099,7 @@ zcache-done () {
     eval "function -zcache-$(functions -- antigen-update)"
     antigen-update () {
         -zcache-antigen-update "$@"
-        antigen-cache-reset
+        antigen-reset
     }
     
     unset _ZCACHE_BUNDLES
