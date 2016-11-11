@@ -550,7 +550,7 @@ fi
   # Setup antigen's own completion.
   autoload -Uz compinit
   if $_ANTIGEN_COMP_ENABLED; then
-    compinit -id $ANTIGEN_COMPDUMPFILE
+    compinit -iCd $ANTIGEN_COMPDUMPFILE
     compdef _antigen antigen
   fi
 
@@ -1406,7 +1406,7 @@ _antigen () {
       _extensions_paths+=($location)
     fi
   done
-    
+
   _payload+="\NL"
   _payload+="$(functions -- _antigen)"
   _payload+="\NL"

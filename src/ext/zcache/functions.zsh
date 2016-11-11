@@ -102,7 +102,7 @@
       _extensions_paths+=($location)
     fi
   done
-    
+
   _payload+="\NL"
   _payload+="$(functions -- _antigen)"
   _payload+="\NL"
