@@ -19,6 +19,9 @@
   -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
   -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
 
+    -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
+    -set-default _ANTIGEN_CLONE_OPTS "--recursive --depth=1"
+
     # Setup antigen's own completion.
     autoload -Uz compinit
     if $_ANTIGEN_COMP_ENABLED; then
