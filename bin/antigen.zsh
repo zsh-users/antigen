@@ -427,36 +427,36 @@ fi
     (cd "$clone_dir" &>>! $_ANTIGEN_LOG_PATH && git --no-pager "$@" &>>! $_ANTIGEN_LOG_PATH)
   }
 
-  # Clone if it doesn't already exist.
-  local start=$(date +'%s')
-  local install_or_update=false
-  local success=false
-  if [[ ! -d $clone_dir ]]; then
-    install_or_update=true
-    echo -n "Installing $(-antigen-bundle-short-name $url)... "
-    git clone --recursive "${url%|*}" "$clone_dir" &>>! $_ANTIGEN_LOG_PATH
-    success=$?
-  elif $update; then
-    local branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
-    if [[ $url == *\|* ]]; then
-      # Get the clone's branch
-      branch="${url#*|}"
+    # Clone if it doesn't already exist.
+    local start=$(date +'%s')
+    local install_or_update=false
+    local success=false
+    if [[ ! -d $clone_dir ]]; then
+        install_or_update=true
+        echo -n "Installing $(-antigen-bundle-short-name $url)... "
+        git clone $ANTIGEN_CLONE_OPTS "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
+        success=$?
+    elif $update; then
+        local branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
+        if [[ $url == *\|* ]]; then
+            # Get the clone's branch
+            branch="${url#*|}"
+        fi
+        install_or_update=true
+        # Update remote if needed.
+        -antigen-update-remote $clone_dir $url
+        echo -n "Updating $(-antigen-bundle-short-name $url)... "
+        # Save current revision.
+        local old_rev="$(--plugin-git rev-parse HEAD)"
+        # Pull changes if update requested.
+        --plugin-git checkout $branch
+        --plugin-git pull origin $branch
+        success=$?
+        # Update submodules.
+        --plugin-git submodule update --recursive
+        # Get the new revision.
+        local new_rev="$(--plugin-git rev-parse HEAD)"
     fi
-    install_or_update=true
-    # Update remote if needed.
-    -antigen-update-remote $clone_dir $url
-    echo -n "Updating $(-antigen-bundle-short-name $url)... "
-    # Save current revision.
-    local old_rev="$(--plugin-git rev-parse HEAD)"
-    # Pull changes if update requested.
-    --plugin-git checkout $branch
-    --plugin-git pull origin $branch
-    success=$?
-    # Update submodules.
-    --plugin-git submodule update --recursive
-    # Get the new revision.
-    local new_rev="$(--plugin-git rev-parse HEAD)"
-  fi
 
   if $install_or_update; then
     local took=$(( $(date +'%s') - $start ))
@@ -509,6 +509,9 @@ fi
   fi
   -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
   -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
+
+    -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
+    -set-default _ANTIGEN_CLONE_OPTS "--recursive --depth=1"
 
     # Setup antigen's own completion.
     autoload -Uz compinit
