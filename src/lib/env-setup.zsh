@@ -16,7 +16,7 @@
   if [[ ! -d $ADOTDIR ]]; then
     mkdir -p $ADOTDIR
   fi
-  -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
+
   -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
 
   -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
