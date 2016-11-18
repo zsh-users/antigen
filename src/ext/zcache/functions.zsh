@@ -5,6 +5,13 @@
 #
 # This does avoid function-context $0 references.
 #
+# This does handles the following patterns:
+#   $0
+#   ${0}
+#   ${funcsourcetrace[1]%:*}
+#   ${(%):-%N}
+#   ${(%):-%x}
+#
 # Usage
 #   -zcache-process-source "/path/to/source" ["theme"|"plugin"]
 #
@@ -14,19 +21,26 @@
     local src="$1"
     local btype="$2"
 
-    local regexp='/\{$/,/^\}/!{
-               /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
-               s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/'
-    
+    # Removes $0 references globally (exclusively)
+    local globals_only='/\{$/,/^\}/!{
+                /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
+                s/\$(.?)0(.?)/\$\1__ZCACHE_FILE_PATH\2/
+    }'
+
+    # Removes funcsourcetrace, and ${%} references globally
+    local globals='/.*/{
+        /\$.?(funcsourcetrace\[1\]\%\:\*|\(\%\)\:\-\%(N|x))/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
+        s/\$(.?)(funcsourcetrace\[1\]\%\:\*|\(\%\)\:\-\%(N|x))(.?)/\$\1__ZCACHE_FILE_PATH\4/
+    }'
+
+    # Removes `local` from temes globally
+	local sed_regexp_themes=''
     if [[ "$btype" == "theme" ]]; then
-        regexp+="
-        s/^local //"
+        themes='/\{$/,/^\}/!{s/^local //}'
+		sed_regexp_themes="-e "$themes
     fi
 
-    regexp+='
-        }'
-
-    cat "$src" | sed -Ee $regexp
+	cat "$src" | sed -E -e $globals -e $globals_only $sed_regexp_themes
 }
 
 # Generates cache from listed bundles.
