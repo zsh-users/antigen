@@ -38,3 +38,12 @@ Fpath should be updated correctly.
 
   $ echo ${(j:\n:)fpath} | grep -Pco test-plugin
   2
+
+Load plugin multiple times, doesn't cluters _ANTIGEN_BUNDLE_RECORD
+
+  $ antigen-bundle $PLUGIN_DIR
+  $ echo $_ANTIGEN_BUNDLE_RECORD | wc -l
+  3
+  $ antigen-bundle $PLUGIN_DIR
+  $ echo $_ANTIGEN_BUNDLE_RECORD | wc -l
+  3

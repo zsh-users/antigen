@@ -520,8 +520,11 @@ antigen-bundle () {
     -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
 
     # Add it to the record.
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD $make_local_clone"
+    local bundle_record="$url $loc $btype $make_local_clone"
+    if [[ ! $_ANTIGEN_BUNDLE_RECORD =~ "$bundle_record" ]]; then
+        # TODO Use array instead of string
+        _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$bundle_record"
+    fi
 }
 antigen-cleanup () {
 
