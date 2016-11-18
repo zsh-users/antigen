@@ -226,16 +226,17 @@ antigen () {
 
     echo "$url"
 }
+# Ensure that a clone exists for the given repo url and branch. If the first
+# argument is `update` and if a clone already exists for the given repo
+# and branch, it is pull-ed, i.e., updated.
+#
+# This function expects three arguments in order:
+# - 'url=<url>'
+# - 'update=true|false'
+# - 'verbose=true|false'
+#
+# Returns true|false Whether cloning/pulling was succesful
 -antigen-ensure-repo () {
-
-    # Ensure that a clone exists for the given repo url and branch. If the first
-    # This function expects three arguments in order:
-    # * 'url=<url>'
-    # * 'update=true|false'
-    # * 'verbose=true|false'
-    # argument is `update` and if a clone already exists for the given repo
-    # and branch, it is pull-ed, i.e., updated.
-
     # Argument defaults.
     # The url. No sane default for this, so just empty.
     local url=${1:?"url must be set"}
@@ -311,6 +312,7 @@ antigen () {
     # Remove the temporary git wrapper function.
     unfunction -- --plugin-git
 
+    return $success
 }
 -antigen-env-setup () {
 
@@ -505,19 +507,21 @@ antigen-bundle () {
     fi
 
     eval "$(-antigen-parse-bundle "$@")"
-    
-    # Add it to the record.
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD $make_local_clone"
 
-    # Ensure a clone exists for this repo, if needed.
+   # Ensure a clone exists for this repo, if needed.
     if $make_local_clone; then
-        -antigen-ensure-repo "$url"
+        if ! -antigen-ensure-repo "$url"; then
+            # Return immediately if there is an error cloning
+            return 1
+        fi
     fi
 
     # Load the plugin.
     -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
 
+    # Add it to the record.
+    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
+    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD $make_local_clone"
 }
 antigen-cleanup () {
 

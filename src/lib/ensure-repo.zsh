@@ -1,13 +1,14 @@
+# Ensure that a clone exists for the given repo url and branch. If the first
+# argument is `update` and if a clone already exists for the given repo
+# and branch, it is pull-ed, i.e., updated.
+#
+# This function expects three arguments in order:
+# - 'url=<url>'
+# - 'update=true|false'
+# - 'verbose=true|false'
+#
+# Returns true|false Whether cloning/pulling was succesful
 -antigen-ensure-repo () {
-
-    # Ensure that a clone exists for the given repo url and branch. If the first
-    # This function expects three arguments in order:
-    # * 'url=<url>'
-    # * 'update=true|false'
-    # * 'verbose=true|false'
-    # argument is `update` and if a clone already exists for the given repo
-    # and branch, it is pull-ed, i.e., updated.
-
     # Argument defaults.
     # The url. No sane default for this, so just empty.
     local url=${1:?"url must be set"}
@@ -83,4 +84,5 @@
     # Remove the temporary git wrapper function.
     unfunction -- --plugin-git
 
+    return $success
 }
