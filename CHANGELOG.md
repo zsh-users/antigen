@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.2] - 2016-11-18
+
+### Changed
+- [#315, #308] Bundle command returns error if repository is not found 
+- [#313, #314] Enhanced cache process-source function 
+
+### Fixed
+- [#310, #307] Disabling cache-related commands if cache is disabled
+- [#311, #304] Handle bundle's default branch different than master
+
+Thanks @DestyNova, @yacoob, @qstrahl and everyone who reported issues and
+provided feedback.
+
 ## [1.2.1] - 2016-10-15
 
 Antigen now resets compdump file on `antigen-apply` or with cache resetting (be
