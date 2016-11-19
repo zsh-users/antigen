@@ -28,22 +28,18 @@
 
 <p><a href="https://github.com/zsh-users/antigen/releases/latest"><img src="https://img.shields.io/github/release/zsh-users/antigen.svg?label=latest" alt="Latest"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/master.svg?label=stable" alt="Build Status"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=next" alt="Build Status"></a></p>
 
-<p><a href="#installation">Installation</a> | <a href="#configuration">Configuration</a> | <a href="https://github.com/zsh-users/antigen/issues">Bug tracker</a> | <a href="https://trello.com/b/P0xrGgfT/antigen">Discussions</a> | <a href="https://gitter.im/antigen-zsh/develop">Chat</a> | <a href="http://mit.sharats.me/">License</a></p>
+<p><a href="#installation">Installation</a> | <a href="#configuration">Configuration</a> | <a href="https://github.com/zsh-users/antigen/wiki">Documentation</a> | <a href="https://github.com/zsh-users/antigen/issues">Bug tracker</a> | <a href="https://trello.com/b/P0xrGgfT/antigen">Discussions</a> | <a href="https://gitter.im/antigen-zsh/develop">Chat</a> | <a href="http://mit.sharats.me/">License</a></p>
 
 <p>Antigen is a small set of functions that help you easily manage your shell (zsh)
 plugins, called bundles. The concept is pretty much the same as bundles in a
 typical vim+pathogen setup. Antigen is to zsh, what <a href="https://github.com/gmarik/vundle">Vundle</a> is to vim.</p>
-
-<blockquote>
-<p><a href="https://gum.co/antigen">Donate to Antigen</a></p>
-</blockquote>
 
 <p><a href="https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce"><img src="https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce.png" alt="https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce"></a></p>
 
 <p>Antigen has reached a certain level of stability and has been used in the wild
 for around a couple of years. If you face any problems, please open an issue.</p>
 
-<p>Antigen works with zsh versions &gt;=4.3 and 5.x.</p>
+<p>Antigen works with zsh versions <code>&gt;= 4.3.5</code>.</p>
 
 <p>Note: Please read the commit comments of the changesets when you pull a new
 version of antigen.</p>
@@ -62,7 +58,7 @@ sample, if you will.</p>
 
 <p>Get and load antigen.</p>
 
-<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.2.0/bin/antigen.zsh &gt; antigen.zsh
+<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.2.2/bin/antigen.zsh &gt; antigen.zsh
 source antigen.zsh
 </code></pre>
 
@@ -598,7 +594,7 @@ looks good as output on the command line.</p>
 
 <p>Install Antigen from our main repository for the latests and greatests version available:</p>
 
-<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.2.0/bin/antigen.zsh &gt; antigen.zsh
+<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.2.2/bin/antigen.zsh &gt; antigen.zsh
 </code></pre>
 
 <p>Or using your system package manager:</p>
@@ -722,36 +718,38 @@ your <code>.zshrc</code>.</p>
 sending pull requests. If its a long/complicated change, please consider opening
 an <a href="https://github.com/zsh-users/antigen/issues">issue</a> first so we can discuss it out. Thanks!</p>
 
-<p>You may also wish to <a href="https://gum.co/antigen">donate to the project</a>. Thank you
-so much!</p>
-
 <h3>
 <a id="feedback-please" class="anchor" href="#feedback-please" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Feedback please</h3>
 
-<p>Any comments/suggestions/feedback welcome. Please say hello to me
-(<a href="http://twitter.com/sharat87">@sharat87</a>) on twitter. Or open an issue to discuss something
+<p>Any comments/suggestions/feedback welcome. Please say hello to us on 
+<a href="https://gitter.im/antigen-zsh/develop">gitter</a>. Or open an issue to discuss something
 (anything!) about the project ;).</p>
 
 <h3>
-<a id="more-plugins" class="anchor" href="#more-plugins" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>More plugins</h3>
+<a id="articles" class="anchor" href="#articles" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Articles</h3>
 
-<p>The <a href="https://github.com/unixorn/awesome-zsh-plugins">awesome-zsh-plugins</a> list is a directory of plugins and themes that you may
-find useful.</p>
-
-<h3>
-<a id="alternatives-to-antigen" class="anchor" href="#alternatives-to-antigen" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Alternatives to antigen</h3>
+<p>These are some external articles wrote by Antigen users.</p>
 
 <ul>
-<li>
-<a href="https://github.com/Tarrasch/antigen-hs">antigen-hs</a> - An antigen-inspired zsh plugin manager that tries to do work
-statically and only on manual invocation, minimizing the zsh startup time.
-Antigen-hs is much more minimalistic and emphasizes convention over
-configuration more strongly than antigen.</li>
-<li>
-<a href="https://github.com/tarjoilija/zgen">zgen</a> - Another antigen-inspired zsh plugin manager that sets up a static
-load file for a fast startup. Has no external dependencies, as it's written
-in pure zsh.</li>
+<li><p><a href="https://medium.com/cocoaacademymag/awesome-cmd-line-with-antigen-zsh-plugin-manager-d497574f7b5">Awesome cmd line with antigen ( zsh plugin manager)</a></p></li>
+<li><p><a href="http://joshldavis.com/2014/07/26/oh-my-zsh-is-a-disease-antigen-is-the-vaccine/">Oh-my-zsh is the Disease and Antigen is the Vaccine</a></p></li>
+<li><p><a href="https://arteymix.github.io/2015/01/20/just-discovered-zsh.html">Just discovered.. zsh!</a></p></li>
+<li><p><a href="http://blog.namangoel.com/zsh-with-antigen">My switch to Zsh with Antigen</a></p></li>
+<li><p><a href="https://neoascetic.me/antigen-zsh-plugin-manager/">Antigen - vundle-like менеджер плагинов для zsh</a></p></li>
+<li><p><a href="http://antonio-mario.com/personalizando-zsh-antigen/">Personalizando zsh: antigen</a></p></li>
+<li><p><a href="http://www.slideshare.net/mollifier/antigen-47698803">Antigenを使おう</a></p></li>
+<li><p><a href="http://blog.glidenote.com/blog/2012/10/25/antigen/">zshのプラグインマネージャーantigenでoh-my-zshの良いとこ取りをする</a></p></li>
+<li><p><a href="http://stephen.yearl.us/npm-and-zsh-pure-prompt/">NPM, antigen and ZSH pure prompt</a></p></li>
+<li><p><a href="http://mgdm.net/weblog/zsh-antigen/">zsh with Antigen</a></p></li>
+<li><p><a href="https://www.youtube.com/watch?v=TIkJ5fDz2-g">Zsh Shell with Antigen + Oh-My-Zsh + Power Level 9k theme</a></p></li>
+<li><p><a href="https://blogs.umass.edu/Techbytes/2014/12/01/getting-started-with-zsh/">Getting Started with ZSH</a></p></li>
 </ul>
+
+<h3>
+<a id="plugins-and-alternatives" class="anchor" href="#plugins-and-alternatives" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Plugins and Alternatives</h3>
+
+<p>The <a href="https://github.com/unixorn/awesome-zsh-plugins">awesome-zsh-plugins</a> list is a directory of plugins, themes and alternatives that
+you may find useful.</p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/zsh-users/antigen">Antigen</a> is maintained by <a href="https://github.com/zsh-users">zsh-users</a>.</span>
