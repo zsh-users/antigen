@@ -892,10 +892,12 @@ _antigen () {
     }'
 
     # Removes `local` from temes globally
-	local sed_regexp_themes=''
+    local sed_regexp_themes=''
     if [[ "$btype" == "theme" ]]; then
-        themes='/\{$/,/^\}/!{s/^local //}'
-		sed_regexp_themes="-e "$themes
+        themes='/\{$/,/^\}/!{
+            s/^local //
+        }'
+        sed_regexp_themes="-e "$themes
     fi
 
 	cat "$src" | sed -E -e $globals -e $globals_only $sed_regexp_themes
