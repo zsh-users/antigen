@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.3] - 2016-11-21
+
+### Fixed
+- [#318, #317] Fixed issue with sed regexp format between BSD and GNU
+
+Thanks @john-kurkowski and everyone who reported issues and
+provided feedback.
+
 ## [1.2.2] - 2016-11-18
 
 ### Changed

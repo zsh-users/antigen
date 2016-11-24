@@ -787,7 +787,7 @@ antigen-use () {
     fi
 }
 antigen-version () {
-    echo "Antigen v1.2.2"
+    echo "Antigen v1.2.3"
 }
 #compdef _antigen
 # Setup antigen's autocompletion
@@ -892,10 +892,12 @@ _antigen () {
     }'
 
     # Removes `local` from temes globally
-	local sed_regexp_themes=''
+    local sed_regexp_themes=''
     if [[ "$btype" == "theme" ]]; then
-        themes='/\{$/,/^\}/!{s/^local //}'
-		sed_regexp_themes="-e "$themes
+        themes='/\{$/,/^\}/!{
+            s/^local //
+        }'
+        sed_regexp_themes="-e "$themes
     fi
 
 	cat "$src" | sed -E -e $globals -e $globals_only $sed_regexp_themes
@@ -924,7 +926,7 @@ _antigen () {
 
     _payload+="#-- START ZCACHE GENERATED FILE\NL"
     _payload+="#-- GENERATED: $(date)\NL"
-    _payload+='#-- ANTIGEN v1.2.2\NL'
+    _payload+='#-- ANTIGEN v1.2.3\NL'
     for bundle in $_ZCACHE_BUNDLES; do
         # -antigen-load-list "$url" "$loc" "$make_local_clone"
         eval "$(-antigen-parse-bundle ${=bundle})"
@@ -958,7 +960,7 @@ _antigen () {
     # \NL (\n) prefix is for backward compatibility
     _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
     _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
-    _payload+="export _ZCACHE_CACHE_VERSION=v1.2.2\NL"
+    _payload+="export _ZCACHE_CACHE_VERSION=v1.2.3\NL"
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
     echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
