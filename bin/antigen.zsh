@@ -226,16 +226,17 @@ antigen () {
 
     echo "$url"
 }
+# Ensure that a clone exists for the given repo url and branch. If the first
+# argument is `update` and if a clone already exists for the given repo
+# and branch, it is pull-ed, i.e., updated.
+#
+# This function expects three arguments in order:
+# - 'url=<url>'
+# - 'update=true|false'
+# - 'verbose=true|false'
+#
+# Returns true|false Whether cloning/pulling was succesful
 -antigen-ensure-repo () {
-
-    # Ensure that a clone exists for the given repo url and branch. If the first
-    # This function expects three arguments in order:
-    # * 'url=<url>'
-    # * 'update=true|false'
-    # * 'verbose=true|false'
-    # argument is `update` and if a clone already exists for the given repo
-    # and branch, it is pull-ed, i.e., updated.
-
     # Argument defaults.
     # The url. No sane default for this, so just empty.
     local url=${1:?"url must be set"}
@@ -264,7 +265,7 @@ antigen () {
         git clone --recursive "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
         success=$?
     elif $update; then
-        local branch=master
+        local branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
         if [[ $url == *\|* ]]; then
             # Get the clone's branch
             branch="${url#*|}"
@@ -311,6 +312,7 @@ antigen () {
     # Remove the temporary git wrapper function.
     unfunction -- --plugin-git
 
+    return $success
 }
 -antigen-env-setup () {
 
@@ -505,19 +507,24 @@ antigen-bundle () {
     fi
 
     eval "$(-antigen-parse-bundle "$@")"
-    
-    # Add it to the record.
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$url $loc $btype"
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD $make_local_clone"
 
-    # Ensure a clone exists for this repo, if needed.
+   # Ensure a clone exists for this repo, if needed.
     if $make_local_clone; then
-        -antigen-ensure-repo "$url"
+        if ! -antigen-ensure-repo "$url"; then
+            # Return immediately if there is an error cloning
+            return 1
+        fi
     fi
 
     # Load the plugin.
     -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
 
+    # Add it to the record.
+    local bundle_record="$url $loc $btype $make_local_clone"
+    if [[ ! $_ANTIGEN_BUNDLE_RECORD =~ "$bundle_record" ]]; then
+        # TODO Use array instead of string
+        _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$bundle_record"
+    fi
 }
 antigen-cleanup () {
 
@@ -780,7 +787,7 @@ antigen-use () {
     fi
 }
 antigen-version () {
-    echo "Antigen v1.2.1"
+    echo "Antigen v1.2.2"
 }
 #compdef _antigen
 # Setup antigen's autocompletion
@@ -856,6 +863,13 @@ _antigen () {
 #
 # This does avoid function-context $0 references.
 #
+# This does handles the following patterns:
+#   $0
+#   ${0}
+#   ${funcsourcetrace[1]%:*}
+#   ${(%):-%N}
+#   ${(%):-%x}
+#
 # Usage
 #   -zcache-process-source "/path/to/source" ["theme"|"plugin"]
 #
@@ -865,19 +879,26 @@ _antigen () {
     local src="$1"
     local btype="$2"
 
-    local regexp='/\{$/,/^\}/!{
-               /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
-               s/\$(.?)0/\$\1__ZCACHE_FILE_PATH/'
-    
+    # Removes $0 references globally (exclusively)
+    local globals_only='/\{$/,/^\}/!{
+                /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
+                s/\$(.?)0(.?)/\$\1__ZCACHE_FILE_PATH\2/
+    }'
+
+    # Removes funcsourcetrace, and ${%} references globally
+    local globals='/.*/{
+        /\$.?(funcsourcetrace\[1\]\%\:\*|\(\%\)\:\-\%(N|x))/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
+        s/\$(.?)(funcsourcetrace\[1\]\%\:\*|\(\%\)\:\-\%(N|x))(.?)/\$\1__ZCACHE_FILE_PATH\4/
+    }'
+
+    # Removes `local` from temes globally
+	local sed_regexp_themes=''
     if [[ "$btype" == "theme" ]]; then
-        regexp+="
-        s/^local //"
+        themes='/\{$/,/^\}/!{s/^local //}'
+		sed_regexp_themes="-e "$themes
     fi
 
-    regexp+='
-        }'
-
-    cat "$src" | sed -Ee $regexp
+	cat "$src" | sed -E -e $globals -e $globals_only $sed_regexp_themes
 }
 
 # Generates cache from listed bundles.
@@ -903,7 +924,7 @@ _antigen () {
 
     _payload+="#-- START ZCACHE GENERATED FILE\NL"
     _payload+="#-- GENERATED: $(date)\NL"
-    _payload+='#-- ANTIGEN v1.2.1\NL'
+    _payload+='#-- ANTIGEN v1.2.2\NL'
     for bundle in $_ZCACHE_BUNDLES; do
         # -antigen-load-list "$url" "$loc" "$make_local_clone"
         eval "$(-antigen-parse-bundle ${=bundle})"
@@ -937,7 +958,7 @@ _antigen () {
     # \NL (\n) prefix is for backward compatibility
     _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
     _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
-    _payload+="export _ZCACHE_CACHE_VERSION=v1.2.1\NL"
+    _payload+="export _ZCACHE_CACHE_VERSION=v1.2.2\NL"
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
     echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
@@ -1099,7 +1120,7 @@ zcache-done () {
     eval "function -zcache-$(functions -- antigen-update)"
     antigen-update () {
         -zcache-antigen-update "$@"
-        antigen-cache-reset
+        antigen-reset
     }
     
     unset _ZCACHE_BUNDLES
@@ -1199,6 +1220,12 @@ antigen-init () {
 
 -antigen-interactive-mode # Updates _ANTIGEN_INTERACTIVE
 # Refusing to run in interactive mode
-if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_INTERACTIVE == false ]]; then
-    zcache-start
+if [[ $_ANTIGEN_CACHE_ENABLED == true ]]; then
+    if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
+        zcache-start
+    fi
+else    
+    # Disable antigen-init and antigen-reset commands if cache is disabled
+    # and running in interactive modes
+    unfunction -- antigen-init antigen-reset antigen-cache-reset
 fi

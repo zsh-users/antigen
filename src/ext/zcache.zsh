@@ -64,7 +64,7 @@ zcache-done () {
     eval "function -zcache-$(functions -- antigen-update)"
     antigen-update () {
         -zcache-antigen-update "$@"
-        antigen-cache-reset
+        antigen-reset
     }
     
     unset _ZCACHE_BUNDLES
@@ -164,6 +164,12 @@ antigen-init () {
 
 -antigen-interactive-mode # Updates _ANTIGEN_INTERACTIVE
 # Refusing to run in interactive mode
-if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_INTERACTIVE == false ]]; then
-    zcache-start
+if [[ $_ANTIGEN_CACHE_ENABLED == true ]]; then
+    if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
+        zcache-start
+    fi
+else    
+    # Disable antigen-init and antigen-reset commands if cache is disabled
+    # and running in interactive modes
+    unfunction -- antigen-init antigen-reset antigen-cache-reset
 fi
