@@ -16,7 +16,7 @@ antigen-update () {
 
     if [[ ! $bundle == "" ]]; then
         bundle_url=$(-antigen-resolve-bundle-url "$bundle")
-        if [[ ${(MS)_ANTIGEN_BUNDLE_RECORD##$bundle_url} ]]; then
+        if [[ ! ${(MS)_ANTIGEN_BUNDLE_RECORD##$bundle_url} == "" ]]; then
             -antigen-update-bundle "$bundle_url"
         else
             echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
