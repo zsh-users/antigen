@@ -45,6 +45,11 @@ antigen () {
 -antigen-bundle-short-name () {
     echo "$@" | sed -E "s|.*/(.*/.*)$|\1|"|sed -E "s|\.git$||g"
 }
+# Echo the bundle specs as in the record. The first line is not echoed since it
+# is a blank line.
+-antigen-echo-record () {
+    echo "$_ANTIGEN_BUNDLE_RECORD" | sed -n '1!p'
+}
 -antigen-get-clone-dir () {
     # Takes a repo url and gives out the path that this url needs to be cloned
     # to. Doesn't actually clone anything.
@@ -478,17 +483,6 @@ antigen-apply () {
     fi
     unset _zdotdir_set
 }
-antigen-bundles () {
-    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-    # are ignored. Everything else is given to `antigen-bundle` as is, no
-    # quoting rules applied.
-    local line
-    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-        # Using `eval` so that we can use the shell-style quoting in each line
-        # piped to `antigen-bundles`.
-        eval "antigen-bundle $line"
-    done
-}
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -525,6 +519,17 @@ antigen-bundle () {
         # TODO Use array instead of string
         _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$bundle_record"
     fi
+}
+antigen-bundles () {
+    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+    # are ignored. Everything else is given to `antigen-bundle` as is, no
+    # quoting rules applied.
+    local line
+    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+        # Using `eval` so that we can use the shell-style quoting in each line
+        # piped to `antigen-bundles`.
+        eval "antigen-bundle $line"
+    done
 }
 antigen-cleanup () {
 
@@ -574,11 +579,6 @@ antigen-cleanup () {
         echo
         echo Nothing deleted.
     fi
-}
-# Echo the bundle specs as in the record. The first line is not echoed since it
-# is a blank line.
--antigen-echo-record () {
-    echo "$_ANTIGEN_BUNDLE_RECORD" | sed -n '1!p'
 }
 antigen-help () {
     cat <<EOF
