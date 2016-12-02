@@ -305,6 +305,20 @@ understand how it works. Its a very small function.
 *Note*: Indenting the contents inside the EOBUNDLES heredoc is not required for
 antigen-bundles to work. Its allowed (and encouraged) to improve readability.
 
+### antigen init
+
+Makes usage of caching in order to quickly load bundles. Improves performance greatly
+and it's recommened if you have an stable set of bundles. See wiki's [cookbook](https://github.com/zsh-users/antigen/wiki/Cookbook#init-command) section
+for further details.
+
+    antigen init /path/to/.antigenrc
+
+Where `.antigenrc` contains your antigen configuration (`antigen bundle`, `antigen bundles`,
+`antigen theme`, etc).
+
+This command is available only with cache enabled, ie: `_ANTIGEN_CACHE_ENABLED=true`.
+
+
 ### antigen update
 
 This is something you might not want to put in your `.zshrc`. Instead, run it
