@@ -61,7 +61,7 @@
         if [[ $success -eq 0 ]]; then
             printf "Done. Took %ds.\n" $took
         else
-            echo -n "Error! See $_ANTIGEN_LOG_PATH.";
+            printf "Error! See \"$_ANTIGEN_LOG_PATH\".\n";
         fi
     fi
 

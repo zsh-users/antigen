@@ -11,22 +11,26 @@ antigen-bundle () {
     local btype=plugin
     
     if [[ -z "$1" ]]; then
-        echo "Must provide a bundle url or name."
+        echo "Antigen: Must provide a bundle url or name."
         return 1
     fi
 
     eval "$(-antigen-parse-bundle "$@")"
 
-   # Ensure a clone exists for this repo, if needed.
+    # Ensure a clone exists for this repo, if needed.
     if $make_local_clone; then
         if ! -antigen-ensure-repo "$url"; then
             # Return immediately if there is an error cloning
+            # Error message is displayed from -antigen-ensure-repo
             return 1
         fi
     fi
 
     # Load the plugin.
-    -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
+    if ! -antigen-load "$url" "$loc" "$make_local_clone" "$btype"; then
+        echo "Antigen: Failed to load $btype."
+        return 1
+    fi
 
     # Add it to the record.
     local bundle_record="$url $loc $btype $make_local_clone"

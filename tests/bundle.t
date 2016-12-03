@@ -1,7 +1,7 @@
 Should get a complain if no bundle is given as argument.
 
   $ antigen-bundle
-  Must provide a bundle url or name.
+  Antigen: Must provide a bundle url or name.
   [1]
 
 Load plugin from master.
@@ -15,6 +15,20 @@ Load the plugin again. Just to see nothing happens.
   $ antigen-bundle $PLUGIN_DIR
   $ hehe
   hehe
+
+Try to load an unexisting plugin from a cloned bundle.
+
+  $ antigen-bundle $PLUGIN_DIR wrong
+  Antigen: Failed to load plugin.
+  [1]
+
+Try to install an unexisting bundle.
+
+  $ antigen-bundle https://127.0.0.1/bundle/unexisting
+  Installing bundle/unexisting... Error! See * (glob)
+  [1]
+  $ echo $fpath | grep -Pco test-plugin
+  1
 
 Confirm there is still only one repository.
 

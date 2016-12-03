@@ -294,7 +294,7 @@ antigen () {
         if [[ $success -eq 0 ]]; then
             printf "Done. Took %ds.\n" $took
         else
-            echo -n "Error! See $_ANTIGEN_LOG_PATH.";
+            printf "Error! See \"$_ANTIGEN_LOG_PATH\".\n";
         fi
     fi
 
@@ -350,44 +350,64 @@ antigen () {
     unfunction -- -set-default
 
 }
+# Load a given bundle by sourcing it.
+#
+# The function also modifies fpath to add the bundle path.
+#
+# Usage
+#   -antigen-load "bundle-url" ["location"] ["make_local_clone"] ["btype"]
+#
+# Returns
+#   Integer. 0 if success 1 if an error ocurred.
 -antigen-load () {
   local url="$1"
   local loc="$2"
   local make_local_clone="$3"
   local btype="$4"
   local src
+  local success=1
 
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone"); do
-      if [[ -d "$src" ]]; then
-          if (( ! ${fpath[(I)$location]} )); then
-              fpath=($location $fpath)
-          fi
-      else
-          # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
-          # This is needed to seek-and-destroy local variable definitions *outside*
-          # function-contexts. This is done in this particular way *only* for
-          # interactive bundle/theme loading, for static loading -99.9% of the time-
-          # eval and subshells are not needed.
-          if [[ "$btype" == "theme" ]]; then
-              eval "$(cat $src | sed -Ee '/\{$/,/^\}/!{
-                      s/^local //
-                  }')"
-          else
-              source "$src"
-          fi
+    if [[ -d "$src" ]]; then
+      if (( ! ${fpath[(I)$location]} )); then
+        fpath=($location $fpath)
       fi
+    else
+      # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
+      # This is needed to seek-and-destroy local variable definitions *outside*
+      # function-contexts. This is done in this particular way *only* for
+      # interactive bundle/theme loading, for static loading -99.9% of the time-
+      # eval and subshells are not needed.
+      if [[ "$btype" == "theme" ]]; then
+        eval "$(cat $src | sed -Ee '/\{$/,/^\}/!{
+                s/^local //
+            }')"
+      else
+        source "$src"
+      fi
+    fi
+
+    success=0
   done
+
+  # Return if there is an error loading bundle in order to avoid
+  # cluttering fpath with broken bundles
+  if [[ $success == 1 ]]; then
+    return $success
+  fi
 
   local location
   if $make_local_clone; then
-      location="$(-antigen-get-clone-dir "$url")/$loc"
+    location="$(-antigen-get-clone-dir "$url")/$loc"
   else
-      location="$url/"
+    location="$url/"
   fi
   # Add to $fpath, for completion(s), if not in there already
   if (( ! ${fpath[(I)$location]} )); then
-     fpath=($location $fpath)
+    fpath=($location $fpath)
   fi
+  
+  return $success
 }
 -antigen-parse-args () {
     local key
@@ -483,6 +503,17 @@ antigen-apply () {
     fi
     unset _zdotdir_set
 }
+antigen-bundles () {
+    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+    # are ignored. Everything else is given to `antigen-bundle` as is, no
+    # quoting rules applied.
+    local line
+    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+        # Using `eval` so that we can use the shell-style quoting in each line
+        # piped to `antigen-bundles`.
+        eval "antigen-bundle $line"
+    done
+}
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -496,22 +527,26 @@ antigen-bundle () {
     local btype=plugin
     
     if [[ -z "$1" ]]; then
-        echo "Must provide a bundle url or name."
+        echo "Antigen: Must provide a bundle url or name."
         return 1
     fi
 
     eval "$(-antigen-parse-bundle "$@")"
 
-   # Ensure a clone exists for this repo, if needed.
+    # Ensure a clone exists for this repo, if needed.
     if $make_local_clone; then
         if ! -antigen-ensure-repo "$url"; then
             # Return immediately if there is an error cloning
+            # Error message is displayed from -antigen-ensure-repo
             return 1
         fi
     fi
 
     # Load the plugin.
-    -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
+    if ! -antigen-load "$url" "$loc" "$make_local_clone" "$btype"; then
+        echo "Antigen: Failed to load $btype."
+        return 1
+    fi
 
     # Add it to the record.
     local bundle_record="$url $loc $btype $make_local_clone"
@@ -519,17 +554,6 @@ antigen-bundle () {
         # TODO Use array instead of string
         _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$bundle_record"
     fi
-}
-antigen-bundles () {
-    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-    # are ignored. Everything else is given to `antigen-bundle` as is, no
-    # quoting rules applied.
-    local line
-    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-        # Using `eval` so that we can use the shell-style quoting in each line
-        # piped to `antigen-bundles`.
-        eval "antigen-bundle $line"
-    done
 }
 antigen-cleanup () {
 
