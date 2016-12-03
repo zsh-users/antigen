@@ -13,7 +13,6 @@
   local make_local_clone="$3"
   local btype="$4"
   local src
-  local success=1
 
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone"); do
     if [[ -d "$src" ]]; then
@@ -35,24 +34,23 @@
       fi
     fi
 
-    success=0
   done
 
-  # Return if there is an error loading bundle in order to avoid
-  # cluttering fpath with broken bundles
-  if [[ $success == 1 ]]; then
-    return $success
-  fi
-
-  local location
+  local location="$url/"
   if $make_local_clone; then
     location="$(-antigen-get-clone-dir "$url")/$loc"
-  else
-    location="$url/"
   fi
-  # Add to $fpath, for completion(s), if not in there already
-  if (( ! ${fpath[(I)$location]} )); then
-    fpath=($location $fpath)
+
+  # If there is no location either as a file or a directory
+  # we assume there is an error in the given location
+  local success=0
+  if [[ -f "$location" || -d "$location" ]]; then
+    # Add to $fpath, for completion(s), if not in there already
+    if (( ! ${fpath[(I)$location]} )); then
+      fpath=($location $fpath)
+    fi
+  else
+    success=1
   fi
   
   return $success
