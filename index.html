@@ -58,7 +58,7 @@ sample, if you will.</p>
 
 <p>Get and load antigen.</p>
 
-<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.2.3/bin/antigen.zsh &gt; antigen.zsh
+<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.2.4/bin/antigen.zsh &gt; antigen.zsh
 source antigen.zsh
 </code></pre>
 
@@ -356,6 +356,21 @@ understand how it works. Its a very small function.</p>
 antigen-bundles to work. Its allowed (and encouraged) to improve readability.</p>
 
 <h3>
+<a id="antigen-init" class="anchor" href="#antigen-init" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen init</h3>
+
+<p>Makes usage of caching in order to quickly load bundles. Improves performance greatly
+and it's recommened if you have an stable set of bundles. See wiki's <a href="https://github.com/zsh-users/antigen/wiki/Cookbook#init-command">cookbook</a> section
+for further details.</p>
+
+<pre><code>antigen init /path/to/.antigenrc
+</code></pre>
+
+<p>Where <code>.antigenrc</code> contains your antigen configuration (<code>antigen bundle</code>, <code>antigen bundles</code>,
+<code>antigen theme</code>, etc).</p>
+
+<p>This command is available only with cache enabled, ie: <code>_ANTIGEN_CACHE_ENABLED=true</code>.</p>
+
+<h3>
 <a id="antigen-update" class="anchor" href="#antigen-update" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen update</h3>
 
 <p>This is something you might not want to put in your <code>.zshrc</code>. Instead, run it
@@ -594,7 +609,7 @@ looks good as output on the command line.</p>
 
 <p>Install Antigen from our main repository for the latests and greatests version available:</p>
 
-<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.2.3/bin/antigen.zsh &gt; antigen.zsh
+<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.2.4/bin/antigen.zsh &gt; antigen.zsh
 </code></pre>
 
 <p>Or using your system package manager:</p>
