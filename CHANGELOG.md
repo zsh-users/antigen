@@ -2,6 +2,21 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.4] - 2016-12-03
+
+### Fixed
+- [#321, #322] Fix `antigen-init` command unable to detect bundles
+- [#328, #331] Display error message if `antigen-theme` fails to load theme
+
+### Changed
+- [#327, #330] Moved `-antigen-echo-record` to `helpers` directory
+
+### Added
+- [#323, #329] Add `antigen-init` command entry in `README.md`
+
+Thanks @orf, @VincentBel, @wsargent and everyone who reported issues and
+provided feedback.
+
 ## [1.2.3] - 2016-11-21
 
 ### Fixed
