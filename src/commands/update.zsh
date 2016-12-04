@@ -20,7 +20,9 @@ antigen-update () {
     done
   else
     local bundle=$1
-    local records=($(echo $_ANTIGEN_BUNDLE_RECORD))
+    # Using typeset in order to support zsh <= 5.0.0
+    typeset -a records
+    records=($(echo $_ANTIGEN_BUNDLE_RECORD))
     local record=${records[(r)*$bundle*]}
 
     if [[ -n "$record" ]]; then
