@@ -33,3 +33,27 @@ Run update again, with no changes in the origin repo.
 
   $ antigen-update
   Updating */test-plugin... Done. Took *s. (glob)
+
+Load another bundle.
+  $ antigen-bundle $PLUGIN_DIR2 &> /dev/null
+
+Run antigen's update for the bundle.
+
+  $ antigen-update $PLUGIN_DIR
+  Updating */test-plugin... Done. Took *s. (glob)
+
+  $ antigen-update $PLUGIN_DIR2
+  Updating */test-plugin2... Done. Took *s. (glob)
+
+Run update again, should update both bundles.
+
+  $ antigen-update
+  Updating */test-plugin... Done. Took *s. (glob)
+  Updating */test-plugin2... Done. Took *s. (glob)
+
+Trying to update an unexisting bundle gives an error.
+
+  $ antigen-update /tmp/example/non-existing-bundle
+  Bundle not found in record. Try 'antigen bundle *' first. (glob)
+  [1]
+
