@@ -549,6 +549,17 @@ antigen-apply () {
     fi
     unset _zdotdir_set
 }
+antigen-bundles () {
+    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+    # are ignored. Everything else is given to `antigen-bundle` as is, no
+    # quoting rules applied.
+    local line
+    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+        # Using `eval` so that we can use the shell-style quoting in each line
+        # piped to `antigen-bundles`.
+        eval "antigen-bundle $line"
+    done
+}
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -580,17 +591,6 @@ antigen-bundle () {
     # Load the plugin.
     -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
 
-}
-antigen-bundles () {
-    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-    # are ignored. Everything else is given to `antigen-bundle` as is, no
-    # quoting rules applied.
-    local line
-    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-        # Using `eval` so that we can use the shell-style quoting in each line
-        # piped to `antigen-bundles`.
-        eval "antigen-bundle $line"
-    done
 }
 antigen-cleanup () {
 
@@ -821,10 +821,10 @@ antigen-update () {
     # Clear log
     :> $_ANTIGEN_LOG_PATH
 
-    if [[ ! $bundle == "" ]]; then
-        bundle_url=$(-antigen-resolve-bundle-url "$bundle")
-        if [[ ! ${(MS)_ANTIGEN_BUNDLE_RECORD##$bundle_url} == "" ]]; then
-            -antigen-update-bundle "$bundle_url"
+    if [[ -n "$bundle" ]]; then
+        local url=$(-antigen-resolve-bundle-url "$bundle")
+        if [[ ! ${(MS)_ANTIGEN_BUNDLE_RECORD##$url} == "" ]]; then
+            -antigen-update-bundle "$url"
         else
             echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
             return 1
@@ -841,12 +841,18 @@ antigen-update () {
 # Updates a bundle performing a `git pull`.
 #
 # Usage
-#    -antigen-update-bundle https://github.com/example/bundle.zsh
+#    -antigen-update-bundle https://github.com/example/bundle.git
 #
 # Returns
 #    Nothing. Performs a `git pull`.
 -antigen-update-bundle () {
     local url="$1"
+
+    if [[ ! -n "$url" ]]; then
+        echo "Antigen: Missing argument."
+        return 1
+    fi
+
     local clone_dir="$(-antigen-get-clone-dir "$url")"
     if [[ -d "$clone_dir" ]]; then
         (echo -n "$clone_dir:"
