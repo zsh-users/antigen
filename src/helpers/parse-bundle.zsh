@@ -9,13 +9,12 @@
 
   # Parse the given arguments. (Will overwrite the above values).
   eval "$(-antigen-parse-args "$@")"
-
   # Check if url is just the plugin name. Super short syntax.
   if [[ "$url" != */* ]]; then
     loc="plugins/$url"
     url="$ANTIGEN_DEFAULT_REPO_URL"
   fi
-  
+
   # Format url in bundle-metadata format: url[|branch]
   url=$(-antigen-parse-bundle-url "$url" "$branch")
 
