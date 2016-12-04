@@ -9,19 +9,8 @@
   # Parse the given arguments. (Will overwrite the above values).
   eval "$(-antigen-parse-args "$@")"
 
-  # Check if url is just the plugin name. Super short syntax.
-  if [[ "$url" != */* ]]; then
-      loc="plugins/$url"
-      url="$ANTIGEN_DEFAULT_REPO_URL"
-  fi
-
-  # Resolve the url.
-  url="$(-antigen-resolve-bundle-url "$url")"
-
-  # Add the branch information to the url.
-  if [[ ! -z $branch ]]; then
-      url="$url|$branch"
-  fi
+  # Format url in bundle-metadata format: url[|branch]
+  url=$(-antigen-parse-bundle-url "$url" "$branch")
 
   # The `make_local_clone` variable better represents whether there should be
   # a local clone made. For cloning to be avoided, firstly, the `$url` should
@@ -46,4 +35,26 @@
         local make_local_clone="$make_local_clone"
         local btype=\""$btype\""
         "
+}
+
+# Parses a bundle url in bundle-metadata format: url[|branch]
+-antigen-parse-bundle-url() {
+  local url=$1
+  local branch=$2
+
+  # Check if url is just the plugin name. Super short syntax.
+  if [[ "$url" != */* ]]; then
+      loc="plugins/$url"
+      url="$ANTIGEN_DEFAULT_REPO_URL"
+  fi
+
+  # Resolve the url.
+  url="$(-antigen-resolve-bundle-url "$url")"
+
+  # Add the branch information to the url.
+  if [[ ! -z $branch ]]; then
+      url="$url|$branch"
+  fi
+
+  echo $url
 }

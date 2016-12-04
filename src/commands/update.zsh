@@ -6,53 +6,50 @@
 # Returns
 #    Nothing. Performs a `git pull`.
 antigen-update () {
-    local bundle="$1"
+  # Clear log
+  :> $_ANTIGEN_LOG_PATH
 
-    # Update your bundles, i.e., `git pull` in all the plugin repos.
-    date >! $ADOTDIR/revert-info
+  # If no argument is given we update all bundles
+  if [[ $# -eq 0  ]]; then
+    # Here we're ignoring all non cloned bundles (ie, --no-local-clone)
+    -antigen-get-cloned-bundles | while read url; do
+      -antigen-update-bundle $url
+    done
+  else
+    local bundle=$1
+    local records=($(echo $_ANTIGEN_BUNDLE_RECORD))
+    local record=${records[(r)*$bundle*]}
 
-    # Clear log
-    :> $_ANTIGEN_LOG_PATH
-
-    if [[ -n "$bundle" ]]; then
-        local url=$(-antigen-resolve-bundle-url "$bundle")
-        if [[ ! ${(MS)_ANTIGEN_BUNDLE_RECORD##$url} == "" ]]; then
-            -antigen-update-bundle "$url"
-        else
-            echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
-            return 1
-        fi
+    if [[ -n "$record" ]]; then
+      -antigen-update-bundle ${=record}
     else
-        -antigen-echo-record |
-            awk '$4 == "true" {print $1}' |
-            sort -u | while read url; do
-                -antigen-update-bundle $url
-            done
+      echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
+      return 1
     fi
+  fi
+
+  # Update revert-info data
+  -antigen-revert-info
 }
 
 # Updates a bundle performing a `git pull`.
 #
 # Usage
-#    -antigen-update-bundle https://github.com/example/bundle.git
+#    -antigen-update-bundle https://github.com/example/bundle.git[|branch]
 #
 # Returns
 #    Nothing. Performs a `git pull`.
 -antigen-update-bundle () {
-    local url="$1"
+  local url="$1"
 
-    if [[ ! -n "$url" ]]; then
-        echo "Antigen: Missing argument."
-        return 1
-    fi
+  if [[ ! -n "$url" ]]; then
+    echo "Antigen: Missing argument."
+    return 1
+  fi
 
-    local clone_dir="$(-antigen-get-clone-dir "$url")"
-    if [[ -d "$clone_dir" ]]; then
-        (echo -n "$clone_dir:"
-            cd "$clone_dir"
-            git rev-parse HEAD) >> $ADOTDIR/revert-info
-    fi
-
-    # update=true verbose=true
-    -antigen-ensure-repo "$url" true true
+  # update=true verbose=false
+  if ! -antigen-ensure-repo "$url" true false; then
+    return 1
+  fi
 }
+

@@ -114,6 +114,18 @@ fi
 -antigen-bundle-short-name () {
     echo "$@" | sed -E "s|.*/(.*/.*)$|\1|"|sed -E "s|\.git$||g"
 }
+# Returns bundles flagged as make_local_clone
+#
+# Usage
+#    -antigen-cloned-bundles
+#
+# Returns
+#    Bundle metadata
+-antigen-get-cloned-bundles() {
+  -antigen-echo-record |
+      awk '$4 == "true" {print $1}' |
+      sort -u
+}
 -antigen-get-clone-dir () {
     # Takes a repo url and gives out the path that this url needs to be cloned
     # to. Doesn't actually clone anything.
@@ -230,19 +242,8 @@ fi
   # Parse the given arguments. (Will overwrite the above values).
   eval "$(-antigen-parse-args "$@")"
 
-  # Check if url is just the plugin name. Super short syntax.
-  if [[ "$url" != */* ]]; then
-      loc="plugins/$url"
-      url="$ANTIGEN_DEFAULT_REPO_URL"
-  fi
-
-  # Resolve the url.
-  url="$(-antigen-resolve-bundle-url "$url")"
-
-  # Add the branch information to the url.
-  if [[ ! -z $branch ]]; then
-      url="$url|$branch"
-  fi
+  # Format url in bundle-metadata format: url[|branch]
+  url=$(-antigen-parse-bundle-url "$url" "$branch")
 
   # The `make_local_clone` variable better represents whether there should be
   # a local clone made. For cloning to be avoided, firstly, the `$url` should
@@ -267,6 +268,28 @@ fi
         local make_local_clone="$make_local_clone"
         local btype=\""$btype\""
         "
+}
+
+# Parses a bundle url in bundle-metadata format: url[|branch]
+-antigen-parse-bundle-url() {
+  local url=$1
+  local branch=$2
+
+  # Check if url is just the plugin name. Super short syntax.
+  if [[ "$url" != */* ]]; then
+      loc="plugins/$url"
+      url="$ANTIGEN_DEFAULT_REPO_URL"
+  fi
+
+  # Resolve the url.
+  url="$(-antigen-resolve-bundle-url "$url")"
+
+  # Add the branch information to the url.
+  if [[ ! -z $branch ]]; then
+      url="$url|$branch"
+  fi
+
+  echo $url
 }
 # Forces to reset zcompdump file
 # Removes $ANTIGEN_COMPDUMPFILE as ${ZDOTDIR:-$HOME}/.zcompdump
@@ -490,6 +513,29 @@ fi
         shift
     done
 }
+# Updates revert-info data with git hash.
+#
+# This does process only cloned bundles.
+#
+# Usage
+#    -antigen-revert-info
+#
+# Returns
+#    Nothing. Generates/updates $ADOTDIR/revert-info.
+-antigen-revert-info() {
+  # Update your bundles, i.e., `git pull` in all the plugin repos.
+  date >! $ADOTDIR/revert-info
+
+  -antigen-get-cloned-bundles | while read url; do
+    local clone_dir="$(-antigen-get-clone-dir "$url")"
+    if [[ -d "$clone_dir" ]]; then
+      (echo -n "$clone_dir:"
+        cd "$clone_dir"
+        git rev-parse HEAD) >> $ADOTDIR/revert-info
+    fi
+  done
+}
+
 -antigen-use-oh-my-zsh () {
     if [[ -z "$ZSH" ]]; then
         export ZSH="$(-antigen-get-clone-dir "$ANTIGEN_DEFAULT_REPO_URL")"
@@ -813,56 +859,53 @@ antigen-theme () {
 # Returns
 #    Nothing. Performs a `git pull`.
 antigen-update () {
-    local bundle="$1"
+  # Clear log
+  :> $_ANTIGEN_LOG_PATH
 
-    # Update your bundles, i.e., `git pull` in all the plugin repos.
-    date >! $ADOTDIR/revert-info
+  # If no argument is given we update all bundles
+  if [[ $# -eq 0  ]]; then
+    # Here we're ignoring all non cloned bundles (ie, --no-local-clone)
+    -antigen-get-cloned-bundles | while read url; do
+      -antigen-update-bundle $url
+    done
+  else
+    local bundle=$1
+    local records=($(echo $_ANTIGEN_BUNDLE_RECORD))
+    local record=${records[(r)*$bundle*]}
 
-    # Clear log
-    :> $_ANTIGEN_LOG_PATH
-
-    if [[ -n "$bundle" ]]; then
-        local url=$(-antigen-resolve-bundle-url "$bundle")
-        if [[ ! ${(MS)_ANTIGEN_BUNDLE_RECORD##$url} == "" ]]; then
-            -antigen-update-bundle "$url"
-        else
-            echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
-            return 1
-        fi
+    if [[ -n "$record" ]]; then
+      -antigen-update-bundle ${=record}
     else
-        -antigen-echo-record |
-            awk '$4 == "true" {print $1}' |
-            sort -u | while read url; do
-                -antigen-update-bundle $url
-            done
+      echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
+      return 1
     fi
+  fi
+
+  # Update revert-info data
+  -antigen-revert-info
 }
 
 # Updates a bundle performing a `git pull`.
 #
 # Usage
-#    -antigen-update-bundle https://github.com/example/bundle.git
+#    -antigen-update-bundle https://github.com/example/bundle.git[|branch]
 #
 # Returns
 #    Nothing. Performs a `git pull`.
 -antigen-update-bundle () {
-    local url="$1"
+  local url="$1"
 
-    if [[ ! -n "$url" ]]; then
-        echo "Antigen: Missing argument."
-        return 1
-    fi
+  if [[ ! -n "$url" ]]; then
+    echo "Antigen: Missing argument."
+    return 1
+  fi
 
-    local clone_dir="$(-antigen-get-clone-dir "$url")"
-    if [[ -d "$clone_dir" ]]; then
-        (echo -n "$clone_dir:"
-            cd "$clone_dir"
-            git rev-parse HEAD) >> $ADOTDIR/revert-info
-    fi
-
-    # update=true verbose=true
-    -antigen-ensure-repo "$url" true true
+  # update=true verbose=false
+  if ! -antigen-ensure-repo "$url" true false; then
+    return 1
+  fi
 }
+
 antigen-use () {
     if [[ $1 == oh-my-zsh ]]; then
         -antigen-use-oh-my-zsh
