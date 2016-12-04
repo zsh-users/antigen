@@ -1,3 +1,4 @@
+
 -antigen-parse-bundle () {
   # Bundle spec arguments' default values.
   local url="$ANTIGEN_DEFAULT_REPO_URL"
@@ -8,6 +9,11 @@
 
   # Parse the given arguments. (Will overwrite the above values).
   eval "$(-antigen-parse-args "$@")"
+  # Check if url is just the plugin name. Super short syntax.
+  if [[ "$url" != */* ]]; then
+    loc="plugins/$url"
+    url="$ANTIGEN_DEFAULT_REPO_URL"
+  fi
 
   # Format url in bundle-metadata format: url[|branch]
   url=$(-antigen-parse-bundle-url "$url" "$branch")
@@ -20,12 +26,12 @@
   local make_local_clone=true
   if [[ $url == /* && -z $branch &&
           ( $no_local_clone == true || ! -d $url/.git ) ]]; then
-      make_local_clone=false
+    make_local_clone=false
   fi
 
   # Add the theme extension to `loc`, if this is a theme.
   if [[ $btype == theme && $loc != *.zsh-theme ]]; then
-      loc="$loc.zsh-theme"
+    loc="$loc.zsh-theme"
   fi
 
   # Bundle spec arguments' default values.
@@ -37,24 +43,3 @@
         "
 }
 
-# Parses a bundle url in bundle-metadata format: url[|branch]
--antigen-parse-bundle-url() {
-  local url=$1
-  local branch=$2
-
-  # Check if url is just the plugin name. Super short syntax.
-  if [[ "$url" != */* ]]; then
-      loc="plugins/$url"
-      url="$ANTIGEN_DEFAULT_REPO_URL"
-  fi
-
-  # Resolve the url.
-  url="$(-antigen-resolve-bundle-url "$url")"
-
-  # Add the branch information to the url.
-  if [[ ! -z $branch ]]; then
-      url="$url|$branch"
-  fi
-
-  echo $url
-}

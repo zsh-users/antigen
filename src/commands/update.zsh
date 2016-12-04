@@ -9,6 +9,9 @@ antigen-update () {
   # Clear log
   :> $_ANTIGEN_LOG_PATH
 
+  # Update revert-info data
+  -antigen-revert-info
+
   # If no argument is given we update all bundles
   if [[ $# -eq 0  ]]; then
     # Here we're ignoring all non cloned bundles (ie, --no-local-clone)
@@ -27,9 +30,6 @@ antigen-update () {
       return 1
     fi
   fi
-
-  # Update revert-info data
-  -antigen-revert-info
 }
 
 # Updates a bundle performing a `git pull`.

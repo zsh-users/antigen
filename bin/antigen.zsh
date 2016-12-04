@@ -231,6 +231,22 @@ fi
         return
     fi
 }
+# Parses a bundle url in bundle-metadata format: url[|branch]
+-antigen-parse-bundle-url() {
+  local url=$1
+  local branch=$2
+
+  # Resolve the url.
+  url="$(-antigen-resolve-bundle-url "$url")"
+
+  # Add the branch information to the url.
+  if [[ ! -z $branch ]]; then
+      url="$url|$branch"
+  fi
+
+  echo $url
+}
+
 -antigen-parse-bundle () {
   # Bundle spec arguments' default values.
   local url="$ANTIGEN_DEFAULT_REPO_URL"
@@ -241,6 +257,11 @@ fi
 
   # Parse the given arguments. (Will overwrite the above values).
   eval "$(-antigen-parse-args "$@")"
+  # Check if url is just the plugin name. Super short syntax.
+  if [[ "$url" != */* ]]; then
+    loc="plugins/$url"
+    url="$ANTIGEN_DEFAULT_REPO_URL"
+  fi
 
   # Format url in bundle-metadata format: url[|branch]
   url=$(-antigen-parse-bundle-url "$url" "$branch")
@@ -253,12 +274,12 @@ fi
   local make_local_clone=true
   if [[ $url == /* && -z $branch &&
           ( $no_local_clone == true || ! -d $url/.git ) ]]; then
-      make_local_clone=false
+    make_local_clone=false
   fi
 
   # Add the theme extension to `loc`, if this is a theme.
   if [[ $btype == theme && $loc != *.zsh-theme ]]; then
-      loc="$loc.zsh-theme"
+    loc="$loc.zsh-theme"
   fi
 
   # Bundle spec arguments' default values.
@@ -270,27 +291,6 @@ fi
         "
 }
 
-# Parses a bundle url in bundle-metadata format: url[|branch]
--antigen-parse-bundle-url() {
-  local url=$1
-  local branch=$2
-
-  # Check if url is just the plugin name. Super short syntax.
-  if [[ "$url" != */* ]]; then
-      loc="plugins/$url"
-      url="$ANTIGEN_DEFAULT_REPO_URL"
-  fi
-
-  # Resolve the url.
-  url="$(-antigen-resolve-bundle-url "$url")"
-
-  # Add the branch information to the url.
-  if [[ ! -z $branch ]]; then
-      url="$url|$branch"
-  fi
-
-  echo $url
-}
 # Forces to reset zcompdump file
 # Removes $ANTIGEN_COMPDUMPFILE as ${ZDOTDIR:-$HOME}/.zcompdump
 # Set $_ANTIGEN_FORCE_RESET_COMPDUMP to true to do so
@@ -743,21 +743,22 @@ antigen-restore () {
     echo ' done.'
     echo 'Please open a new shell to get the restored changes.'
 }
+# Reads $ADORDIR/revert-info and restores bundles' revision
 antigen-revert () {
-    if [[ -f $ADOTDIR/revert-info ]]; then
-        cat $ADOTDIR/revert-info | sed -n '1!p' | while read line; do
-            local dir="$(echo "$line" | cut -d: -f1)"
-            git --git-dir="$dir/.git" --work-tree="$dir" \
-                checkout "$(echo "$line" | cut -d: -f2)" 2> /dev/null
-        done
+  if [[ -f $ADOTDIR/revert-info ]]; then
+    cat $ADOTDIR/revert-info | sed -n '1!p' | while read line; do
+      local dir="$(echo "$line" | cut -d: -f1)"
+      git --git-dir="$dir/.git" --work-tree="$dir" \
+        checkout "$(echo "$line" | cut -d: -f2)" 2> /dev/null
+    done
 
-        echo "Reverted to state before running -update on $(
-                cat $ADOTDIR/revert-info | sed -n '1p')."
+    echo "Reverted to state before running -update on $(
+            cat $ADOTDIR/revert-info | sed -n '1p')."
 
-    else
-        echo 'No revert information available. Cannot revert.' >&2
-        return 1
-    fi
+  else
+    echo 'No revert information available. Cannot revert.' >&2
+    return 1
+  fi
 }
 # Update (with `git pull`) antigen itself.
 # TODO: Once update is finished, show a summary of the new commits, as a kind of
@@ -862,6 +863,9 @@ antigen-update () {
   # Clear log
   :> $_ANTIGEN_LOG_PATH
 
+  # Update revert-info data
+  -antigen-revert-info
+
   # If no argument is given we update all bundles
   if [[ $# -eq 0  ]]; then
     # Here we're ignoring all non cloned bundles (ie, --no-local-clone)
@@ -880,9 +884,6 @@ antigen-update () {
       return 1
     fi
   fi
-
-  # Update revert-info data
-  -antigen-revert-info
 }
 
 # Updates a bundle performing a `git pull`.
