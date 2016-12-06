@@ -115,24 +115,10 @@ fi
 -antigen-bundle-short-name () {
     echo "$@" | sed -E "s|.*/(.*/.*).*?|\1|"|sed -E "s|\.git.*$||g"
 }
-<<<<<<< 43e25019e32cb09ef4249220920aa61c6299d437
 # Echo the bundle specs as in the record. The first line is not echoed since it
 # is a blank line.
 -antigen-echo-record () {
     echo "$_ANTIGEN_BUNDLE_RECORD" | sed -n '1!p'
-=======
-# Returns bundles flagged as make_local_clone
-#
-# Usage
-#    -antigen-cloned-bundles
-#
-# Returns
-#    Bundle metadata
--antigen-get-cloned-bundles() {
-  -antigen-echo-record |
-      awk '$4 == "true" {print $1}' |
-      sort -u
->>>>>>> `antigen update` command handle single bundle (#326)
 }
 # Filters _ANTIGEN_BUNDLE_RECORD for $1
 #
@@ -229,6 +215,18 @@ fi
   
   return 0
 }
+# Returns bundles flagged as make_local_clone
+#
+# Usage
+#    -antigen-cloned-bundles
+#
+# Returns
+#    Bundle metadata
+-antigen-get-cloned-bundles() {
+  -antigen-echo-record |
+      awk '$4 == "true" {print $1}' |
+      sort -u
+}
 # Updates _ANTIGEN_INTERACTIVE environment variable to reflect
 # if antigen is running in an interactive shell or from sourcing.
 #
@@ -300,6 +298,10 @@ fi
         echo "${(j:\n:)bundle_files}"
         return
     fi
+    
+    # Add to PATH (binary bundle)
+    echo "$location"
+    return
 }
 # Parses a bundle url in bundle-metadata format: url[|branch]
 -antigen-parse-bundle-url() {
@@ -525,10 +527,12 @@ fi
   local src
 
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone"); do
+    # TODO Refactor this out
     if [[ -d "$src" ]]; then
-      if (( ! ${fpath[(I)$location]} )); then
-        fpath=($location $fpath)
-      fi
+        if (( ! ${fpath[(I)$src]} )); then
+            fpath=($src $fpath)
+        fi
+        PATH="$PATH:$src"
     else
       # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
       # This is needed to seek-and-destroy local variable definitions *outside*
@@ -685,17 +689,6 @@ antigen-apply () {
     fi
     unset _zdotdir_set
 }
-antigen-bundles () {
-    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-    # are ignored. Everything else is given to `antigen-bundle` as is, no
-    # quoting rules applied.
-    local line
-    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-        # Using `eval` so that we can use the shell-style quoting in each line
-        # piped to `antigen-bundles`.
-        eval "antigen-bundle $line"
-    done
-}
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -736,6 +729,17 @@ antigen-bundle () {
         # TODO Use array instead of string
         _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD\n$bundle_record"
     fi
+}
+antigen-bundles () {
+    # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+    # are ignored. Everything else is given to `antigen-bundle` as is, no
+    # quoting rules applied.
+    local line
+    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+        # Using `eval` so that we can use the shell-style quoting in each line
+        # piped to `antigen-bundles`.
+        eval "antigen-bundle $line"
+    done
 }
 antigen-cleanup () {
 
@@ -1247,6 +1251,7 @@ _antigen () {
 #   Nothing. Generates _ZCACHE_META_PATH and _ZCACHE_PAYLOAD_PATH
 -zcache-generate-cache () {
     local -aU _extensions_paths
+    local -aU _binary_paths
     local -a _bundles_meta
     local _payload=''
     local location
@@ -1268,9 +1273,12 @@ _antigen () {
                 _payload+="#-- SOURCE: $line\NL"
                 _payload+=$(-zcache-process-source "$line" "$btype")
                 _payload+="\NL;#-- END SOURCE\NL"
+            elif [[ -d "$line" ]]; then
+                _binary_paths+=($line)
             fi
         done
 
+        # TODO Refactor this out
         if $make_local_clone; then
             location="$(-antigen-get-clone-dir "$url")/$loc"
         else
@@ -1286,6 +1294,7 @@ _antigen () {
     _payload+="$(functions -- _antigen)"
     _payload+="\NL"
     _payload+="fpath+=(${_extensions_paths[@]})\NL"
+    _payload+="PATH=\"\$PATH:${_binary_paths[@]}\"\NL"
     _payload+="unset __ZCACHE_FILE_PATH\NL"
     # \NL (\n) prefix is for backward compatibility
     _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"

@@ -62,6 +62,7 @@
 #   Nothing. Generates _ZCACHE_META_PATH and _ZCACHE_PAYLOAD_PATH
 -zcache-generate-cache () {
     local -aU _extensions_paths
+    local -aU _binary_paths
     local -a _bundles_meta
     local _payload=''
     local location
@@ -83,9 +84,12 @@
                 _payload+="#-- SOURCE: $line\NL"
                 _payload+=$(-zcache-process-source "$line" "$btype")
                 _payload+="\NL;#-- END SOURCE\NL"
+            elif [[ -d "$line" ]]; then
+                _binary_paths+=($line)
             fi
         done
 
+        # TODO Refactor this out
         if $make_local_clone; then
             location="$(-antigen-get-clone-dir "$url")/$loc"
         else
@@ -101,6 +105,7 @@
     _payload+="$(functions -- _antigen)"
     _payload+="\NL"
     _payload+="fpath+=(${_extensions_paths[@]})\NL"
+    _payload+="PATH=\"\$PATH:${_binary_paths[@]}\"\NL"
     _payload+="unset __ZCACHE_FILE_PATH\NL"
     # \NL (\n) prefix is for backward compatibility
     _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
