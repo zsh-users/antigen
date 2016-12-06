@@ -85,6 +85,7 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
         }
 
         # Disable antigen commands
+        typeset -a _commands
         _commands=('use' 'bundle' 'bundles' 'theme' 'list' 'apply' 'cleanup' \
          'help' 'list' 'reset' 'restore' 'revert' 'snapshot' 'selfupdate' 'update' 'version')
         for command in $_commands; do
@@ -105,7 +106,7 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
 
         # On antigen-init
         antigen-init () {
-            -antigen-lazyloader
+            -antigen-lazyloader $@
         }
 
         return
