@@ -309,13 +309,17 @@ fi
     return
   fi
 
-  # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
-  local bundle_files
-  bundle_files=($location/*.zsh(N) $location/*.sh(N))
-  if [[ $#bundle_files -gt 0 ]]; then
-    echo "${(j:\n:)bundle_files}"
+    # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
+    local bundle_files
+    bundle_files=($location/*.zsh(N) $location/*.sh(N))
+    if [[ $#bundle_files -gt 0 ]]; then
+        echo "${(j:\n:)bundle_files}"
+        return
+    fi
+    
+    # Add to PATH (binary bundle)
+    echo "$location"
     return
-  fi
 }
 
 # Parses a bundle url in bundle-metadata format: url[|branch]
@@ -563,11 +567,14 @@ fi
   local make_local_clone="$3"
   local btype="$4"
   local src
+
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone" "$btype"); do
+    # TODO Refactor this out
     if [[ -d "$src" ]]; then
-      if (( ! ${fpath[(I)$location]} )); then
-        fpath=($location $fpath)
-      fi
+        if (( ! ${fpath[(I)$src]} )); then
+            fpath=($src $fpath)
+        fi
+        PATH="$PATH:$src"
     else
       # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
       # This is needed to seek-and-destroy local variable definitions *outside*
@@ -1350,22 +1357,23 @@ _antigen () {
 # Returns
 #   Nothing. Generates _ZCACHE_META_PATH and _ZCACHE_PAYLOAD_PATH
 -zcache-generate-cache () {
-  local -aU _extensions_paths
-  local -a _bundles_meta
-  local _payload=''
-  local location
+    local -aU _extensions_paths
+    local -aU _binary_paths
+    local -a _bundles_meta
+    local _payload=''
+    local location
 
-  _payload+="#-- START ZCACHE GENERATED FILE\NL"
-  _payload+="#-- GENERATED: $(date)\NL"
-  _payload+='#-- ANTIGEN v1.4.1\NL'
-  for bundle in $_ZCACHE_BUNDLES; do
-    # -antigen-load-list "$url" "$loc" "$make_local_clone"
-    eval "$(-antigen-parse-bundle ${=bundle})"
-    _bundles_meta+=("$url $loc $btype $make_local_clone $branch")
+    _payload+="#-- START ZCACHE GENERATED FILE\NL"
+    _payload+="#-- GENERATED: $(date)\NL"
+    _payload+='#-- ANTIGEN v1.4.1\NL'
+    for bundle in $_ZCACHE_BUNDLES; do
+        # -antigen-load-list "$url" "$loc" "$make_local_clone"
+        eval "$(-antigen-parse-bundle ${=bundle})"
+        _bundles_meta+=("$url $loc $btype $make_local_clone $branch")
 
-    if $make_local_clone; then
-      -antigen-ensure-repo "$url"
-    fi
+        if $make_local_clone; then
+            -antigen-ensure-repo "$url"
+        fi
 
     -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
       if [[ -f "$line" ]]; then
