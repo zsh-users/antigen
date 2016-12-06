@@ -81,3 +81,13 @@ Handle local bundles (--no-local-clone).
 
   $ -antigen-bundle-short-name "/home/user/local-bundle"
   user/local-bundle
+
+Load a binary bundle.
+
+  $ antigen-bundle $PLUGIN_DIR3 &> /dev/null
+  $ hr
+  ######
+
+  $ echo $PATH | grep test-plugin3
+  *plugin3* (glob)
+
