@@ -685,6 +685,12 @@ antigen-purge () {
   local bundle=$1
   local force=$2
 
+  # Put local keyword/variable definition on top
+  # for zsh <= 5.0.0 otherwise will complain about it
+  local record=""
+  local url=""
+  local make_local_clone=""
+
   if [[ $# -eq 0  ]]; then
     echo "Antigen: Missing argument."
     return 1
@@ -692,8 +698,8 @@ antigen-purge () {
 
   # local keyword doesn't work on zsh <= 5.0.0
   record=$(-antigen-find-record $bundle)
-  local url=$(echo $record | cut -d' ' -f1)
-  local make_local_clone=$(echo $record | cut -d' ' -f4)
+  url="$(echo "$record" | cut -d' ' -f1)"
+  make_local_clone=$(echo "$record" | cut -d' ' -f4)
 
   if [[ $make_local_clone == "false" ]]; then
     echo "Bundle has no local clone. Will not be removed."
@@ -722,13 +728,14 @@ antigen-purge () {
 -antigen-purge-bundle () {
   local url=$1
   local force=$2
+  local clone_dir=""
 
   if [[ $# -eq 0  ]]; then
     echo "Antigen: Missing argument."
     return 1
   fi
 
-  local clone_dir=$(-antigen-get-clone-dir "$url")
+  clone_dir=$(-antigen-get-clone-dir "$url")
   if [[ $force == "--force" ]]; then
     rm -rf "$clone_dir"
     return 0
