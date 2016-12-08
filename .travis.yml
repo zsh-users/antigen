@@ -6,6 +6,8 @@ python:
   - "2.7"
 
 cache:
+  pip: true
+  apt: true
   directories:
     - $HOME/zsh
     - $HOME/.zsh-builds
@@ -19,19 +21,20 @@ env:
     - BUILDS_PATH=$HOME/.zsh-builds
     - ZSH_SOURCE=$HOME/zsh
   matrix:
-    - ZSH_VERSION=master
-    - ZSH_VERSION=zsh-5.2
-    - ZSH_VERSION=zsh-5.1
-    - ZSH_VERSION=zsh-5.0.0
-    - ZSH_VERSION=zsh-4.3.17
-    - ZSH_VERSION=zsh-4.3.5
+    - ZSH_BUILD_VERSION=master
+    - ZSH_BUILD_VERSION=zsh-5.2-test-2
+    - ZSH_BUILD_VERSION=zsh-5.2
+    - ZSH_BUILD_VERSION=zsh-5.1
+    - ZSH_BUILD_VERSION=zsh-5.0.0
+    - ZSH_BUILD_VERSION=zsh-4.3.17
+    - ZSH_BUILD_VERSION=zsh-4.3.5
 
 install:
   # Install python requirements.
   - "make deps"
 
   # Install zsh versions from source.
-  - "./tests/build-zsh.sh $ZSH_VERSION $BUILDS_PATH $ZSH_SOURCE"
+  - "./tests/build-zsh.sh $ZSH_BUILD_VERSION $BUILDS_PATH $ZSH_SOURCE"
 
 before_script:
   # Show the git version being used to test.
@@ -42,11 +45,11 @@ before_script:
   - "git config --global user.email test@test.test"
 
   # Show zsh version being deployed.
-  - "$BUILDS_PATH/$ZSH_VERSION/zsh --version"
+  - "$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh --version"
 
 # Run the tests.
 script:
-  - "make tests PYENV= SHELL=$BUILDS_PATH/$ZSH_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=false _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=true SHELL=$BUILDS_PATH/$ZSH_VERSION/zsh"
+  - "make tests PYENV= SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+  - "make stats _ANTIGEN_CACHE_ENABLED=false _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=true SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"

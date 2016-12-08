@@ -16,6 +16,16 @@ ZSH_SOURCE=$3
 # Install dev tools (already installed in travis environment)
 # apt-get install -y git-core gcc make autoconf yodl libncursesw5-dev texinfo checkinstall
 
+# zsh already exists
+if [ -d $ZSH_SOURCE/.git ]; then
+  echo "Found zsh source from cache."
+  cd $ZSH_SOURCE
+  make install.bin
+  exit 0
+else
+  echo "No zsh source found."
+fi
+
 # Get the code. Should cache it.
 [ ! -e zsh ] && git clone $ZSH_REMOTE_URL $ZSH_SOURCE
 cd $ZSH_SOURCE
