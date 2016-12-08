@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 PROJECT=${1:-$HOME}
 SHELL=${2:-zsh}
 ZSHRC=$HOME/.zshrc
