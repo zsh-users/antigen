@@ -50,6 +50,48 @@ antigen () {
 -antigen-echo-record () {
     echo "$_ANTIGEN_BUNDLE_RECORD" | sed -n '1!p'
 }
+# Filters _ANTIGEN_BUNDLE_RECORD for $1
+#
+# Usage
+#   -antigen-find-bundle example/bundle
+#
+# Returns
+#   String if bundle is found
+-antigen-find-bundle () {
+  echo $(-antigen-find-record $1 | cut -d' ' -f1)
+}
+# Filters _ANTIGEN_BUNDLE_RECORD for $1
+#
+# Usage
+#   -antigen-find-record example/bundle
+#
+# Returns
+#   String if record is found
+-antigen-find-record () {
+  local bundle=$1
+  # Using typeset in order to support zsh <= 5.0.0
+  typeset -a records
+
+  local _IFS="$IFS"
+  IFS=$'\n'
+  records=(${(f)_ANTIGEN_BUNDLE_RECORD})
+  IFS="$_IFS"
+  
+  echo "${records[(r)*$bundle*]}"
+}
+# Returns bundle names from _ANTIGEN_BUNDLE_RECORD
+#
+# Usage
+#   -antigen-get-bundles
+#
+# Returns
+#   List f bundle installed
+-antigen-get-bundles () {
+  local bundles=$(echo $_ANTIGEN_BUNDLE_RECORD | cut -d' ' -f1)
+  for bundle in $bundles; do
+      echo $(-antigen-bundle-short-name $bundle)
+  done
+}
 -antigen-get-clone-dir () {
     # Takes a repo url and gives out the path that this url needs to be cloned
     # to. Doesn't actually clone anything.
@@ -632,6 +674,79 @@ antigen-prezto-lib () {
     echo '`antigen-prezto-lib` is deprecated and will soon be removed.'
     echo 'Use `antigen-use prezto` instead.'
 }
+# Remove a bundle from filesystem
+#
+# Usage
+#   antigen-purge example/bundle [--force]
+#
+# Returns
+#   Nothing. Removes bundle from filesystem.
+antigen-purge () {
+  local bundle=$1
+  local force=$2
+
+  # Put local keyword/variable definition on top
+  # for zsh <= 5.0.0 otherwise will complain about it
+  local record=""
+  local url=""
+  local make_local_clone=""
+
+  if [[ $# -eq 0  ]]; then
+    echo "Antigen: Missing argument."
+    return 1
+  fi
+
+  # local keyword doesn't work on zsh <= 5.0.0
+  record=$(-antigen-find-record $bundle)
+  url="$(echo "$record" | cut -d' ' -f1)"
+  make_local_clone=$(echo "$record" | cut -d' ' -f4)
+
+  if [[ $make_local_clone == "false" ]]; then
+    echo "Bundle has no local clone. Will not be removed."
+    return 1
+  fi
+  
+  if [[ -n "$url" ]]; then
+    if -antigen-purge-bundle $url $force; then
+      antigen-reset
+    fi
+  else
+    echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
+    return 1
+  fi
+  
+  return 0
+}
+
+# Remove a bundle from filesystem
+#
+# Usage
+#   antigen-purge http://github.com/example/bundle [--force]
+#
+# Returns
+#   Nothing. Removes bundle from filesystem.
+-antigen-purge-bundle () {
+  local url=$1
+  local force=$2
+  local clone_dir=""
+
+  if [[ $# -eq 0  ]]; then
+    echo "Antigen: Missing argument."
+    return 1
+  fi
+
+  clone_dir=$(-antigen-get-clone-dir "$url")
+  if [[ $force == "--force" ]]; then
+    rm -rf "$clone_dir"
+    return 0
+  elif read -q "?Remove '$clone_dir'? (y/n) "; then
+    echo ""
+    rm -rf "$clone_dir"
+    return 0
+  else
+    return 1
+  fi
+}
 antigen-restore () {
 
     if [[ $# == 0 ]]; then
@@ -828,18 +943,19 @@ _antigen () {
     'snapshot:Create a snapshot of all the active clones'
     'restore:Restore the bundles state as specified in the snapshot'
     'selfupdate:Update antigen itself'
+    'purge:Remove a cloned bundle from filesystem'
   );
 
   if $_ANTIGEN_CACHE_ENABLED; then
-      _1st_arguments+=(
+    _1st_arguments+=(
       'reset:Clears antigen cache'
       'init:Load Antigen configuration from file'
-      )
+    )
   fi
 
   _1st_arguments+=(
-  'help:Show this message'
-  'version:Display Antigen version'
+    'help:Show this message'
+    'version:Display Antigen version'
   )
 
   __bundle() {
@@ -873,6 +989,9 @@ _antigen () {
       ;;
     cleanup)
       __cleanup
+      ;;
+    purge)
+      compadd $(-antigen-get-bundles)
       ;;
   esac
 }
