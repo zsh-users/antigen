@@ -1,7 +1,7 @@
 Purge command removes a bundle from filesystem.
-  $ antigen-bundle desyncr/zsh-ctrlp &> /dev/null
-  $ antigen-list | grep ctrp
-  [0]
+  $ antigen-bundle $PLUGIN_DIR &> /dev/null
+  $ antigen-list | grep test-plugin
+  *test-plugin* (glob)
 
-  $ antigen-purge desyncr/zsh-ctrlp
-  
+  $ antigen-purge test-plugin --force
+  Done. Please open a new shell to see the changes.
