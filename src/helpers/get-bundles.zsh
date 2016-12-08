@@ -4,10 +4,12 @@
 #   -antigen-get-bundles
 #
 # Returns
-#   List f bundle installed
+#   List of bundles installed
 -antigen-get-bundles () {
-  local bundles=$(echo $_ANTIGEN_BUNDLE_RECORD | cut -d' ' -f1)
+  local bundles
+
+  bundles=$(-antigen-echo-record | sort -u | cut -d' ' -f1)
   for bundle in $bundles; do
-      echo $(-antigen-bundle-short-name $bundle)
+    echo "$(-antigen-bundle-short-name $bundle)"
   done
 }

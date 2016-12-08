@@ -85,11 +85,13 @@ antigen () {
 #   -antigen-get-bundles
 #
 # Returns
-#   List f bundle installed
+#   List of bundles installed
 -antigen-get-bundles () {
-  local bundles=$(echo $_ANTIGEN_BUNDLE_RECORD | cut -d' ' -f1)
+  local bundles
+
+  bundles=$(-antigen-echo-record | sort -u | cut -d' ' -f1)
   for bundle in $bundles; do
-      echo $(-antigen-bundle-short-name $bundle)
+    echo "$(-antigen-bundle-short-name $bundle)"
   done
 }
 -antigen-get-clone-dir () {
@@ -659,14 +661,27 @@ antigen-lib () {
     echo '`antigen-lib` is deprecated and will soon be removed.'
     echo 'Use `antigen-use oh-my-zsh` instead.'
 }
+# List instaled bundles either in long (record) or short format
+#
+# Usage
+#    antigen-list [--short]
+#
+# Returns
+#    List of bundles
 antigen-list () {
-    # List all currently installed bundles.
-    if [[ -z "$_ANTIGEN_BUNDLE_RECORD" ]]; then
-        echo "You don't have any bundles." >&2
-        return 1
-    else
-        -antigen-echo-record | sort -u
-    fi
+  local format=$1
+
+  # List all currently installed bundles.
+  if [[ -z "$_ANTIGEN_BUNDLE_RECORD" ]]; then
+    echo "You don't have any bundles." >&2
+    return 1
+  fi
+  
+  if [[ $format == "--short" ]]; then
+    -antigen-get-bundles
+  else
+    -antigen-echo-record | sort -u
+  fi
 }
 # For backwards compatibility.
 antigen-prezto-lib () {
