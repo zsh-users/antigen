@@ -990,7 +990,7 @@ _antigen () {
     cleanup)
       __cleanup
       ;;
-    (update|purge)
+    purge)
       compadd $(-antigen-get-bundles)
       ;;
   esac
