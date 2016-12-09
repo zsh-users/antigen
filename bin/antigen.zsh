@@ -43,7 +43,7 @@ antigen () {
     fi
 }
 -antigen-bundle-short-name () {
-    echo "$@" | sed -E "s|.*/(.*/.*)$|\1|"|sed -E "s|\.git$||g"
+    echo "$@" | sed -E "s|.*/(.*/.*).*?|\1|"|sed -E "s|\.git.*$||g"
 }
 # Echo the bundle specs as in the record. The first line is not echoed since it
 # is a blank line.
