@@ -50,4 +50,6 @@ make -j5
 
 make install
 
+sudo chsh -s $(which bash)
+
 cd -
