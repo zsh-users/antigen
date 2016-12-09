@@ -127,6 +127,25 @@ antigen () {
         echo "$url"
     fi
 }
+# Returns a list of themes from a default library (omz)
+#
+# Usage
+#   -antigen-get-themes
+#
+# Returns
+#   List of themes by name
+-antigen-get-themes () {
+  local library="robbyrussell/oh-my-zsh"
+  local bundle=$(-antigen-find-bundle $library)
+
+  if [[ -n "$bundle" ]]; then
+    local url=$(-antigen-resolve-bundle-url $bundle)
+    local dir=$(-antigen-get-clone-dir $url)
+    echo $(ls $dir/themes | sed 's/.zsh-theme//')
+  fi
+  
+  return 0
+}
 # Updates _ANTIGEN_INTERACTIVE environment variable to reflect
 # if antigen is running in an interactive shell or from sourcing.
 #
@@ -892,6 +911,11 @@ antigen-theme () {
     # This is only needed on interactive mode
     autoload -U add-zsh-hook is-at-least
     local hook
+    
+    # Clear out prompts
+    PROMPT=""
+    RPROMPT=""
+    
     for hook in chpwd precmd preexec periodic; do
         # add-zsh-hook's -D option was introduced first in 4.3.6-dev and
         # 4.3.7 first stable, 4.3.5 and below may experiment minor issues
@@ -1008,6 +1032,9 @@ _antigen () {
     purge)
       compadd $(-antigen-get-bundles)
       ;;
+    theme)
+      compadd $(-antigen-get-themes)
+    ;;
   esac
 }
 

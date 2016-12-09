@@ -65,6 +65,9 @@ _antigen () {
     purge)
       compadd $(-antigen-get-bundles)
       ;;
+    theme)
+      compadd $(-antigen-get-themes)
+    ;;
   esac
 }
 
