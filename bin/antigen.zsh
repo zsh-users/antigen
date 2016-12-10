@@ -1301,7 +1301,7 @@ _antigen () {
     cleanup)
       __cleanup
       ;;
-    purge)
+    (update|purge)
       compadd $(-antigen-get-bundles)
       ;;
     theme)
