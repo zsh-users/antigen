@@ -46,7 +46,9 @@ publish:
 	# Merge release branch into develop before deploying
 
 deploy:
+	git checkout develop
 	git tag -m "Build release $$(cat ${PROJECT}/VERSION)" -s $$(cat ${PROJECT}/VERSION)
+	git push upstream $$(cat ${PROJECT}/VERSION)
 	git archive --output=$$(cat ${PROJECT}/VERSION).tar.gz --prefix=antigen-$$(cat ${PROJECT}/VERSION|sed s/v//)/ $$(cat ${PROJECT}/VERSION)
 	zcat $$(cat ${PROJECT}/VERSION).tar.gz | gpg --armor --detach-sign >$$(cat ${PROJECT}/VERSION).tar.gz.sign
 	# Verify signature
