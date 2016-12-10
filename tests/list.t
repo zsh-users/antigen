@@ -32,3 +32,32 @@ List command supports short format flag.
   $ antigen-list --short
   */test-plugin (glob)
   */test-plugin2 (glob)
+
+Find bundle/record internal function.
+
+  $ -antigen-find-record
+  [1]
+
+  $ -antigen-find-record nonexisting
+  
+
+  $ -antigen-find-record test
+  *test-plugin* (glob)
+
+  $ -antigen-find-record test-plugin
+  *test-plugin* (glob)
+
+  $ -antigen-find-record test-plugin2
+  *test-plugin2* (glob)
+
+  $ -antigen-find-record plugin2
+  *test-plugin2* (glob)
+
+  $ -antigen-find-record list.t/test-plugin
+  *test-plugin* (glob)
+
+  $ -antigen-find-record list.t/test-plugin2
+  *test-plugin2* (glob)
+
+  $ -antigen-find-record list.t
+  *test-plugin* (glob)
