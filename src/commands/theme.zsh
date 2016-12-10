@@ -12,7 +12,7 @@ antigen-theme () {
   local result=0
 
   if [[ $_ANTIGEN_RESET_THEME_HOOKS == true ]]; then
-      -antigen-theme-reset-hooks
+    -antigen-theme-reset-hooks
   fi
 
   record=$(-antigen-find-record "theme")

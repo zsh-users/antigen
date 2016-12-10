@@ -61,23 +61,23 @@
 # Returns
 #   Nothing. Generates _ZCACHE_META_PATH and _ZCACHE_PAYLOAD_PATH
 -zcache-generate-cache () {
-    local -aU _extensions_paths
-    local -aU _binary_paths
-    local -a _bundles_meta
-    local _payload=''
-    local location
+  local -aU _extensions_paths
+  local -aU _binary_paths
+  local -a _bundles_meta
+  local _payload=''
+  local location
 
-    _payload+="#-- START ZCACHE GENERATED FILE\NL"
-    _payload+="#-- GENERATED: $(date)\NL"
-    _payload+='#-- ANTIGEN {{ANTIGEN_VERSION}}\NL'
-    for bundle in $_ZCACHE_BUNDLES; do
-        # -antigen-load-list "$url" "$loc" "$make_local_clone"
-        eval "$(-antigen-parse-bundle ${=bundle})"
-        _bundles_meta+=("$url $loc $btype $make_local_clone $branch")
+  _payload+="#-- START ZCACHE GENERATED FILE\NL"
+  _payload+="#-- GENERATED: $(date)\NL"
+  _payload+='#-- ANTIGEN {{ANTIGEN_VERSION}}\NL'
+  for bundle in $_ZCACHE_BUNDLES; do
+    # -antigen-load-list "$url" "$loc" "$make_local_clone"
+    eval "$(-antigen-parse-bundle ${=bundle})"
+    _bundles_meta+=("$url $loc $btype $make_local_clone $branch")
 
-        if $make_local_clone; then
-            -antigen-ensure-repo "$url"
-        fi
+    if $make_local_clone; then
+      -antigen-ensure-repo "$url"
+    fi
 
     -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
       if [[ -f "$line" ]]; then
@@ -109,6 +109,7 @@
   _payload+="$(functions -- _antigen)"
   _payload+="\NL"
   _payload+="fpath+=(${_extensions_paths[@]})\NL"
+  _payload+="PATH=\"\$PATH:${_binary_paths[@]}\"\NL"
   _payload+="unset __ZCACHE_FILE_PATH\NL"
   # \NL (\n) prefix is for backward compatibility
   _payload+="_ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
