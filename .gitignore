@@ -14,3 +14,8 @@ revert-info
 
 # Default antigen.log location
 *.log
+
+# Release archives and signatures
+*.tar.gz
+*.tar.gz.sign
+

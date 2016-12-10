@@ -43,6 +43,14 @@ publish:
 	git add .
 	git commit -S -m "Build release $$(cat ${PROJECT}/VERSION)"
 	git push origin release/$$(cat ${PROJECT}/VERSION)
+	# Merge release branch into develop before deploying
+
+deploy:
+	git tag -m "Build release $$(cat ${PROJECT}/VERSION)" -s $$(cat ${PROJECT}/VERSION)
+	git archive --output=$$(cat ${PROJECT}/VERSION).tar.gz --prefix=antigen-$$(cat ${PROJECT}/VERSION|sed s/v//)/ $$(cat ${PROJECT}/VERSION)
+	zcat $$(cat ${PROJECT}/VERSION).tar.gz | gpg --armor --detach-sign >$$(cat ${PROJECT}/VERSION).tar.gz.sign
+	# Verify signature
+	# zcat $$(cat ${PROJECT}/VERSION).tar.gz | gpg --verify $$(cat ${PROJECT}/VERSION).tar.gz.sign -
 
 clean:
 	rm -f ${PREFIX}/share/antigen.zsh
