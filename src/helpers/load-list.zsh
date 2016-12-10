@@ -47,16 +47,16 @@
     return
   fi
 
-    # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
-    local bundle_files
-    bundle_files=($location/*.zsh(N) $location/*.sh(N))
-    if [[ $#bundle_files -gt 0 ]]; then
-        echo "${(j:\n:)bundle_files}"
-        return
-    fi
-    
-    # Add to PATH (binary bundle)
-    echo "$location"
+  # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
+  local bundle_files
+  bundle_files=($location/*.zsh(N) $location/*.sh(N))
+  if [[ $#bundle_files -gt 0 ]]; then
+    echo "${(j:\n:)bundle_files}"
     return
+  fi
+  
+  # Add to PATH (binary bundle)
+  echo "$location"
+  return
 }
 
