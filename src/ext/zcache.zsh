@@ -147,6 +147,8 @@ antigen-cache-reset () {
 #   Nothing
 antigen-init () {
     if zcache-cache-exists; then
+        # Force cache to load - this does skip -zcache-cache-invalidate
+        _ZCACHE_BUNDLES=$(cat $_ZCACHE_BUNDLES_PATH)
         zcache-done
         return
     fi

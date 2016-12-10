@@ -45,6 +45,11 @@ antigen () {
 -antigen-bundle-short-name () {
     echo "$@" | sed -E "s|.*/(.*/.*)$|\1|"|sed -E "s|\.git$||g"
 }
+# Echo the bundle specs as in the record. The first line is not echoed since it
+# is a blank line.
+-antigen-echo-record () {
+    echo "$_ANTIGEN_BUNDLE_RECORD" | sed -n '1!p'
+}
 -antigen-get-clone-dir () {
     # Takes a repo url and gives out the path that this url needs to be cloned
     # to. Doesn't actually clone anything.
@@ -289,7 +294,7 @@ antigen () {
         if [[ $success -eq 0 ]]; then
             printf "Done. Took %ds.\n" $took
         else
-            echo -n "Error! See $_ANTIGEN_LOG_PATH.";
+            printf "Error! See \"$_ANTIGEN_LOG_PATH\".\n";
         fi
     fi
 
@@ -345,6 +350,15 @@ antigen () {
     unfunction -- -set-default
 
 }
+# Load a given bundle by sourcing it.
+#
+# The function also modifies fpath to add the bundle path.
+#
+# Usage
+#   -antigen-load "bundle-url" ["location"] ["make_local_clone"] ["btype"]
+#
+# Returns
+#   Integer. 0 if success 1 if an error ocurred.
 -antigen-load () {
   local url="$1"
   local loc="$2"
@@ -353,36 +367,45 @@ antigen () {
   local src
 
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone"); do
-      if [[ -d "$src" ]]; then
-          if (( ! ${fpath[(I)$location]} )); then
-              fpath=($location $fpath)
-          fi
-      else
-          # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
-          # This is needed to seek-and-destroy local variable definitions *outside*
-          # function-contexts. This is done in this particular way *only* for
-          # interactive bundle/theme loading, for static loading -99.9% of the time-
-          # eval and subshells are not needed.
-          if [[ "$btype" == "theme" ]]; then
-              eval "$(cat $src | sed -Ee '/\{$/,/^\}/!{
-                      s/^local //
-                  }')"
-          else
-              source "$src"
-          fi
+    if [[ -d "$src" ]]; then
+      if (( ! ${fpath[(I)$location]} )); then
+        fpath=($location $fpath)
       fi
+    else
+      # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
+      # This is needed to seek-and-destroy local variable definitions *outside*
+      # function-contexts. This is done in this particular way *only* for
+      # interactive bundle/theme loading, for static loading -99.9% of the time-
+      # eval and subshells are not needed.
+      if [[ "$btype" == "theme" ]]; then
+        eval "$(cat $src | sed -Ee '/\{$/,/^\}/!{
+                s/^local //
+            }')"
+      else
+        source "$src"
+      fi
+    fi
+
   done
 
-  local location
+  local location="$url/"
   if $make_local_clone; then
-      location="$(-antigen-get-clone-dir "$url")/$loc"
+    location="$(-antigen-get-clone-dir "$url")/$loc"
+  fi
+
+  # If there is no location either as a file or a directory
+  # we assume there is an error in the given location
+  local success=0
+  if [[ -f "$location" || -d "$location" ]]; then
+    # Add to $fpath, for completion(s), if not in there already
+    if (( ! ${fpath[(I)$location]} )); then
+      fpath=($location $fpath)
+    fi
   else
-      location="$url/"
+    success=1
   fi
-  # Add to $fpath, for completion(s), if not in there already
-  if (( ! ${fpath[(I)$location]} )); then
-     fpath=($location $fpath)
-  fi
+  
+  return $success
 }
 -antigen-parse-args () {
     local key
@@ -502,22 +525,26 @@ antigen-bundle () {
     local btype=plugin
     
     if [[ -z "$1" ]]; then
-        echo "Must provide a bundle url or name."
+        echo "Antigen: Must provide a bundle url or name."
         return 1
     fi
 
     eval "$(-antigen-parse-bundle "$@")"
 
-   # Ensure a clone exists for this repo, if needed.
+    # Ensure a clone exists for this repo, if needed.
     if $make_local_clone; then
         if ! -antigen-ensure-repo "$url"; then
             # Return immediately if there is an error cloning
+            # Error message is displayed from -antigen-ensure-repo
             return 1
         fi
     fi
 
     # Load the plugin.
-    -antigen-load "$url" "$loc" "$make_local_clone" "$btype"
+    if ! -antigen-load "$url" "$loc" "$make_local_clone" "$btype"; then
+        echo "Antigen: Failed to load $btype."
+        return 1
+    fi
 
     # Add it to the record.
     local bundle_record="$url $loc $btype $make_local_clone"
@@ -574,11 +601,6 @@ antigen-cleanup () {
         echo
         echo Nothing deleted.
     fi
-}
-# Echo the bundle specs as in the record. The first line is not echoed since it
-# is a blank line.
--antigen-echo-record () {
-    echo "$_ANTIGEN_BUNDLE_RECORD" | sed -n '1!p'
 }
 antigen-help () {
     cat <<EOF
@@ -787,7 +809,7 @@ antigen-use () {
     fi
 }
 antigen-version () {
-    echo "Antigen v1.2.3"
+    echo "Antigen v1.2.4"
 }
 #compdef _antigen
 # Setup antigen's autocompletion
@@ -926,7 +948,7 @@ _antigen () {
 
     _payload+="#-- START ZCACHE GENERATED FILE\NL"
     _payload+="#-- GENERATED: $(date)\NL"
-    _payload+='#-- ANTIGEN v1.2.3\NL'
+    _payload+='#-- ANTIGEN v1.2.4\NL'
     for bundle in $_ZCACHE_BUNDLES; do
         # -antigen-load-list "$url" "$loc" "$make_local_clone"
         eval "$(-antigen-parse-bundle ${=bundle})"
@@ -960,7 +982,7 @@ _antigen () {
     # \NL (\n) prefix is for backward compatibility
     _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
     _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
-    _payload+="export _ZCACHE_CACHE_VERSION=v1.2.3\NL"
+    _payload+="export _ZCACHE_CACHE_VERSION=v1.2.4\NL"
     _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
     echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
@@ -1205,6 +1227,8 @@ antigen-cache-reset () {
 #   Nothing
 antigen-init () {
     if zcache-cache-exists; then
+        # Force cache to load - this does skip -zcache-cache-invalidate
+        _ZCACHE_BUNDLES=$(cat $_ZCACHE_BUNDLES_PATH)
         zcache-done
         return
     fi

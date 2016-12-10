@@ -13,15 +13,6 @@ define ised
 	mv "$(2).1" "$(2)"
 endef
 
-itests:
-	${MAKE} tests CRAM_OPTS=-i
-
-tests:
-	${PYENV} ZDOTDIR="${PROJECT}/tests" cram ${CRAM_OPTS} --shell=${SHELL} ${TESTS}
-
-install:
-	mkdir -p ${PREFIX}/share && cp ${BIN}/antigen.zsh ${PREFIX}/share/antigen.zsh
-
 build:
 	cat ${PROJECT}/src/antigen.zsh > ${BIN}/antigen.zsh
 	cat ${PROJECT}/src/helpers/*.zsh >> ${BIN}/antigen.zsh
@@ -55,6 +46,15 @@ publish:
 
 clean:
 	rm -f ${PREFIX}/share/antigen.zsh
+
+itests:
+	${MAKE} tests CRAM_OPTS=-i
+
+tests:
+	${PYENV} ZDOTDIR="${PROJECT}/tests" cram ${CRAM_OPTS} --shell=${SHELL} ${TESTS}
+
+install:
+	mkdir -p ${PREFIX}/share && cp ${BIN}/antigen.zsh ${PREFIX}/share/antigen.zsh
 
 deps:
 	pip install cram==0.6.*
