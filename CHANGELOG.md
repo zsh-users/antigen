@@ -2,6 +2,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0] - 2016-12-10
+
+### Fixed
+- [#340, #347] Fix bundle short name broken with branched bundles
+- [#341] Improve TravisCI performance
+
+### Changed
+- [#343, #344] Add `--short` option for `antigen-list` command
+
+### Added
+- [#301, #348] Sign git commits & releases (tags)
+- [#337, #345] Theme command tab completion
+- [#335, #342] Purge command for removing bundles from file system
+
+Thanks @rugk and everyone who reported issues and provided feedback.
+
 ## [1.2.4] - 2016-12-03
 
 ### Fixed
