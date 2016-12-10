@@ -6,6 +6,8 @@
 # Returns
 #    Nothing. Performs a `git pull`.
 antigen-update () {
+  local bundle=$1
+
   # Clear log
   :> $_ANTIGEN_LOG_PATH
 
@@ -18,18 +20,14 @@ antigen-update () {
     -antigen-get-cloned-bundles | while read url; do
       -antigen-update-bundle $url
     done
+    # TODO next minor version
+    # antigen-reset
   else
-    local bundle=$1
-    # Using typeset in order to support zsh <= 5.0.0
-    typeset -a records
-    records=($(echo $_ANTIGEN_BUNDLE_RECORD))
-    local record=${records[(r)*$bundle*]}
-
-    if [[ -n "$record" ]]; then
-      -antigen-update-bundle ${=record}
+    if -antigen-update-bundle $bundle; then
+      # TODO next minor version
+      # antigen-reset
     else
-      echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
-      return 1
+      return $?
     fi
   fi
 }
@@ -37,15 +35,32 @@ antigen-update () {
 # Updates a bundle performing a `git pull`.
 #
 # Usage
-#    -antigen-update-bundle https://github.com/example/bundle.git[|branch]
+#    -antigen-update-bundle example/bundle
 #
 # Returns
 #    Nothing. Performs a `git pull`.
 -antigen-update-bundle () {
-  local url="$1"
-
-  if [[ ! -n "$url" ]]; then
+  local bundle="$1"
+  local record=""
+  local url=""
+  local make_local_clone=""
+  
+  if [[ $# -eq 0 ]]; then
     echo "Antigen: Missing argument."
+    return 1
+  fi
+  
+  record=$(-antigen-find-record $bundle)
+  if [[ ! -n "$record" ]]; then
+    echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
+    return 1
+  fi
+  
+  url="$(echo "$record" | cut -d' ' -f1)"
+  make_local_clone=$(echo "$record" | cut -d' ' -f4)
+
+  if [[ $make_local_clone == "false" ]]; then
+    echo "Bundle has no local clone. Will not be updated."
     return 1
   fi
 
