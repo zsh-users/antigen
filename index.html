@@ -58,7 +58,7 @@ sample, if you will.</p>
 
 <p>Get and load antigen.</p>
 
-<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.2.4/bin/antigen.zsh &gt; antigen.zsh
+<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.3.0/bin/antigen.zsh &gt; antigen.zsh
 source antigen.zsh
 </code></pre>
 
@@ -433,6 +433,36 @@ It straight away deletes all the unused clones. This option makes this command
 usable in a non-interactive fashion.</p>
 
 <h3>
+<a id="antigen-purge" class="anchor" href="#antigen-purge" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen purge</h3>
+
+<p>This command removes a bundle from filesystem. Usage:</p>
+
+<pre><code>antigen purge example/bundle [--force]
+</code></pre>
+
+<p>Where <code>example/bundle</code> is the bundle you want to purge from filesystem.</p>
+
+<p>Take into account that the bundle will be removed from filesystem but next time
+you open up a shell, if you have an <code>antigen bundle example/bundle</code> line laying
+around, the bundle will be installed again.</p>
+
+<p>This command, by default asks for confirmation before deleting bundles. If the
+<code>--force</code> argument is given, then this confirmation is not asked.</p>
+
+<h3>
+<a id="antigen-reset" class="anchor" href="#antigen-reset" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen reset</h3>
+
+<p>If cache is enabled this command will clean the generated cache. This is useful
+if you are using <code>antigen-init</code> command in order to reload bundle configuration changes.</p>
+
+<p>Usage:</p>
+
+<pre><code>antigen reset
+</code></pre>
+
+<p>Takes no further arguments.</p>
+
+<h3>
 <a id="antigen-use" class="anchor" href="#antigen-use" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>antigen use</h3>
 
 <p>This command lets you load any (supported) zsh pre-packaged framework, like
@@ -609,7 +639,7 @@ looks good as output on the command line.</p>
 
 <p>Install Antigen from our main repository for the latests and greatests version available:</p>
 
-<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.2.4/bin/antigen.zsh &gt; antigen.zsh
+<pre><code>curl https://cdn.rawgit.com/zsh-users/antigen/v1.3.0/bin/antigen.zsh &gt; antigen.zsh
 </code></pre>
 
 <p>Or using your system package manager:</p>
