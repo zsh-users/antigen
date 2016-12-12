@@ -319,7 +319,7 @@ antigen () {
 
     # A temporary function wrapping the `git` command with repeated arguments.
     --plugin-git () {
-        (cd "$clone_dir" &>> $_ANTIGEN_LOG_PATH && git --no-pager "$@" &>> $_ANTIGEN_LOG_PATH)
+        (cd "$clone_dir" &>>! $_ANTIGEN_LOG_PATH && git --no-pager "$@" &>>! $_ANTIGEN_LOG_PATH)
     }
 
     # Clone if it doesn't already exist.
@@ -329,7 +329,7 @@ antigen () {
     if [[ ! -d $clone_dir ]]; then
         install_or_update=true
         echo -n "Installing $(-antigen-bundle-short-name $url)... "
-        git clone --recursive "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
+        git clone --recursive "${url%|*}" "$clone_dir" &>>! $_ANTIGEN_LOG_PATH
         success=$?
     elif $update; then
         local branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
