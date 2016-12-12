@@ -22,7 +22,7 @@ env:
     - ZSH_SOURCE=$HOME/zsh
   matrix:
     - ZSH_BUILD_VERSION=master
-    - ZSH_BUILD_VERSION=zsh-5.2-test-2
+    - ZSH_BUILD_VERSION=zsh-5.3
     - ZSH_BUILD_VERSION=zsh-5.2
     - ZSH_BUILD_VERSION=zsh-5.1
     - ZSH_BUILD_VERSION=zsh-5.0.0
