@@ -31,7 +31,7 @@ sample, if you will.
 
 Get and load antigen.
 
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.3.0/bin/antigen.zsh > antigen.zsh
+    curl https://cdn.rawgit.com/zsh-users/antigen/v1.3.1/bin/antigen.zsh > antigen.zsh
     source antigen.zsh
 
 There. You now have all the antigen goodies. Let's try install some plugins. How
@@ -305,6 +305,10 @@ understand how it works. Its a very small function.
 *Note*: Indenting the contents inside the EOBUNDLES heredoc is not required for
 antigen-bundles to work. Its allowed (and encouraged) to improve readability.
 
+Another thing to take into account is that variables (ex. environment variables)
+and especial builtin characters (`~`, `.`) won't work inside a heredoc, so you may
+have to change a `antigen-bundle` syntax to work with `antigen-bundles`.
+
 ### antigen init
 
 Makes usage of caching in order to quickly load bundles. Improves performance greatly
@@ -557,7 +561,7 @@ looks good as output on the command line.
 
 Install Antigen from our main repository for the latests and greatests version available:
 
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.3.0/bin/antigen.zsh > antigen.zsh
+    curl https://cdn.rawgit.com/zsh-users/antigen/v1.3.1/bin/antigen.zsh > antigen.zsh
 
 Or using your system package manager:
 
