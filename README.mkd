@@ -305,6 +305,10 @@ understand how it works. Its a very small function.
 *Note*: Indenting the contents inside the EOBUNDLES heredoc is not required for
 antigen-bundles to work. Its allowed (and encouraged) to improve readability.
 
+Another thing to take into account is that variables (ex. environment variables)
+and especial builtin characters (`~`, `.`) won't work inside a heredoc, so you may
+have to change a `antigen-bundle` syntax to work with `antigen-bundles`.
+
 ### antigen init
 
 Makes usage of caching in order to quickly load bundles. Improves performance greatly
