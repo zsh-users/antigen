@@ -2,7 +2,7 @@ title: Antigen
 description: A plugin manager for zsh, inspired by oh-my-zsh and vundle.
 google_analytics: UA-32559609-1
 show_downloads: true
-theme: jekyll-theme-architect
+theme: jekyll-theme-tactile
 
 gems:
   - jekyll-mentions
