@@ -70,6 +70,6 @@ deps:
 	pip install cram==0.6.*
 
 stats:
-	${PROJECT}/tests/stats.sh "${PROJECT}" "${SHELL}"
+	"${SHELL}" ${PROJECT}/tests/stats.sh "${PROJECT}" "${SHELL}"
 
 all: clean build install

@@ -61,13 +61,13 @@ Cache is saved correctly.
   $ cat $_ZCACHE_PAYLOAD_PATH | wc -l
   24
 
-  $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pzc 'hehe2"\nalias prompt'
+  $ cat $_ZCACHE_PAYLOAD_PATH | grep -c 'alias prompt'
   1
 
-  $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pc 'root=\${__ZCACHE_FILE_PATH}'
+  $ cat $_ZCACHE_PAYLOAD_PATH | grep -c 'root=\${__ZCACHE_FILE_PATH}'
   1
 
-  $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pc 'echo \$root/\$0'
+  $ cat $_ZCACHE_PAYLOAD_PATH | grep -c 'echo \$root/\$0'
   1
 
 Cache is invalidated on antigen configuration changes.
@@ -95,8 +95,8 @@ Cache is invalidated on antigen configuration changes.
 Cache version matches antigen version.
 
   $ ANTIGEN_VERSION=$(antigen version | sed 's/Antigen //')
-  $ cat $_ZCACHE_PAYLOAD_PATH | grep -Pzc "$ANTIGEN_VERSION"
-  1
+  $ cat $_ZCACHE_PAYLOAD_PATH | grep -c "$ANTIGEN_VERSION"
+  2
 
   $ if [[ "$ANTIGEN_VERSION" == "$_ZCACHE_CACHE_VERSION" ]]; then echo 1; else echo 0; fi
   1
