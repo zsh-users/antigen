@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/zsh
 PROJECT=${1:-$HOME}
 SHELL=${2:-zsh}
 ZSHRC=$HOME/.zshrc
@@ -11,12 +11,13 @@ cp $ZSHRC $TMP
 
 cp $PROJECT/tests/.zshrc $HOME/.zshrc
 eval $CMD
-for x in $(seq 1 20); do
-    /usr/bin/time -f "real %e user %U sys %S" -a -o $MTIME $CMD
-    tail -1 $MTIME
-done 
 
-awk '{ et += $2; ut += $4; st += $6; count++ } END {  printf "\nAverage:\nreal %.3f user %.3f sys %.3f\n", et/count, ut/count, st/count }' $MTIME
+for x in $(seq 1 20); do
+    (eval time $CMD) &>> $MTIME
+    tail -1 $MTIME
+done
+
+awk '{ total += $10; user += $4; sys += $6; count++ } END {  printf "\nAverage:\ntotal %.3fs user %.3fs sys %.3fs\n", total/count, user/count, sys/count }' $MTIME
 
 rm -f $MTIME
 cp $TMP $ZSHRC

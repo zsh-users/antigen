@@ -43,7 +43,7 @@ git checkout $ZSH_VERSION
 ./Util/preconfig
 
 # Configure bindir for this branch
-./configure --bindir=$BUILDS_PATH/$ZSH_VERSION --prefix=$BUILDS_PATH/$ZSH_VERSION
+./configure --bindir=$BUILDS_PATH/$ZSH_VERSION --prefix=$BUILDS_PATH/$ZSH_VERSION --without-tcsetpgrp
 
 # Make
 make -j5
