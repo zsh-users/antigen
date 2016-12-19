@@ -16,6 +16,9 @@
     local update=${2:-false}
     # Verbose output.
     local verbose=${3:-false}
+    
+    # Ensure log file exists
+    [ ! -e $_ANTIGEN_LOG_PATH ] && touch $_ANTIGEN_LOG_PATH
 
     shift $#
 
