@@ -2,6 +2,12 @@ antigen-theme () {
     if [[ $_ANTIGEN_RESET_THEME_HOOKS == true ]]; then
         -antigen-theme-reset-hooks
     fi
+    
+    record=$(-antigen-find-record "theme")
+    if [[ -n $record ]]; then
+      #echo "record: " $record
+      _ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD//$record/}
+    fi
 
     if [[ "$1" != */* && "$1" != --* ]]; then
         # The first argument is just a name of the plugin, to be picked up from
