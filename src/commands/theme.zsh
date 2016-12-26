@@ -2,10 +2,9 @@ antigen-theme () {
     if [[ $_ANTIGEN_RESET_THEME_HOOKS == true ]]; then
         -antigen-theme-reset-hooks
     fi
-    
+
     record=$(-antigen-find-record "theme")
     if [[ -n $record ]]; then
-      #echo "record: " $record
       _ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD//$record/}
     fi
 
@@ -25,11 +24,11 @@ antigen-theme () {
     # This is only needed on interactive mode
     autoload -U add-zsh-hook is-at-least
     local hook
-    
+
     # Clear out prompts
     PROMPT=""
     RPROMPT=""
-    
+
     for hook in chpwd precmd preexec periodic; do
         # add-zsh-hook's -D option was introduced first in 4.3.6-dev and
         # 4.3.7 first stable, 4.3.5 and below may experiment minor issues
