@@ -23,6 +23,7 @@ alias pg='git --git-dir "$PLUGIN_DIR/.git" --work-tree "$PLUGIN_DIR"'
 
 echo 'alias hehe="echo hehe"' > "$PLUGIN_DIR"/aliases.zsh
 echo 'export PS1="prompt>"' > "$PLUGIN_DIR"/silly.zsh-theme
+echo 'export PS1=">"' > "$PLUGIN_DIR"/arrow.zsh-theme
 
 {
     pg init
