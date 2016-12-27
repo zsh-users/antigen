@@ -899,12 +899,14 @@ antigen-snapshot () {
 # Returns
 #   0 if everything was succesfully
 antigen-theme () {
+  local record
+  local result=0
+
   if [[ $_ANTIGEN_RESET_THEME_HOOKS == true ]]; then
       -antigen-theme-reset-hooks
   fi
 
-  local record=$(-antigen-find-record "theme")
-  local result=0
+  record=$(-antigen-find-record "theme")
 
   if [[ "$1" != */* && "$1" != --* ]]; then
     # The first argument is just a name of the plugin, to be picked up from
