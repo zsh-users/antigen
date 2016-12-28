@@ -16,18 +16,18 @@ local -a _ZCACHE_BUNDLES
 # Returns
 #   Nothing
 zcache-start () {
-    if [[ $_ZCACHE_EXTENSION_ACTIVE == true ]]; then
-        return
-    fi
+  if [[ $_ZCACHE_EXTENSION_ACTIVE == true ]]; then
+    return
+  fi
 
-    [[ ! -d "$_ZCACHE_PATH" ]] && mkdir -p "$_ZCACHE_PATH"
-    -zcache-hook-antigen
+  [[ ! -d "$_ZCACHE_PATH" ]] && mkdir -p "$_ZCACHE_PATH"
+  -zcache-hook-antigen
 
-    # Avoid running in interactive mode. This handles an specific case
-    # where antigen is sourced from file (eval context) but antigen commands
-    # are issued from toplevel (interactively).
-    zle -N zle-line-init zcache-done
-    _ZCACHE_EXTENSION_ACTIVE=true
+  # Avoid running in interactive mode. This handles an specific case
+  # where antigen is sourced from file (eval context) but antigen commands
+  # are issued from toplevel (interactively).
+  zle -N zle-line-init zcache-done
+  _ZCACHE_EXTENSION_ACTIVE=true
 }
 
 # Generates (if needed) and loads cache.
@@ -40,34 +40,34 @@ zcache-start () {
 # Returns
 #   Nothing
 zcache-done () {
-    if [[ -z $_ZCACHE_EXTENSION_ACTIVE ]]; then
-        return 1
-    fi
-    unset _ZCACHE_EXTENSION_ACTIVE
-    
-    -zcache-unhook-antigen
-    
-    # Avoids seg fault on zsh 4.3.5
-    if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
-        if ! zcache-cache-exists || -zcache-cache-invalidated; then
-            -zcache-generate-cache
-            -antigen-reset-compdump
-        fi
-        
-        zcache-load-cache
+  if [[ -z $_ZCACHE_EXTENSION_ACTIVE ]]; then
+    return 1
+  fi
+  unset _ZCACHE_EXTENSION_ACTIVE
+
+  -zcache-unhook-antigen
+
+  # Avoids seg fault on zsh 4.3.5
+  if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
+    if ! zcache-cache-exists || -zcache-cache-invalidated; then
+      -zcache-generate-cache
+      -antigen-reset-compdump
     fi
 
-    if [[ $_ZCACHE_EXTENSION_CLEAN_FUNCTIONS == true ]]; then
-        unfunction -- ${(Mok)functions:#-zcache*}
-    fi
+    zcache-load-cache
+  fi
 
-    eval "function -zcache-$(functions -- antigen-update)"
-    antigen-update () {
-        -zcache-antigen-update "$@"
-        antigen-reset
-    }
-    
-    unset _ZCACHE_BUNDLES
+  if [[ $_ZCACHE_EXTENSION_CLEAN_FUNCTIONS == true ]]; then
+    unfunction -- ${(Mok)functions:#-zcache*}
+  fi
+
+  eval "function -zcache-$(functions -- antigen-update)"
+  antigen-update () {
+    -zcache-antigen-update "$@"
+    antigen-reset
+  }
+
+  unset _ZCACHE_BUNDLES
 }
 
 # Returns true if cache is available.
@@ -78,7 +78,7 @@ zcache-done () {
 # Returns
 #   Either 1 if cache exists or 0 if it does not exists
 zcache-cache-exists () {
-    [[ -f "$_ZCACHE_PAYLOAD_PATH" ]]
+  [[ -f "$_ZCACHE_PAYLOAD_PATH" ]]
 }
 
 # Load bundles from cache (sourcing it)
@@ -91,7 +91,7 @@ zcache-cache-exists () {
 # Returns
 #   Nothing
 zcache-load-cache () {
-    source "$_ZCACHE_PAYLOAD_PATH"
+  source "$_ZCACHE_PAYLOAD_PATH"
 }
 
 # Removes cache payload and metadata if available
@@ -102,11 +102,11 @@ zcache-load-cache () {
 # Returns
 #   Nothing
 antigen-reset () {
-    -zcache-remove-path () { [[ -f "$1" ]] && rm "$1" }
-    -zcache-remove-path "$_ZCACHE_PAYLOAD_PATH"
-    -zcache-remove-path "$_ZCACHE_BUNDLES_PATH"
-    unfunction -- -zcache-remove-path
-    echo 'Done. Please open a new shell to see the changes.'
+  -zcache-remove-path () { [[ -f "$1" ]] && rm "$1" }
+  -zcache-remove-path "$_ZCACHE_PAYLOAD_PATH"
+  -zcache-remove-path "$_ZCACHE_BUNDLES_PATH"
+  unfunction -- -zcache-remove-path
+  echo 'Done. Please open a new shell to see the changes.'
 }
 
 # Deprecated for antigen-reset command
@@ -117,8 +117,8 @@ antigen-reset () {
 # Returns
 #   Nothing
 antigen-cache-reset () {
-    echo 'Deprecated in favor of antigen reset.'
-    antigen-reset
+  echo 'Deprecated in favor of antigen reset.'
+  antigen-reset
 }
 
 # Antigen command to load antigen configuration
@@ -146,32 +146,33 @@ antigen-cache-reset () {
 # Returns
 #   Nothing
 antigen-init () {
-    if zcache-cache-exists; then
-        # Force cache to load - this does skip -zcache-cache-invalidate
-        _ZCACHE_BUNDLES=$(cat $_ZCACHE_BUNDLES_PATH)
-        zcache-done
-        return
-    fi
+  if zcache-cache-exists; then
+    # Force cache to load - this does skip -zcache-cache-invalidate
+    _ZCACHE_BUNDLES=$(cat $_ZCACHE_BUNDLES_PATH)
+    zcache-done
+    return
+  fi
 
-    local src="$1"
-    if [[ -f "$src" ]]; then
-        source "$src"
-        return
-    fi
+  local src="$1"
+  if [[ -f "$src" ]]; then
+    source "$src"
+    return
+  fi
 
-    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-        eval $line
-    done
+  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+    eval $line
+  done
 }
 
 -antigen-interactive-mode # Updates _ANTIGEN_INTERACTIVE
 # Refusing to run in interactive mode
 if [[ $_ANTIGEN_CACHE_ENABLED == true ]]; then
-    if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
-        zcache-start
-    fi
-else    
-    # Disable antigen-init and antigen-reset commands if cache is disabled
-    # and running in interactive modes
-    unfunction -- antigen-init antigen-reset antigen-cache-reset
+  if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
+    zcache-start
+  fi
+else
+  # Disable antigen-init and antigen-reset commands if cache is disabled
+  # and running in interactive modes
+  unfunction -- antigen-init antigen-reset antigen-cache-reset
 fi
+

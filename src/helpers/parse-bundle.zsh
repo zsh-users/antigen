@@ -11,8 +11,8 @@
 
   # Check if url is just the plugin name. Super short syntax.
   if [[ "$url" != */* ]]; then
-      loc="plugins/$url"
-      url="$ANTIGEN_DEFAULT_REPO_URL"
+    loc="plugins/$url"
+    url="$ANTIGEN_DEFAULT_REPO_URL"
   fi
 
   # Resolve the url.
@@ -20,7 +20,7 @@
 
   # Add the branch information to the url.
   if [[ ! -z $branch ]]; then
-      url="$url|$branch"
+    url="$url|$branch"
   fi
 
   # The `make_local_clone` variable better represents whether there should be
@@ -31,12 +31,12 @@
   local make_local_clone=true
   if [[ $url == /* && -z $branch &&
           ( $no_local_clone == true || ! -d $url/.git ) ]]; then
-      make_local_clone=false
+    make_local_clone=false
   fi
 
   # Add the theme extension to `loc`, if this is a theme.
   if [[ $btype == theme && $loc != *.zsh-theme ]]; then
-      loc="$loc.zsh-theme"
+    loc="$loc.zsh-theme"
   fi
 
   # Bundle spec arguments' default values.
@@ -47,3 +47,4 @@
         local btype=\""$btype\""
         "
 }
+

@@ -1,3 +1,4 @@
 antigen-version () {
-    echo "Antigen {{ANTIGEN_VERSION}}"
+  echo "Antigen {{ANTIGEN_VERSION}}"
 }
+

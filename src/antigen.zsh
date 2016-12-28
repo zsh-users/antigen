@@ -18,8 +18,8 @@ local _ANTIGEN_FORCE_RESET_COMPDUMP=${_ANTIGEN_FORCE_RESET_COMPDUMP:-true}
 
 # Do not load anything if git is not available.
 if ! which git &> /dev/null; then
-    echo 'Antigen: Please install git to use Antigen.' >&2
-    return 1
+  echo 'Antigen: Please install git to use Antigen.' >&2
+  return 1
 fi
 
 # Used to defer compinit/compdef
@@ -29,16 +29,16 @@ compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
 # A syntax sugar to avoid the `-` when calling antigen commands. With this
 # function, you can write `antigen-bundle` as `antigen bundle` and so on.
 antigen () {
-    local cmd="$1"
-    if [[ -z "$cmd" ]]; then
-        echo 'Antigen: Please give a command to run.' >&2
-        return 1
-    fi
-    shift
+  local cmd="$1"
+  if [[ -z "$cmd" ]]; then
+    echo 'Antigen: Please give a command to run.' >&2
+    return 1
+  fi
+  shift
 
-    if functions "antigen-$cmd" > /dev/null; then
-        "antigen-$cmd" "$@"
-    else
-        echo "Antigen: Unknown command: $cmd" >&2
-    fi
+  if functions "antigen-$cmd" > /dev/null; then
+    "antigen-$cmd" "$@"
+  else
+    echo "Antigen: Unknown command: $cmd" >&2
+  fi
 }

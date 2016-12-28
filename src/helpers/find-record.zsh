@@ -14,6 +14,7 @@
   IFS=$'\n'
   records=(${(f)_ANTIGEN_BUNDLE_RECORD})
   IFS="$_IFS"
-  
+
   echo "${records[(r)*$bundle*]}"
 }
+
