@@ -67,13 +67,19 @@ matrix:
       #language: generic
       #env: ZSH_BUILD_VERSION=zsh-4.3.5
 
+addons:
+    apt:
+        sources:
+            - debian-sid
+        packages:
+            - shellcheck
+
 install:
   # Install python requirements.
   - "make deps"
 
-  # Install shellcheck
+  # Install shellcheck (osx only)
   - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install shellcheck; fi
-  - if [ $TRAVIS_OS_NAME == 'linux' ]; then apt-get install shellcheck; fi
 
   # Install zsh versions from source.
   - "./tests/build-zsh.sh $ZSH_BUILD_VERSION $BUILDS_PATH $ZSH_SOURCE"
