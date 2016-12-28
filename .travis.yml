@@ -100,7 +100,7 @@ before_script:
   - "git config --global user.email test@test.test"
 
   # Run shell check
-  - "shellcheck ./bin/antigen.zsh --shell=ksh && echo done"
+  - "shellcheck ./bin/antigen.zsh --shell=ksh || exit 0"
 
 # Run the tests.
 script:
