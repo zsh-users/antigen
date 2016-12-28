@@ -71,6 +71,10 @@ install:
   # Install python requirements.
   - "make deps"
 
+  # Install shellcheck
+  - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install shellcheck; fi
+  - if [ $TRAVIS_OS_NAME == 'linux' ]; then sudo apt-get install shellcheck; fi
+
   # Install zsh versions from source.
   - "./tests/build-zsh.sh $ZSH_BUILD_VERSION $BUILDS_PATH $ZSH_SOURCE"
 
@@ -88,6 +92,9 @@ before_script:
   # Test config for git.
   - "git config --global user.name test"
   - "git config --global user.email test@test.test"
+
+  # Run shell check
+  - "shellcheck ./bin/antigen.zsh --shell=ksh"
 
 # Run the tests.
 script:
