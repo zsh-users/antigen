@@ -73,7 +73,7 @@ install:
 
   # Install shellcheck
   - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install shellcheck; fi
-  - if [ $TRAVIS_OS_NAME == 'linux' ]; then sudo apt-get install shellcheck; fi
+  - if [ $TRAVIS_OS_NAME == 'linux' ]; then apt-get install shellcheck; fi
 
   # Install zsh versions from source.
   - "./tests/build-zsh.sh $ZSH_BUILD_VERSION $BUILDS_PATH $ZSH_SOURCE"
