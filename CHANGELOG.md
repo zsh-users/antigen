@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.2] - 2016-12-29
+
+### Fixed
+- [#367, #368] Fix interactively changing between themes
+
+### Changed
+- [#369] Enforce coding style
+- [#370, #372] Update README.md with new external articles
+
+Thanks to everyone who reported issues and provided feedback.
+
 ## [1.3.1] - 2016-12-17
 
 ### Fixed
