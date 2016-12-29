@@ -13,7 +13,7 @@ antigen-list () {
     echo "You don't have any bundles." >&2
     return 1
   fi
-  
+
   if [[ $format == "--short" ]]; then
     -antigen-get-bundles
   else

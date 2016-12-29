@@ -29,7 +29,7 @@ antigen-purge () {
     echo "Bundle has no local clone. Will not be removed."
     return 1
   fi
-  
+
   if [[ -n "$url" ]]; then
     if -antigen-purge-bundle $url $force; then
       antigen-reset
@@ -38,7 +38,7 @@ antigen-purge () {
     echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
     return 1
   fi
-  
+
   return 0
 }
 

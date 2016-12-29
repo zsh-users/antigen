@@ -61,3 +61,4 @@ antigen-theme () {
     add-zsh-hook -d "${hook}" "vcs_info"  # common in omz themes
   done
 }
+

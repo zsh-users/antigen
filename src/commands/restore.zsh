@@ -1,33 +1,31 @@
 antigen-restore () {
+  if [[ $# == 0 ]]; then
+    echo 'Please provide a snapshot file to restore from.' >&2
+    return 1
+  fi
 
-    if [[ $# == 0 ]]; then
-        echo 'Please provide a snapshot file to restore from.' >&2
-        return 1
-    fi
+  local snapshot_file="$1"
 
-    local snapshot_file="$1"
+  # TODO: Before doing anything with the snapshot file, verify its checksum.
+  # If it fails, notify this to the user and confirm if restore should
+  # proceed.
 
-    # TODO: Before doing anything with the snapshot file, verify its checksum.
-    # If it fails, notify this to the user and confirm if restore should
-    # proceed.
+  echo -n "Restoring from $snapshot_file..."
 
-    echo -n "Restoring from $snapshot_file..."
+  sed -n '1!p' "$snapshot_file" |
+    while read line; do
+      local version_hash="${line%% *}"
+      local url="${line##* }"
+      local clone_dir="$(-antigen-get-clone-dir "$url")"
 
-    sed -n '1!p' "$snapshot_file" |
-        while read line; do
+      if [[ ! -d $clone_dir ]]; then
+          git clone "$url" "$clone_dir" &> /dev/null
+      fi
 
-            local version_hash="${line%% *}"
-            local url="${line##* }"
-            local clone_dir="$(-antigen-get-clone-dir "$url")"
+      (cd "$clone_dir" && git checkout $version_hash) &> /dev/null
+    done
 
-            if [[ ! -d $clone_dir ]]; then
-                git clone "$url" "$clone_dir" &> /dev/null
-            fi
-
-            (cd "$clone_dir" && git checkout $version_hash) &> /dev/null
-
-        done
-
-    echo ' done.'
-    echo 'Please open a new shell to get the restored changes.'
+  echo ' done.'
+  echo 'Please open a new shell to get the restored changes.'
 }
+

@@ -67,9 +67,19 @@ matrix:
       #language: generic
       #env: ZSH_BUILD_VERSION=zsh-4.3.5
 
+addons:
+    apt:
+        sources:
+            - debian-sid
+        packages:
+            - shellcheck
+
 install:
   # Install python requirements.
   - "make deps"
+
+  # Install shellcheck (osx only)
+  - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install shellcheck; fi
 
   # Install zsh versions from source.
   - "./tests/build-zsh.sh $ZSH_BUILD_VERSION $BUILDS_PATH $ZSH_SOURCE"
@@ -88,6 +98,9 @@ before_script:
   # Test config for git.
   - "git config --global user.name test"
   - "git config --global user.email test@test.test"
+
+  # Run shell check
+  - "shellcheck ./bin/antigen.zsh --shell=ksh -e SC1036,SC1056,SC1072,SC1073,SC1009,SC1083"
 
 # Run the tests.
 script:
