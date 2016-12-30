@@ -31,7 +31,7 @@ sample, if you will.
 
 Get and load antigen.
 
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.3.1/bin/antigen.zsh > antigen.zsh
+    curl https://cdn.rawgit.com/zsh-users/antigen/v1.3.2/bin/antigen.zsh > antigen.zsh
     source antigen.zsh
 
 There. You now have all the antigen goodies. Let's try install some plugins. How
@@ -561,7 +561,7 @@ looks good as output on the command line.
 
 Install Antigen from our main repository for the latests and greatests version available:
 
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.3.1/bin/antigen.zsh > antigen.zsh
+    curl https://cdn.rawgit.com/zsh-users/antigen/v1.3.2/bin/antigen.zsh > antigen.zsh
 
 Or using your system package manager:
 
@@ -680,9 +680,11 @@ Any comments/suggestions/feedback welcome. Please say hello to us on
 
 These are some external articles wrote by Antigen users.
 
-- [Awesome cmd line with antigen ( zsh plugin manager)](https://medium.com/cocoaacademymag/awesome-cmd-line-with-antigen-zsh-plugin-manager-d497574f7b5)
+- [Awesome cmd line with antigen (zsh plugin manager)](https://medium.com/cocoaacademymag/awesome-cmd-line-with-antigen-zsh-plugin-manager-d497574f7b5)
 
 - [Oh-my-zsh is the Disease and Antigen is the Vaccine](http://joshldavis.com/2014/07/26/oh-my-zsh-is-a-disease-antigen-is-the-vaccine/)
+
+- [Personalizando zsh: antigen](http://antonio-mario.com/personalizando-zsh-antigen/)
 
 - [Just discovered.. zsh!](https://arteymix.github.io/2015/01/20/just-discovered-zsh.html)
 
@@ -703,6 +705,12 @@ These are some external articles wrote by Antigen users.
 - [Zsh Shell with Antigen + Oh-My-Zsh + Power Level 9k theme](https://www.youtube.com/watch?v=TIkJ5fDz2-g)
 
 - [Getting Started with ZSH](https://blogs.umass.edu/Techbytes/2014/12/01/getting-started-with-zsh/)
+
+- [My Interesting Zsh Prompt ](https://urbanoalvarez.es/blog/my-interesting-zsh-prompt)
+
+- [antigen | دانیال نیک نام](https://blog.niknam.org/1395/09/23/antigen/)
+
+- [What Can Antigen Do For You?](http://blog.andrewlang.net/post/150662693408/what-can-antigen-do-for-you)
 
 
 ### Plugins and Alternatives
