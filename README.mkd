@@ -733,3 +733,5 @@ you may find useful.
 [twitter]: http://twitter.com/sharat87
 [antigen-hs]: https://github.com/Tarrasch/antigen-hs
 [zgen]: https://github.com/tarjoilija/zgen
+
+Join the chat at https://gitter.im/antigen-zsh/Lobby
