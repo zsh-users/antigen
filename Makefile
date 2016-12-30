@@ -41,8 +41,18 @@ release: build
 publish:
 	# Build release commit
 	git add .
-	git commit -m "Build release $$(cat ${PROJECT}/VERSION)"
+	git commit -S -m "Build release $$(cat ${PROJECT}/VERSION)"
 	git push origin release/$$(cat ${PROJECT}/VERSION)
+	# Merge release branch into develop before deploying
+
+deploy:
+	git checkout develop
+	git tag -m "Build release $$(cat ${PROJECT}/VERSION)" -s $$(cat ${PROJECT}/VERSION)
+	git push upstream $$(cat ${PROJECT}/VERSION)
+	git archive --output=$$(cat ${PROJECT}/VERSION).tar.gz --prefix=antigen-$$(cat ${PROJECT}/VERSION|sed s/v//)/ $$(cat ${PROJECT}/VERSION)
+	zcat $$(cat ${PROJECT}/VERSION).tar.gz | gpg --armor --detach-sign >$$(cat ${PROJECT}/VERSION).tar.gz.sign
+	# Verify signature
+	# zcat $$(cat ${PROJECT}/VERSION).tar.gz | gpg --verify $$(cat ${PROJECT}/VERSION).tar.gz.sign -
 
 clean:
 	rm -f ${PREFIX}/share/antigen.zsh
@@ -60,6 +70,6 @@ deps:
 	pip install cram==0.6.*
 
 stats:
-	${PROJECT}/tests/stats.sh "${PROJECT}" "${SHELL}"
+	"${SHELL}" ${PROJECT}/tests/stats.sh "${PROJECT}" "${SHELL}"
 
 all: clean build install

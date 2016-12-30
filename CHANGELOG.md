@@ -2,6 +2,47 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.2] - 2016-12-29
+
+### Fixed
+- [#367, #368] Fix interactively changing between themes
+
+### Changed
+- [#369] Enforce coding style
+- [#370, #372] Update README.md with new external articles
+
+Thanks to everyone who reported issues and provided feedback.
+
+## [1.3.1] - 2016-12-17
+
+### Fixed
+- [#360, #361] Avoid error when CLOBBER is unset
+- [#355, #356] Bundle short name breaks on OSX (BSD sed)
+
+### Changed
+- [#363] Added zsh 5.3 to the build pipeline
+- [#365, #357] Configure Travis-Ci to build against OS X (10.11, xcode 7.3)
+- [#350] Add makefile task to create signed releases
+- [#364, #362] Add note about variable handling inside `antigen-bundles` heredoc
+
+Thanks @rltbennett, @rherrick and everyone who reported issues and provided feedback.
+
+## [1.3.0] - 2016-12-10
+
+### Fixed
+- [#340, #347] Fix bundle short name broken with branched bundles
+- [#341] Improve TravisCI performance
+
+### Changed
+- [#343, #344] Add `--short` option for `antigen-list` command
+
+### Added
+- [#301, #348] Sign git commits & releases (tags)
+- [#337, #345] Theme command tab completion
+- [#335, #342] Purge command for removing bundles from file system
+
+Thanks @rugk and everyone who reported issues and provided feedback.
+
 ## [1.2.4] - 2016-12-03
 
 ### Fixed

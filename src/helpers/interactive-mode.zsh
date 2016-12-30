@@ -10,17 +10,18 @@
 # Returns
 #   Either true or false depending if we are running in interactive mode
 -antigen-interactive-mode () {
-    # Check if we are in any way running in interactive mode
-    if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
-        if [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
-            _ANTIGEN_INTERACTIVE=true
-        elif [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
-            zmodload zsh/parameter
-            if [[ "${functrace[$#functrace]%:*}" == "zsh" ]]; then
-                _ANTIGEN_INTERACTIVE=true
-            fi
-        fi
+  # Check if we are in any way running in interactive mode
+  if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
+    if [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
+      _ANTIGEN_INTERACTIVE=true
+    elif [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
+      zmodload zsh/parameter
+      if [[ "${functrace[$#functrace]%:*}" == "zsh" ]]; then
+        _ANTIGEN_INTERACTIVE=true
+      fi
     fi
+  fi
 
-    return _ANTIGEN_INTERACTIVE
+  return _ANTIGEN_INTERACTIVE
 }
+

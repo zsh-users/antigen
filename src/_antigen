@@ -15,18 +15,19 @@ _antigen () {
     'snapshot:Create a snapshot of all the active clones'
     'restore:Restore the bundles state as specified in the snapshot'
     'selfupdate:Update antigen itself'
+    'purge:Remove a cloned bundle from filesystem'
   );
 
   if $_ANTIGEN_CACHE_ENABLED; then
-      _1st_arguments+=(
+    _1st_arguments+=(
       'reset:Clears antigen cache'
       'init:Load Antigen configuration from file'
-      )
+    )
   fi
 
   _1st_arguments+=(
-  'help:Show this message'
-  'version:Display Antigen version'
+    'help:Show this message'
+    'version:Display Antigen version'
   )
 
   __bundle() {
@@ -61,6 +62,12 @@ _antigen () {
     cleanup)
       __cleanup
       ;;
+    purge)
+      compadd $(-antigen-get-bundles)
+      ;;
+    theme)
+      compadd $(-antigen-get-themes)
+    ;;
   esac
 }
 

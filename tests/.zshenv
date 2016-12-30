@@ -23,6 +23,7 @@ alias pg='git --git-dir "$PLUGIN_DIR/.git" --work-tree "$PLUGIN_DIR"'
 
 echo 'alias hehe="echo hehe"' > "$PLUGIN_DIR"/aliases.zsh
 echo 'export PS1="prompt>"' > "$PLUGIN_DIR"/silly.zsh-theme
+echo 'export PS1=">"' > "$PLUGIN_DIR"/arrow.zsh-theme
 
 {
     pg init
@@ -51,3 +52,16 @@ echo 'alias unsourced-alias="echo unsourced-alias"' > "$PLUGIN_DIR2"/aliases.zsh
     pg2 add .
     pg2 commit -m 'Initial commit'
 } > /dev/null
+
+# Wrapper around \wc command to handle wc format differences between GNU and BSD
+# GNU:
+#  echo 1 | wc -l
+#  1
+# BSD:
+#  echo 1 | wc -l
+#       1
+#
+# Using this wrapper output from both implementations resembles GNU's.
+function wc () {
+    command wc "$@" | xargs
+}

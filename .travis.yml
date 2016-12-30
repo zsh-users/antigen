@@ -1,11 +1,12 @@
-# Using python for running the tests, using the `cram` test framework.
-language: python
+sudo: false
 
 # Python version to run tests with.
 python:
   - "2.7"
 
 cache:
+  pip: true
+  apt: true
   directories:
     - $HOME/zsh
     - $HOME/.zsh-builds
@@ -18,35 +19,93 @@ env:
     - ZSH_REMOTE_URL=https://github.com/zsh-users/zsh.git
     - BUILDS_PATH=$HOME/.zsh-builds
     - ZSH_SOURCE=$HOME/zsh
-  matrix:
-    - ZSH_VERSION=master
-    - ZSH_VERSION=zsh-5.2
-    - ZSH_VERSION=zsh-5.1
-    - ZSH_VERSION=zsh-5.0.0
-    - ZSH_VERSION=zsh-4.3.17
-    - ZSH_VERSION=zsh-4.3.5
+
+matrix:
+  include:
+    - os: linux
+      language: python
+      env: ZSH_BUILD_VERSION=master
+    - os: linux
+      language: python
+      env: ZSH_BUILD_VERSION=zsh-5.3
+    - os: linux
+      language: python
+      env: ZSH_BUILD_VERSION=zsh-5.2
+    - os: linux
+      language: python
+      env: ZSH_BUILD_VERSION=zsh-5.1
+    - os: linux
+      language: python
+      env: ZSH_BUILD_VERSION=zsh-5.0.0
+    - os: linux
+      language: python
+      env: ZSH_BUILD_VERSION=zsh-4.3.17
+    - os: linux
+      language: python
+      env: ZSH_BUILD_VERSION=zsh-4.3.5
+
+    - os: osx
+      language: generic
+      env: ZSH_BUILD_VERSION=master
+    - os: osx
+      language: generic
+      env: ZSH_BUILD_VERSION=zsh-5.3
+    - os: osx
+      language: generic
+      env: ZSH_BUILD_VERSION=zsh-5.2
+    - os: osx
+      language: generic
+      env: ZSH_BUILD_VERSION=zsh-5.1
+    - os: osx
+      language: generic
+      env: ZSH_BUILD_VERSION=zsh-5.0.0
+    - os: osx
+      language: generic
+      env: ZSH_BUILD_VERSION=zsh-4.3.17
+    # zsh 4.3.5 fails on OS X. See https://travis-ci.org/zsh-users/antigen/jobs/184819719
+      #- os: osx
+      #language: generic
+      #env: ZSH_BUILD_VERSION=zsh-4.3.5
+
+addons:
+    apt:
+        sources:
+            - debian-sid
+        packages:
+            - shellcheck
 
 install:
   # Install python requirements.
   - "make deps"
 
-  # Install zsh versions from source.
-  - "./tests/build-zsh.sh $ZSH_VERSION $BUILDS_PATH $ZSH_SOURCE"
+  # Install shellcheck (osx only)
+  - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install shellcheck; fi
 
-before_script:
+  # Install zsh versions from source.
+  - "./tests/build-zsh.sh $ZSH_BUILD_VERSION $BUILDS_PATH $ZSH_SOURCE"
+
+before_install:
+  # Show system information
+  - "uname -a"
+
   # Show the git version being used to test.
   - "git --version"
+
+before_script:
+  # Show zsh version being deployed.
+  - "$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh --version"
 
   # Test config for git.
   - "git config --global user.name test"
   - "git config --global user.email test@test.test"
 
-  # Show zsh version being deployed.
-  - "$BUILDS_PATH/$ZSH_VERSION/zsh --version"
+  # Run shell check
+  - "shellcheck ./bin/antigen.zsh --shell=ksh -e SC1036,SC1056,SC1072,SC1073,SC1009,SC1083"
 
 # Run the tests.
 script:
-  - "make tests PYENV= SHELL=$BUILDS_PATH/$ZSH_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=false _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=true SHELL=$BUILDS_PATH/$ZSH_VERSION/zsh"
+  - "make tests PYENV= SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+  - "make stats _ANTIGEN_CACHE_ENABLED=false _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=true SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+

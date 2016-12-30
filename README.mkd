@@ -31,7 +31,7 @@ sample, if you will.
 
 Get and load antigen.
 
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.2.4/bin/antigen.zsh > antigen.zsh
+    curl https://cdn.rawgit.com/zsh-users/antigen/v1.3.2/bin/antigen.zsh > antigen.zsh
     source antigen.zsh
 
 There. You now have all the antigen goodies. Let's try install some plugins. How
@@ -305,6 +305,10 @@ understand how it works. Its a very small function.
 *Note*: Indenting the contents inside the EOBUNDLES heredoc is not required for
 antigen-bundles to work. Its allowed (and encouraged) to improve readability.
 
+Another thing to take into account is that variables (ex. environment variables)
+and especial builtin characters (`~`, `.`) won't work inside a heredoc, so you may
+have to change a `antigen-bundle` syntax to work with `antigen-bundles`.
+
 ### antigen init
 
 Makes usage of caching in order to quickly load bundles. Improves performance greatly
@@ -373,6 +377,32 @@ This command, by default asks for confirmation before deleting the unused
 clones. If the `--force` argument is given, then this confirmation is not asked.
 It straight away deletes all the unused clones. This option makes this command
 usable in a non-interactive fashion.
+
+### antigen purge
+
+This command removes a bundle from filesystem. Usage:
+
+    antigen purge example/bundle [--force]
+
+Where `example/bundle` is the bundle you want to purge from filesystem.
+
+Take into account that the bundle will be removed from filesystem but next time
+you open up a shell, if you have an `antigen bundle example/bundle` line laying
+around, the bundle will be installed again.
+
+This command, by default asks for confirmation before deleting bundles. If the
+`--force` argument is given, then this confirmation is not asked.
+
+### antigen reset
+
+If cache is enabled this command will clean the generated cache. This is useful
+if you are using `antigen-init` command in order to reload bundle configuration changes.
+
+Usage:
+
+    antigen reset
+
+Takes no further arguments.
 
 ### antigen use
 
@@ -531,7 +561,7 @@ looks good as output on the command line.
 
 Install Antigen from our main repository for the latests and greatests version available:
 
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.2.4/bin/antigen.zsh > antigen.zsh
+    curl https://cdn.rawgit.com/zsh-users/antigen/v1.3.2/bin/antigen.zsh > antigen.zsh
 
 Or using your system package manager:
 
@@ -650,9 +680,11 @@ Any comments/suggestions/feedback welcome. Please say hello to us on
 
 These are some external articles wrote by Antigen users.
 
-- [Awesome cmd line with antigen ( zsh plugin manager)](https://medium.com/cocoaacademymag/awesome-cmd-line-with-antigen-zsh-plugin-manager-d497574f7b5)
+- [Awesome cmd line with antigen (zsh plugin manager)](https://medium.com/cocoaacademymag/awesome-cmd-line-with-antigen-zsh-plugin-manager-d497574f7b5)
 
 - [Oh-my-zsh is the Disease and Antigen is the Vaccine](http://joshldavis.com/2014/07/26/oh-my-zsh-is-a-disease-antigen-is-the-vaccine/)
+
+- [Personalizando zsh: antigen](http://antonio-mario.com/personalizando-zsh-antigen/)
 
 - [Just discovered.. zsh!](https://arteymix.github.io/2015/01/20/just-discovered-zsh.html)
 
@@ -673,6 +705,12 @@ These are some external articles wrote by Antigen users.
 - [Zsh Shell with Antigen + Oh-My-Zsh + Power Level 9k theme](https://www.youtube.com/watch?v=TIkJ5fDz2-g)
 
 - [Getting Started with ZSH](https://blogs.umass.edu/Techbytes/2014/12/01/getting-started-with-zsh/)
+
+- [My Interesting Zsh Prompt ](https://urbanoalvarez.es/blog/my-interesting-zsh-prompt)
+
+- [antigen | دانیال نیک نام](https://blog.niknam.org/1395/09/23/antigen/)
+
+- [What Can Antigen Do For You?](http://blog.andrewlang.net/post/150662693408/what-can-antigen-do-for-you)
 
 
 ### Plugins and Alternatives

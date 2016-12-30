@@ -1,5 +1,5 @@
 # Running tests creates this completion dump file.
-tests/.zcompdump
+tests/.zcompdump*
 
 # Test failure reports
 tests/*.t.err
@@ -14,3 +14,8 @@ revert-info
 
 # Default antigen.log location
 *.log
+
+# Release archives and signatures
+*.tar.gz
+*.tar.gz.sign
+

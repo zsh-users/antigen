@@ -22,3 +22,13 @@ Add another bundle.
   $ antigen-list
   */test-plugin / plugin true (glob)
   */test-plugin2 / plugin true (glob)
+
+List command supports short format flag.
+
+  $ antigen-list
+  */test-plugin / plugin true (glob)
+  */test-plugin2 / plugin true (glob)
+
+  $ antigen-list --short
+  */test-plugin (glob)
+  */test-plugin2 (glob)
