@@ -708,7 +708,7 @@ These are some external articles wrote by Antigen users.
 
 - [My Interesting Zsh Prompt ](https://urbanoalvarez.es/blog/my-interesting-zsh-prompt)
 
-- [antigen | دانیال نیک نام](https://blog.niknam.org/1395/09/23/antigen/)
+- [antigen - دانیال نیک نام](https://blog.niknam.org/1395/09/23/antigen/)
 
 - [What Can Antigen Do For You?](http://blog.andrewlang.net/post/150662693408/what-can-antigen-do-for-you)
 
