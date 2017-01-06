@@ -680,11 +680,9 @@ Any comments/suggestions/feedback welcome. Please say hello to us on
 
 These are some external articles wrote by Antigen users.
 
-- [Awesome cmd line with antigen (zsh plugin manager)](https://medium.com/cocoaacademymag/awesome-cmd-line-with-antigen-zsh-plugin-manager-d497574f7b5)
-
 - [Oh-my-zsh is the Disease and Antigen is the Vaccine](http://joshldavis.com/2014/07/26/oh-my-zsh-is-a-disease-antigen-is-the-vaccine/)
 
-- [Personalizando zsh: antigen](http://antonio-mario.com/personalizando-zsh-antigen/)
+- [Awesome cmd line with antigen (zsh plugin manager)](https://medium.com/cocoaacademymag/awesome-cmd-line-with-antigen-zsh-plugin-manager-d497574f7b5)
 
 - [Just discovered.. zsh!](https://arteymix.github.io/2015/01/20/just-discovered-zsh.html)
 
@@ -708,7 +706,7 @@ These are some external articles wrote by Antigen users.
 
 - [My Interesting Zsh Prompt ](https://urbanoalvarez.es/blog/my-interesting-zsh-prompt)
 
-- [antigen | دانیال نیک نام](https://blog.niknam.org/1395/09/23/antigen/)
+- [antigen - دانیال نیک نام](https://blog.niknam.org/1395/09/23/antigen/)
 
 - [What Can Antigen Do For You?](http://blog.andrewlang.net/post/150662693408/what-can-antigen-do-for-you)
 
