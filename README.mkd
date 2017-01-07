@@ -1,10 +1,16 @@
-# Antigen <sup>v1</sup>
+<h1 align="center">
+  <a href="https://github.com/zsh-users/antigen"><img src="antigen.png" alt="Antigen"></a>
+  <br>
+  Antigen <sup>v2</sup>
+</h1>
+<h4 align="center">The plugin manager for zsh.</h2>
 
-### A plugin manager for zsh, inspired by oh-my-zsh and vundle. 
-
-[![Latest](https://img.shields.io/github/release/zsh-users/antigen.svg?label=latest)](https://github.com/zsh-users/antigen/releases/latest) [![Build Status](https://img.shields.io/travis/zsh-users/antigen/master.svg?label=stable)](http://travis-ci.org/zsh-users/antigen) [![Build Status](https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=next)](http://travis-ci.org/zsh-users/antigen)
-
-[Installation](#installation) | [Configuration](#configuration) | [Documentation](https://github.com/zsh-users/antigen/wiki) | [Bug tracker](https://github.com/zsh-users/antigen/issues) | [Discussions](https://trello.com/b/P0xrGgfT/antigen) | [Chat](https://gitter.im/antigen-zsh/develop) | [License](http://mit.sharats.me/)
+<p align="center">
+  <a href="https://github.com/zsh-users/antigen/releases/latest"><img src="https://img.shields.io/github/release/zsh-users/antigen.svg?label=latest" alt="Latest"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/master.svg?label=stable" alt="Build Status"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=next" alt="Build Status"></a>
+</p>
+<p align="center">
+  <a href="#installation">Installation</a> | <a href="#configuration">Configuration</a> | <a href="https://github.com/zsh-users/antigen/wiki">Documentation</a> | <a href="https://github.com/zsh-users/antigen/issues">Bug tracker</a> | <a href="https://trello.com/b/P0xrGgfT/antigen">Discussions</a> | <a href="https://gitter.im/antigen-zsh/develop">Chat</a> | <a href="http://mit.sharats.me/">License</a>
+</p>
 
 Antigen is a small set of functions that help you easily manage your shell (zsh)
 plugins, called bundles. The concept is pretty much the same as bundles in a
