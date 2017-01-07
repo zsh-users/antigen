@@ -1,9 +1,5 @@
 sudo: false
 
-# Python version to run tests with.
-python:
-  - "2.7"
-
 cache:
   pip: true
   apt: true
@@ -73,6 +69,7 @@ addons:
             - debian-sid
         packages:
             - shellcheck
+            - python-pip
 
 install:
   # Install python requirements.
