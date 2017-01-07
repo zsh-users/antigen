@@ -19,25 +19,25 @@ env:
 matrix:
   include:
     - os: linux
-      language: python
+      language: generic
       env: ZSH_BUILD_VERSION=master
     - os: linux
-      language: python
+      language: generic
       env: ZSH_BUILD_VERSION=zsh-5.3
     - os: linux
-      language: python
+      language: generic
       env: ZSH_BUILD_VERSION=zsh-5.2
     - os: linux
-      language: python
+      language: generic
       env: ZSH_BUILD_VERSION=zsh-5.1
     - os: linux
-      language: python
+      language: generic
       env: ZSH_BUILD_VERSION=zsh-5.0.0
     - os: linux
-      language: python
+      language: generic
       env: ZSH_BUILD_VERSION=zsh-4.3.17
     - os: linux
-      language: python
+      language: generic
       env: ZSH_BUILD_VERSION=zsh-4.3.5
 
     - os: osx
