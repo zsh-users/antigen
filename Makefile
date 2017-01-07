@@ -8,7 +8,7 @@ PROJECT ?= $$PWD
 BIN ?= ${PROJECT}/bin
 CRAM_OPTS ?= '-v'
 
-VERSION=$(cat ${PROJECT}/VERSION)
+VERSION=$$(cat ${PROJECT}/VERSION)
 
 define ised
 	sed $(1) $(2) > "$(2).1"
@@ -44,7 +44,7 @@ release:
 
 	# Build release commit
 	git add CHANGELOG.md VERSION README.mkd bin/antigen.zsh
-	git commit -S -m "Build release ${VERSION}"
+	git commit -S -m "Build release $(version)"
 
 publish:
 	git push origin release/${VERSION}
