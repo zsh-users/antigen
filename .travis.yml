@@ -65,8 +65,6 @@ matrix:
 
 addons:
     apt:
-        sources:
-            - debian-sid
         packages:
             - shellcheck
             - python-pip
