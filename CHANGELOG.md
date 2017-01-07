@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.3] - 2017-01-07
+
+### Changed
+- [#379] Update makefile release tasks
+- [#378] Add entry in wiki regarding COMPDUMP location configuration
+- [#376] Update README.md with external articles
+- [#375, #374] Add LICENSE file to repository
+
+Thanks to everyone who reported issues and provided feedback.
+
 ## [1.3.2] - 2016-12-29
 
 ### Fixed
