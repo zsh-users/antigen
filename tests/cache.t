@@ -39,11 +39,33 @@ Should have listed bundles.
   $ ls -A $_ZCACHE_PATH | wc -l
   2
 
-Both bundles are cached.
+Both bundles are cached by bundle.
+
+  $ unset _ZCACHE_EXTENSION_ACTIVE
+  $ _ZCACHE_EXTENSION_BUNDLE=true
+  $ zcache-start # forces non-interactive mode
+  $ antigen reset > /dev/null
+
+  $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen-bundles > /dev/null
+  $ antigen apply > /dev/null
 
   $ cat $_ZCACHE_PAYLOAD_PATH | grep hehe
   alias hehe="echo hehe"
   alias hehe2="echo hehe2"
+
+Both bundles are cached by reference.
+
+  $ unset _ZCACHE_EXTENSION_ACTIVE
+  $ _ZCACHE_EXTENSION_BUNDLE=false
+  $ zcache-start # forces non-interactive mode
+  $ antigen reset > /dev/null
+
+  $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen-bundles > /dev/null
+  $ antigen apply > /dev/null
+
+  $ cat $_ZCACHE_PAYLOAD_PATH | grep source
+  source .*-SLASH-test-plugin//aliases.zsh.* (re)
+  source .*-SLASH-test-plugin2//init.zsh.* (re)
 
 List command should work as expected.
 
@@ -53,13 +75,21 @@ List command should work as expected.
 
 Respect escape sequences.
 
+  $ unset _ZCACHE_EXTENSION_ACTIVE
+  $ _ZCACHE_EXTENSION_BUNDLE=true
+  $ zcache-start # forces non-interactive mode
+  $ antigen reset > /dev/null
+
+  $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen-bundles > /dev/null
+  $ antigen apply > /dev/null
+
   $ cat $_ZCACHE_PAYLOAD_PATH | grep prompt
   alias prompt="\e]$ >\a\n"
 
 Cache is saved correctly.
 
   $ cat $_ZCACHE_PAYLOAD_PATH | wc -l
-  25
+  23
 
   $ cat $_ZCACHE_PAYLOAD_PATH | grep -c 'alias prompt'
   1

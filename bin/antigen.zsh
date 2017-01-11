@@ -1195,9 +1195,14 @@ _antigen () {
 
     -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
       if [[ -f "$line" ]]; then
-        _payload+="#-- SOURCE: $line\NL"
-        _payload+=$(-zcache-process-source "$line" "$btype")
-        _payload+="\NL;#-- END SOURCE\NL"
+        # Whether to use bundle or reference cache
+        if [[ $_ZCACHE_EXTENSION_BUNDLE == true ]]; then
+          _payload+="#-- SOURCE: $line\NL"
+          _payload+=$(-zcache-process-source "$line" "$btype")
+          _payload+="\NL;#-- END SOURCE\NL"
+        else
+          _payload+="source \"$line\";\NL"
+        fi
       fi
     done
 
@@ -1212,12 +1217,12 @@ _antigen () {
     fi
   done
 
-  _payload+="fpath+=(${_extensions_paths[@]})\NL"
-  _payload+="unset __ZCACHE_FILE_PATH\NL"
+  _payload+="fpath+=(${_extensions_paths[@]});\NL"
+  _payload+="unset __ZCACHE_FILE_PATH;\NL"
   # \NL (\n) prefix is for backward compatibility
-  _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
-  _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
-  _payload+="export _ZCACHE_CACHE_VERSION=v1.3.5\NL"
+  _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
+  _payload+=" _ZCACHE_CACHE_LOADED=true"
+  _payload+=" _ZCACHE_CACHE_VERSION=v1.3.5\NL"
 
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
   if [[ ! -z "$ZSH" ]]; then
@@ -1330,6 +1335,8 @@ export _ZCACHE_PAYLOAD_PATH="$_ZCACHE_PATH/.zcache-payload"
 export _ZCACHE_BUNDLES_PATH="$_ZCACHE_PATH/.zcache-bundles"
 export _ZCACHE_EXTENSION_CLEAN_FUNCTIONS="${_ZCACHE_EXTENSION_CLEAN_FUNCTIONS:-true}"
 export _ZCACHE_EXTENSION_ACTIVE=false
+# Whether to use bundle or reference cache (since v1.4.0)
+export _ZCACHE_EXTENSION_BUNDLE=false
 local -a _ZCACHE_BUNDLES
 
 # Starts zcache execution.

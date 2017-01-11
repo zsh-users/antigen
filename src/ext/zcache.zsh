@@ -3,6 +3,8 @@ export _ZCACHE_PAYLOAD_PATH="$_ZCACHE_PATH/.zcache-payload"
 export _ZCACHE_BUNDLES_PATH="$_ZCACHE_PATH/.zcache-bundles"
 export _ZCACHE_EXTENSION_CLEAN_FUNCTIONS="${_ZCACHE_EXTENSION_CLEAN_FUNCTIONS:-true}"
 export _ZCACHE_EXTENSION_ACTIVE=false
+# Whether to use bundle or reference cache (since v1.4.0)
+export _ZCACHE_EXTENSION_BUNDLE=false
 local -a _ZCACHE_BUNDLES
 
 # Starts zcache execution.
