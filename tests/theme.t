@@ -53,3 +53,9 @@ Using the same theme does not change anything.
   $ antigen-list | grep arrow
   *arrow* (glob)
 
+Can load a theme without specifying a theme name:
+
+  $ antigen-theme $PLUGIN_DIR
+  $ antigen-list | grep arrow
+  *arrow* (glob)
+
