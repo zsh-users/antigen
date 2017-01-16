@@ -13,8 +13,7 @@
   local make_local_clone="$3"
   local btype="$4"
   local src
-
-  for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone"); do
+  for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone" "$btype"); do
     if [[ -d "$src" ]]; then
       if (( ! ${fpath[(I)$location]} )); then
         fpath=($location $fpath)

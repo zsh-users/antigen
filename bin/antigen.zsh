@@ -184,6 +184,7 @@ antigen () {
   local url="$1"
   local loc="$2"
   local make_local_clone="$3"
+  local btype="$4"
 
   # The full location where the plugin is located.
   local location="$url/"
@@ -202,6 +203,16 @@ antigen () {
   if [[ -f "$location" ]]; then
     echo "$location"
     return
+  fi
+
+  # Load `*.zsh-theme` for themes
+  if [[ "$btype" == "theme" ]]; then
+    local theme_plugin
+    theme_plugin=($location/*.zsh-theme(N[1]))
+    if [[ -f "$theme_plugin" ]]; then
+      echo "$theme_plugin"
+      return
+    fi
   fi
 
   # If we have a `*.plugin.zsh`, source it.
@@ -263,9 +274,12 @@ antigen () {
     make_local_clone=false
   fi
 
-  # Add the theme extension to `loc`, if this is a theme.
-  if [[ $btype == theme && $loc != *.zsh-theme ]]; then
-    loc="$loc.zsh-theme"
+  # Add the theme extension to `loc`, if this is a theme, but only
+  # if it's especified, ie, --loc=theme-name, in case when it's not
+  # specified antige-load-list will look for *.zsh-theme files
+  if [[ $btype == theme &&
+    $loc != "/" && $loc != *.zsh-theme ]]; then
+      loc="$loc.zsh-theme"
   fi
 
   # Bundle spec arguments' default values.
@@ -440,8 +454,7 @@ antigen () {
   local make_local_clone="$3"
   local btype="$4"
   local src
-
-  for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone"); do
+  for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone" "$btype"); do
     if [[ -d "$src" ]]; then
       if (( ! ${fpath[(I)$location]} )); then
         fpath=($location $fpath)
