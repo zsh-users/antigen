@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.4] - 2017-01-16
+
+### Changed
+- [#389, #385] `antigen-theme` command load themes from path 
+
+### Fixed
+- [#384] Fix updating version references 
+
+Thanks to everyone who reported issues and provided feedback.
+
 ## [1.3.3] - 2017-01-07
 
 ### Changed

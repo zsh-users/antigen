@@ -1020,7 +1020,7 @@ antigen-use () {
 }
 
 antigen-version () {
-  echo "Antigen v1.3.3"
+  echo "Antigen v1.3.4"
 }
 
 #compdef _antigen
@@ -1167,7 +1167,7 @@ _antigen () {
 
   _payload+="#-- START ZCACHE GENERATED FILE\NL"
   _payload+="#-- GENERATED: $(date)\NL"
-  _payload+='#-- ANTIGEN v1.3.3\NL'
+  _payload+='#-- ANTIGEN v1.3.4\NL'
   for bundle in $_ZCACHE_BUNDLES; do
     # -antigen-load-list "$url" "$loc" "$make_local_clone"
     eval "$(-antigen-parse-bundle ${=bundle})"
@@ -1201,7 +1201,7 @@ _antigen () {
   # \NL (\n) prefix is for backward compatibility
   _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
   _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
-  _payload+="export _ZCACHE_CACHE_VERSION=v1.3.3\NL"
+  _payload+="export _ZCACHE_CACHE_VERSION=v1.3.4\NL"
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
