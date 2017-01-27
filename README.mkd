@@ -96,6 +96,9 @@ and continue until you're tired. At which point you can come back to this page
 So, now that you're here, I suppose you are convinced and want antigen running
 your shell all the time. Sweet. Let's do it.
 
+There are several installation methods available in the [Installation](#installation)
+section or you can use git:
+
 First, clone this repo, probably as a submodule if you have your dotfiles in a
 git repo,
 
