@@ -640,7 +640,10 @@ antigen-bundle () {
 
   # Add it to the record.
   local bundle_record="$url $loc $btype $make_local_clone"
-  if [[ ! $_ANTIGEN_BUNDLE_RECORD =~ "$bundle_record" ]]; then
+  # http://zsh-workers.zsh.narkive.com/QwfCWpW8/what-s-wrong-with-this-expression
+  if [[ "$_ANTIGEN_BUNDLE_RECORD" =~ "$bundle_record" ]]; then
+    return
+  else
     # TODO Use array instead of string
     _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD"$'\n'"$bundle_record"
   fi
@@ -953,9 +956,14 @@ antigen-theme () {
   #   - there was no error in bundling the given theme
   #   - there is a theme registered
   #   - registered theme is not the same as the current one
-  if [[ $result == 0 && -n $record && ! $record =~ "$@" ]]; then
-    # Remove entire line plus $\n character
-    _ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD//$'\n'$record/}
+  if [[ $result == 0 && -n $record ]]; then
+    # http://zsh-workers.zsh.narkive.com/QwfCWpW8/what-s-wrong-with-this-expression
+    if [[ "$record" =~ "$@" ]]; then
+      return $result
+    else
+      # Remove entire line plus $\n character
+      _ANTIGEN_BUNDLE_RECORD="${_ANTIGEN_BUNDLE_RECORD//$'\n'$record/}"
+    fi
   fi
 
   return $result
