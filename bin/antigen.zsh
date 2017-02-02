@@ -1071,6 +1071,11 @@ _antigen () {
       '--no-local-clone[Do not create a clone]' \
       '--btype[Indicates whether the bundle is a theme or a simple plugin]'
   }
+  __list() {
+    _arguments \
+      '--short[Show only bundle name]'
+  }
+
 
   __cleanup() {
     _arguments \
@@ -1100,6 +1105,9 @@ _antigen () {
       ;;
     theme)
       compadd $(-antigen-get-themes)
+      ;;
+    list)
+      __list
     ;;
   esac
 }
