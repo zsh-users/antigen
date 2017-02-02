@@ -359,7 +359,9 @@ Insider detail: The information for reverting is stored in
 Use this command to list out the currently *loaded* plugins. Keep in mind that
 this includes any bundles installed on-the-fly.
 
-Takes no arguments. Gives out four entries per line of output, denoting the
+    antigen list [--short]
+
+Without arguments it gives out four entries per line of output, denoting the
 following fields of each bundle.
 
     <repo-url> <loc> <btype> <has-local-clone?>
@@ -369,6 +371,8 @@ The `btype` field is an internal detail, that specifies if the bundle is a
 
 The final field is `true` or `false` reflecting whether there is a local clone
 for this bundle.
+
+With `--short` argument it will only print short bundle names only.
 
 ### antigen cleanup
 
