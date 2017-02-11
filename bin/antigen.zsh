@@ -1028,7 +1028,7 @@ antigen-use () {
 }
 
 antigen-version () {
-  echo "Antigen v1.3.5"
+  echo "Antigen v1.4.0"
 }
 
 #compdef _antigen
@@ -1183,7 +1183,7 @@ _antigen () {
 
   _payload+="#-- START ZCACHE GENERATED FILE\NL"
   _payload+="#-- GENERATED: $(date)\NL"
-  _payload+='#-- ANTIGEN v1.3.5\NL'
+  _payload+='#-- ANTIGEN v1.4.0\NL'
   for bundle in $_ZCACHE_BUNDLES; do
     # -antigen-load-list "$url" "$loc" "$make_local_clone"
     eval "$(-antigen-parse-bundle ${=bundle})"
@@ -1222,7 +1222,7 @@ _antigen () {
   # \NL (\n) prefix is for backward compatibility
   _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
   _payload+=" _ZCACHE_CACHE_LOADED=true"
-  _payload+=" _ZCACHE_CACHE_VERSION=v1.3.5\NL"
+  _payload+=" _ZCACHE_CACHE_VERSION=v1.4.0\NL"
 
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
   if [[ ! -z "$ZSH" ]]; then
