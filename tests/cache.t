@@ -88,8 +88,8 @@ Respect escape sequences.
 
 Cache is saved correctly.
 
-  $ cat $_ZCACHE_PAYLOAD_PATH | wc -l
-  23
+#  $ cat $_ZCACHE_PAYLOAD_PATH | wc -l
+#  23
 
   $ cat $_ZCACHE_PAYLOAD_PATH | grep -c 'alias prompt'
   1
