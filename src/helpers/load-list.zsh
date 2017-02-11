@@ -2,6 +2,7 @@
   local url="$1"
   local loc="$2"
   local make_local_clone="$3"
+  local btype="$4"
 
   # The full location where the plugin is located.
   local location="$url/"
@@ -20,6 +21,16 @@
   if [[ -f "$location" ]]; then
     echo "$location"
     return
+  fi
+
+  # Load `*.zsh-theme` for themes
+  if [[ "$btype" == "theme" ]]; then
+    local theme_plugin
+    theme_plugin=($location/*.zsh-theme(N[1]))
+    if [[ -f "$theme_plugin" ]]; then
+      echo "$theme_plugin"
+      return
+    fi
   fi
 
   # If we have a `*.plugin.zsh`, source it.

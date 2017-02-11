@@ -42,6 +42,9 @@ matrix:
       env: ZSH_BUILD_VERSION=zsh-4.3.17
     - os: linux
       language: python
+      env: ZSH_BUILD_VERSION=zsh-4.3.11
+    - os: linux
+      language: python
       env: ZSH_BUILD_VERSION=zsh-4.3.5
 
     - os: osx
@@ -62,6 +65,9 @@ matrix:
     - os: osx
       language: generic
       env: ZSH_BUILD_VERSION=zsh-4.3.17
+    - os: osx
+      language: generic
+      env: ZSH_BUILD_VERSION=zsh-4.3.11
     # zsh 4.3.5 fails on OS X. See https://travis-ci.org/zsh-users/antigen/jobs/184819719
       #- os: osx
       #language: generic
@@ -100,7 +106,7 @@ before_script:
   - "git config --global user.email test@test.test"
 
   # Run shell check
-  - "shellcheck ./bin/antigen.zsh --shell=ksh -e SC1036,SC1056,SC1072,SC1073,SC1009,SC1083"
+  - "shellcheck ./bin/antigen.zsh --shell=ksh -e SC1036,SC1056,SC1072,SC1073,SC1009,SC1083,SC1046,SC1047"
 
 # Run the tests.
 script:

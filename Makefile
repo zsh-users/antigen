@@ -8,6 +8,8 @@ PROJECT ?= $$PWD
 BIN ?= ${PROJECT}/bin
 CRAM_OPTS ?= '-v'
 
+VERSION=$$(cat ${PROJECT}/VERSION)
+
 define ised
 	sed $(1) $(2) > "$(2).1"
 	mv "$(2).1" "$(2)"
@@ -23,36 +25,39 @@ build:
 	cat ${PROJECT}/src/ext/*.zsh >> ${BIN}/antigen.zsh
 	$(call ised,"s/{{ANTIGEN_VERSION}}/$$(cat ${PROJECT}/VERSION)/",${BIN}/antigen.zsh)
 
-release: build
+release:
 	# Move to release branch
-	vi VERSION
 	git checkout develop
-	git checkout -b release/$$(cat ${PROJECT}/VERSION)
-	
-	# make build and tests
+	git checkout -b release/$(version)
+
+	# Update release version
+	echo "$(version)" > ${PROJECT}/VERSION
+
+	# Make build and tests
 	make build && make tests PYENV= SHELL=zsh
 	
-	# Update versions
-	vi README.mkd
+	# Update version references in README.md
+	$(call ised, "s/${VERSION}/$(version)/",README.mkd)
 	
 	# Update changelog
 	vi CHANGELOG.md
-	
-publish:
+
 	# Build release commit
-	git add .
-	git commit -S -m "Build release $$(cat ${PROJECT}/VERSION)"
-	git push origin release/$$(cat ${PROJECT}/VERSION)
+	git add CHANGELOG.md VERSION README.mkd bin/antigen.zsh
+	git commit -S -m "Build release $(version)"
+
+publish:
+	git push origin release/${VERSION}
 	# Merge release branch into develop before deploying
 
 deploy:
 	git checkout develop
-	git tag -m "Build release $$(cat ${PROJECT}/VERSION)" -s $$(cat ${PROJECT}/VERSION)
-	git push upstream $$(cat ${PROJECT}/VERSION)
-	git archive --output=$$(cat ${PROJECT}/VERSION).tar.gz --prefix=antigen-$$(cat ${PROJECT}/VERSION|sed s/v//)/ $$(cat ${PROJECT}/VERSION)
-	zcat $$(cat ${PROJECT}/VERSION).tar.gz | gpg --armor --detach-sign >$$(cat ${PROJECT}/VERSION).tar.gz.sign
+	git tag -m "Build release ${VERSION}" -s ${VERSION}
+	git push upstream ${VERSION}
+	git archive --output=${VERSION}.tar.gz --prefix=antigen-$$(echo ${VERSION}|sed s/v//)/ ${VERSION}
+	zcat ${VERSION}.tar.gz | gpg --armor --detach-sign >${VERSION}.tar.gz.sign
 	# Verify signature
-	# zcat $$(cat ${PROJECT}/VERSION).tar.gz | gpg --verify $$(cat ${PROJECT}/VERSION).tar.gz.sign -
+	zcat ${VERSION}.tar.gz | gpg --verify ${VERSION}.tar.gz.sign -
 
 clean:
 	rm -f ${PREFIX}/share/antigen.zsh

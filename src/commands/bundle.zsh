@@ -34,7 +34,10 @@ antigen-bundle () {
 
   # Add it to the record.
   local bundle_record="$url $loc $btype $make_local_clone"
-  if [[ ! $_ANTIGEN_BUNDLE_RECORD =~ "$bundle_record" ]]; then
+  # http://zsh-workers.zsh.narkive.com/QwfCWpW8/what-s-wrong-with-this-expression
+  if [[ "$_ANTIGEN_BUNDLE_RECORD" =~ "$bundle_record" ]]; then
+    return
+  else
     # TODO Use array instead of string
     _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD"$'\n'"$bundle_record"
   fi

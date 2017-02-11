@@ -2,6 +2,37 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.5] - 2017-02-03
+
+### Changed
+- [#393, #392] Add hint in readme to alternative install methods 
+
+### Fixed
+- [#398, #396] Add argument completion for `antigen-list` command 
+- [#394, #395] Fix syntax issue on zsh 4.3.11 
+
+Thanks @TBird2001, @einSelbst and everyone who reported issues and provided feedback.
+
+## [1.3.4] - 2017-01-16
+
+### Changed
+- [#389, #385] `antigen-theme` command load themes from path 
+
+### Fixed
+- [#384] Fix updating version references 
+
+Thanks to everyone who reported issues and provided feedback.
+
+## [1.3.3] - 2017-01-07
+
+### Changed
+- [#379, #382] Update makefile release tasks
+- [#378] Add entry in wiki regarding COMPDUMP location configuration
+- [#376] Update README.md with external articles
+- [#375, #374] Add LICENSE file to repository
+
+Thanks to everyone who reported issues and provided feedback.
+
 ## [1.3.2] - 2016-12-29
 
 ### Fixed

@@ -184,6 +184,7 @@ antigen () {
   local url="$1"
   local loc="$2"
   local make_local_clone="$3"
+  local btype="$4"
 
   # The full location where the plugin is located.
   local location="$url/"
@@ -202,6 +203,16 @@ antigen () {
   if [[ -f "$location" ]]; then
     echo "$location"
     return
+  fi
+
+  # Load `*.zsh-theme` for themes
+  if [[ "$btype" == "theme" ]]; then
+    local theme_plugin
+    theme_plugin=($location/*.zsh-theme(N[1]))
+    if [[ -f "$theme_plugin" ]]; then
+      echo "$theme_plugin"
+      return
+    fi
   fi
 
   # If we have a `*.plugin.zsh`, source it.
@@ -263,9 +274,12 @@ antigen () {
     make_local_clone=false
   fi
 
-  # Add the theme extension to `loc`, if this is a theme.
-  if [[ $btype == theme && $loc != *.zsh-theme ]]; then
-    loc="$loc.zsh-theme"
+  # Add the theme extension to `loc`, if this is a theme, but only
+  # if it's especified, ie, --loc=theme-name, in case when it's not
+  # specified antige-load-list will look for *.zsh-theme files
+  if [[ $btype == theme &&
+    $loc != "/" && $loc != *.zsh-theme ]]; then
+      loc="$loc.zsh-theme"
   fi
 
   # Bundle spec arguments' default values.
@@ -440,8 +454,7 @@ antigen () {
   local make_local_clone="$3"
   local btype="$4"
   local src
-
-  for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone"); do
+  for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone" "$btype"); do
     if [[ -d "$src" ]]; then
       if (( ! ${fpath[(I)$location]} )); then
         fpath=($location $fpath)
@@ -627,7 +640,10 @@ antigen-bundle () {
 
   # Add it to the record.
   local bundle_record="$url $loc $btype $make_local_clone"
-  if [[ ! $_ANTIGEN_BUNDLE_RECORD =~ "$bundle_record" ]]; then
+  # http://zsh-workers.zsh.narkive.com/QwfCWpW8/what-s-wrong-with-this-expression
+  if [[ "$_ANTIGEN_BUNDLE_RECORD" =~ "$bundle_record" ]]; then
+    return
+  else
     # TODO Use array instead of string
     _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD"$'\n'"$bundle_record"
   fi
@@ -940,9 +956,14 @@ antigen-theme () {
   #   - there was no error in bundling the given theme
   #   - there is a theme registered
   #   - registered theme is not the same as the current one
-  if [[ $result == 0 && -n $record && ! $record =~ "$@" ]]; then
-    # Remove entire line plus $\n character
-    _ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD//$'\n'$record/}
+  if [[ $result == 0 && -n $record ]]; then
+    # http://zsh-workers.zsh.narkive.com/QwfCWpW8/what-s-wrong-with-this-expression
+    if [[ "$record" =~ "$@" ]]; then
+      return $result
+    else
+      # Remove entire line plus $\n character
+      _ANTIGEN_BUNDLE_RECORD="${_ANTIGEN_BUNDLE_RECORD//$'\n'$record/}"
+    fi
   fi
 
   return $result
@@ -1007,7 +1028,7 @@ antigen-use () {
 }
 
 antigen-version () {
-  echo "Antigen v1.3.2"
+  echo "Antigen v1.3.5"
 }
 
 #compdef _antigen
@@ -1050,6 +1071,11 @@ _antigen () {
       '--no-local-clone[Do not create a clone]' \
       '--btype[Indicates whether the bundle is a theme or a simple plugin]'
   }
+  __list() {
+    _arguments \
+      '--short[Show only bundle name]'
+  }
+
 
   __cleanup() {
     _arguments \
@@ -1079,6 +1105,9 @@ _antigen () {
       ;;
     theme)
       compadd $(-antigen-get-themes)
+      ;;
+    list)
+      __list
     ;;
   esac
 }
@@ -1154,7 +1183,7 @@ _antigen () {
 
   _payload+="#-- START ZCACHE GENERATED FILE\NL"
   _payload+="#-- GENERATED: $(date)\NL"
-  _payload+='#-- ANTIGEN v1.3.2\NL'
+  _payload+='#-- ANTIGEN v1.3.5\NL'
   for bundle in $_ZCACHE_BUNDLES; do
     # -antigen-load-list "$url" "$loc" "$make_local_clone"
     eval "$(-antigen-parse-bundle ${=bundle})"
@@ -1188,7 +1217,7 @@ _antigen () {
   # \NL (\n) prefix is for backward compatibility
   _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
   _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
-  _payload+="export _ZCACHE_CACHE_VERSION=v1.3.2\NL"
+  _payload+="export _ZCACHE_CACHE_VERSION=v1.3.5\NL"
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"

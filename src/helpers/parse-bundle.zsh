@@ -34,9 +34,12 @@
     make_local_clone=false
   fi
 
-  # Add the theme extension to `loc`, if this is a theme.
-  if [[ $btype == theme && $loc != *.zsh-theme ]]; then
-    loc="$loc.zsh-theme"
+  # Add the theme extension to `loc`, if this is a theme, but only
+  # if it's especified, ie, --loc=theme-name, in case when it's not
+  # specified antige-load-list will look for *.zsh-theme files
+  if [[ $btype == theme &&
+    $loc != "/" && $loc != *.zsh-theme ]]; then
+      loc="$loc.zsh-theme"
   fi
 
   # Bundle spec arguments' default values.
