@@ -1218,6 +1218,17 @@ _antigen () {
   _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"\NL"
   _payload+="export _ZCACHE_CACHE_LOADED=true\NL"
   _payload+="export _ZCACHE_CACHE_VERSION=v1.3.5\NL"
+
+  # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
+  if [[ ! -z "$ZSH" ]]; then
+    _payload+="export ZSH=\"$ZSH\"";
+    _payload+=" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
+  fi
+
+  if [[ ! -z "$ZDOTDIR" ]]; then
+    _payload+="export ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
+  fi
+
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"

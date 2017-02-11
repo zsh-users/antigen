@@ -59,7 +59,7 @@ Respect escape sequences.
 Cache is saved correctly.
 
   $ cat $_ZCACHE_PAYLOAD_PATH | wc -l
-  24
+  25
 
   $ cat $_ZCACHE_PAYLOAD_PATH | grep -c 'alias prompt'
   1
