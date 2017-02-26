@@ -1,12 +1,12 @@
 Use url library.
   $ antigen-bundle () { echo $@ }
   $ antigen-use https://github.com/zsh-users/prezto.git
-  antigen-bundle https://github.com/zsh-users/prezto.git
+  https://github.com/zsh-users/prezto.git
 
 Accept antigen-bundle semantics.
   $ antigen-bundle () { echo $@ }
   $ antigen-use https://github.com/zsh-users/prezto.git --loc=lib
-  antigen-bundle https://github.com/zsh-users/prezto.git --loc=lib
+  https://github.com/zsh-users/prezto.git --loc=lib
 
 Missing argument.
 

@@ -1019,7 +1019,7 @@ antigen-use () {
   elif [[ $1 == prezto ]]; then
     -antigen-use-prezto
   elif [[ $1 != "" ]]; then
-    echo antigen-bundle $@
+    antigen-bundle $@
   else
     echo 'Usage: antigen-use <library-name|url>' >&2
     echo 'Where <library-name> is any one of the following:' >&2
