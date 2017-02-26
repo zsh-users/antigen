@@ -414,7 +414,7 @@ Takes no further arguments.
 ### antigen use
 
 This command lets you load any (supported) zsh pre-packaged framework, like
-oh-my-zsh. Usage is
+oh-my-zsh, as well as any library from custom url. Usage is
 
     antigen use oh-my-zsh
 
@@ -466,6 +466,15 @@ Please note that Prezto support is new and experimental. If you find any bugs, p
 report over on github issues.
 Also note that due to how Prezto is implemented Antigen has to alter `ZDOTDIR`
 environment variable, which is restored immediately after `antigen apply` command.
+
+#### custom library
+
+Use
+
+    antigen use https://github.com/custom/lib.git
+
+in your `.zshrc`, before any `antigen bundle` declarations. It take all arguments
+`antigen-bundle` command does.
 
 ### antigen theme
 
