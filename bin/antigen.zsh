@@ -1019,6 +1019,7 @@ antigen-use () {
   elif [[ $1 == prezto ]]; then
     -antigen-use-prezto
   elif [[ $1 != "" ]]; then
+    export ANTIGEN_DEFAULT_REPO_URL=$1
     antigen-bundle $@
   else
     echo 'Usage: antigen-use <library-name|url>' >&2

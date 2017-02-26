@@ -2,6 +2,8 @@ Use url library.
   $ antigen-bundle () { echo $@ }
   $ antigen-use https://github.com/zsh-users/prezto.git
   https://github.com/zsh-users/prezto.git
+  $ echo $ANTIGEN_DEFAULT_REPO_URL
+  https://github.com/zsh-users/prezto.git
 
 Accept antigen-bundle semantics.
   $ antigen-bundle () { echo $@ }
