@@ -717,6 +717,8 @@ These are some external articles wrote by Antigen users.
 
 - [What Can Antigen Do For You?](http://blog.andrewlang.net/post/150662693408/what-can-antigen-do-for-you)
 
+- [A Modern Terminal Workflow](http://wrotenwrites.com/a_modern_terminal_workflow_3/)
+
 
 ### Plugins and Alternatives
 
