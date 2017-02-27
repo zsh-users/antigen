@@ -11,8 +11,8 @@ Load the plugins.
 Check the listing.
 
   $ antigen-list
-  */test-plugin / plugin true (glob)
-  */test-plugin2 / plugin true (glob)
+  .*/test-plugin / plugin true @ master (re)
+  .*/test-plugin2 / plugin true @ master (re)
 
 Nothing should be available for cleanup.
 

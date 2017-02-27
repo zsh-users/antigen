@@ -112,6 +112,25 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
     return
   fi
 fi
+# Returns the bundle's git revision
+#
+# Usage
+#   -antigen-bundle-rev bundle-name
+#
+# Returns
+#   Bundle rev-parse output
+-antigen-bundle-rev () {
+  local bundle=$1
+  local bundle_path=$(-antigen-get-clone-dir $bundle)
+  local ref
+  ref=$(git --git-dir="$bundle_path/.git" rev-parse --abbrev-ref '@')
+
+  # Avoid 'HEAD" when in detached mode
+  if [[ $ref == "HEAD" ]]; then
+    ref=$(git --git-dir="$bundle_path/.git" rev-parse '@')
+  fi
+  echo $ref
+}
 -antigen-bundle-short-name () {
   echo "$@" | sed -E "s|.*/(.*/.*).*|\1|"|sed -E "s|\.git.*$||g"
 }
@@ -168,10 +187,23 @@ fi
 #   List of bundles installed
 -antigen-get-bundles () {
   local bundles
+  local mode
+  local revision
+
+  mode="long"
+  if [[ $1 == "--short" ]]; then
+    mode="short"
+  fi
 
   bundles=$(-antigen-echo-record | sort -u | cut -d' ' -f1)
-  for bundle in $bundles; do
-    echo "$(-antigen-bundle-short-name $bundle)"
+  # echo $bundles: Quick hack to split list
+  for bundle in $(echo $bundles); do
+    revision=$(-antigen-bundle-rev $bundle)
+    if [[ $mode == "short" ]] then
+      echo "$(-antigen-bundle-short-name $bundle) @ $revision"
+    else
+      echo "$(-antigen-find-record $bundle) @ $revision"
+    fi
   done
 }
 
@@ -869,11 +901,7 @@ antigen-list () {
     return 1
   fi
 
-  if [[ $format == "--short" ]]; then
-    -antigen-get-bundles
-  else
-    -antigen-echo-record | sort -u
-  fi
+  -antigen-get-bundles $format
 }
 # Remove a bundle from filesystem
 #

@@ -14,9 +14,5 @@ antigen-list () {
     return 1
   fi
 
-  if [[ $format == "--short" ]]; then
-    -antigen-get-bundles
-  else
-    -antigen-echo-record | sort -u
-  fi
+  -antigen-get-bundles $format
 }

@@ -8,30 +8,30 @@ Add a bundle.
 
   $ antigen-bundle $PLUGIN_DIR &> /dev/null
   $ antigen-list
-  */test-plugin / plugin true (glob)
+  .*/test-plugin / plugin true @ master (re)
 
 Add same bundle and check uniqueness.
 
   $ antigen-bundle $PLUGIN_DIR
   $ antigen-list
-  */test-plugin / plugin true (glob)
+  .*/test-plugin / plugin true @ .* (re)
 
 Add another bundle.
 
   $ antigen-bundle $PLUGIN_DIR2 &> /dev/null
   $ antigen-list
-  */test-plugin / plugin true (glob)
-  */test-plugin2 / plugin true (glob)
+  .*/test-plugin / plugin true @ .* (re)
+  .*/test-plugin2 / plugin true @ .* (re)
 
 List command supports short format flag.
 
   $ antigen-list
-  */test-plugin / plugin true (glob)
-  */test-plugin2 / plugin true (glob)
+  .*/test-plugin / plugin true @ .* (re)
+  .*/test-plugin2 / plugin true @ .* (re)
 
   $ antigen-list --short
-  */test-plugin (glob)
-  */test-plugin2 (glob)
+  .*/test-plugin @ .* (re)
+  .*/test-plugin2 @ .* (re)
 
 Find bundle/record internal function.
 
