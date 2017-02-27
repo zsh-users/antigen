@@ -13,7 +13,7 @@
 
   # Avoid 'HEAD" when in detached mode
   if [[ $ref == "HEAD" ]]; then
-    ref=$(git --git-dir="$bundle_path/.git" rev-parse '@')
+    ref=$(git --git-dir="$bundle_path/.git" rev-parse --short '@')
   fi
   echo $ref
 }

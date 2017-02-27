@@ -47,6 +47,10 @@ Can display feature branches.
   .*/test-plugin @ master (re)
   .*/test-plugin2 @ .* (re)
 
+  $ antigen-list --long
+  .*/test-plugin / plugin true @ master (re)
+  .*/test-plugin2 / plugin true @ .* (re)
+
 Find bundle/record internal function.
 
   $ -antigen-find-record

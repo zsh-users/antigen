@@ -9,6 +9,7 @@
   local bundles
   local mode
   local revision
+  local bundle_name
 
   mode="short"
   if [[ $1 == "--long" ]]; then
@@ -25,10 +26,11 @@
       continue
     fi
     revision=$(-antigen-bundle-rev $bundle)
+    bundle_name=$(-antigen-bundle-short-name $bundle)
     if [[ $mode == "short" ]] then
-      echo "$(-antigen-bundle-short-name $bundle) @ $revision"
+      echo "$bundle_name @ $revision"
     else
-      echo "$(-antigen-find-record $bundle) @ $revision"
+      echo "$(-antigen-find-record $bundle_name) @ $revision"
     fi
   done
 }
