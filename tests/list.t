@@ -45,7 +45,7 @@ Can display feature branches.
   feature-branch
   $ antigen-list --short
   .*/test-plugin @ master (re)
-  .*/test-plugin2 @ feature-branch (re)
+  .*/test-plugin2 @ .* (re)
 
 Find bundle/record internal function.
 

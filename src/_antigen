@@ -68,7 +68,7 @@ _antigen () {
       __cleanup
       ;;
     (update|purge)
-      compadd $(-antigen-get-bundles)
+      compadd $(-antigen-get-bundles --simple)
       ;;
     theme)
       compadd $(-antigen-get-themes)
