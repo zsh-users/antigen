@@ -190,9 +190,9 @@ fi
   local mode
   local revision
 
-  mode="long"
-  if [[ $1 == "--short" ]]; then
-    mode="short"
+  mode="short"
+  if [[ $1 == "--long" ]]; then
+    mode="long"
   fi
 
   bundles=$(-antigen-echo-record | sort -u | cut -d' ' -f1)
@@ -888,7 +888,7 @@ EOF
 # List instaled bundles either in long (record) or short format
 #
 # Usage
-#    antigen-list [--short]
+#    antigen-list [--short|--long]
 #
 # Returns
 #    List of bundles

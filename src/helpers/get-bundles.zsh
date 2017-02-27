@@ -10,9 +10,9 @@
   local mode
   local revision
 
-  mode="long"
-  if [[ $1 == "--short" ]]; then
-    mode="short"
+  mode="short"
+  if [[ $1 == "--long" ]]; then
+    mode="long"
   fi
 
   bundles=$(-antigen-echo-record | sort -u | cut -d' ' -f1)
