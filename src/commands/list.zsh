@@ -1,7 +1,7 @@
-# List instaled bundles either in long (record) or short format
+# List instaled bundles either in long (record), short or simple format.
 #
 # Usage
-#    antigen-list [--short|--long]
+#    antigen-list [--short|--long|--simple]
 #
 # Returns
 #    List of bundles
