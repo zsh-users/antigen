@@ -118,14 +118,14 @@ fi
 #   -antigen-bundle-rev bundle-name
 #
 # Returns
-#   Bundle rev-parse output
+#   Bundle rev-parse output (branch name or short ref name)
 -antigen-bundle-rev () {
   local bundle=$1
   local bundle_path=$(-antigen-get-clone-dir $bundle)
   local ref
   ref=$(git --git-dir="$bundle_path/.git" rev-parse --abbrev-ref '@')
 
-  # Avoid 'HEAD" when in detached mode
+  # Avoid 'HEAD' when in detached mode
   if [[ $ref == "HEAD" ]]; then
     ref=$(git --git-dir="$bundle_path/.git" rev-parse --short '@')
   fi
@@ -893,10 +893,10 @@ documentation, visit the project's page at 'http://antigen.sharats.me'.
 EOF
   antigen-version
 }
-# List instaled bundles either in long (record) or short format
+# List instaled bundles either in long (record), short or simple format.
 #
 # Usage
-#    antigen-list [--short|--long]
+#    antigen-list [--short|--long|--simple]
 #
 # Returns
 #    List of bundles
