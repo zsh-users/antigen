@@ -3,9 +3,8 @@
   # used to create the given directory path.
 
   if [[ "$1" == ".zprezto" ]]; then
-    # Prezto's (in `.zprezto`), is assumed to be from `sorin-ionescu`'s
-    # remote.
-    echo https://github.com/sorin-ionescu/prezto.git
+    # Prezto's (in `.zprezto`), is assumed to be from the community fork.
+    echo https://github.com/zsh-users/prezto.git
   else
     local _path="${1}"
     _path=${_path//^\$ADOTDIR\/repos\/}

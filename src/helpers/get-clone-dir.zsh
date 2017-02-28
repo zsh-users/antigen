@@ -3,7 +3,7 @@
   # to. Doesn't actually clone anything.
   echo -n $ADOTDIR/repos/
 
-  if [[ "$1" == "https://github.com/sorin-ionescu/prezto.git" ]]; then
+  if [[ "$1" =~ "\/prezto.git$" ]]; then
     # Prezto's directory *has* to be `.zprezto`.
     echo .zprezto
   else

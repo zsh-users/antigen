@@ -449,17 +449,18 @@ arguments.
 
 Use
 
-    antigen use prezto 
+    antigen use prezto
 
 in  your `.zshrc`, before any `antigen bundle` declarations. It takes no further arguments.
 
-That is, it initializes the canonical repo of the prezto framework,  Your .zshrc file could look like this:
+This initializes the community-supported fork of the prezto framework. Your
+.zshrc file could look like this:
 
     antigen use prezto
-    antigen bundle sorin-ionescu/prezto modules/helper  # required for Git module
-    antigen bundle sorin-ionescu/prezto modules/editor
-    antigen bundle sorin-ionescu/prezto modules/git
-    antigen bundle sorin-ionescu/prezto modules/prompt
+    antigen bundle zsh-users/prezto modules/helper  # required for Git module
+    antigen bundle zsh-users/prezto modules/editor
+    antigen bundle zsh-users/prezto modules/git
+    antigen bundle zsh-users/prezto modules/prompt
     antigen apply
 
 Please note that Prezto support is new and experimental. If you find any bugs, please

@@ -46,6 +46,8 @@
     echo -n "Updating $(-antigen-bundle-short-name $url)... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
+    # Update remote if needed.
+    -antigen-update-remote $url
     # Pull changes if update requested.
     --plugin-git checkout $branch
     --plugin-git pull origin $branch

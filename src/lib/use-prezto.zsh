@@ -5,6 +5,6 @@
   fi
   export ZDOTDIR=$ADOTDIR/repos/
 
-  antigen-bundle sorin-ionescu/prezto
+  antigen-bundle zsh-users/prezto
 }
 

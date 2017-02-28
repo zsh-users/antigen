@@ -104,7 +104,7 @@ antigen () {
   # to. Doesn't actually clone anything.
   echo -n $ADOTDIR/repos/
 
-  if [[ "$1" == "https://github.com/sorin-ionescu/prezto.git" ]]; then
+  if [[ "$1" =~ "\/prezto.git$" ]]; then
     # Prezto's directory *has* to be `.zprezto`.
     echo .zprezto
   else
@@ -121,9 +121,8 @@ antigen () {
   # used to create the given directory path.
 
   if [[ "$1" == ".zprezto" ]]; then
-    # Prezto's (in `.zprezto`), is assumed to be from `sorin-ionescu`'s
-    # remote.
-    echo https://github.com/sorin-ionescu/prezto.git
+    # Prezto's (in `.zprezto`), is assumed to be from the community fork.
+    echo https://github.com/zsh-users/prezto.git
   else
     local _path="${1}"
     _path=${_path//^\$ADOTDIR\/repos\/}
@@ -319,6 +318,17 @@ antigen () {
   echo "$url"
 }
 
+-antigen-update-remote () {
+  local url="$1"
+
+  if [[ "$1" == "https://github.com/zsh-users/prezto.git" ]]; then
+    if [[ "$(--plugin-git config --get remote.origin.url)" == "https://github.com/sorin-ionescu/prezto.git" ]]; then
+      echo -n "Updating remote for prezto"
+      --plugin-git remote set-url origin https://github.com/zsh-users/prezto.git
+    fi
+  fi
+}
+
 # Ensure that a clone exists for the given repo url and branch. If the first
 # argument is `update` and if a clone already exists for the given repo
 # and branch, it is pull-ed, i.e., updated.
@@ -367,6 +377,8 @@ antigen () {
     echo -n "Updating $(-antigen-bundle-short-name $url)... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
+    # Update remote if needed.
+    -antigen-update-remote $url
     # Pull changes if update requested.
     --plugin-git checkout $branch
     --plugin-git pull origin $branch
@@ -552,7 +564,7 @@ antigen () {
   fi
   export ZDOTDIR=$ADOTDIR/repos/
 
-  antigen-bundle sorin-ionescu/prezto
+  antigen-bundle zsh-users/prezto
 }
 
 # Initialize completion
@@ -592,17 +604,6 @@ antigen-apply () {
     unset _old_zdotdir
   fi
   unset _zdotdir_set
-}
-antigen-bundles () {
-  # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-  # are ignored. Everything else is given to `antigen-bundle` as is, no
-  # quoting rules applied.
-  local line
-  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-    # Using `eval` so that we can use the shell-style quoting in each line
-    # piped to `antigen-bundles`.
-    eval "antigen-bundle $line"
-  done
 }
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
@@ -649,6 +650,17 @@ antigen-bundle () {
   fi
 }
 
+antigen-bundles () {
+  # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+  # are ignored. Everything else is given to `antigen-bundle` as is, no
+  # quoting rules applied.
+  local line
+  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+    # Using `eval` so that we can use the shell-style quoting in each line
+    # piped to `antigen-bundles`.
+    eval "antigen-bundle $line"
+  done
+}
 # Cleanup unused repositories.
 antigen-cleanup () {
   local force=false
