@@ -4,7 +4,7 @@
 
   if [[ "$url" == "https://github.com/zsh-users/prezto.git" ]]; then
     if [[ "$(cd $clone_dir && git config --get remote.origin.url)" == "https://github.com/sorin-ionescu/prezto.git" ]]; then
-      echo "Upgrading to the community fork of prezto"
+      echo "Upgrading from sorin-ionescu/prezto to zsh-users/prezto"
       --plugin-git remote set-url origin $url
     fi
   fi

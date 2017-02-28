@@ -324,7 +324,7 @@ antigen () {
 
   if [[ "$url" == "https://github.com/zsh-users/prezto.git" ]]; then
     if [[ "$(cd $clone_dir && git config --get remote.origin.url)" == "https://github.com/sorin-ionescu/prezto.git" ]]; then
-      echo "Upgrading to the community fork of prezto"
+      echo "Upgrading from sorin-ionescu/prezto to zsh-users/prezto"
       --plugin-git remote set-url origin $url
     fi
   fi
@@ -375,11 +375,11 @@ antigen () {
       branch="${url#*|}"
     fi
     install_or_update=true
+    # Update remote if needed.
+    -antigen-update-remote $clone_dir $url
     echo -n "Updating $(-antigen-bundle-short-name $url)... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
-    # Update remote if needed.
-    -antigen-update-remote $clone_dir $url
     # Pull changes if update requested.
     --plugin-git checkout $branch
     --plugin-git pull origin $branch

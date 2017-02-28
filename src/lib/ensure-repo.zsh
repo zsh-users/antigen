@@ -43,11 +43,11 @@
       branch="${url#*|}"
     fi
     install_or_update=true
+    # Update remote if needed.
+    -antigen-update-remote $clone_dir $url
     echo -n "Updating $(-antigen-bundle-short-name $url)... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
-    # Update remote if needed.
-    -antigen-update-remote $clone_dir $url
     # Pull changes if update requested.
     --plugin-git checkout $branch
     --plugin-git pull origin $branch
