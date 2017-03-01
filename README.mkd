@@ -605,6 +605,10 @@ antigen. Make sure you set them *before* source-ing `antigen.zsh`.
 used for `bundle` commands. The default value is robbyrussell's oh-my-zsh repo,
 but you can set this to the fork url of your own fork.
 
+`ANTIGEN_PREZTO_REPO_URL` &mdash; This is the repository url for cloning and
+updating Prezto. THe default value is the community fork (zsh-users/prezto),
+but you can set this to sorin-ionescu/prezto or to your own fork.
+
 `ADOTDIR` &mdash; This directory is used to store all the repo clones, your
 bundles, themes, caches and everything else antigen requires to run smoothly.
 Defaults to `$HOME/.antigen`.
