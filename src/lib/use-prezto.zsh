@@ -5,6 +5,6 @@
   fi
   export ZDOTDIR=$ADOTDIR/repos/
 
-  antigen-bundle zsh-users/prezto
+  antigen-bundle $ANTIGEN_PREZTO_REPO_URL
 }
 

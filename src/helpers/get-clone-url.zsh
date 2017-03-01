@@ -1,10 +1,9 @@
 -antigen-get-clone-url () {
-  # Takes a repo's clone dir and gives out the repo's original url that was
-  # used to create the given directory path.
+  # Takes a repo's clone dir and unmangles it, to give the repo's original url
+  # that was used to create the given directory path.
 
   if [[ "$1" == ".zprezto" ]]; then
-    # Prezto's (in `.zprezto`), is assumed to be from the community fork.
-    echo https://github.com/zsh-users/prezto.git
+    echo "$(cd "$ADOTDIR/repos/.zprezto" && git config --get remote.origin.url)"
   else
     local _path="${1}"
     _path=${_path//^\$ADOTDIR\/repos\/}

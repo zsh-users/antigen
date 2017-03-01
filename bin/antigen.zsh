@@ -100,11 +100,11 @@ antigen () {
 }
 
 -antigen-get-clone-dir () {
-  # Takes a repo url and gives out the path that this url needs to be cloned
-  # to. Doesn't actually clone anything.
+  # Takes a repo url and mangles it, giving the path that this url will be
+  # cloned to. Doesn't actually clone anything.
   echo -n $ADOTDIR/repos/
 
-  if [[ "$1" =~ "\/prezto.git$" ]]; then
+  if [[ "$1" == "$ANTIGEN_PREZTO_REPO_URL" ]]; then
     # Prezto's directory *has* to be `.zprezto`.
     echo .zprezto
   else
@@ -117,12 +117,11 @@ antigen () {
 }
 
 -antigen-get-clone-url () {
-  # Takes a repo's clone dir and gives out the repo's original url that was
-  # used to create the given directory path.
+  # Takes a repo's clone dir and unmangles it, to give the repo's original url
+  # that was used to create the given directory path.
 
   if [[ "$1" == ".zprezto" ]]; then
-    # Prezto's (in `.zprezto`), is assumed to be from the community fork.
-    echo https://github.com/zsh-users/prezto.git
+    echo "$(cd "$ADOTDIR/repos/.zprezto" && git config --get remote.origin.url)"
   else
     local _path="${1}"
     _path=${_path//^\$ADOTDIR\/repos\/}
@@ -322,9 +321,9 @@ antigen () {
   local clone_dir="$1"
   local url="$2"
 
-  if [[ "$url" == "https://github.com/zsh-users/prezto.git" ]]; then
-    if [[ "$(cd $clone_dir && git config --get remote.origin.url)" == "https://github.com/sorin-ionescu/prezto.git" ]]; then
-      echo "Upgrading from sorin-ionescu/prezto to zsh-users/prezto"
+  if [[ "$clone_dir" =~ "\/.zprezto" ]]; then
+    if [[ "$(cd $clone_dir && git config --get remote.origin.url)" != "$url" ]]; then
+      echo "Setting $(basename "$clone_dir") remote to $url."
       --plugin-git remote set-url origin $url
     fi
   fi
@@ -433,6 +432,8 @@ antigen () {
   # Pre-startup initializations.
   -set-default ANTIGEN_DEFAULT_REPO_URL \
       https://github.com/robbyrussell/oh-my-zsh.git
+  -set-default ANTIGEN_PREZTO_REPO_URL \
+      https://github.com/zsh-users/prezto.git
   -set-default ADOTDIR $HOME/.antigen
   if [[ ! -d $ADOTDIR ]]; then
     mkdir -p $ADOTDIR
@@ -565,7 +566,7 @@ antigen () {
   fi
   export ZDOTDIR=$ADOTDIR/repos/
 
-  antigen-bundle zsh-users/prezto
+  antigen-bundle $ANTIGEN_PREZTO_REPO_URL
 }
 
 # Initialize completion
