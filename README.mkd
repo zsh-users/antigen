@@ -579,21 +579,9 @@ Install Antigen from our main repository for the latests and greatests version a
 
     curl https://cdn.rawgit.com/zsh-users/antigen/v1.4.1/bin/antigen.zsh > antigen.zsh
 
-Or using your system package manager:
+Or using your [system package manager](https://software.opensuse.org/download.html?project=shells%3Azsh-users%3Aantigen&package=antigen).
 
-### Apt
-
-    apt-get install zsh-antigen
-
-### Brew
-
-    brew install antigen
-
-### AUR
-
-    yaourt -S antigen-git
-
-Remember that your package manager may install an older Antigen version.
+Remember that your package manager may install an older version of Antigen.
 
 ## Configuration
 
