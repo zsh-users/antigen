@@ -1,9 +1,9 @@
 -antigen-get-clone-dir () {
-  # Takes a repo url and gives out the path that this url needs to be cloned
-  # to. Doesn't actually clone anything.
+  # Takes a repo url and mangles it, giving the path that this url will be
+  # cloned to. Doesn't actually clone anything.
   echo -n $ADOTDIR/repos/
 
-  if [[ "$1" == "https://github.com/sorin-ionescu/prezto.git" ]]; then
+  if [[ "$1" == "$ANTIGEN_PREZTO_REPO_URL" ]]; then
     # Prezto's directory *has* to be `.zprezto`.
     echo .zprezto
   else

@@ -2,10 +2,25 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Next release
+
+The next time you run `antigen update`, you will automatically be migrated to
+the [Prezto community fork][]. To remain on [sorin-ionescu/prezto][], set
+`ANTIGEN_PREZTO_REPO_URL=sorin-ionescu/prezto`.
+
+If you have changed your Prezto remote manually, be sure it's in sync with
+`ANTIGEN_PREZTO_REPO_URL` before you run `antigen update`.
+
+New environment variables:
+  - `ANTIGEN_PREZTO_REPO_URL`: The URL to use when cloning or updating Prezto.
+
+[Prezto community fork]: https://github.com/zsh-users/prezto
+[sorin-ionsecu/prezto]: https://github.com/sorin-ionescu/prezto
+
 ## [1.4.1] - 2017-02-26
 
 ### Changed
-- [#402, #409] `antige-use` command handle library url
+- [#402, #409] `antigen-use` command handle library url
 - [#404, #408] Update README.md with new antigen-related articles
 
 ### Fixed

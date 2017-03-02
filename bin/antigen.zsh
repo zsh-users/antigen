@@ -100,11 +100,11 @@ antigen () {
 }
 
 -antigen-get-clone-dir () {
-  # Takes a repo url and gives out the path that this url needs to be cloned
-  # to. Doesn't actually clone anything.
+  # Takes a repo url and mangles it, giving the path that this url will be
+  # cloned to. Doesn't actually clone anything.
   echo -n $ADOTDIR/repos/
 
-  if [[ "$1" == "https://github.com/sorin-ionescu/prezto.git" ]]; then
+  if [[ "$1" == "$ANTIGEN_PREZTO_REPO_URL" ]]; then
     # Prezto's directory *has* to be `.zprezto`.
     echo .zprezto
   else
@@ -117,13 +117,11 @@ antigen () {
 }
 
 -antigen-get-clone-url () {
-  # Takes a repo's clone dir and gives out the repo's original url that was
-  # used to create the given directory path.
+  # Takes a repo's clone dir and unmangles it, to give the repo's original url
+  # that was used to create the given directory path.
 
   if [[ "$1" == ".zprezto" ]]; then
-    # Prezto's (in `.zprezto`), is assumed to be from `sorin-ionescu`'s
-    # remote.
-    echo https://github.com/sorin-ionescu/prezto.git
+    echo "$(cd "$ADOTDIR/repos/.zprezto" && git config --get remote.origin.url)"
   else
     local _path="${1}"
     _path=${_path//^\$ADOTDIR\/repos\/}
@@ -319,6 +317,18 @@ antigen () {
   echo "$url"
 }
 
+-antigen-update-remote () {
+  local clone_dir="$1"
+  local url="$2"
+
+  if [[ "$clone_dir" =~ "\/.zprezto" ]]; then
+    if [[ "$(cd $clone_dir && git config --get remote.origin.url)" != "$url" ]]; then
+      echo "Setting $(basename "$clone_dir") remote to $url."
+      --plugin-git remote set-url origin $url
+    fi
+  fi
+}
+
 # Ensure that a clone exists for the given repo url and branch. If the first
 # argument is `update` and if a clone already exists for the given repo
 # and branch, it is pull-ed, i.e., updated.
@@ -364,6 +374,8 @@ antigen () {
       branch="${url#*|}"
     fi
     install_or_update=true
+    # Update remote if needed.
+    -antigen-update-remote $clone_dir $url
     echo -n "Updating $(-antigen-bundle-short-name $url)... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
@@ -420,6 +432,8 @@ antigen () {
   # Pre-startup initializations.
   -set-default ANTIGEN_DEFAULT_REPO_URL \
       https://github.com/robbyrussell/oh-my-zsh.git
+  -set-default ANTIGEN_PREZTO_REPO_URL \
+      https://github.com/zsh-users/prezto.git
   -set-default ADOTDIR $HOME/.antigen
   if [[ ! -d $ADOTDIR ]]; then
     mkdir -p $ADOTDIR
@@ -552,7 +566,7 @@ antigen () {
   fi
   export ZDOTDIR=$ADOTDIR/repos/
 
-  antigen-bundle sorin-ionescu/prezto
+  antigen-bundle $ANTIGEN_PREZTO_REPO_URL
 }
 
 # Initialize completion
@@ -592,17 +606,6 @@ antigen-apply () {
     unset _old_zdotdir
   fi
   unset _zdotdir_set
-}
-antigen-bundles () {
-  # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-  # are ignored. Everything else is given to `antigen-bundle` as is, no
-  # quoting rules applied.
-  local line
-  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-    # Using `eval` so that we can use the shell-style quoting in each line
-    # piped to `antigen-bundles`.
-    eval "antigen-bundle $line"
-  done
 }
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
@@ -649,6 +652,17 @@ antigen-bundle () {
   fi
 }
 
+antigen-bundles () {
+  # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+  # are ignored. Everything else is given to `antigen-bundle` as is, no
+  # quoting rules applied.
+  local line
+  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+    # Using `eval` so that we can use the shell-style quoting in each line
+    # piped to `antigen-bundles`.
+    eval "antigen-bundle $line"
+  done
+}
 # Cleanup unused repositories.
 antigen-cleanup () {
   local force=false
