@@ -8,7 +8,7 @@
 
   # Add the branch information to the url.
   if [[ ! -z $branch ]]; then
-      url="$url|$branch"
+    url="$url|$branch"
   fi
 
   echo $url

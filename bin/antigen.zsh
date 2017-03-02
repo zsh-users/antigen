@@ -56,61 +56,61 @@ _ZCACHE_PAYLOAD="${ADOTDIR:-$HOME/.antigen}/.cache/.zcache-payload"
 # Use this functionallity only if both CACHE and FASTBOOT options are enabled.
 if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]]; then
 
-    # If there is cache (zcache payload), and it wasn't loaded then procced.
+  # If there is cache (zcache payload), and it wasn't loaded then procced.
 
-    # The condition "$_ZCACHE_CACHE_LOADED != true" was crafted this way because
-    # $_ZCACHE_CACHE_LOADED variable is otherwise undefined, so it seems easier to
-    # check for a known value.
-    if [[ $_ZCACHE_CACHE_LOADED != true && -f "$_ZCACHE_PAYLOAD" ]]; then
+  # The condition "$_ZCACHE_CACHE_LOADED != true" was crafted this way because
+  # $_ZCACHE_CACHE_LOADED variable is otherwise undefined, so it seems easier to
+  # check for a known value.
+  if [[ $_ZCACHE_CACHE_LOADED != true && -f "$_ZCACHE_PAYLOAD" ]]; then
 
-        # Do load zcache payload, this has the following effects:
-        #   - _ANTIGEN_BUNDLE_RECORD is updated from cache
-        #   - _ZCACHE_CACHE_LOADED is set to TRUE
-        #   - _antigen is updated from cache
-        #   - fpath is updated from cache
-        #   - autoload compinit && compinit -id $ANTIGEN_COMPDUMPFILE
-        source "$_ZCACHE_PAYLOAD"
+    # Do load zcache payload, this has the following effects:
+    #   - _ANTIGEN_BUNDLE_RECORD is updated from cache
+    #   - _ZCACHE_CACHE_LOADED is set to TRUE
+    #   - _antigen is updated from cache
+    #   - fpath is updated from cache
+    #   - autoload compinit && compinit -id $ANTIGEN_COMPDUMPFILE
+    source "$_ZCACHE_PAYLOAD"
 
-        # Lazyload wrapper
-        -antigen-lazyloader () {
-            # Hook antigen functions to lazy load antigen itself
-            for command in ${(Mok)functions:#antigen*}; do
-                # Once any of the hooked functions are called and antigen is finally
-                # loaded what will happen is that antigen overwrittes the hooked functions
-                # so no other call to them will be executed, thus no need to
-                # 'unhook' or uninitialize them.
-                eval "$command () { source "$_ANTIGEN_SOURCE"; eval $command \$@ }"
-            done
-            unfunction -- '-antigen-lazyloader'
-        }
+    # Lazyload wrapper
+    -antigen-lazyloader () {
+      # Hook antigen functions to lazy load antigen itself
+      for command in ${(Mok)functions:#antigen*}; do
+        # Once any of the hooked functions are called and antigen is finally
+        # loaded what will happen is that antigen overwrittes the hooked functions
+        # so no other call to them will be executed, thus no need to
+        # 'unhook' or uninitialize them.
+        eval "$command () { source "$_ANTIGEN_SOURCE"; eval $command \$@ }"
+      done
+      unfunction -- '-antigen-lazyloader'
+    }
 
-        # Disable antigen commands
-        typeset -a _commands
-        _commands=('use' 'bundle' 'bundles' 'theme' 'list' 'apply' 'cleanup' \
-         'help' 'list' 'reset' 'restore' 'revert' 'snapshot' 'selfupdate' 'update' 'version')
-        for command in $_commands; do
-            eval "antigen-$command () {}"
-        done
+    # Disable antigen commands
+    typeset -a _commands
+    _commands=('use' 'bundle' 'bundles' 'theme' 'list' 'apply' 'cleanup' \
+     'help' 'list' 'reset' 'restore' 'revert' 'snapshot' 'selfupdate' 'update' 'version')
+    for command in $_commands; do
+      eval "antigen-$command () {}"
+    done
 
-        # On antigen apply or init
-        antigen () {
-            if [[ "$1" == "apply" || "$1" == "init" ]]; then
-                -antigen-lazyloader
-            fi
-        }
+    # On antigen apply or init
+    antigen () {
+      if [[ "$1" == "apply" || "$1" == "init" ]]; then
+        -antigen-lazyloader
+      fi
+    }
 
-        # On antigen-apply
-        antigen-apply () {
-            -antigen-lazyloader
-        }
+    # On antigen-apply
+    antigen-apply () {
+      -antigen-lazyloader
+    }
 
-        # On antigen-init
-        antigen-init () {
-            -antigen-lazyloader $@
-        }
+    # On antigen-init
+    antigen-init () {
+      -antigen-lazyloader $@
+    }
 
-        return
-    fi
+    return
+  fi
 fi
 -antigen-bundle-short-name () {
   echo "$@" | sed -E "s|.*/(.*/.*).*|\1|"|sed -E "s|\.git.*$||g"
@@ -315,17 +315,17 @@ fi
     return
   fi
 
-    # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
-    local bundle_files
-    bundle_files=($location/*.zsh(N) $location/*.sh(N))
-    if [[ $#bundle_files -gt 0 ]]; then
-        echo "${(j:\n:)bundle_files}"
-        return
-    fi
-    
-    # Add to PATH (binary bundle)
-    echo "$location"
+  # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
+  local bundle_files
+  bundle_files=($location/*.zsh(N) $location/*.sh(N))
+  if [[ $#bundle_files -gt 0 ]]; then
+    echo "${(j:\n:)bundle_files}"
     return
+  fi
+  
+  # Add to PATH (binary bundle)
+  echo "$location"
+  return
 }
 
 # Parses a bundle url in bundle-metadata format: url[|branch]
@@ -338,7 +338,7 @@ fi
 
   # Add the branch information to the url.
   if [[ ! -z $branch ]]; then
-      url="$url|$branch"
+    url="$url|$branch"
   fi
 
   echo $url
@@ -461,36 +461,36 @@ fi
     (cd "$clone_dir" &>>! $_ANTIGEN_LOG_PATH && git --no-pager "$@" &>>! $_ANTIGEN_LOG_PATH)
   }
 
-    # Clone if it doesn't already exist.
-    local start=$(date +'%s')
-    local install_or_update=false
-    local success=false
-    if [[ ! -d $clone_dir ]]; then
-        install_or_update=true
-        echo -n "Installing $(-antigen-bundle-short-name $url)... "
-        git clone $ANTIGEN_CLONE_OPTS "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
-        success=$?
-    elif $update; then
-        local branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
-        if [[ $url == *\|* ]]; then
-            # Get the clone's branch
-            branch="${url#*|}"
-        fi
-        install_or_update=true
-        # Update remote if needed.
-        -antigen-update-remote $clone_dir $url
-        echo -n "Updating $(-antigen-bundle-short-name $url)... "
-        # Save current revision.
-        local old_rev="$(--plugin-git rev-parse HEAD)"
-        # Pull changes if update requested.
-        --plugin-git checkout $branch
-        --plugin-git pull origin $branch
-        success=$?
-        # Update submodules.
-        --plugin-git submodule update --recursive
-        # Get the new revision.
-        local new_rev="$(--plugin-git rev-parse HEAD)"
+  # Clone if it doesn't already exist.
+  local start=$(date +'%s')
+  local install_or_update=false
+  local success=false
+  if [[ ! -d $clone_dir ]]; then
+    install_or_update=true
+    echo -n "Installing $(-antigen-bundle-short-name $url)... "
+    git clone $ANTIGEN_CLONE_OPTS "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
+    success=$?
+  elif $update; then
+    local branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
+    if [[ $url == *\|* ]]; then
+        # Get the clone's branch
+        branch="${url#*|}"
     fi
+    install_or_update=true
+    # Update remote if needed.
+    -antigen-update-remote $clone_dir $url
+    echo -n "Updating $(-antigen-bundle-short-name $url)... "
+    # Save current revision.
+    local old_rev="$(--plugin-git rev-parse HEAD)"
+    # Pull changes if update requested.
+    --plugin-git checkout $branch
+    --plugin-git pull origin $branch
+    success=$?
+    # Update submodules.
+    --plugin-git submodule update $ANTIGEN_CLONE_OPTS
+    # Get the new revision.
+    local new_rev="$(--plugin-git rev-parse HEAD)"
+  fi
 
   if $install_or_update; then
     local took=$(( $(date +'%s') - $start ))
@@ -544,18 +544,18 @@ fi
   -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
   -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
 
-    -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
-    -set-default _ANTIGEN_CLONE_OPTS "--recursive --depth=1"
+  -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
+  -set-default _ANTIGEN_CLONE_OPTS "--recursive --depth=1"
 
-    # Setup antigen's own completion.
-    autoload -Uz compinit
-    if $_ANTIGEN_COMP_ENABLED; then
-      compinit -id $ANTIGEN_COMPDUMPFILE
-      compdef _antigen antigen
-    fi
+  # Setup antigen's own completion.
+  autoload -Uz compinit
+  if $_ANTIGEN_COMP_ENABLED; then
+    compinit -id $ANTIGEN_COMPDUMPFILE
+    compdef _antigen antigen
+  fi
 
-    # Remove private functions.
-    unfunction -- -set-default
+  # Remove private functions.
+  unfunction -- -set-default
 }
 
 # Load a given bundle by sourcing it.
@@ -577,10 +577,10 @@ fi
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone" "$btype"); do
     # TODO Refactor this out
     if [[ -d "$src" ]]; then
-        if (( ! ${fpath[(I)$src]} )); then
-            fpath=($src $fpath)
-        fi
-        PATH="$PATH:$src"
+      if (( ! ${fpath[(I)$src]} )); then
+          fpath=($src $fpath)
+      fi
+      PATH="$PATH:$src"
     else
       # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
       # This is needed to seek-and-destroy local variable definitions *outside*
@@ -717,19 +717,19 @@ antigen-apply () {
     -antigen-reset-compdump
   fi
 
-    # Load the compinit module. This will readefine the `compdef` function to
-    # the one that actually initializes completions.
-    autoload -Uz compinit
-    compinit -id $ANTIGEN_COMPDUMPFILE
-    if [[ ! -f "$ANTIGEN_COMPDUMPFILE.zwc" ]]; then
-        # Apply all `compinit`s that have been deferred.
-        local cdef
-        for cdef in "${__deferred_compdefs[@]}"; do
-            compdef "$cdef"
-        done
+  # Load the compinit module. This will readefine the `compdef` function to
+  # the one that actually initializes completions.
+  autoload -Uz compinit
+  compinit -id $ANTIGEN_COMPDUMPFILE
+  if [[ ! -f "$ANTIGEN_COMPDUMPFILE.zwc" ]]; then
+    # Apply all `compinit`s that have been deferred.
+    local cdef
+    for cdef in "${__deferred_compdefs[@]}"; do
+      compdef "$cdef"
+    done
 
-        zcompile $ANTIGEN_COMPDUMPFILE
-    fi
+    zcompile $ANTIGEN_COMPDUMPFILE
+  fi
 
   unset __deferred_compdefs
 
@@ -1084,7 +1084,7 @@ antigen-theme () {
   local result=0
 
   if [[ $_ANTIGEN_RESET_THEME_HOOKS == true ]]; then
-      -antigen-theme-reset-hooks
+    -antigen-theme-reset-hooks
   fi
 
   record=$(-antigen-find-record "theme")
@@ -1377,31 +1377,31 @@ _antigen () {
 # Returns
 #   Nothing. Generates _ZCACHE_META_PATH and _ZCACHE_PAYLOAD_PATH
 -zcache-generate-cache () {
-    local -aU _extensions_paths
-    local -aU _binary_paths
-    local -a _bundles_meta
-    local _payload=''
-    local location
+  local -aU _extensions_paths
+  local -aU _binary_paths
+  local -a _bundles_meta
+  local _payload=''
+  local location
 
-    _payload+="#-- START ZCACHE GENERATED FILE\NL"
-    _payload+="#-- GENERATED: $(date)\NL"
-    _payload+='#-- ANTIGEN v1.4.1\NL'
-    for bundle in $_ZCACHE_BUNDLES; do
-        # -antigen-load-list "$url" "$loc" "$make_local_clone"
-        eval "$(-antigen-parse-bundle ${=bundle})"
-        _bundles_meta+=("$url $loc $btype $make_local_clone $branch")
+  _payload+="#-- START ZCACHE GENERATED FILE\NL"
+  _payload+="#-- GENERATED: $(date)\NL"
+  _payload+='#-- ANTIGEN v1.4.1\NL'
+  for bundle in $_ZCACHE_BUNDLES; do
+    # -antigen-load-list "$url" "$loc" "$make_local_clone"
+    eval "$(-antigen-parse-bundle ${=bundle})"
+    _bundles_meta+=("$url $loc $btype $make_local_clone $branch")
 
-        if $make_local_clone; then
-            -antigen-ensure-repo "$url"
-        fi
+    if $make_local_clone; then
+      -antigen-ensure-repo "$url"
+    fi
 
-        -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
-          if [[ -f "$line" ]]; then
-            # Whether to use bundle or reference cache
-            if [[ $_ZCACHE_EXTENSION_BUNDLE == true ]]; then
-              _payload+="#-- SOURCE: $line\NL"
-              _payload+=$(-zcache-process-source "$line" "$btype")
-              _payload+="\NL;#-- END SOURCE\NL"
+    -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
+      if [[ -f "$line" ]]; then
+        # Whether to use bundle or reference cache
+        if [[ $_ZCACHE_EXTENSION_BUNDLE == true ]]; then
+          _payload+="#-- SOURCE: $line\NL"
+          _payload+=$(-zcache-process-source "$line" "$btype")
+          _payload+="\NL;#-- END SOURCE\NL"
         else
           _payload+="source \"$line\";\NL"
         fi
@@ -1419,34 +1419,34 @@ _antigen () {
     fi
   done
     
-    _payload+="\NL"
-    _payload+="$(functions -- _antigen)"
-    _payload+="\NL"
-    _payload+="fpath+=(${_extensions_paths[@]})\NL"
-    _payload+="PATH=\"\$PATH:${_binary_paths[@]}\"\NL"
-    _payload+="unset __ZCACHE_FILE_PATH\NL"
-    # \NL (\n) prefix is for backward compatibility
-    _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
-    _payload+=" _ZCACHE_CACHE_LOADED=true"
-    _payload+=" _ZCACHE_CACHE_VERSION=v1.4.1\NL"
-    
-    # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
-    if [[ ! -z "$ZSH" ]]; then
-      _payload+="export ZSH=\"$ZSH\"";
-      _payload+=" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
-    fi
+  _payload+="\NL"
+  _payload+="$(functions -- _antigen)"
+  _payload+="\NL"
+  _payload+="fpath+=(${_extensions_paths[@]})\NL"
+  _payload+="PATH=\"\$PATH:${_binary_paths[@]}\"\NL"
+  _payload+="unset __ZCACHE_FILE_PATH\NL"
+  # \NL (\n) prefix is for backward compatibility
+  _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
+  _payload+=" _ZCACHE_CACHE_LOADED=true"
+  _payload+=" _ZCACHE_CACHE_VERSION=v1.4.1\NL"
+  
+  # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
+  if [[ ! -z "$ZSH" ]]; then
+    _payload+="export ZSH=\"$ZSH\"";
+    _payload+=" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
+  fi
 
-    if [[ ! -z "$ZDOTDIR" ]]; then
-      _payload+="export ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
-    fi
-    
-    _payload+="autoload -Uz compinit\NL"
-    _payload+="compinit -id $ANTIGEN_COMPDUMPFILE\NL"
-    _payload+="#-- END ZCACHE GENERATED FILE\NL"
+  if [[ ! -z "$ZDOTDIR" ]]; then
+    _payload+="export ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
+  fi
+  
+  _payload+="autoload -Uz compinit\NL"
+  _payload+="compinit -id $ANTIGEN_COMPDUMPFILE\NL"
+  _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
-    echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
-    zcompile "$_ZCACHE_PAYLOAD_PATH"
-    echo "$_ZCACHE_BUNDLES" >! "$_ZCACHE_BUNDLES_PATH"
+  echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
+  zcompile "$_ZCACHE_PAYLOAD_PATH"
+  echo "$_ZCACHE_BUNDLES" >! "$_ZCACHE_BUNDLES_PATH"
 }
 
 # Generic hook function for various antigen-* commands.
@@ -1583,35 +1583,35 @@ zcache-start () {
 # Returns
 #   Nothing
 zcache-done () {
-    if [[ -z $_ZCACHE_EXTENSION_ACTIVE ]]; then
-        return 1
+  if [[ -z $_ZCACHE_EXTENSION_ACTIVE ]]; then
+    return 1
+  fi
+  unset _ZCACHE_EXTENSION_ACTIVE
+
+  -zcache-unhook-antigen
+
+  # Avoids seg fault on zsh 4.3.5
+  if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
+    if ! zcache-cache-exists || -zcache-cache-invalidated; then
+      -zcache-generate-cache
+      -antigen-reset-compdump
     fi
-    unset _ZCACHE_EXTENSION_ACTIVE
 
-    -zcache-unhook-antigen
-
-    # Avoids seg fault on zsh 4.3.5
-    if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
-        if ! zcache-cache-exists || -zcache-cache-invalidated; then
-            -zcache-generate-cache
-            -antigen-reset-compdump
-        fi
-
-        zcache-load-cache
-    fi
+    zcache-load-cache
+  fi
 
   if [[ $_ZCACHE_EXTENSION_CLEAN_FUNCTIONS == true ]]; then
     unfunction -- ${(Mok)functions:#-zcache*}
   fi
 
-    eval "function -zcache-$(functions -- antigen-update)"
-    antigen-update () {
-        if -zcache-antigen-update "$@"; then
-            antigen-reset
-        fi
-    }
+  eval "function -zcache-$(functions -- antigen-update)"
+  antigen-update () {
+    if -zcache-antigen-update "$@"; then
+      antigen-reset
+    fi
+  }
 
-    unset _ZCACHE_BUNDLES
+  unset _ZCACHE_BUNDLES
 }
 
 # Returns true if cache is available.

@@ -61,31 +61,31 @@
 # Returns
 #   Nothing. Generates _ZCACHE_META_PATH and _ZCACHE_PAYLOAD_PATH
 -zcache-generate-cache () {
-    local -aU _extensions_paths
-    local -aU _binary_paths
-    local -a _bundles_meta
-    local _payload=''
-    local location
+  local -aU _extensions_paths
+  local -aU _binary_paths
+  local -a _bundles_meta
+  local _payload=''
+  local location
 
-    _payload+="#-- START ZCACHE GENERATED FILE\NL"
-    _payload+="#-- GENERATED: $(date)\NL"
-    _payload+='#-- ANTIGEN {{ANTIGEN_VERSION}}\NL'
-    for bundle in $_ZCACHE_BUNDLES; do
-        # -antigen-load-list "$url" "$loc" "$make_local_clone"
-        eval "$(-antigen-parse-bundle ${=bundle})"
-        _bundles_meta+=("$url $loc $btype $make_local_clone $branch")
+  _payload+="#-- START ZCACHE GENERATED FILE\NL"
+  _payload+="#-- GENERATED: $(date)\NL"
+  _payload+='#-- ANTIGEN {{ANTIGEN_VERSION}}\NL'
+  for bundle in $_ZCACHE_BUNDLES; do
+    # -antigen-load-list "$url" "$loc" "$make_local_clone"
+    eval "$(-antigen-parse-bundle ${=bundle})"
+    _bundles_meta+=("$url $loc $btype $make_local_clone $branch")
 
-        if $make_local_clone; then
-            -antigen-ensure-repo "$url"
-        fi
+    if $make_local_clone; then
+      -antigen-ensure-repo "$url"
+    fi
 
-        -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
-          if [[ -f "$line" ]]; then
-            # Whether to use bundle or reference cache
-            if [[ $_ZCACHE_EXTENSION_BUNDLE == true ]]; then
-              _payload+="#-- SOURCE: $line\NL"
-              _payload+=$(-zcache-process-source "$line" "$btype")
-              _payload+="\NL;#-- END SOURCE\NL"
+    -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
+      if [[ -f "$line" ]]; then
+        # Whether to use bundle or reference cache
+        if [[ $_ZCACHE_EXTENSION_BUNDLE == true ]]; then
+          _payload+="#-- SOURCE: $line\NL"
+          _payload+=$(-zcache-process-source "$line" "$btype")
+          _payload+="\NL;#-- END SOURCE\NL"
         else
           _payload+="source \"$line\";\NL"
         fi
@@ -103,34 +103,34 @@
     fi
   done
     
-    _payload+="\NL"
-    _payload+="$(functions -- _antigen)"
-    _payload+="\NL"
-    _payload+="fpath+=(${_extensions_paths[@]})\NL"
-    _payload+="PATH=\"\$PATH:${_binary_paths[@]}\"\NL"
-    _payload+="unset __ZCACHE_FILE_PATH\NL"
-    # \NL (\n) prefix is for backward compatibility
-    _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
-    _payload+=" _ZCACHE_CACHE_LOADED=true"
-    _payload+=" _ZCACHE_CACHE_VERSION={{ANTIGEN_VERSION}}\NL"
-    
-    # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
-    if [[ ! -z "$ZSH" ]]; then
-      _payload+="export ZSH=\"$ZSH\"";
-      _payload+=" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
-    fi
+  _payload+="\NL"
+  _payload+="$(functions -- _antigen)"
+  _payload+="\NL"
+  _payload+="fpath+=(${_extensions_paths[@]})\NL"
+  _payload+="PATH=\"\$PATH:${_binary_paths[@]}\"\NL"
+  _payload+="unset __ZCACHE_FILE_PATH\NL"
+  # \NL (\n) prefix is for backward compatibility
+  _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
+  _payload+=" _ZCACHE_CACHE_LOADED=true"
+  _payload+=" _ZCACHE_CACHE_VERSION={{ANTIGEN_VERSION}}\NL"
+  
+  # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
+  if [[ ! -z "$ZSH" ]]; then
+    _payload+="export ZSH=\"$ZSH\"";
+    _payload+=" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
+  fi
 
-    if [[ ! -z "$ZDOTDIR" ]]; then
-      _payload+="export ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
-    fi
-    
-    _payload+="autoload -Uz compinit\NL"
-    _payload+="compinit -id $ANTIGEN_COMPDUMPFILE\NL"
-    _payload+="#-- END ZCACHE GENERATED FILE\NL"
+  if [[ ! -z "$ZDOTDIR" ]]; then
+    _payload+="export ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
+  fi
+  
+  _payload+="autoload -Uz compinit\NL"
+  _payload+="compinit -id $ANTIGEN_COMPDUMPFILE\NL"
+  _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
-    echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
-    zcompile "$_ZCACHE_PAYLOAD_PATH"
-    echo "$_ZCACHE_BUNDLES" >! "$_ZCACHE_BUNDLES_PATH"
+  echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
+  zcompile "$_ZCACHE_PAYLOAD_PATH"
+  echo "$_ZCACHE_BUNDLES" >! "$_ZCACHE_BUNDLES_PATH"
 }
 
 # Generic hook function for various antigen-* commands.
