@@ -27,7 +27,7 @@
     fi
     revision=$(-antigen-bundle-rev $bundle)
     bundle_name=$(-antigen-bundle-short-name $bundle)
-    if [[ $mode == "short" ]] then
+    if [[ $mode == "short" ]]; then
       echo "$bundle_name @ $revision"
     else
       echo "$(-antigen-find-record $bundle_name) @ $revision"
