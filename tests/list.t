@@ -8,30 +8,48 @@ Add a bundle.
 
   $ antigen-bundle $PLUGIN_DIR &> /dev/null
   $ antigen-list
-  */test-plugin / plugin true (glob)
+  .*/test-plugin @ master (re)
 
 Add same bundle and check uniqueness.
 
   $ antigen-bundle $PLUGIN_DIR
   $ antigen-list
-  */test-plugin / plugin true (glob)
+  .*/test-plugin @ .* (re)
 
 Add another bundle.
 
   $ antigen-bundle $PLUGIN_DIR2 &> /dev/null
   $ antigen-list
-  */test-plugin / plugin true (glob)
-  */test-plugin2 / plugin true (glob)
+  .*/test-plugin @ master (re)
+  .*/test-plugin2 @ master (re)
 
 List command supports short format flag.
 
   $ antigen-list
-  */test-plugin / plugin true (glob)
-  */test-plugin2 / plugin true (glob)
+  .*/test-plugin @ master (re)
+  .*/test-plugin2 @ master (re)
 
   $ antigen-list --short
-  */test-plugin (glob)
-  */test-plugin2 (glob)
+  .*/test-plugin @ master (re)
+  .*/test-plugin2 @ master (re)
+
+  $ antigen-list --long
+  .*/test-plugin / plugin true @ master (re)
+  .*/test-plugin2 / plugin true @ master (re)
+
+Can display feature branches.
+
+  $ cd $PLUGIN_DIR2
+  $ git checkout -b feature-branch &> /dev/null
+  $ git rev-parse --abbrev-ref '@'
+  feature-branch
+  $ antigen-list --short
+  .*/test-plugin @ master (re)
+  .*/test-plugin2 @ .* (re)
+
+  $ antigen-list --long
+  .*/test-plugin / plugin true @ master (re)
+  .*/test-plugin2 / plugin true @ .* (re)
 
 Find bundle/record internal function.
 
