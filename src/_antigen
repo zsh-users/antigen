@@ -70,10 +70,10 @@ _antigen () {
       __cleanup
       ;;
     (update|purge)
-      compadd $(-antigen-get-bundles --simple)
+      compadd $(-antigen-get-bundles --simple 2> /dev/null)
       ;;
     theme)
-      compadd $(-antigen-get-themes)
+      compadd $(-antigen-get-themes 2> /dev/null)
       ;;
     list)
       __list
