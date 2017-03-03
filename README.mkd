@@ -370,18 +370,29 @@ Insider detail: The information for reverting is stored in
 Use this command to list out the currently *loaded* plugins. Keep in mind that
 this includes any bundles installed on-the-fly.
 
-    antigen list [--short]
+    antigen list [--simple|--short|--long]
 
 Without arguments it gives out four entries per line of output, denoting the
 following fields of each bundle.
 
-    <repo-url> <loc> <btype> <has-local-clone?>
+With `--long` flag it gives out five entries per line of output,
+denoting the following fields of each bundle.
+
+    <repo-url> <loc> <btype> <has-local-clone?> <branch> @ <branch|tag|ref>
 
 The `btype` field is an internal detail, that specifies if the bundle is a
 `plugin` or a `theme`.
 
-The final field is `true` or `false` reflecting whether there is a local clone
-for this bundle.
+The <has-local-clone> field is `true` or `false` reflecting whether there is
+a local clone for this bundle.
+
+With `--short` flag the output is simplier:
+
+    <repo-name> @ <branch|tag|ref>
+
+A barebones list can be obtained with `--simple` flag, with the following output:
+
+    <repo-name>
 
 With `--short` argument it will only print short bundle names only.
 

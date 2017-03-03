@@ -70,8 +70,8 @@ Both bundles are cached by reference.
 List command should work as expected.
 
   $ antigen-list
-  */test-plugin / plugin true* (glob)
-  */test-plugin2 / plugin true* (glob)
+  .*/test-plugin @ master (re)
+  .*/test-plugin2 @ master (re)
 
 Respect escape sequences.
 

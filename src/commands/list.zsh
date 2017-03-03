@@ -1,7 +1,7 @@
-# List instaled bundles either in long (record) or short format
+# List instaled bundles either in long (record), short or simple format.
 #
 # Usage
-#    antigen-list [--short]
+#    antigen-list [--short|--long|--simple]
 #
 # Returns
 #    List of bundles
@@ -14,9 +14,5 @@ antigen-list () {
     return 1
   fi
 
-  if [[ $format == "--short" ]]; then
-    -antigen-get-bundles
-  else
-    -antigen-echo-record | sort -u
-  fi
+  -antigen-get-bundles $format
 }

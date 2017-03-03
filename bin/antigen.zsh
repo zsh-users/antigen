@@ -112,6 +112,25 @@ if [[ $_ANTIGEN_CACHE_ENABLED == true && $_ANTIGEN_FAST_BOOT_ENABLED == true ]];
     return
   fi
 fi
+# Returns the bundle's git revision
+#
+# Usage
+#   -antigen-bundle-rev bundle-name
+#
+# Returns
+#   Bundle rev-parse output (branch name or short ref name)
+-antigen-bundle-rev () {
+  local bundle=$1
+  local bundle_path=$(-antigen-get-clone-dir $bundle)
+  local ref
+  ref=$(git --git-dir="$bundle_path/.git" rev-parse --abbrev-ref '@')
+
+  # Avoid 'HEAD' when in detached mode
+  if [[ $ref == "HEAD" ]]; then
+    ref=$(git --git-dir="$bundle_path/.git" rev-parse --short '@')
+  fi
+  echo $ref
+}
 -antigen-bundle-short-name () {
   echo "$@" | sed -E "s|.*/(.*/.*).*|\1|"|sed -E "s|\.git.*$||g"
 }
@@ -162,19 +181,38 @@ fi
 # Returns bundle names from _ANTIGEN_BUNDLE_RECORD
 #
 # Usage
-#   -antigen-get-bundles
+#   -antigen-get-bundles [--short|--simple|--long]
 #
 # Returns
 #   List of bundles installed
 -antigen-get-bundles () {
-  local bundles
+  local mode
+  local revision
+  local url
+  local bundle_name
+  local bundle_entry
+  mode=${1:-"--short"}
 
-  bundles=$(-antigen-echo-record | sort -u | cut -d' ' -f1)
-  for bundle in $bundles; do
-    echo "$(-antigen-bundle-short-name $bundle)"
+  for record in ${(@f)_ANTIGEN_BUNDLE_RECORD}; do
+    url="$(echo "$record" | cut -d' ' -f1)"
+    bundle_name=$(-antigen-bundle-short-name $url)
+    bundle_entry=$(-antigen-find-record $url)
+    
+    revision=$(-antigen-bundle-rev $url)
+    
+    case "$mode" in
+        --short)
+          echo "$bundle_name @ $revision"
+        ;;
+        --simple)
+          echo "$bundle_name"
+        ;;
+        --long)
+          echo "$record @ $revision"
+        ;;
+     esac
   done
 }
-
 # Returns bundles flagged as make_local_clone
 #
 # Usage
@@ -354,13 +392,12 @@ fi
 
   # Parse the given arguments. (Will overwrite the above values).
   eval "$(-antigen-parse-args "$@")"
-
   # Check if url is just the plugin name. Super short syntax.
   if [[ "$url" != */* ]]; then
     loc="plugins/$url"
     url="$ANTIGEN_DEFAULT_REPO_URL"
   fi
-  
+
   # Format url in bundle-metadata format: url[|branch]
   url=$(-antigen-parse-bundle-url "$url" "$branch")
 
@@ -541,7 +578,7 @@ fi
   if [[ ! -d $ADOTDIR ]]; then
     mkdir -p $ADOTDIR
   fi
-  -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
+
   -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
 
   -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
@@ -550,7 +587,7 @@ fi
   # Setup antigen's own completion.
   autoload -Uz compinit
   if $_ANTIGEN_COMP_ENABLED; then
-    compinit -id $ANTIGEN_COMPDUMPFILE
+    compinit -iCd $ANTIGEN_COMPDUMPFILE
     compdef _antigen antigen
   fi
 
@@ -720,7 +757,7 @@ antigen-apply () {
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
   autoload -Uz compinit
-  compinit -id $ANTIGEN_COMPDUMPFILE
+  compinit -iCd $ANTIGEN_COMPDUMPFILE
   if [[ ! -f "$ANTIGEN_COMPDUMPFILE.zwc" ]]; then
     # Apply all `compinit`s that have been deferred.
     local cdef
@@ -854,16 +891,10 @@ documentation, visit the project's page at 'http://antigen.sharats.me'.
 EOF
   antigen-version
 }
-# For backwards compatibility.
-antigen-lib () {
-  -antigen-use-oh-my-zsh
-  echo '`antigen-lib` is deprecated and will soon be removed.'
-  echo 'Use `antigen-use oh-my-zsh` instead.'
-}
-# List instaled bundles either in long (record) or short format
+# List instaled bundles either in long (record), short or simple format.
 #
 # Usage
-#    antigen-list [--short]
+#    antigen-list [--short|--long|--simple]
 #
 # Returns
 #    List of bundles
@@ -876,17 +907,7 @@ antigen-list () {
     return 1
   fi
 
-  if [[ $format == "--short" ]]; then
-    -antigen-get-bundles
-  else
-    -antigen-echo-record | sort -u
-  fi
-}
-# For backwards compatibility.
-antigen-prezto-lib () {
-  -antigen-use-prezto
-  echo '`antigen-prezto-lib` is deprecated and will soon be removed.'
-  echo 'Use `antigen-use prezto` instead.'
+  -antigen-get-bundles $format
 }
 # Remove a bundle from filesystem
 #
@@ -1274,7 +1295,9 @@ _antigen () {
   }
   __list() {
     _arguments \
-      '--short[Show only bundle name]'
+      '--simple[Show only bundle name]' \
+      '--short[Show only bundle name and branch]' \
+      '--long[Show bundle records]'
   }
 
 
@@ -1302,10 +1325,10 @@ _antigen () {
       __cleanup
       ;;
     (update|purge)
-      compadd $(-antigen-get-bundles)
+      compadd $(-antigen-get-bundles --simple 2> /dev/null)
       ;;
     theme)
-      compadd $(-antigen-get-themes)
+      compadd $(-antigen-get-themes 2> /dev/null)
       ;;
     list)
       __list
@@ -1418,7 +1441,7 @@ _antigen () {
       _extensions_paths+=($location)
     fi
   done
-    
+
   _payload+="\NL"
   _payload+="$(functions -- _antigen)"
   _payload+="\NL"
