@@ -1295,7 +1295,9 @@ _antigen () {
   }
   __list() {
     _arguments \
-      '--short[Show only bundle name]'
+      '--simple[Show only bundle name]' \
+      '--short[Show only bundle name and branch]' \
+      '--long[Show bundle records]'
   }
 
 
