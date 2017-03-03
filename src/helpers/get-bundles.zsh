@@ -1,37 +1,35 @@
 # Returns bundle names from _ANTIGEN_BUNDLE_RECORD
 #
 # Usage
-#   -antigen-get-bundles
+#   -antigen-get-bundles [--short|--simple|--long]
 #
 # Returns
 #   List of bundles installed
 -antigen-get-bundles () {
-  local bundles
   local mode
   local revision
+  local url
   local bundle_name
+  local bundle_entry
+  mode=${1:-"--short"}
 
-  mode="short"
-  if [[ $1 == "--long" ]]; then
-    mode="long"
-  elif [[ $1 == "--simple" ]]; then
-    mode="simple"
-  fi
-
-  bundles=$(-antigen-echo-record | sort -u | cut -d' ' -f1)
-  # echo $bundles: Quick hack to split list
-  for bundle in $(echo $bundles); do
-    if [[ $mode == "simple" ]]; then
-      echo "$(-antigen-bundle-short-name $bundle)"
-      continue
-    fi
-    revision=$(-antigen-bundle-rev $bundle)
-    bundle_name=$(-antigen-bundle-short-name $bundle)
-    if [[ $mode == "short" ]]; then
-      echo "$bundle_name @ $revision"
-    else
-      echo "$(-antigen-find-record $bundle_name) @ $revision"
-    fi
+  for record in ${(@f)_ANTIGEN_BUNDLE_RECORD}; do
+    url="$(echo "$record" | cut -d' ' -f1)"
+    bundle_name=$(-antigen-bundle-short-name $url)
+    bundle_entry=$(-antigen-find-record $url)
+    
+    revision=$(-antigen-bundle-rev $url)
+    
+    case "$mode" in
+        --short)
+          echo "$bundle_name @ $revision"
+        ;;
+        --simple)
+          echo "$bundle_name"
+        ;;
+        --long)
+          echo "$record @ $revision"
+        ;;
+     esac
   done
 }
-
