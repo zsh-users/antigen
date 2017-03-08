@@ -296,7 +296,7 @@ antigen () {
 # Set $_ANTIGEN_FORCE_RESET_COMPDUMP to true to do so
 -antigen-reset-compdump () {
   if [[ $_ANTIGEN_FORCE_RESET_COMPDUMP == true && -f $ANTIGEN_COMPDUMPFILE ]]; then
-    rm $ANTIGEN_COMPDUMPFILE
+    rm -f $ANTIGEN_COMPDUMPFILE
   fi
 }
 
@@ -593,17 +593,6 @@ antigen-apply () {
   fi
   unset _zdotdir_set
 }
-antigen-bundles () {
-  # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-  # are ignored. Everything else is given to `antigen-bundle` as is, no
-  # quoting rules applied.
-  local line
-  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-    # Using `eval` so that we can use the shell-style quoting in each line
-    # piped to `antigen-bundles`.
-    eval "antigen-bundle $line"
-  done
-}
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -649,6 +638,17 @@ antigen-bundle () {
   fi
 }
 
+antigen-bundles () {
+  # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+  # are ignored. Everything else is given to `antigen-bundle` as is, no
+  # quoting rules applied.
+  local line
+  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+    # Using `eval` so that we can use the shell-style quoting in each line
+    # piped to `antigen-bundles`.
+    eval "antigen-bundle $line"
+  done
+}
 # Cleanup unused repositories.
 antigen-cleanup () {
   local force=false
@@ -1440,7 +1440,7 @@ zcache-load-cache () {
 # Returns
 #   Nothing
 antigen-reset () {
-  -zcache-remove-path () { [[ -f "$1" ]] && rm "$1" }
+  -zcache-remove-path () { [[ -f "$1" ]] && rm -f "$1" }
   -zcache-remove-path "$_ZCACHE_PAYLOAD_PATH"
   -zcache-remove-path "$_ZCACHE_BUNDLES_PATH"
   unfunction -- -zcache-remove-path
