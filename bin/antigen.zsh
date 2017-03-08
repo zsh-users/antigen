@@ -104,32 +104,23 @@ antigen () {
   # cloned to. Doesn't actually clone anything.
   echo -n $ADOTDIR/repos/
 
-  if [[ "$1" == "$ANTIGEN_PREZTO_REPO_URL" ]]; then
-    # Prezto's directory *has* to be `.zprezto`.
-    echo .zprezto
-  else
-    local url="${1}"
-    url=${url//\//-SLASH-}
-    url=${url//\:/-COLON-}
-    path=${url//\|/-PIPE-}
-    echo "$path"
-  fi
+  local url="${1}"
+  url=${url//\//-SLASH-}
+  url=${url//\:/-COLON-}
+  path=${url//\|/-PIPE-}
+  echo "$path"
 }
 
 -antigen-get-clone-url () {
   # Takes a repo's clone dir and unmangles it, to give the repo's original url
   # that was used to create the given directory path.
 
-  if [[ "$1" == ".zprezto" ]]; then
-    echo "$(cd "$ADOTDIR/repos/.zprezto" && git config --get remote.origin.url)"
-  else
-    local _path="${1}"
-    _path=${_path//^\$ADOTDIR\/repos\/}
-    _path=${_path//-SLASH-/\/}
-    _path=${_path//-COLON-/\:}
-    url=${_path//-PIPE-/\|}
-    echo "$url"
-  fi
+  local _path="${1}"
+  _path=${_path//^\$ADOTDIR\/repos\/}
+  _path=${_path//-SLASH-/\/}
+  _path=${_path//-COLON-/\:}
+  url=${_path//-PIPE-/\|}
+  echo "$url"
 }
 
 # Returns a list of themes from a default library (omz)
@@ -560,13 +551,8 @@ antigen () {
 }
 
 -antigen-use-prezto () {
-  _zdotdir_set=${+parameters[ZDOTDIR]}
-  if (( _zdotdir_set )); then
-    _old_zdotdir=$ZDOTDIR
-  fi
-  export ZDOTDIR=$ADOTDIR/repos/
-
-  antigen-bundle $ANTIGEN_PREZTO_REPO_URL
+  export ZPREZTODIR="$(-antigen-get-clone-dir "$ANTIGEN_PREZTO_REPO_URL")"
+  antigen-bundle "$ANTIGEN_PREZTO_REPO_URL"
 }
 
 # Initialize completion
@@ -598,14 +584,6 @@ antigen-apply () {
   done
 
   unset __deferred_compdefs
-
-  if (( _zdotdir_set )); then
-    ZDOTDIR=$_old_zdotdir
-  else
-    unset ZDOTDIR
-    unset _old_zdotdir
-  fi
-  unset _zdotdir_set
 }
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
