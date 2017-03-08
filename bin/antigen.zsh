@@ -294,7 +294,7 @@ antigen () {
 # Set $_ANTIGEN_FORCE_RESET_COMPDUMP to true to do so
 -antigen-reset-compdump () {
   if [[ $_ANTIGEN_FORCE_RESET_COMPDUMP == true && -f $ANTIGEN_COMPDUMPFILE ]]; then
-    rm $ANTIGEN_COMPDUMPFILE
+    rm -f $ANTIGEN_COMPDUMPFILE
   fi
 }
 
@@ -1454,7 +1454,7 @@ zcache-load-cache () {
 # Returns
 #   Nothing
 antigen-reset () {
-  -zcache-remove-path () { [[ -f "$1" ]] && rm "$1" }
+  -zcache-remove-path () { [[ -f "$1" ]] && rm -f "$1" }
   -zcache-remove-path "$_ZCACHE_PAYLOAD_PATH"
   -zcache-remove-path "$_ZCACHE_BUNDLES_PATH"
   unfunction -- -zcache-remove-path
