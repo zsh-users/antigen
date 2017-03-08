@@ -1,10 +1,10 @@
 -antigen-env-setup () {
-  # Helper function: Same as `export $1=$2`, but will only happen if the name
+  # Helper function: Same as `$1=$2`, but will only happen if the name
   # specified by `$1` is not already set.
   -set-default () {
     local arg_name="$1"
     local arg_value="$2"
-    eval "test -z \"\$$arg_name\" && export $arg_name='$arg_value'"
+    eval "test -z \"\$$arg_name\" && $arg_name='$arg_value'"
   }
 
   # Pre-startup initializations.

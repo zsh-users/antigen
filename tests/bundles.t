@@ -11,7 +11,7 @@ Check if they are both applied.
 
 Clean it all up.
 
-  $ export _ANTIGEN_BUNDLE_RECORD=""
+  $ _ANTIGEN_BUNDLE_RECORD=""
   $ antigen-cleanup --force &> /dev/null
 
 Specify with indentation.

@@ -2,12 +2,12 @@
 
 # See cram's documentation for some of the variables used below.
 
-export ADOTDIR="$PWD/dot-antigen"
+ADOTDIR="$PWD/dot-antigen"
 [[ ! -d "$ADOTDIR" ]] && mkdir -p "$ADOTDIR"
 
-export _ANTIGEN_CACHE_ENABLED=true
-export _ANTIGEN_INTERACTIVE_MODE=true
-export _ZCACHE_EXTENSION_CLEAN_FUNCTIONS=false
+_ANTIGEN_CACHE_ENABLED=true
+_ANTIGEN_INTERACTIVE_MODE=true
+_ZCACHE_EXTENSION_CLEAN_FUNCTIONS=false
 
 test -f "$TESTDIR/.zcompdump" && rm "$TESTDIR/.zcompdump"
 
@@ -15,15 +15,15 @@ source "$TESTDIR/../antigen.zsh"
 
 # A test plugin repository to test out antigen with.
 
-export PLUGIN_DIR="$PWD/test-plugin"
+PLUGIN_DIR="$PWD/test-plugin"
 mkdir "$PLUGIN_DIR"
 
 # A wrapper function over `git` to work with the test plugin repo.
 alias pg='git --git-dir "$PLUGIN_DIR/.git" --work-tree "$PLUGIN_DIR"'
 
 echo 'alias hehe="echo hehe"' > "$PLUGIN_DIR"/aliases.zsh
-echo 'export PS1="prompt>"' > "$PLUGIN_DIR"/silly.zsh-theme
-echo 'export PS1=">"' > "$PLUGIN_DIR"/arrow.zsh-theme
+echo 'PS1="prompt>"' > "$PLUGIN_DIR"/silly.zsh-theme
+echo 'PS1=">"' > "$PLUGIN_DIR"/arrow.zsh-theme
 
 {
     pg init
@@ -33,7 +33,7 @@ echo 'export PS1=">"' > "$PLUGIN_DIR"/arrow.zsh-theme
 
 # Another test plugin.
 
-export PLUGIN_DIR2="$PWD/test-plugin2"
+PLUGIN_DIR2="$PWD/test-plugin2"
 mkdir "$PLUGIN_DIR2"
 
 # A wrapper function over `git` to work with the test plugin repo.
