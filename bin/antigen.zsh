@@ -323,7 +323,7 @@ antigen () {
 
   if [[ "$clone_dir" =~ "\/.zprezto" ]]; then
     if [[ "$(cd $clone_dir && git config --get remote.origin.url)" != "$url" ]]; then
-      echo "Setting $(basename "$clone_dir") remote to $url."
+      echo "Setting $(basename "$clone_dir") remote to $url"
       --plugin-git remote set-url origin $url
     fi
   fi
@@ -607,6 +607,17 @@ antigen-apply () {
   fi
   unset _zdotdir_set
 }
+antigen-bundles () {
+  # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+  # are ignored. Everything else is given to `antigen-bundle` as is, no
+  # quoting rules applied.
+  local line
+  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+    # Using `eval` so that we can use the shell-style quoting in each line
+    # piped to `antigen-bundles`.
+    eval "antigen-bundle $line"
+  done
+}
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -652,17 +663,6 @@ antigen-bundle () {
   fi
 }
 
-antigen-bundles () {
-  # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-  # are ignored. Everything else is given to `antigen-bundle` as is, no
-  # quoting rules applied.
-  local line
-  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-    # Using `eval` so that we can use the shell-style quoting in each line
-    # piped to `antigen-bundles`.
-    eval "antigen-bundle $line"
-  done
-}
 # Cleanup unused repositories.
 antigen-cleanup () {
   local force=false
@@ -1214,7 +1214,9 @@ _antigen () {
     -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
       if [[ -f "$line" ]]; then
         # Whether to use bundle or reference cache
-        if [[ $_ZCACHE_EXTENSION_BUNDLE == true ]]; then
+        # Force bundle cache for btype = theme, until PR 
+        # https://github.com/robbyrussell/oh-my-zsh/pull/3743 is merged.
+        if [[ $_ZCACHE_EXTENSION_BUNDLE == true || $btype == "theme" ]]; then
           _payload+="#-- SOURCE: $line\NL"
           _payload+=$(-zcache-process-source "$line" "$btype")
           _payload+="\NL;#-- END SOURCE\NL"
