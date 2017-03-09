@@ -15,7 +15,7 @@ Clones a repository if it's not cloned already:
 
   $ -antigen-ensure-repo $REPO_URL
   Installing user/repo.* (re)
-  git clone --recursive --depth=1 -- https://github.com/user/repo.git .*user-SLASH-repo.git (re)
+  git clone --single-branch --recursive --depth=1 --branch master -- https://github.com/user/repo.git .*user-SLASH-repo.git (re)
   .* (re)
   Done. Took 0s. (re)
 
@@ -23,7 +23,7 @@ Ignore update argument if there is no repo cloned:
 
   $ -antigen-ensure-repo $REPO_URL true
   Installing user/repo... 
-  git clone --recursive --depth=1 -- https://github.com/user/repo.git .*user-SLASH-repo.git (re)
+  git clone --single-branch --recursive --depth=1 --branch master -- https://github.com/user/repo.git .*user-SLASH-repo.git (re)
   .* (re)
   Done. Took 0s.
 
@@ -48,9 +48,7 @@ Clone especific branch if required:
 
   $ -antigen-ensure-repo "$REPO_URL|v5.0"
   Installing user/repo... 
-  git clone --recursive --depth=1 -- https://github.com/user/repo.git .*user-SLASH-repo.git-PIPE-v5.0 (re)
+  git clone --single-branch --recursive --depth=1 --branch v5.0 -- https://github.com/user/repo.git .*user-SLASH-repo.git-PIPE-v5.0 (re)
   
   Done. Took 0s.
-  
-  git --git-dir=.* --no-pager checkout v5\.0 (re)
-  
+

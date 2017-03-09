@@ -37,10 +37,17 @@
   local start=$(date +'%s')
   local install_or_update=false
   local success=false
+
+  # If its a specific branch that we want, checkout that branch.
+  local branch="master" # TODO FIX THIS
+  if [[ $url == *\|* ]]; then
+      branch="${url#*|}"
+  fi
+  
   if [[ ! -d $clone_dir ]]; then
     install_or_update=true
     echo -n "Installing $(-antigen-bundle-short-name $url)... "
-    git clone ${=_ANTIGEN_CLONE_OPTS} -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
+    git clone ${=_ANTIGEN_CLONE_OPTS} --branch $branch -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
     success=$?
   elif $update; then
     local branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
@@ -59,7 +66,7 @@
     --plugin-git pull origin $branch
     success=$?
     # Update submodules.
-    --plugin-git submodule update ${=_ANTIGEN_CLONE_OPTS}
+    --plugin-git submodule update ${=_ANTIGEN_SUBMODULE_OPTS}
     # Get the new revision.
     local new_rev="$(--plugin-git rev-parse HEAD)"
   fi
@@ -71,15 +78,6 @@
     else
       printf "Error! See \"$_ANTIGEN_LOG_PATH\".\n";
     fi
-  fi
-
-  # If its a specific branch that we want, checkout that branch.
-  if [[ $url == *\|* ]]; then
-    local current_branch=${$(--plugin-git symbolic-ref HEAD)##refs/heads/}
-    local requested_branch="${url#*|}"
-    # Only do the checkout when we are not already on the branch.
-    [[ $requested_branch != $current_branch ]] &&
-      --plugin-git checkout $requested_branch
   fi
 
   if [[ -n $old_rev && $old_rev != $new_rev ]]; then
