@@ -50,7 +50,7 @@
     git clone ${=_ANTIGEN_CLONE_OPTS} --branch $branch -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
     success=$?
   elif $update; then
-    local branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
+    branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
     if [[ $url == *\|* ]]; then
         # Get the clone's branch
         branch="${url#*|}"
