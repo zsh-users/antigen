@@ -30,7 +30,7 @@
 
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG_PATH)
+    (cd "$clone_dir" &>>! $_ANTIGEN_LOG_PATH && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG_PATH)
   }
 
   # Clone if it doesn't already exist.
