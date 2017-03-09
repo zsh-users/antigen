@@ -40,7 +40,7 @@
   if [[ ! -d $clone_dir ]]; then
     install_or_update=true
     echo -n "Installing $(-antigen-bundle-short-name $url)... "
-    git clone $ANTIGEN_CLONE_OPTS "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
+    git clone ${=_ANTIGEN_CLONE_OPTS} -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
     success=$?
   elif $update; then
     local branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
@@ -59,7 +59,7 @@
     --plugin-git pull origin $branch
     success=$?
     # Update submodules.
-    --plugin-git submodule update $ANTIGEN_CLONE_OPTS
+    --plugin-git submodule update ${=_ANTIGEN_CLONE_OPTS}
     # Get the new revision.
     local new_rev="$(--plugin-git rev-parse HEAD)"
   fi
@@ -94,4 +94,3 @@
 
   return $success
 }
-

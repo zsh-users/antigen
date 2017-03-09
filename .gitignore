@@ -21,3 +21,6 @@ revert-info
 
 # Ignore compiled zsh files
 *.zwc
+
+# Ignore timestamp file for zcache auto-reset config
+*.timestamp

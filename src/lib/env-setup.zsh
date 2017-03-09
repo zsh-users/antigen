@@ -20,6 +20,9 @@
   -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
 
   -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
+  
+  # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
+  # for arguments that can be passed as `--key=value`.
   -set-default _ANTIGEN_CLONE_OPTS "--recursive --depth=1"
 
   # Setup antigen's own completion.

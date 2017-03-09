@@ -551,7 +551,7 @@ fi
   if [[ ! -d $clone_dir ]]; then
     install_or_update=true
     echo -n "Installing $(-antigen-bundle-short-name $url)... "
-    git clone $ANTIGEN_CLONE_OPTS "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
+    git clone ${=_ANTIGEN_CLONE_OPTS} -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
     success=$?
   elif $update; then
     local branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
@@ -570,7 +570,7 @@ fi
     --plugin-git pull origin $branch
     success=$?
     # Update submodules.
-    --plugin-git submodule update $ANTIGEN_CLONE_OPTS
+    --plugin-git submodule update ${=_ANTIGEN_CLONE_OPTS}
     # Get the new revision.
     local new_rev="$(--plugin-git rev-parse HEAD)"
   fi
@@ -605,7 +605,6 @@ fi
 
   return $success
 }
-
 -antigen-env-setup () {
   # Helper function: Same as `export $1=$2`, but will only happen if the name
   # specified by `$1` is not already set.
@@ -628,6 +627,9 @@ fi
   -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
 
   -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
+  
+  # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
+  # for arguments that can be passed as `--key=value`.
   -set-default _ANTIGEN_CLONE_OPTS "--recursive --depth=1"
 
   # Setup antigen's own completion.
