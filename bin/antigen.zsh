@@ -520,9 +520,15 @@ fi
 #
 # Returns true|false Whether cloning/pulling was succesful
 -antigen-ensure-repo () {
-  # Argument defaults.
+  # Argument defaults. Previously using ${1:?"missing url argument"} format
+  # but it seems to mess up with cram
+  if (( $# < 1 )); then
+    echo "Antigen: Missing url argument."
+    return 1
+  fi
+  
   # The url. No sane default for this, so just empty.
-  local url=${1:?"url must be set"}
+  local url=$1
   # Check if we have to update.
   local update=${2:-false}
   # Verbose output.
@@ -535,7 +541,7 @@ fi
 
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd "$clone_dir" &>>! $_ANTIGEN_LOG_PATH && git --no-pager "$@" &>>! $_ANTIGEN_LOG_PATH)
+    (git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG_PATH)
   }
 
   # Clone if it doesn't already exist.
