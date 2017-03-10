@@ -138,7 +138,7 @@ antigen () {
     local dir=$(-antigen-get-clone-dir $ANTIGEN_DEFAULT_REPO_URL)
     echo $(ls $dir/themes | sed 's/.zsh-theme//')
   fi
-  
+
   return 0
 }
 
@@ -308,18 +308,6 @@ antigen () {
   echo "$url"
 }
 
--antigen-update-remote () {
-  local clone_dir="$1"
-  local url="$2"
-
-  if [[ "$clone_dir" =~ "\/.zprezto" ]]; then
-    if [[ "$(cd $clone_dir && git config --get remote.origin.url)" != "$url" ]]; then
-      echo "Setting $(basename "$clone_dir") remote to $url."
-      --plugin-git remote set-url origin $url
-    fi
-  fi
-}
-
 # Ensure that a clone exists for the given repo url and branch. If the first
 # argument is `update` and if a clone already exists for the given repo
 # and branch, it is pull-ed, i.e., updated.
@@ -365,8 +353,6 @@ antigen () {
       branch="${url#*|}"
     fi
     install_or_update=true
-    # Update remote if needed.
-    -antigen-update-remote $clone_dir $url
     echo -n "Updating $(-antigen-bundle-short-name $url)... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
@@ -497,7 +483,7 @@ antigen () {
   else
     success=1
   fi
-  
+
   return $success
 }
 
@@ -551,7 +537,6 @@ antigen () {
 }
 
 -antigen-use-prezto () {
-  export ZPREZTODIR="$(-antigen-get-clone-dir "$ANTIGEN_PREZTO_REPO_URL")"
   antigen-bundle "$ANTIGEN_PREZTO_REPO_URL"
 }
 
@@ -976,7 +961,7 @@ antigen-theme () {
     # while switching themes interactively.
     if is-at-least 4.3.7; then
       add-zsh-hook -D "${hook}" "prompt_*"
-      add-zsh-hook -D "${hook}" "*_${hook}" # common in omz themes 
+      add-zsh-hook -D "${hook}" "*_${hook}" # common in omz themes
     fi
     add-zsh-hook -d "${hook}" "vcs_info"  # common in omz themes
   done
@@ -1224,10 +1209,6 @@ _antigen () {
   if [[ ! -z "$ZSH" ]]; then
     _payload+="export ZSH=\"$ZSH\"";
     _payload+=" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
-  fi
-
-  if [[ ! -z "$ZDOTDIR" ]]; then
-    _payload+="export ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
   fi
 
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
