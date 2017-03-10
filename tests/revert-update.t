@@ -32,7 +32,7 @@ Confirm we currently have the old version.
 Run antigen's update.
 
   $ antigen-update
-  Updating */test-plugin... Done. Took *s. (glob)
+  Updating */test-plugin@master... Done. Took *s. (glob)
 
 Confirm we have the new version.
 
