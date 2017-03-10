@@ -1,5 +1,11 @@
 # zshrc file written for antigen's tests. Might not be a good one for daily use.
 
+# Clean the environment from CI so that environment tests will pass.
+
+unset ZSH_REMOTE_URL
+unset ZSH_SOURCE
+unset ZSH_BUILD_VERSION
+
 # See cram's documentation for some of the variables used below.
 
 ADOTDIR="$PWD/dot-antigen"
