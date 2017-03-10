@@ -167,12 +167,20 @@ fi
 
   # Avoid 'HEAD' when in detached mode
   if [[ $ref == "HEAD" ]]; then
-    ref=$(git --git-dir="$bundle_path/.git" rev-parse --short '@')
+    ref=$(git --git-dir="$bundle_path/.git" describe --tags --exact-match || git --git-dir="$bundle_path/.git" rev-parse --short '@')
   fi
   echo $ref
 }
 -antigen-bundle-short-name () {
-  echo "$@" | sed -E "s|.*/(.*/.*).*|\1|"|sed -E "s|\.git.*$||g"
+  local bundle_name=$(echo "$1" | sed -E "s|.*/(.*/.*).*|\1|"|sed -E "s|\.git.*$||g")
+  local bundle_branch=$2
+    
+  if [[ "$bundle_branch" == "" ]]; then
+    echo $bundle_name
+    return
+  fi
+
+  echo "$bundle_name@$bundle_branch"
 }
 
 # Echo the bundle specs as in the record. The first line is not echoed since it
@@ -253,6 +261,18 @@ fi
      esac
   done
 }
+# Returns bundles flagged as make_local_clone
+#
+# Usage
+#    -antigen-cloned-bundles
+#
+# Returns
+#    Bundle metadata
+-antigen-get-cloned-bundles() {
+  -antigen-echo-record |
+      awk '$4 == "true" {print $1}' |
+      sort -u
+}
 -antigen-get-clone-dir () {
   # Takes a repo url and mangles it, giving the path that this url will be
   # cloned to. Doesn't actually clone anything.
@@ -265,8 +285,8 @@ fi
     local url="${1}"
     url=${url//\//-SLASH-}
     url=${url//\:/-COLON-}
-    path=${url//\|/-PIPE-}
-    echo "$path"
+    url=${url//\*/-STAR-}
+    echo "${url//\|/-PIPE-}"
   fi
 }
 
@@ -281,23 +301,11 @@ fi
     _path=${_path//^\$ADOTDIR\/repos\/}
     _path=${_path//-SLASH-/\/}
     _path=${_path//-COLON-/\:}
-    url=${_path//-PIPE-/\|}
-    echo "$url"
+    _path=${_path//-STAR-/\*}
+    echo "${_path//-PIPE-/\|}"
   fi
 }
 
-# Returns bundles flagged as make_local_clone
-#
-# Usage
-#    -antigen-cloned-bundles
-#
-# Returns
-#    Bundle metadata
--antigen-get-cloned-bundles() {
-  -antigen-echo-record |
-      awk '$4 == "true" {print $1}' |
-      sort -u
-}
 # Returns a list of themes from a default library (omz)
 #
 # Usage
@@ -552,30 +560,26 @@ fi
   # If its a specific branch that we want, checkout that branch.
   local branch="master" # TODO FIX THIS
   if [[ $url == *\|* ]]; then
-      branch="${url#*|}"
+    branch="$(-antigen-parse-branch ${url%|*} ${url#*|})"
   fi
   
   if [[ ! -d $clone_dir ]]; then
     install_or_update=true
-    echo -n "Installing $(-antigen-bundle-short-name $url)... "
+    echo -n "Installing $(-antigen-bundle-short-name $url $branch)... "
     git clone ${=_ANTIGEN_CLONE_OPTS} --branch $branch -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
     success=$?
   elif $update; then
-    branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
-    if [[ $url == *\|* ]]; then
-        # Get the clone's branch
-        branch="${url#*|}"
-    fi
     install_or_update=true
     # Update remote if needed.
     -antigen-update-remote $clone_dir $url
-    echo -n "Updating $(-antigen-bundle-short-name $url)... "
+    echo -n "Updating $(-antigen-bundle-short-name $url $branch)... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
     # Pull changes if update requested.
     --plugin-git checkout $branch
     --plugin-git pull origin $branch
     success=$?
+
     # Update submodules.
     --plugin-git submodule update ${=_ANTIGEN_SUBMODULE_OPTS}
     # Get the new revision.
@@ -729,7 +733,13 @@ fi
       *)
         value=$key
         case $index in
-          0) key=url ;;
+          0)
+            key=url
+            if [[ $value =~ "@" ]]; then
+              echo "local branch='${value#*@}'"
+              value=${value%@*}
+            fi
+          ;;
           1) key=loc ;;
         esac
         let index+=1
@@ -741,6 +751,28 @@ fi
   done
 }
 
+# Parses and retrieves a remote branch given a branch name.
+#
+# If the branch name contains '*' it will retrieve remote branches
+# and try to match against tags and heads, returning the latest matching.
+#
+# Usage
+#     -antigen-parse-branch https://github.com/user/repo.git x.y.z
+#
+# Returns
+#     Branch name
+-antigen-parse-branch () {
+  local url=$1
+  local branch=$2
+  local branches
+
+  if [[ "$branch" =~ '\*' ]]; then
+    branches=$(git ls-remote --tag --refs -q $url "$branch"|tac|head -n1)
+    branch=${branches#*/*/}
+  fi
+
+  echo $branch
+}
 # Updates revert-info data with git hash.
 #
 # This does process only cloned bundles.
@@ -825,6 +857,17 @@ antigen-apply () {
   fi
   unset _zdotdir_set
 }
+antigen-bundles () {
+  # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+  # are ignored. Everything else is given to `antigen-bundle` as is, no
+  # quoting rules applied.
+  local line
+  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+    # Using `eval` so that we can use the shell-style quoting in each line
+    # piped to `antigen-bundles`.
+    eval "antigen-bundle $line"
+  done
+}
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -870,17 +913,6 @@ antigen-bundle () {
   fi
 }
 
-antigen-bundles () {
-  # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-  # are ignored. Everything else is given to `antigen-bundle` as is, no
-  # quoting rules applied.
-  local line
-  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-    # Using `eval` so that we can use the shell-style quoting in each line
-    # piped to `antigen-bundles`.
-    eval "antigen-bundle $line"
-  done
-}
 # Cleanup unused repositories.
 antigen-cleanup () {
   local force=false

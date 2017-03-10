@@ -41,30 +41,26 @@
   # If its a specific branch that we want, checkout that branch.
   local branch="master" # TODO FIX THIS
   if [[ $url == *\|* ]]; then
-      branch="${url#*|}"
+    branch="$(-antigen-parse-branch ${url%|*} ${url#*|})"
   fi
   
   if [[ ! -d $clone_dir ]]; then
     install_or_update=true
-    echo -n "Installing $(-antigen-bundle-short-name $url)... "
+    echo -n "Installing $(-antigen-bundle-short-name $url $branch)... "
     git clone ${=_ANTIGEN_CLONE_OPTS} --branch $branch -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
     success=$?
   elif $update; then
-    branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
-    if [[ $url == *\|* ]]; then
-        # Get the clone's branch
-        branch="${url#*|}"
-    fi
     install_or_update=true
     # Update remote if needed.
     -antigen-update-remote $clone_dir $url
-    echo -n "Updating $(-antigen-bundle-short-name $url)... "
+    echo -n "Updating $(-antigen-bundle-short-name $url $branch)... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
     # Pull changes if update requested.
     --plugin-git checkout $branch
     --plugin-git pull origin $branch
     success=$?
+
     # Update submodules.
     --plugin-git submodule update ${=_ANTIGEN_SUBMODULE_OPTS}
     # Get the new revision.

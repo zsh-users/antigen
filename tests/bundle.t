@@ -25,7 +25,7 @@ Try to load an unexisting plugin from a cloned bundle.
 Try to install an unexisting bundle.
 
   $ antigen-bundle https://127.0.0.1/bundle/unexisting.git
-  Installing bundle/unexisting... Error! See * (glob)
+  Installing bundle/unexisting@master... Error! See * (glob)
   [1]
   $ echo $fpath | grep -co test-plugin
   1
