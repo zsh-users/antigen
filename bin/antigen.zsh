@@ -167,12 +167,20 @@ fi
 
   # Avoid 'HEAD' when in detached mode
   if [[ $ref == "HEAD" ]]; then
-    ref=$(git --git-dir="$bundle_path/.git" rev-parse --short '@')
+    ref=$(git --git-dir="$bundle_path/.git" describe --tags --exact-match || git --git-dir="$bundle_path/.git" rev-parse --short '@')
   fi
   echo $ref
 }
 -antigen-bundle-short-name () {
-  echo "$@" | sed -E "s|.*/(.*/.*).*|\1|"|sed -E "s|\.git.*$||g"
+  local bundle_name=$(echo "$1" | sed -E "s|.*/(.*/.*).*|\1|"|sed -E "s|\.git.*$||g")
+  local bundle_branch=$2
+    
+  if [[ "$bundle_branch" == "" ]]; then
+    echo $bundle_name
+    return
+  fi
+
+  echo "$bundle_name@$bundle_branch"
 }
 
 # Echo the bundle specs as in the record. The first line is not echoed since it
@@ -277,8 +285,8 @@ fi
     local url="${1}"
     url=${url//\//-SLASH-}
     url=${url//\:/-COLON-}
-    path=${url//\|/-PIPE-}
-    echo "$path"
+    url=${url//\*/-STAR-}
+    echo "${url//\|/-PIPE-}"
   fi
 }
 
@@ -293,8 +301,8 @@ fi
     _path=${_path//^\$ADOTDIR\/repos\/}
     _path=${_path//-SLASH-/\/}
     _path=${_path//-COLON-/\:}
-    url=${_path//-PIPE-/\|}
-    echo "$url"
+    _path=${_path//-STAR-/\*}
+    echo "${_path//-PIPE-/\|}"
   fi
 }
 
@@ -520,9 +528,15 @@ fi
 #
 # Returns true|false Whether cloning/pulling was succesful
 -antigen-ensure-repo () {
-  # Argument defaults.
+  # Argument defaults. Previously using ${1:?"missing url argument"} format
+  # but it seems to mess up with cram
+  if (( $# < 1 )); then
+    echo "Antigen: Missing url argument."
+    return 1
+  fi
+  
   # The url. No sane default for this, so just empty.
-  local url=${1:?"url must be set"}
+  local url=$1
   # Check if we have to update.
   local update=${2:-false}
   # Verbose output.
@@ -535,36 +549,39 @@ fi
 
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd "$clone_dir" &>>! $_ANTIGEN_LOG_PATH && git --no-pager "$@" &>>! $_ANTIGEN_LOG_PATH)
+    (cd "$clone_dir" &>>! $_ANTIGEN_LOG_PATH && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG_PATH)
   }
 
   # Clone if it doesn't already exist.
   local start=$(date +'%s')
   local install_or_update=false
   local success=false
+
+  # If its a specific branch that we want, checkout that branch.
+  local branch="master" # TODO FIX THIS
+  if [[ $url == *\|* ]]; then
+    branch="$(-antigen-parse-branch ${url%|*} ${url#*|})"
+  fi
+  
   if [[ ! -d $clone_dir ]]; then
     install_or_update=true
-    echo -n "Installing $(-antigen-bundle-short-name $url)... "
-    git clone $ANTIGEN_CLONE_OPTS "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
+    echo -n "Installing $(-antigen-bundle-short-name $url $branch)... "
+    git clone ${=_ANTIGEN_CLONE_OPTS} --branch $branch -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
     success=$?
   elif $update; then
-    local branch=$(--plugin-git rev-parse --abbrev-ref HEAD)
-    if [[ $url == *\|* ]]; then
-        # Get the clone's branch
-        branch="${url#*|}"
-    fi
     install_or_update=true
     # Update remote if needed.
     -antigen-update-remote $clone_dir $url
-    echo -n "Updating $(-antigen-bundle-short-name $url)... "
+    echo -n "Updating $(-antigen-bundle-short-name $url $branch)... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
     # Pull changes if update requested.
     --plugin-git checkout $branch
     --plugin-git pull origin $branch
     success=$?
+
     # Update submodules.
-    --plugin-git submodule update $ANTIGEN_CLONE_OPTS
+    --plugin-git submodule update ${=_ANTIGEN_SUBMODULE_OPTS}
     # Get the new revision.
     local new_rev="$(--plugin-git rev-parse HEAD)"
   fi
@@ -576,15 +593,6 @@ fi
     else
       printf "Error! See \"$_ANTIGEN_LOG_PATH\".\n";
     fi
-  fi
-
-  # If its a specific branch that we want, checkout that branch.
-  if [[ $url == *\|* ]]; then
-    local current_branch=${$(--plugin-git symbolic-ref HEAD)##refs/heads/}
-    local requested_branch="${url#*|}"
-    # Only do the checkout when we are not already on the branch.
-    [[ $requested_branch != $current_branch ]] &&
-      --plugin-git checkout $requested_branch
   fi
 
   if [[ -n $old_rev && $old_rev != $new_rev ]]; then
@@ -599,7 +607,6 @@ fi
 
   return $success
 }
-
 -antigen-env-setup () {
   # Helper function: Same as `export $1=$2`, but will only happen if the name
   # specified by `$1` is not already set.
@@ -622,7 +629,11 @@ fi
   -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
 
   -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
-  -set-default _ANTIGEN_CLONE_OPTS "--recursive --depth=1"
+  
+  # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
+  # for arguments that can be passed as `--key=value`.
+  -set-default _ANTIGEN_CLONE_OPTS "--single-branch --recursive --depth=1"
+  -set-default _ANTIGEN_SUBMODULE_OPTS "--recursive --depth=1"
 
   # Setup antigen's own completion.
   autoload -Uz compinit
@@ -722,7 +733,13 @@ fi
       *)
         value=$key
         case $index in
-          0) key=url ;;
+          0)
+            key=url
+            if [[ $value =~ "@" ]]; then
+              echo "local branch='${value#*@}'"
+              value=${value%@*}
+            fi
+          ;;
           1) key=loc ;;
         esac
         let index+=1
@@ -734,6 +751,28 @@ fi
   done
 }
 
+# Parses and retrieves a remote branch given a branch name.
+#
+# If the branch name contains '*' it will retrieve remote branches
+# and try to match against tags and heads, returning the latest matching.
+#
+# Usage
+#     -antigen-parse-branch https://github.com/user/repo.git x.y.z
+#
+# Returns
+#     Branch name
+-antigen-parse-branch () {
+  local url=$1
+  local branch=$2
+  local branches
+
+  if [[ "$branch" =~ '\*' ]]; then
+    branches=$(git ls-remote --tag --refs -q $url "$branch"|tac|head -n1)
+    branch=${branches#*/*/}
+  fi
+
+  echo $branch
+}
 # Updates revert-info data with git hash.
 #
 # This does process only cloned bundles.

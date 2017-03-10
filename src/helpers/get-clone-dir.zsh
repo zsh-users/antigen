@@ -10,8 +10,8 @@
     local url="${1}"
     url=${url//\//-SLASH-}
     url=${url//\:/-COLON-}
-    path=${url//\|/-PIPE-}
-    echo "$path"
+    url=${url//\*/-STAR-}
+    echo "${url//\|/-PIPE-}"
   fi
 }
 

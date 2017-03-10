@@ -63,3 +63,22 @@ Repeated, once as positional and once more as keyword.
   $ parse url1 --url=url2
   local url='url1'
   local url='url2'
+
+Supports bundle name with branch/version.
+
+  $ parse url@version
+  local branch='version'
+  local url='url'
+
+Supports branch/version flag
+
+  $ parse url --branch=version
+  local url='url'
+  local branch='version'
+
+Flag `--branch` overwrites `@`-name.
+
+  $ parse url@b1 --branch=b2
+  local branch='b1'
+  local url='url'
+  local branch='b2'
