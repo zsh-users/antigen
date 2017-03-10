@@ -9,6 +9,14 @@ Check if they are both applied.
   $ hehe2
   hehe2
 
+Should not leak Antigen or OMZ environment variables.
+
+  $ env | sed -e 's/\=.*//' | grep -i antigen | wc -l
+  0
+
+  $ env | sed -e 's/\=.*//' | grep -i zsh | wc -l
+  0
+
 Clean it all up.
 
   $ _ANTIGEN_BUNDLE_RECORD=""
