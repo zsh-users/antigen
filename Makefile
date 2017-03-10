@@ -35,10 +35,10 @@ release:
 
 	# Make build and tests
 	make build && make tests PYENV= SHELL=zsh
-	
+
 	# Update version references in README.md
 	$(call ised, "s/${VERSION}/$(version)/",README.mkd)
-	
+
 	# Update changelog
 	vi CHANGELOG.md
 
