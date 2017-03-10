@@ -13,7 +13,7 @@
 
   # Avoid 'HEAD' when in detached mode
   if [[ $ref == "HEAD" ]]; then
-    ref=$(git --git-dir="$bundle_path/.git" describe --tags --exact-match || git --git-dir="$bundle_path/.git" rev-parse --short '@')
+    ref=$(git --git-dir="$bundle_path/.git" describe --tags --exact-match 2>/dev/null || git --git-dir="$bundle_path/.git" rev-parse --short '@')
   fi
   echo $ref
 }

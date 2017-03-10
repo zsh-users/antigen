@@ -21,6 +21,6 @@
   records=(${(@f)$(-antigen-echo-record)})
   IFS="$_IFS"
 
-  echo "${records[(r)*$bundle*]}"
+  echo "${records[(r)*${bundle/\|/\\\|}*]}"
 }
 
