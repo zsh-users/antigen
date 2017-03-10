@@ -104,7 +104,7 @@ zcache-load-cache () {
 # Returns
 #   Nothing
 antigen-reset () {
-  -zcache-remove-path () { [[ -f "$1" ]] && rm "$1" }
+  -zcache-remove-path () { [[ -f "$1" ]] && rm -f "$1" }
   -zcache-remove-path "$_ZCACHE_PAYLOAD_PATH"
   -zcache-remove-path "$_ZCACHE_BUNDLES_PATH"
   unfunction -- -zcache-remove-path

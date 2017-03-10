@@ -81,7 +81,9 @@
     -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
       if [[ -f "$line" ]]; then
         # Whether to use bundle or reference cache
-        if [[ $_ZCACHE_EXTENSION_BUNDLE == true ]]; then
+        # Force bundle cache for btype = theme, until PR 
+        # https://github.com/robbyrussell/oh-my-zsh/pull/3743 is merged.
+        if [[ $_ZCACHE_EXTENSION_BUNDLE == true || $btype == "theme" ]]; then
           _payload+="#-- SOURCE: $line\NL"
           _payload+=$(-zcache-process-source "$line" "$btype")
           _payload+="\NL;#-- END SOURCE\NL"
