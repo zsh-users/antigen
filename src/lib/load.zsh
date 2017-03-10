@@ -13,6 +13,18 @@
   local make_local_clone="$3"
   local btype="$4"
   local src
+  local pfunction_glob='^([_.]*|prompt_*_setup|README*|*~)(-.N:t)'
+
+  # Extended globbing is needed for listing autoloadable function directories.
+  setopt LOCAL_OPTIONS EXTENDED_GLOB
+
+  if [[ -d "$loc/functions" ]]; then
+    fpath=($loc/functions $fpath)
+    for pfunction in $loc/functions/$~pfunction_glob; do
+      autoload -Uz "$pfunction"
+    done
+  fi
+
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone" "$btype"); do
     if [[ -d "$src" ]]; then
       if (( ! ${fpath[(I)$location]} )); then
@@ -51,7 +63,7 @@
   else
     success=1
   fi
-  
+
   return $success
 }
 

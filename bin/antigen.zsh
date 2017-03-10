@@ -472,6 +472,18 @@ antigen () {
   local make_local_clone="$3"
   local btype="$4"
   local src
+  local pfunction_glob='^([_.]*|prompt_*_setup|README*|*~)(-.N:t)'
+
+  # Extended globbing is needed for listing autoloadable function directories.
+  setopt LOCAL_OPTIONS EXTENDED_GLOB
+
+  if [[ -d "$loc/functions" ]]; then
+    fpath=($loc/functions $fpath)
+    for pfunction in $loc/functions/$~pfunction_glob; do
+      autoload -Uz "$pfunction"
+    done
+  fi
+
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone" "$btype"); do
     if [[ -d "$src" ]]; then
       if (( ! ${fpath[(I)$location]} )); then
@@ -510,7 +522,7 @@ antigen () {
   else
     success=1
   fi
-  
+
   return $success
 }
 
@@ -1199,9 +1211,15 @@ _antigen () {
 #   Nothing. Generates _ZCACHE_META_PATH and _ZCACHE_PAYLOAD_PATH
 -zcache-generate-cache () {
   local -aU _extensions_paths
+  local -aU _autoloaded_functions
   local -a _bundles_meta
   local _payload=''
+  local _sourcing_payload=''
   local location
+
+  local pfunction_glob='^([_.]*|prompt_*_setup|README*|*~)(-.N:t)'
+  # Extended globbing is needed for listing autoloadable function directories.
+  setopt LOCAL_OPTIONS EXTENDED_GLOB
 
   _payload+="#-- START ZCACHE GENERATED FILE\NL"
   _payload+="#-- GENERATED: $(date)\NL"
@@ -1218,14 +1236,14 @@ _antigen () {
     -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
       if [[ -f "$line" ]]; then
         # Whether to use bundle or reference cache
-        # Force bundle cache for btype = theme, until PR 
+        # Force bundle cache for btype = theme, until PR
         # https://github.com/robbyrussell/oh-my-zsh/pull/3743 is merged.
         if [[ $_ZCACHE_EXTENSION_BUNDLE == true || $btype == "theme" ]]; then
-          _payload+="#-- SOURCE: $line\NL"
-          _payload+=$(-zcache-process-source "$line" "$btype")
-          _payload+="\NL;#-- END SOURCE\NL"
+          _sourcing_payload+="#-- SOURCE: $line\NL"
+          _sourcing_payload+=$(-zcache-process-source "$line" "$btype")
+          _sourcing_payload+="\NL;#-- END SOURCE\NL"
         else
-          _payload+="source \"$line\";\NL"
+          _sourcing_payload+="source \"$line\";\NL"
         fi
       fi
     done
@@ -1239,10 +1257,21 @@ _antigen () {
     if [[ -d "$location" ]]; then
       _extensions_paths+=($location)
     fi
+
+    if [[ -d "$location/functions" ]]; then
+      _extensions_paths+=($location/functions)
+      for pfunction in $location/functions/$~pfunction_glob; do
+        _autoloaded_functions+=($pfunction)
+      done
+    fi
   done
 
   _payload+="fpath+=(${_extensions_paths[@]});\NL"
   _payload+="unset __ZCACHE_FILE_PATH;\NL"
+  if [[ ! -z "${_autoloaded_functions}" ]]; then
+    _payload+="autoload -Uz ${_autoloaded_functions[@]};\NL"
+  fi
+  _payload+=$_sourcing_payload
   # \NL (\n) prefix is for backward compatibility
   _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
   _payload+=" _ZCACHE_CACHE_LOADED=true"
