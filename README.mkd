@@ -605,7 +605,13 @@ Defaults to `$HOME/.antigen`.
 were used previously but are now removed. Please use `ADOTDIR` instead, as
 mentioned above.
 
-## Running the tests
+## Development
+
+When making changes, edit the files in `src/`. Do not directly edit
+`bin/antigen.zsh` as that file is generated automatically. Run `make` to
+regenerate it.
+
+### Running the tests
 
 All the tests are in the `tests` folder and are run using the [cram][] test
 system. The latest version on that website, as of today is v0.5, which does not
