@@ -115,10 +115,6 @@
     _payload+=" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
   fi
 
-  if [[ ! -z "$ZDOTDIR" ]]; then
-    _payload+="export ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
-  fi
-
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"

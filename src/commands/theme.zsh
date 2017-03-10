@@ -61,7 +61,7 @@ antigen-theme () {
     # while switching themes interactively.
     if is-at-least 4.3.7; then
       add-zsh-hook -D "${hook}" "prompt_*"
-      add-zsh-hook -D "${hook}" "*_${hook}" # common in omz themes 
+      add-zsh-hook -D "${hook}" "*_${hook}" # common in omz themes
     fi
     add-zsh-hook -d "${hook}" "vcs_info"  # common in omz themes
   done
