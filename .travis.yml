@@ -44,6 +44,9 @@ matrix:
     - os: linux
       language: python
       env: ZSH_BUILD_VERSION=zsh-4.3.5
+    - os: osx
+      language: generic
+      env: ZSH_BUILD_VERSION=master
 
 addons:
     apt:
