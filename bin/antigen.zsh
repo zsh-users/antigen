@@ -767,7 +767,7 @@ fi
   local branches
 
   if [[ "$branch" =~ '\*' ]]; then
-    branches=$(git ls-remote --tags -q "$url" "$branch"|cut -d'/' -f3|sort -nr|head -n1)
+    branches=$(git ls-remote --tags -q "$url" "$branch"|cut -d'/' -f3|sort -n|tail -1)
     # There is no --refs flag in git 1.8 and below, this way we
     # emulate this flag -- also git 1.8 ref order is undefined.
     branch=${${branches#*/*/}%^*} # Why you are like this?
@@ -867,7 +867,7 @@ antigen-bundles () {
   grep '^[[:space:]]*[^[:space:]#]' | while read line; do
     # Using `eval` so that we can use the shell-style quoting in each line
     # piped to `antigen-bundles`.
-    eval "antigen-bundle $line"
+    eval antigen-bundle ${(q)line}
   done
 }
 # Syntaxes
