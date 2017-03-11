@@ -3,7 +3,7 @@
   if (( _zdotdir_set )); then
     _old_zdotdir=$ZDOTDIR
   fi
-  export ZDOTDIR=$ADOTDIR/repos/
+  ZDOTDIR=$ADOTDIR/repos/
 
   antigen-bundle $ANTIGEN_PREZTO_REPO_URL
 }

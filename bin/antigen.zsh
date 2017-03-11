@@ -425,12 +425,12 @@ antigen () {
 }
 
 -antigen-env-setup () {
-  # Helper function: Same as `export $1=$2`, but will only happen if the name
+  # Helper function: Same as `$1=$2`, but will only happen if the name
   # specified by `$1` is not already set.
   -set-default () {
     local arg_name="$1"
     local arg_value="$2"
-    eval "test -z \"\$$arg_name\" && export $arg_name='$arg_value'"
+    eval "test -z \"\$$arg_name\" && $arg_name='$arg_value'"
   }
 
   # Pre-startup initializations.
@@ -555,10 +555,10 @@ antigen () {
 
 -antigen-use-oh-my-zsh () {
   if [[ -z "$ZSH" ]]; then
-    export ZSH="$(-antigen-get-clone-dir "$ANTIGEN_DEFAULT_REPO_URL")"
+    ZSH="$(-antigen-get-clone-dir "$ANTIGEN_DEFAULT_REPO_URL")"
   fi
   if [[ -z "$ZSH_CACHE_DIR" ]]; then
-    export ZSH_CACHE_DIR="$ZSH/cache/"
+    ZSH_CACHE_DIR="$ZSH/cache/"
   fi
   antigen-bundle --loc=lib
 }
@@ -568,7 +568,7 @@ antigen () {
   if (( _zdotdir_set )); then
     _old_zdotdir=$ZDOTDIR
   fi
-  export ZDOTDIR=$ADOTDIR/repos/
+  ZDOTDIR=$ADOTDIR/repos/
 
   antigen-bundle $ANTIGEN_PREZTO_REPO_URL
 }
@@ -1037,7 +1037,7 @@ antigen-use () {
   elif [[ $1 == prezto ]]; then
     -antigen-use-prezto
   elif [[ $1 != "" ]]; then
-    export ANTIGEN_DEFAULT_REPO_URL=$1
+    ANTIGEN_DEFAULT_REPO_URL=$1
     antigen-bundle $@
   else
     echo 'Usage: antigen-use <library-name|url>' >&2
@@ -1244,18 +1244,18 @@ _antigen () {
   _payload+="fpath+=(${_extensions_paths[@]});\NL"
   _payload+="unset __ZCACHE_FILE_PATH;\NL"
   # \NL (\n) prefix is for backward compatibility
-  _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
+  _payload+=" _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
   _payload+=" _ZCACHE_CACHE_LOADED=true"
   _payload+=" _ZCACHE_CACHE_VERSION=v1.4.1\NL"
 
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
   if [[ ! -z "$ZSH" ]]; then
-    _payload+="export ZSH=\"$ZSH\"";
+    _payload+=" ZSH=\"$ZSH\"";
     _payload+=" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
   fi
 
   if [[ ! -z "$ZDOTDIR" ]]; then
-    _payload+="export ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
+    _payload+=" ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
   fi
 
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
@@ -1354,13 +1354,13 @@ _antigen () {
   [[ $_ANTIGEN_AUTODETECT_CONFIG_CHANGES == true && ! -f $_ZCACHE_BUNDLES_PATH || $(cat $_ZCACHE_BUNDLES_PATH) != "$_ZCACHE_BUNDLES" ]];
 }
 
-export _ZCACHE_PATH="${_ANTIGEN_CACHE_PATH:-$ADOTDIR/.cache}"
-export _ZCACHE_PAYLOAD_PATH="$_ZCACHE_PATH/.zcache-payload"
-export _ZCACHE_BUNDLES_PATH="$_ZCACHE_PATH/.zcache-bundles"
-export _ZCACHE_EXTENSION_CLEAN_FUNCTIONS="${_ZCACHE_EXTENSION_CLEAN_FUNCTIONS:-true}"
-export _ZCACHE_EXTENSION_ACTIVE=false
+local _ZCACHE_PATH="${_ANTIGEN_CACHE_PATH:-$ADOTDIR/.cache}"
+local _ZCACHE_PAYLOAD_PATH="$_ZCACHE_PATH/.zcache-payload"
+local _ZCACHE_BUNDLES_PATH="$_ZCACHE_PATH/.zcache-bundles"
+local _ZCACHE_EXTENSION_CLEAN_FUNCTIONS="${_ZCACHE_EXTENSION_CLEAN_FUNCTIONS:-true}"
+local _ZCACHE_EXTENSION_ACTIVE=false
 # Whether to use bundle or reference cache (since v1.4.0)
-export _ZCACHE_EXTENSION_BUNDLE=${_ZCACHE_EXTENSION_BUNDLE:-false}
+local _ZCACHE_EXTENSION_BUNDLE=${_ZCACHE_EXTENSION_BUNDLE:-false}
 local -a _ZCACHE_BUNDLES
 
 # Starts zcache execution.

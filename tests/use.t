@@ -33,6 +33,14 @@ Use oh-my-zsh library.
   $ antigen-use oh-my-zsh
   Using oh-my-zsh.
 
+Should not leak Antigen or OMZ environment variables.
+
+  $ env | sed -e 's/\=.*//' | grep -i antigen | wc -l
+  0
+
+  $ env | sed -e 's/\=.*//' | grep -i zsh | wc -l
+  0
+
 Use prezto library.
 
   $ antigen-use prezto

@@ -1,9 +1,9 @@
 Set environment variables for this test case
 
-  $ export TEST_DIR=$PWD
-  $ export TEST_HOST=$TEST_DIR/host
-  $ export TEST_NORMAL=$TEST_DIR/client
-  $ export TEST_SUBMODULE=$TEST_DIR/submodule
+  $ TEST_DIR=$PWD
+  $ TEST_HOST=$TEST_DIR/host
+  $ TEST_NORMAL=$TEST_DIR/client
+  $ TEST_SUBMODULE=$TEST_DIR/submodule
 
 Create fake host repository
 

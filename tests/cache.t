@@ -39,6 +39,14 @@ Should have listed bundles.
   $ ls -A $_ZCACHE_PATH | wc -l
   2
 
+Should not leak Antigen or OMZ environment variables.
+
+  $ env | sed -e 's/\=.*//' | grep -i antigen | wc -l
+  0
+
+  $ env | sed -e 's/\=.*//' | grep -i zsh | wc -l
+  0
+
 Both bundles are cached by bundle.
 
   $ unset _ZCACHE_EXTENSION_ACTIVE
