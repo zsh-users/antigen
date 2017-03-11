@@ -261,6 +261,18 @@ fi
      esac
   done
 }
+# Returns bundles flagged as make_local_clone
+#
+# Usage
+#    -antigen-cloned-bundles
+#
+# Returns
+#    Bundle metadata
+-antigen-get-cloned-bundles() {
+  -antigen-echo-record |
+      awk '$4 == "true" {print $1}' |
+      sort -u
+}
 -antigen-get-clone-dir () {
   # Takes a repo url and mangles it, giving the path that this url will be
   # cloned to. Doesn't actually clone anything.
@@ -294,18 +306,6 @@ fi
   fi
 }
 
-# Returns bundles flagged as make_local_clone
-#
-# Usage
-#    -antigen-cloned-bundles
-#
-# Returns
-#    Bundle metadata
--antigen-get-cloned-bundles() {
-  -antigen-echo-record |
-      awk '$4 == "true" {print $1}' |
-      sort -u
-}
 # Returns a list of themes from a default library (omz)
 #
 # Usage
@@ -767,7 +767,7 @@ fi
   local branches
 
   if [[ "$branch" =~ '\*' ]]; then
-    branches=$(git ls-remote --tag --refs -q $url "$branch"|tail -r|head -n1)
+    branches=$(git ls-remote --tag --refs -q $url "$branch"|tail -1)
     branch=${branches#*/*/}
   fi
 
@@ -857,6 +857,17 @@ antigen-apply () {
   fi
   unset _zdotdir_set
 }
+antigen-bundles () {
+  # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
+  # are ignored. Everything else is given to `antigen-bundle` as is, no
+  # quoting rules applied.
+  local line
+  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+    # Using `eval` so that we can use the shell-style quoting in each line
+    # piped to `antigen-bundles`.
+    eval "antigen-bundle $line"
+  done
+}
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
 # Keyword only arguments:
@@ -902,17 +913,6 @@ antigen-bundle () {
   fi
 }
 
-antigen-bundles () {
-  # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-  # are ignored. Everything else is given to `antigen-bundle` as is, no
-  # quoting rules applied.
-  local line
-  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-    # Using `eval` so that we can use the shell-style quoting in each line
-    # piped to `antigen-bundles`.
-    eval "antigen-bundle $line"
-  done
-}
 # Cleanup unused repositories.
 antigen-cleanup () {
   local force=false
