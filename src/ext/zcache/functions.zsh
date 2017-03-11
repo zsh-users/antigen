@@ -89,6 +89,8 @@
         else
           _payload+="source \"$line\";\NL"
         fi
+      elif [[ -d "$line" ]]; then
+        _binary_paths+=($line)
       fi
     done
 

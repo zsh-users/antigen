@@ -27,7 +27,10 @@
 
   # Get the clone's directory as per the given repo url and branch.
   local clone_dir="$(-antigen-get-clone-dir $url)"
-
+  if [[ -d "$clone_dir" && $update == false ]]; then
+    return true
+  fi
+    
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
     (cd "$clone_dir" &>>! $_ANTIGEN_LOG_PATH && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG_PATH)
@@ -37,7 +40,7 @@
   local start=$(date +'%s')
   local install_or_update=false
   local success=false
-
+  
   # If its a specific branch that we want, checkout that branch.
   local branch="master" # TODO FIX THIS
   if [[ $url == *\|* ]]; then
