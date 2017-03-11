@@ -15,12 +15,12 @@ antigen bundles <<EOBUNDLES
   peterhurford/git-it-on.zsh
   caarlos0/jvm.git
   caarlos0/zsh-open-pr
-  junegunn/fzf@0.16.*
-  mafredri/zsh-async@1.5.*
+  'junegunn/fzf@0.16.*'
+  'mafredri/zsh-async@1.5.*'
   mollifier/cd-gitroot
   oz/safe-paste # comment appended to the line
   caarlos0/ports
-  supercrabtree/k@0.*
+  'supercrabtree/k@0.*'
   Tarrasch/zsh-bd
   Tarrasch/zsh-colors
   heroku
