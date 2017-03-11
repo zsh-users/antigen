@@ -735,7 +735,7 @@ fi
         case $index in
           0)
             key=url
-            if [[ $value =~ "@" ]]; then
+            if [[ "$value" =~ "@" ]]; then
               echo "local branch='${value#*@}'"
               value=${value%@*}
             fi
