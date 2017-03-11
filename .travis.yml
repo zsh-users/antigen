@@ -69,6 +69,9 @@ before_install:
   # Show the git version being used to test.
   - "git --version"
 
+  # Show environment variables 
+  - "env"
+
 before_script:
   # Show zsh version being deployed.
   - "$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh --version"
@@ -83,7 +86,7 @@ before_script:
 # Run the tests.
 script:
   - "make tests PYENV= SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=false _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=true SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+  - "make stats ANTIGEN=$TRAVIS_BUILD_DIR _ANTIGEN_CACHE_ENABLED=false _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+  - "make stats ANTIGEN=$TRAVIS_BUILD_DIR _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+  - "make stats ANTIGEN=$TRAVIS_BUILD_DIR _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=true SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
 
