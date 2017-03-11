@@ -1268,7 +1268,7 @@ _antigen () {
 
   _payload+="fpath+=(${_extensions_paths[@]});\NL"
   _payload+="unset __ZCACHE_FILE_PATH;\NL"
-  if [[ ! -z "${_autoloaded_functions}" ]]; then
+  if (( $#_autoloaded_functions )); then
     _payload+="autoload -Uz ${_autoloaded_functions[@]};\NL"
   fi
   _payload+=$_sourcing_payload
