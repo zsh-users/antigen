@@ -6,6 +6,10 @@ unset ZSH_REMOTE_URL
 unset ZSH_SOURCE
 unset ZSH_BUILD_VERSION
 
+# Removes travis commit message that may interfere with env-leak tests.
+# See https://gitter.im/antigen-zsh/develop?at=58c35d257ceae5376a9f859a
+unset TRAVIS_COMMIT_MESSAGE
+
 # See cram's documentation for some of the variables used below.
 
 ADOTDIR="$PWD/dot-antigen"
