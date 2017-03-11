@@ -223,9 +223,9 @@ fi
   records=(${(@f)$(-antigen-echo-record)})
   IFS="$_IFS"
 
-  echo "${records[(r)*${bundle/\|/\\\|}*]}"
+  local record=${bundle/\|/\\\|}
+  echo "${records[(r)*$record*]}"
 }
-
 # Returns bundle names from _ANTIGEN_BUNDLE_RECORD
 #
 # Usage
@@ -565,19 +565,19 @@ fi
   
   if [[ ! -d $clone_dir ]]; then
     install_or_update=true
-    echo -n "Installing $(-antigen-bundle-short-name $url $branch)... "
-    git clone ${=_ANTIGEN_CLONE_OPTS} --branch $branch -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
+    echo -n "Installing $(-antigen-bundle-short-name "$url" "$branch")... "
+    git clone ${=_ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
     success=$?
   elif $update; then
     install_or_update=true
     # Update remote if needed.
     -antigen-update-remote $clone_dir $url
-    echo -n "Updating $(-antigen-bundle-short-name $url $branch)... "
+    echo -n "Updating $(-antigen-bundle-short-name "$url" "$branch")... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
     # Pull changes if update requested.
-    --plugin-git checkout $branch
-    --plugin-git pull origin $branch
+    --plugin-git checkout "$branch"
+    --plugin-git pull origin "$branch"
     success=$?
 
     # Update submodules.
@@ -735,9 +735,9 @@ fi
         case $index in
           0)
             key=url
-            if [[ $value =~ "@" ]]; then
+            if [[ "$value" =~ '@' ]]; then
               echo "local branch='${value#*@}'"
-              value=${value%@*}
+              value="${value%@*}"
             fi
           ;;
           1) key=loc ;;
@@ -767,8 +767,10 @@ fi
   local branches
 
   if [[ "$branch" =~ '\*' ]]; then
-    branches=$(git ls-remote --tag --refs -q $url "$branch"|tail -1)
-    branch=${branches#*/*/}
+    branches=$(git ls-remote --tags -q "$url" "$branch"|cut -d'/' -f3|sort -n|tail -1)
+    # There is no --refs flag in git 1.8 and below, this way we
+    # emulate this flag -- also git 1.8 ref order is undefined.
+    branch=${${branches#*/*/}%^*} # Why you are like this?
   fi
 
   echo $branch
@@ -865,7 +867,7 @@ antigen-bundles () {
   grep '^[[:space:]]*[^[:space:]#]' | while read line; do
     # Using `eval` so that we can use the shell-style quoting in each line
     # piped to `antigen-bundles`.
-    eval "antigen-bundle $line"
+    eval antigen-bundle ${(q)line}
   done
 }
 # Syntaxes

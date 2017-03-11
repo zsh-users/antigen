@@ -17,7 +17,7 @@ Clones a repository if it's not cloned already:
   Installing user/repo.* (re)
   git clone --single-branch --recursive --depth=1 --branch master -- https://github.com/user/repo.git .*user-SLASH-repo.git (re)
   .* (re)
-  Done. Took 0s. (re)
+  Done. Took *s. (glob)
 
 Ignore update argument if there is no repo cloned:
 
@@ -25,7 +25,7 @@ Ignore update argument if there is no repo cloned:
   Installing user/repo@master... 
   git clone --single-branch --recursive --depth=1 --branch master -- https://github.com/user/repo.git .*user-SLASH-repo.git (re)
   .* (re)
-  Done. Took 0s.
+  Done. Took *s. (glob)
 
 Effectively update a repository already cloned:
 
@@ -40,7 +40,7 @@ Effectively update a repository already cloned:
   
   git --git-dir=.*SLASH-user-SLASH-repo.git/.git --no-pager submodule update --recursive --depth=1 (re)
   
-  Done. Took 0s.
+  Done. Took *s. (glob)
 
 Clone especific branch if required:
 
@@ -48,5 +48,5 @@ Clone especific branch if required:
   Installing user/repo@v5.0... 
   git clone --single-branch --recursive --depth=1 --branch v5.0 -- https://github.com/user/repo.git .*user-SLASH-repo.git-PIPE-v5.0 (re)
   
-  Done. Took 0s.
+  Done. Took *s. (glob)
 
