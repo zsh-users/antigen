@@ -14,7 +14,7 @@
   local branches
 
   if [[ "$branch" =~ '\*' ]]; then
-    branches=$(git ls-remote --tag --refs -q $url "$branch"|tail -1)
+    branches=$(git ls-remote --tag --refs -q "$url" "$branch"|tail -1)
     branch=${branches#*/*/}
   fi
 

@@ -565,19 +565,19 @@ fi
   
   if [[ ! -d $clone_dir ]]; then
     install_or_update=true
-    echo -n "Installing $(-antigen-bundle-short-name $url $branch)... "
-    git clone ${=_ANTIGEN_CLONE_OPTS} --branch $branch -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
+    echo -n "Installing $(-antigen-bundle-short-name "$url" "$branch")... "
+    git clone ${=_ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
     success=$?
   elif $update; then
     install_or_update=true
     # Update remote if needed.
     -antigen-update-remote $clone_dir $url
-    echo -n "Updating $(-antigen-bundle-short-name $url $branch)... "
+    echo -n "Updating $(-antigen-bundle-short-name "$url" "$branch")... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
     # Pull changes if update requested.
-    --plugin-git checkout $branch
-    --plugin-git pull origin $branch
+    --plugin-git checkout "$branch"
+    --plugin-git pull origin "$branch"
     success=$?
 
     # Update submodules.
@@ -735,9 +735,9 @@ fi
         case $index in
           0)
             key=url
-            if [[ "$value" =~ "@" ]]; then
+            if [[ "$value" =~ '@' ]]; then
               echo "local branch='${value#*@}'"
-              value=${value%@*}
+              value="${value%@*}"
             fi
           ;;
           1) key=loc ;;
@@ -767,7 +767,7 @@ fi
   local branches
 
   if [[ "$branch" =~ '\*' ]]; then
-    branches=$(git ls-remote --tag --refs -q $url "$branch"|tail -1)
+    branches=$(git ls-remote --tag --refs -q "$url" "$branch"|tail -1)
     branch=${branches#*/*/}
   fi
 
