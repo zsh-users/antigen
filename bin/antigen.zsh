@@ -767,8 +767,10 @@ fi
   local branches
 
   if [[ "$branch" =~ '\*' ]]; then
-    branches=$(git ls-remote --tag --refs -q "$url" "$branch"|tail -1)
-    branch=${branches#*/*/}
+    branches=$(git ls-remote --tags -q "$url" "$branch"|cut -d'/' -f3|sort -nr|head -n1)
+    # There is no --refs flag in git 1.8 and below, this way we
+    # emulate this flag -- also git 1.8 ref order is undefined.
+    branch=${${branches#*/*/}%^*} # Why you are like this?
   fi
 
   echo $branch
