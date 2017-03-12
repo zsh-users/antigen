@@ -9,6 +9,7 @@ export _ANTIGEN_CACHE_ENABLED=true
 export _ANTIGEN_INTERACTIVE_MODE=true
 export _ZCACHE_EXTENSION_CLEAN_FUNCTIONS=false
 export _ANTIGEN_BUNDLE_RECORD=""
+export _ANTIGEN_LOG_PATH=/tmp/antigen.log
 
 test -f "$TESTDIR/.zcompdump" && rm "$TESTDIR/.zcompdump"
 

@@ -1,14 +1,20 @@
 .PHONY: itests tests install all
 
-PYENV ?= . .pyenv/bin/activate &&
+PYENV ?= 
 TESTS ?= tests
 PREFIX ?= /usr/local
-SHELL ?= zsh
+SH ?= zsh
 PROJECT ?= $$PWD
 BIN ?= ${PROJECT}/bin
-CRAM_OPTS ?= '-v'
+CRAM_OPTS ?= -v
 
-VERSION=$$(cat ${PROJECT}/VERSION)
+TARGET ?= ${BIN}/antigen.zsh
+SRC ?= ${PROJECT}/src
+GLOB ?= ${SRC}/*.zsh ${SRC}/helpers/*.zsh ${SRC}/lib/*.zsh \
+        ${SRC}/commands/*.zsh ${SRC}/_antigen ${SRC}/ext/**/*.zsh \
+        ${SRC}/ext/*.zsh
+
+VERSION_FILE=${PROJECT}/VERSION
 
 define ised
 	sed $(1) $(2) > "$(2).1"
@@ -16,35 +22,32 @@ define ised
 endef
 
 build:
-	cat ${PROJECT}/src/antigen.zsh > ${BIN}/antigen.zsh
-	cat ${PROJECT}/src/boot.zsh >> ${BIN}/antigen.zsh
-	cat ${PROJECT}/src/helpers/*.zsh >> ${BIN}/antigen.zsh
-	cat ${PROJECT}/src/lib/*.zsh >> ${BIN}/antigen.zsh
-	cat ${PROJECT}/src/commands/*.zsh >> ${BIN}/antigen.zsh
-	cat ${PROJECT}/src/_antigen >> ${BIN}/antigen.zsh
-	cat ${PROJECT}/src/ext/*/*.zsh >> ${BIN}/antigen.zsh
-	cat ${PROJECT}/src/ext/*.zsh >> ${BIN}/antigen.zsh
-	$(call ised,"s/{{ANTIGEN_VERSION}}/$$(cat ${PROJECT}/VERSION)/",${BIN}/antigen.zsh)
+	:> ${TARGET}
+	for src in ${GLOB}; do echo "$$src"; cat "$$src" >> ${TARGET}; done
+	$(call ised,"s/{{ANTIGEN_VERSION}}/$$(cat ${VERSION_FILE})/",${TARGET})
+
+readme:
+	$(call ised, "s/$$(cat ${VERSION_FILE})/$(version)/",README.mkd)
 
 release:
 	# Move to release branch
 	git checkout develop
 	git checkout -b release/$(version)
-
-	# Update release version
-	echo "$(version)" > ${PROJECT}/VERSION
-
-	# Make build and tests
-	make build && make tests PYENV= SHELL=zsh
 	
 	# Update version references in README.md
-	$(call ised, "s/${VERSION}/$(version)/",README.mkd)
+	$(call ised, "s/$$(cat ${VERSION_FILE})/$(version)/",README.mkd)
+	
+	# Update release version
+	echo "$(version)" > ${VERSION_FILE}
+	
+	# Make build and tests
+	make build && make tests
 	
 	# Update changelog
-	vi CHANGELOG.md
-
+	${EDITOR} CHANGELOG.md
+	
 	# Build release commit
-	git add CHANGELOG.md VERSION README.mkd bin/antigen.zsh
+	git add CHANGELOG.md ${VERSION_FILE} README.mkd ${TARGET}
 	git commit -S -m "Build release $(version)"
 
 publish:
@@ -67,15 +70,15 @@ itests:
 	${MAKE} tests CRAM_OPTS=-i
 
 tests:
-	${PYENV} ZDOTDIR="${PROJECT}/tests" cram ${CRAM_OPTS} --shell=${SHELL} ${TESTS}
+	${PYENV} ZDOTDIR="${PROJECT}/tests" cram ${CRAM_OPTS} --shell=${SH} ${TESTS}
 
 install:
-	mkdir -p ${PREFIX}/share && cp ${BIN}/antigen.zsh ${PREFIX}/share/antigen.zsh
+	mkdir -p ${PREFIX}/share && cp ${TARGET} ${PREFIX}/share/antigen.zsh
 
 deps:
 	pip install cram==0.6.*
 
 stats:
-	"${SHELL}" ${PROJECT}/tests/stats.sh "${PROJECT}" "${SHELL}"
+	"${SH}" ${PROJECT}/tests/stats.sh "${PROJECT}" "${SH}"
 
 all: clean build install
