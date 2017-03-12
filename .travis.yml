@@ -88,7 +88,7 @@ before_script:
 
 # Run the tests.
 script:
-  - "make tests SH=$ZSH_BIN"
+  - "time make tests SH=$ZSH_BIN"
   - "make stats _ANTIGEN_CACHE_ENABLED=false SH=$ZSH_BIN"
   - "make stats _ANTIGEN_CACHE_ENABLED=true SH=$ZSH_BIN"
   - "make stats _ANTIGEN_CACHE_ENABLED=true STATS_USE_INIT=true SH=$ZSH_BIN"
@@ -96,7 +96,7 @@ script:
   # will run this on both OS X and Linux, the two platforms must also produce
   # the same build, else one of them will fail.
   - "SHASUM=$(shasum -a 256 ./bin/antigen.zsh) && echo $SHASUM"
-  - "make"
+  - "time make"
   - "SHACHECK=$(shasum -a 256 ./bin/antigen.zsh) && echo $SHACHECK"
   - "[[ $SHASUM == $SHACHECK ]]"
 
