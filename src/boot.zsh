@@ -5,7 +5,7 @@ _ZCACHE_PAYLOAD="${ADOTDIR:-$HOME/.antigen}/.cache/.zcache-payload"
 
 # Enable or disable timestamp checks
 _ZCACHE_TIMESTAMP_CHECK_ENABLED=${_ZCACHE_TIMESTAMP_CHECK_ENABLED:-true}
-_ZCACHE_TIMESTAMP_CHECK=($HOME/.zshrc ${ADOTDIR:-$HOME}/.antigenrc)
+_ZCACHE_TIMESTAMP_CHECK=${_ZCACHE_TIMESTAMP_CHECK:-($HOME/.zshrc ${ADOTDIR:-$HOME}/.antigenrc)}
 
 # Used to do full boostrap
 _ZCACHE_TIMESTAMP="${ADOTDIR:-$HOME/.antigen}/.timestamp"
@@ -37,6 +37,7 @@ if [[ $_ZCACHE_TIMESTAMP_CHECK_ENABLED == true ]]; then
       # Do full bootstrap
       echo $timestamp > $_ZCACHE_TIMESTAMP
       _ANTIGEN_FAST_BOOT_ENABLED=false
+      [[ -f "$_ZCACHE_PAYLOAD" ]] && rm -f "$_ZCACHE_PAYLOAD"
     fi
   else
     echo $timestamp > $_ZCACHE_TIMESTAMP
