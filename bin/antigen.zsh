@@ -261,18 +261,6 @@ fi
      esac
   done
 }
-# Returns bundles flagged as make_local_clone
-#
-# Usage
-#    -antigen-cloned-bundles
-#
-# Returns
-#    Bundle metadata
--antigen-get-cloned-bundles() {
-  -antigen-echo-record |
-      awk '$4 == "true" {print $1}' |
-      sort -u
-}
 -antigen-get-clone-dir () {
   # Takes a repo url and mangles it, giving the path that this url will be
   # cloned to. Doesn't actually clone anything.
@@ -306,6 +294,18 @@ fi
   fi
 }
 
+# Returns bundles flagged as make_local_clone
+#
+# Usage
+#    -antigen-cloned-bundles
+#
+# Returns
+#    Bundle metadata
+-antigen-get-cloned-bundles() {
+  -antigen-echo-record |
+      awk '$4 == "true" {print $1}' |
+      sort -u
+}
 # Returns a list of themes from a default library (omz)
 #
 # Usage

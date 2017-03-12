@@ -10,7 +10,7 @@ CRAM_OPTS ?= -v
 
 TARGET ?= ${BIN}/antigen.zsh
 SRC ?= ${PROJECT}/src
-GLOB ?= ${SRC}/*.zsh ${SRC}/helpers/*.zsh ${SRC}/lib/*.zsh \
+GLOB ?= ${SRC}/*.zsh $(sort $(wildcard ${PWD}/src/helpers/*.zsh)) ${SRC}/lib/*.zsh \
         ${SRC}/commands/*.zsh ${SRC}/_antigen ${SRC}/ext/**/*.zsh \
         ${SRC}/ext/*.zsh
 
