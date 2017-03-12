@@ -92,7 +92,9 @@ script:
   - "make stats _ANTIGEN_CACHE_ENABLED=false SH=$ZSH_BIN"
   - "make stats _ANTIGEN_CACHE_ENABLED=true SH=$ZSH_BIN"
   - "make stats _ANTIGEN_CACHE_ENABLED=true STATS_USE_INIT=true SH=$ZSH_BIN"
-  # Test reproducible build across osx and gnu
+  # Ensure the checked-in build matches the build produced in CI. Since the CI
+  # will run this on both OS X and Linux, the two platforms must also produce
+  # the same build, else one of them will fail.
   - "SHASUM=$(shasum -a 256 ./bin/antigen.zsh) && echo $SHASUM"
   - "make"
   - "SHACHECK=$(shasum -a 256 ./bin/antigen.zsh) && echo $SHACHECK"
