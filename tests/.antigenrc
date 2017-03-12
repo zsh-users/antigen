@@ -18,7 +18,7 @@ antigen bundles <<EOBUNDLES
   junegunn/fzf@0.16.*
   mafredri/zsh-async@v1.5.*
   mollifier/cd-gitroot
-  oz/safe-paste # comment appended to the line
+  oz/safe-paste
   caarlos0/ports
   supercrabtree/k@0.*
   Tarrasch/zsh-bd
