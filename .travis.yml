@@ -93,7 +93,8 @@ script:
   - "make stats _ANTIGEN_CACHE_ENABLED=true SH=$ZSH_BIN"
   - "make stats _ANTIGEN_CACHE_ENABLED=true STATS_USE_INIT=true SH=$ZSH_BIN"
   # Test reproducible build across osx and gnu
-  - "MD5SUM=$(shasum -a 256 ./bin/antigen.zsh)"
+  - "SHASUM=$(shasum -a 256 ./bin/antigen.zsh) && echo $SHASUM"
   - "make"
-  - "[[ $MD5SUM == $(shasum -a 256 ./bin/antigen.zsh) ]]"
+  - "SHACHECK=$(shasum -a 256 ./bin/antigen.zsh) && echo $SHACHECK"
+  - "[[ $SHASUM == $SHACHECK ]]"
 
