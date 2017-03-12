@@ -76,7 +76,8 @@ before_install:
 
 before_script:
   # Show zsh version being deployed.
-  - "$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh --version"
+  - "ZSH_BIN=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+  - "$ZSH_BIN --version"
 
   # Test config for git.
   - "git config --global user.name test"
@@ -87,8 +88,10 @@ before_script:
 
 # Run the tests.
 script:
-  - "make tests SH=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=false _ANTIGEN_INIT_ENABLED=false SH=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=false SH=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=true SH=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+  - "make tests SH=$ZSH_BIN"
+  - "make stats _ANTIGEN_CACHE_ENABLED=false SH=$ZSH_BIN"
+  - "make stats _ANTIGEN_CACHE_ENABLED=true SH=$ZSH_BIN"
+  - "make stats _ANTIGEN_CACHE_ENABLED=true STATS_USE_INIT=true SH=$ZSH_BIN"
+  # Test can build
+  - "make"
 
