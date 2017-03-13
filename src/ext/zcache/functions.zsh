@@ -63,6 +63,7 @@
 -zcache-generate-cache () {
   local -aU _extensions_paths
   local -aU _autoloaded_functions
+  local -aU _binary_paths
   local -a _bundles_meta
   local _payload=''
   local _sourcing_payload=''
@@ -96,6 +97,8 @@
         else
           _sourcing_payload+="source \"$line\";\NL"
         fi
+      elif [[ -d "$line" ]]; then
+        _binary_paths+=($line)
       fi
     done
 
@@ -117,30 +120,37 @@
     fi
   done
 
-  _payload+="fpath+=(${_extensions_paths[@]});\NL"
-  _payload+="unset __ZCACHE_FILE_PATH;\NL"
+  _payload+="\NL"
+  _payload+="$(functions -- _antigen)"
+  _payload+="\NL"
+  _payload+="fpath+=(${_extensions_paths[@]})\NL"
+  _payload+="PATH=\"\$PATH:${_binary_paths[@]}\"\NL"
+  _payload+="unset __ZCACHE_FILE_PATH\NL"
   if (( $#_autoloaded_functions )); then
     _payload+="autoload -Uz ${_autoloaded_functions[@]};\NL"
   fi
   _payload+=$_sourcing_payload
   # \NL (\n) prefix is for backward compatibility
-  _payload+="export _ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
+  _payload+="_ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
   _payload+=" _ZCACHE_CACHE_LOADED=true"
   _payload+=" _ZCACHE_CACHE_VERSION={{ANTIGEN_VERSION}}\NL"
 
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
   if [[ ! -z "$ZSH" ]]; then
-    _payload+="export ZSH=\"$ZSH\"";
+    _payload+="ZSH=\"$ZSH\"";
     _payload+=" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
   fi
 
   if [[ ! -z "$ZDOTDIR" ]]; then
-    _payload+="export ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
+    _payload+=" ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
   fi
 
+  _payload+="autoload -Uz compinit\NL"
+  _payload+="compinit -id $ANTIGEN_COMPDUMPFILE\NL"
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
+  zcompile "$_ZCACHE_PAYLOAD_PATH"
   echo "$_ZCACHE_BUNDLES" >! "$_ZCACHE_BUNDLES_PATH"
 }
 

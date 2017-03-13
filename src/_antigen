@@ -40,7 +40,9 @@ _antigen () {
   }
   __list() {
     _arguments \
-      '--short[Show only bundle name]'
+      '--simple[Show only bundle name]' \
+      '--short[Show only bundle name and branch]' \
+      '--long[Show bundle records]'
   }
 
 
@@ -67,11 +69,11 @@ _antigen () {
     cleanup)
       __cleanup
       ;;
-    purge)
-      compadd $(-antigen-get-bundles)
+    (update|purge)
+      compadd $(-antigen-get-bundles --simple 2> /dev/null)
       ;;
     theme)
-      compadd $(-antigen-get-themes)
+      compadd $(-antigen-get-themes 2> /dev/null)
       ;;
     list)
       __list

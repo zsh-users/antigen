@@ -26,10 +26,12 @@
   fi
 
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone" "$btype"); do
+    # TODO Refactor this out
     if [[ -d "$src" ]]; then
-      if (( ! ${fpath[(I)$location]} )); then
-        fpath=($location $fpath)
+      if (( ! ${fpath[(I)$src]} )); then
+          fpath=($src $fpath)
       fi
+      PATH="$PATH:$src"
     else
       # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
       # This is needed to seek-and-destroy local variable definitions *outside*

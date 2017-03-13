@@ -14,14 +14,15 @@ cache:
 
 env:
   global:
-    - ANTIGEN=$TRAVIS_BUILD_DIR
-    - ADOTDIR=$TRAVIS_BUILD_DIR
     - ZSH_REMOTE_URL=https://github.com/zsh-users/zsh.git
     - BUILDS_PATH=$HOME/.zsh-builds
     - ZSH_SOURCE=$HOME/zsh
 
 matrix:
   include:
+    - os: osx
+      language: generic
+      env: ZSH_BUILD_VERSION=master
     - os: linux
       language: python
       env: ZSH_BUILD_VERSION=master
@@ -71,9 +72,13 @@ before_install:
   # Show the git version being used to test.
   - "git --version"
 
+  # Show environment variables 
+  - "env"
+
 before_script:
   # Show zsh version being deployed.
-  - "$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh --version"
+  - "ZSH_BIN=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+  - "$ZSH_BIN --version"
 
   # Test config for git.
   - "git config --global user.name test"
@@ -84,8 +89,16 @@ before_script:
 
 # Run the tests.
 script:
-  - "make tests PYENV= SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=false _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=false SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true _ANTIGEN_INIT_ENABLED=true SHELL=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
+  - "time make tests SH=$ZSH_BIN"
+  - "export ANTIGEN=$TRAVIS_BUILD_DIR"
+  - "make stats _ANTIGEN_CACHE_ENABLED=false SH=$ZSH_BIN"
+  - "make stats _ANTIGEN_CACHE_ENABLED=true SH=$ZSH_BIN"
+  - "make stats _ANTIGEN_CACHE_ENABLED=true STATS_USE_INIT=true SH=$ZSH_BIN"
+  # Ensure the checked-in build matches the build produced in CI. Since the CI
+  # will run this on both OS X and Linux, the two platforms must also produce
+  # the same build, else one of them will fail.
+  - "SHASUM=$(shasum -a 256 ./bin/antigen.zsh) && echo $SHASUM"
+  - "time make"
+  - "SHACHECK=$(shasum -a 256 ./bin/antigen.zsh) && echo $SHACHECK"
+  - "[[ $SHASUM == $SHACHECK ]]"
 

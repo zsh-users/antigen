@@ -25,7 +25,13 @@
       *)
         value=$key
         case $index in
-          0) key=url ;;
+          0)
+            key=url
+            if [[ "$value" =~ '@' ]]; then
+              echo "local branch='${value#*@}'"
+              value="${value%@*}"
+            fi
+          ;;
           1) key=loc ;;
         esac
         let index+=1

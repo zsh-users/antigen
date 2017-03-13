@@ -19,3 +19,8 @@ revert-info
 *.tar.gz
 *.tar.gz.sign
 
+# Ignore compiled zsh files
+*.zwc
+
+# Ignore timestamp file for zcache auto-reset config
+*.timestamp
