@@ -6,7 +6,7 @@
   _path=${_path//^\$ADOTDIR\/repos\/}
   _path=${_path//-SLASH-/\/}
   _path=${_path//-COLON-/\:}
-  url=${_path//-PIPE-/\|}
-  echo "$url"
+  _path=${_path//-STAR-/\*}
+  echo "${_path//-PIPE-/\|}"
 }
 

@@ -21,7 +21,7 @@ Should be registered correctly in BUNDLE_RECORD.
   $ echo $_ANTIGEN_BUNDLE_RECORD | grep theme
   *silly.zsh-theme* (glob)
 
-Load a second heme in the same session.
+Load a second theme in the same session.
 
   $ antigen-theme $PLUGIN_DIR arrow &> /dev/null
   $ echo "$PS1"
@@ -46,16 +46,16 @@ Should be registered correctly in BUNDLE_RECORD.
 Using the same theme does not change anything.
 
   $ antigen-theme $PLUGIN_DIR arrow &> /dev/null
-  $ antigen-list | grep arrow
+  $ antigen-list --long | grep arrow
   *arrow* (glob)
 
   $ antigen-theme $PLUGIN_DIR arrow &> /dev/null
-  $ antigen-list | grep arrow
+  $ antigen-list --long | grep arrow
   *arrow* (glob)
 
 Can load a theme without specifying a theme name:
 
   $ antigen-theme $PLUGIN_DIR
-  $ antigen-list | grep arrow
+  $ antigen-list --long | grep arrow
   *arrow* (glob)
 

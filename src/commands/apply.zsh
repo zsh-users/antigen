@@ -17,14 +17,17 @@ antigen-apply () {
 
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
-  autoload -U compinit
-  compinit -i -d $ANTIGEN_COMPDUMPFILE
+  autoload -Uz compinit
+  compinit -iCd $ANTIGEN_COMPDUMPFILE
+  if [[ ! -f "$ANTIGEN_COMPDUMPFILE.zwc" ]]; then
+    # Apply all `compinit`s that have been deferred.
+    local cdef
+    for cdef in "${__deferred_compdefs[@]}"; do
+      compdef "$cdef"
+    done
 
-  # Apply all `compinit`s that have been deferred.
-  local cdef
-  for cdef in "${__deferred_compdefs[@]}"; do
-    compdef "$cdef"
-  done
+    zcompile $ANTIGEN_COMPDUMPFILE
+  fi
 
   unset __deferred_compdefs
 }
