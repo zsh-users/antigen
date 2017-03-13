@@ -668,16 +668,9 @@ fi
   local make_local_clone="$3"
   local btype="$4"
   local src
-  local pfunction_glob='^([_.]*|prompt_*_setup|README*|*~)(-.N:t)'
-
-  # Extended globbing is needed for listing autoloadable function directories.
-  setopt LOCAL_OPTIONS EXTENDED_GLOB
 
   if [[ -d "$loc/functions" ]]; then
     fpath=($loc/functions $fpath)
-    for pfunction in $loc/functions/$~pfunction_glob; do
-      autoload -Uz "$pfunction"
-    done
   fi
 
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone" "$btype"); do
@@ -701,7 +694,6 @@ fi
         source "$src"
       fi
     fi
-
   done
 
   local location="$url/"
@@ -1500,16 +1492,11 @@ _antigen () {
 #   Nothing. Generates _ZCACHE_META_PATH and _ZCACHE_PAYLOAD_PATH
 -zcache-generate-cache () {
   local -aU _extensions_paths
-  local -aU _autoloaded_functions
   local -aU _binary_paths
   local -a _bundles_meta
   local _payload=''
   local _sourcing_payload=''
   local location
-
-  local pfunction_glob='^([_.]*|prompt_*_setup|README*|*~)(-.N:t)'
-  # Extended globbing is needed for listing autoloadable function directories.
-  setopt LOCAL_OPTIONS EXTENDED_GLOB
 
   _payload+="#-- START ZCACHE GENERATED FILE\NL"
   _payload+="#-- GENERATED: $(date)\NL"
@@ -1552,9 +1539,6 @@ _antigen () {
 
     if [[ -d "$location/functions" ]]; then
       _extensions_paths+=($location/functions)
-      for pfunction in $location/functions/$~pfunction_glob; do
-        _autoloaded_functions+=($pfunction)
-      done
     fi
   done
 
@@ -1564,9 +1548,6 @@ _antigen () {
   _payload+="fpath+=(${_extensions_paths[@]})\NL"
   _payload+="PATH=\"\$PATH:${_binary_paths[@]}\"\NL"
   _payload+="unset __ZCACHE_FILE_PATH\NL"
-  if (( $#_autoloaded_functions )); then
-    _payload+="autoload -Uz ${_autoloaded_functions[@]};\NL"
-  fi
   _payload+=$_sourcing_payload
   # \NL (\n) prefix is for backward compatibility
   _payload+="_ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
