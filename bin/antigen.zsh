@@ -13,7 +13,7 @@ autoload -U is-at-least;
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
 local _ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD:-""}
 if is-at-least 4.3.7; then
-  local _ANTIGEN_INSTALL_DIR=${0:A:h}
+  local _ANTIGEN_INSTALL_DIR=${0:A:h:h}
 else
   local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 fi
