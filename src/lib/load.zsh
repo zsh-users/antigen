@@ -14,6 +14,10 @@
   local btype="$4"
   local src
 
+  if [[ -d "$loc/functions" ]]; then
+    fpath=($loc/functions $fpath)
+  fi
+
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone" "$btype"); do
     # TODO Refactor this out
     if [[ -d "$src" ]]; then
@@ -35,7 +39,6 @@
         source "$src"
       fi
     fi
-
   done
 
   local location="$url/"
@@ -54,7 +57,7 @@
   else
     success=1
   fi
-  
+
   return $success
 }
 

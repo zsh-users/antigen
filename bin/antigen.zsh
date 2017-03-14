@@ -669,6 +669,10 @@ fi
   local btype="$4"
   local src
 
+  if [[ -d "$loc/functions" ]]; then
+    fpath=($loc/functions $fpath)
+  fi
+
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone" "$btype"); do
     # TODO Refactor this out
     if [[ -d "$src" ]]; then
@@ -690,7 +694,6 @@ fi
         source "$src"
       fi
     fi
-
   done
 
   local location="$url/"
@@ -709,7 +712,7 @@ fi
   else
     success=1
   fi
-  
+
   return $success
 }
 
@@ -1492,6 +1495,7 @@ _antigen () {
   local -aU _binary_paths
   local -a _bundles_meta
   local _payload=''
+  local _sourcing_payload=''
   local location
 
   _payload+="#-- START ZCACHE GENERATED FILE\NL"
@@ -1509,14 +1513,14 @@ _antigen () {
     -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
       if [[ -f "$line" ]]; then
         # Whether to use bundle or reference cache
-        # Force bundle cache for btype = theme, until PR 
+        # Force bundle cache for btype = theme, until PR
         # https://github.com/robbyrussell/oh-my-zsh/pull/3743 is merged.
         if [[ $_ZCACHE_EXTENSION_BUNDLE == true || $btype == "theme" ]]; then
-          _payload+="#-- SOURCE: $line\NL"
-          _payload+=$(-zcache-process-source "$line" "$btype")
-          _payload+="\NL;#-- END SOURCE\NL"
+          _sourcing_payload+="#-- SOURCE: $line\NL"
+          _sourcing_payload+=$(-zcache-process-source "$line" "$btype")
+          _sourcing_payload+="\NL;#-- END SOURCE\NL"
         else
-          _payload+="source \"$line\";\NL"
+          _sourcing_payload+="source \"$line\";\NL"
         fi
       elif [[ -d "$line" ]]; then
         _binary_paths+=($line)
@@ -1532,6 +1536,10 @@ _antigen () {
     if [[ -d "$location" ]]; then
       _extensions_paths+=($location)
     fi
+
+    if [[ -d "$location/functions" ]]; then
+      _extensions_paths+=($location/functions)
+    fi
   done
 
   _payload+="\NL"
@@ -1540,6 +1548,7 @@ _antigen () {
   _payload+="fpath+=(${_extensions_paths[@]})\NL"
   _payload+="PATH=\"\$PATH:${_binary_paths[@]}\"\NL"
   _payload+="unset __ZCACHE_FILE_PATH\NL"
+  _payload+=$_sourcing_payload
   # \NL (\n) prefix is for backward compatibility
   _payload+="_ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
   _payload+=" _ZCACHE_CACHE_LOADED=true"
