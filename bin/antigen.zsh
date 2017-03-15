@@ -1825,9 +1825,12 @@ antigen-init () {
   if [[ -f "$src" ]]; then
     source "$src"
     return
+  elif [[ -z "$1" ]]; then
+    echo "Antigen: missing input for 'antigen-init' command";
+    return
   fi
 
-  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+  grep '^[[:space:]]*[^[:space:]#]' | while read -r line; do
     eval $line
   done
 }
