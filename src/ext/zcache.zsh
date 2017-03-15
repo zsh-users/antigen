@@ -158,14 +158,18 @@ antigen-init () {
     return
   fi
 
-  if [[ -n "$src" && -f "$src" ]]; then
-    source "$src"
-    return
-  else
-    echo "Antigen: missing input for 'antigen-init' command or invalid argument provided.";
-    return 1
+  # If we're given an argument it should be a path to a file
+  if [[ -n "$src" ]]; then
+    if [[ -f "$src" ]]; then
+      source "$src"
+      return
+    else
+      echo "Antigen: invalid argument provided.";
+      return 1
+    fi
   fi
 
+  # Otherwise we expect it to be a heredoc
   grep '^[[:space:]]*[^[:space:]#]' | while read -r line; do
     eval $line
   done
