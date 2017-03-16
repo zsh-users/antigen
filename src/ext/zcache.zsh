@@ -149,6 +149,8 @@ antigen-cache-reset () {
 # Returns
 #   Nothing
 antigen-init () {
+  local src="$1"
+
   if zcache-cache-exists; then
     # Force cache to load - this does skip -zcache-cache-invalidate
     _ZCACHE_BUNDLES=$(cat $_ZCACHE_BUNDLES_PATH)
@@ -156,13 +158,19 @@ antigen-init () {
     return
   fi
 
-  local src="$1"
-  if [[ -f "$src" ]]; then
-    source "$src"
-    return
+  # If we're given an argument it should be a path to a file
+  if [[ -n "$src" ]]; then
+    if [[ -f "$src" ]]; then
+      source "$src"
+      return
+    else
+      echo "Antigen: invalid argument provided.";
+      return 1
+    fi
   fi
 
-  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+  # Otherwise we expect it to be a heredoc
+  grep '^[[:space:]]*[^[:space:]#]' | while read -r line; do
     eval $line
   done
 }
