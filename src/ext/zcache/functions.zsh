@@ -45,6 +45,17 @@
   cat "$src" | sed -E -e $globals -e $globals_only $sed_regexp_themes
 }
 
+-antigen-loader () {
+  # Disable antigen-* commands
+  typeset -a _commands
+  _commands=('use' 'bundle' 'bundles' 'theme' 'list' 'apply' \
+    'cleanup' 'help' 'list' 'reset' 'restore' 'revert' 'snapshot' \
+     'selfupdate' 'update' 'version' 'init')
+  for command in $_commands; do
+    eval "antigen-$command () {}"
+  done
+}
+
 # Generates cache from listed bundles.
 #
 # Iterates over _ZCACHE_BUNDLES and install them (if needed) then join all needed
@@ -115,8 +126,17 @@
   _payload+="\NL"
   _payload+="$(functions -- _antigen)"
   _payload+="\NL"
+  _payload+="$(functions -- -antigen-loader)"
+  _payload+="\NL"
+  _payload+="-antigen-loader"
+  _payload+="\NL"
+  _payload+='antigen () {\NLif [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then\NLsource "'$_ANTIGEN_SOURCE'"\NLeval antigen $@\NLfi\NL}'
+  _payload+="\NL"
   _payload+="fpath+=(${_extensions_paths[@]})\NL"
   _payload+="PATH=\"\$PATH:${_binary_paths[@]}\"\NL"
+  _payload+="autoload -Uz compinit\NL"
+  _payload+="compinit -C -d $ANTIGEN_COMPDUMPFILE\NL"
+  _payload+="compdef antigen _antigen\NL"
   _payload+="unset __ZCACHE_FILE_PATH\NL"
   _payload+=$_sourcing_payload
   # \NL (\n) prefix is for backward compatibility
@@ -134,8 +154,6 @@
     _payload+=" ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
   fi
 
-  _payload+="autoload -Uz compinit\NL"
-  _payload+="compinit -id $ANTIGEN_COMPDUMPFILE\NL"
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"

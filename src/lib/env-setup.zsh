@@ -29,7 +29,7 @@
   # Setup antigen's own completion.
   autoload -Uz compinit
   if $_ANTIGEN_COMP_ENABLED; then
-    compinit -iCd $ANTIGEN_COMPDUMPFILE
+    compinit -iuCd $ANTIGEN_COMPDUMPFILE
     compdef _antigen antigen
   fi
 
