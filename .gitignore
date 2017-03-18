@@ -24,3 +24,6 @@ revert-info
 
 # Ignore timestamp file for zcache auto-reset config
 *.timestamp
+
+# cache init
+init.zsh

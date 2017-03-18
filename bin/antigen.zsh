@@ -6,26 +6,16 @@
 #          and Contributors <https://github.com/zsh-users/antigen/contributors>
 # Homepage: http://antigen.sharats.me
 # License: MIT License <mitl.sharats.me>
-autoload -U is-at-least;
 
 # Each line in this string has the following entries separated by a space
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
-local _ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD:-""}
-if [[ -z "$_ANTIGEN_INSTALL_DIR" ]]; then
-  if is-at-least 4.3.7; then
-    local _ANTIGEN_INSTALL_DIR=${0:A:h}
-  else
-    local _ANTIGEN_INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
-  fi
-fi
-local _ANTIGEN_CACHE_ENABLED=${_ANTIGEN_CACHE_ENABLED:-true}
-local _ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
-local _ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
-local _ANTIGEN_RESET_THEME_HOOKS=${_ANTIGEN_RESET_THEME_HOOKS:-true}
-local _ANTIGEN_AUTODETECT_CONFIG_CHANGES=${_ANTIGEN_AUTODETECT_CONFIG_CHANGES:-true}
-local _ANTIGEN_FORCE_RESET_COMPDUMP=${_ANTIGEN_FORCE_RESET_COMPDUMP:-true}
-local _ANTIGEN_FAST_BOOT_ENABLED=${_ANTIGEN_FAST_BOOT_ENABLED:-true}
+_ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD:-""}
+[[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
+_ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
+_ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
+_ANTIGEN_RESET_THEME_HOOKS=${_ANTIGEN_RESET_THEME_HOOKS:-true}
+_ANTIGEN_FORCE_RESET_COMPDUMP=${_ANTIGEN_FORCE_RESET_COMPDUMP:-true}
 
 # Do not load anything if git is not available.
 if (( ! $+commands[git] )); then
@@ -47,58 +37,12 @@ antigen () {
   fi
   shift
 
-    if (( $+functions[antigen-$cmd] )); then
-        "antigen-$cmd" "$@"
-    else
-        echo "Antigen: Unknown command: $cmd" >&2
-    fi
+  if (( $+functions[antigen-$cmd] )); then
+      "antigen-$cmd" "$@"
+  else
+      echo "Antigen: Unknown command: $cmd" >&2
+  fi
 }
-# Used for lazy-loading.
-_ANTIGEN_SOURCE="$_ANTIGEN_INSTALL_DIR/antigen.zsh"
-
-# Enable or disable timestamp checks
-_ZCACHE_TIMESTAMP_CHECK_ENABLED=${_ZCACHE_TIMESTAMP_CHECK_ENABLED:-true}
-_ZCACHE_TIMESTAMP_CHECK=${_ZCACHE_TIMESTAMP_CHECK:-($HOME/.zshrc ${ADOTDIR:-$HOME}/.antigenrc)}
-
-# Used to do full boostrap
-_ZCACHE_TIMESTAMP="${ADOTDIR:-$HOME/.antigen}/.timestamp"
-
-if [[ $_ZCACHE_TIMESTAMP_CHECK_ENABLED == true ]]; then
-  # source: http://stackoverflow.com/q/17878684
-  if stat -c %Y . >/dev/null 2>&1; then
-    -antigen-get-timestamp() { stat -c %Y "$1" 2>/dev/null; }
-  elif stat -f %m . >/dev/null 2>&1; then
-    -antigen-get-timestamp() { stat -f %m "$1" 2>/dev/null; }
-  elif date -r . +%s >/dev/null 2>&1; then
-    -antigen-get-timestamp() { stat -r "$1" +%s 2>/dev/null; }
-  else
-    echo '-antigen-get-timestamp() is unsupported' >&2
-    -antigen-get-timestamp() { printf '%s' 0; }
-  fi
-
-  local timestamp=0
-  for config in $_ZCACHE_TIMESTAMP_CHECK; do
-    config_timestamp=$(-antigen-get-timestamp $config)
-    if [ $timestamp -lt "$config_timestamp" ]; then
-      timestamp=$config_timestamp
-    fi
-  done
-
-  if [ -r $_ZCACHE_TIMESTAMP ]; then
-    saved=$(cat $_ZCACHE_TIMESTAMP)
-    if [ $saved -lt $timestamp ]; then
-      # Do full bootstrap
-      echo $timestamp > $_ZCACHE_TIMESTAMP
-      _ANTIGEN_FAST_BOOT_ENABLED=false
-      [[ -f "$_ZCACHE_PAYLOAD" ]] && rm -f "$_ZCACHE_PAYLOAD"
-    fi
-  else
-    echo $timestamp > $_ZCACHE_TIMESTAMP
-  fi
-fi
-
-[[ -f $_ZCACHE_PAYLOAD && ! $_ZCACHE_CACHE_LOADED == true ]] && source "$_ZCACHE_PAYLOAD" && return;
-
 # Returns the bundle's git revision
 #
 # Usage
@@ -630,9 +574,10 @@ fi
       # interactive bundle/theme loading, for static loading -99.9% of the time-
       # eval and subshells are not needed.
       if [[ "$btype" == "theme" ]]; then
-        eval "$(cat $src | sed -Ee '/\{$/,/^\}/!{
-                s/^local //
-            }')"
+        eval "PREVDIR=$PWD; cd ${src:A:h};
+              $(cat $src | sed -Ee '/\{$/,/^\}/!{
+               s/^local //
+           }'); cd $PREVDIR"
       else
         source "$src"
       fi
@@ -811,6 +756,8 @@ antigen-apply () {
     unset _old_zdotdir
   fi
   unset _zdotdir_set
+  
+  -zcache-generate-cache
 }
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
@@ -1081,8 +1028,8 @@ antigen-selfupdate () {
    fi
    git pull
 
-   # Should be transparently hooked by zcache
-   $_ANTIGEN_CACHE_ENABLED && antigen-cache-reset &>> /dev/null
+   # TODO Should be transparently hooked by zcache
+   antigen-reset &>> /dev/null
   )
 }
 antigen-snapshot () {
@@ -1307,12 +1254,10 @@ _antigen () {
     'purge:Remove a cloned bundle from filesystem'
   );
 
-  if $_ANTIGEN_CACHE_ENABLED; then
-    _1st_arguments+=(
-      'reset:Clears antigen cache'
-      'init:Load Antigen configuration from file'
-    )
-  fi
+  _1st_arguments+=(
+    'reset:Clears antigen cache'
+    'init:Load Antigen configuration from file'
+  )
 
   _1st_arguments+=(
     'help:Show this message'
@@ -1371,6 +1316,66 @@ _antigen () {
 }
 
 -antigen-env-setup
+_ZCACHE_PAYLOAD_PATH="${_ANTIGEN_CACHE_PATH:-$ADOTDIR}/init.zsh"
+# Whether to use bundle or reference cache (since v1.4.0)
+_ZCACHE_EXTENSION_BUNDLE=${_ZCACHE_EXTENSION_BUNDLE:-false}
+
+# Removes cache payload and metadata if available
+#
+# Usage
+#   zcache-cache-reset
+#
+# Returns
+#   Nothing
+antigen-reset () {
+  [[ -f "$_ZCACHE_PAYLOAD_PATH" ]] && rm -f "$_ZCACHE_PAYLOAD_PATH"
+  echo 'Done. Please open a new shell to see the changes.'
+}
+
+# Antigen command to load antigen configuration
+#
+# This method is slighlty more performing than using various antigen-* methods.
+#
+# Usage
+#   Referencing an antigen configuration file:
+#
+#       antigen-init "/path/to/antigenrc"
+#
+#   or using HEREDOCS:
+#
+#       antigen-init <<EOBUNDLES
+#           antigen use oh-my-zsh
+#
+#           antigen bundle zsh/bundle
+#           antigen bundle zsh/example
+#
+#           antigen theme zsh/theme
+#
+#           antigen apply
+#       EOBUNDLES
+#
+# Returns
+#   Nothing
+antigen-init () {
+  local src="$1"
+
+  # If we're given an argument it should be a path to a file
+  if [[ -n "$src" ]]; then
+    if [[ -f "$src" ]]; then
+      source "$src"
+      return
+    else
+      echo "Antigen: invalid argument provided.";
+      return 1
+    fi
+  fi
+
+  # Otherwise we expect it to be a heredoc
+  grep '^[[:space:]]*[^[:space:]#]' | while read -r line; do
+    eval $line
+  done
+}
+
 # Clears $0 and ${0} references from cached sources.
 #
 # This is needed otherwise plugins trying to source from a different path
@@ -1418,17 +1423,6 @@ _antigen () {
   cat "$src" | sed -E -e $globals -e $globals_only $sed_regexp_themes
 }
 
--antigen-loader () {
-  # Disable antigen-* commands
-  typeset -a _commands
-  _commands=('use' 'bundle' 'bundles' 'theme' 'list' 'apply' \
-    'cleanup' 'help' 'list' 'reset' 'restore' 'revert' 'snapshot' \
-     'selfupdate' 'update' 'version' 'init')
-  for command in $_commands; do
-    eval "antigen-$command () {}"
-  done
-}
-
 # Generates cache from listed bundles.
 #
 # Iterates over _ZCACHE_BUNDLES and install them (if needed) then join all needed
@@ -1448,14 +1442,10 @@ _antigen () {
   local -aU _extensions_paths
   local -aU _binary_paths
   local -a _bundles_meta
-  local _payload=''
-  local _sourcing_payload=''
-  local location
-
-  _payload+="#-- START ZCACHE GENERATED FILE\NL"
-  _payload+="#-- GENERATED: $(date)\NL"
-  _payload+='#-- ANTIGEN v1.4.1\NL'
-  for bundle in $_ZCACHE_BUNDLES; do
+  local _payload=""
+  local _sources=""
+  local location=""
+  for bundle in ${(@f)_ANTIGEN_BUNDLE_RECORD}; do
     # -antigen-load-list "$url" "$loc" "$make_local_clone"
     eval "$(-antigen-parse-bundle ${=bundle})"
     _bundles_meta+=("$url $loc $btype $make_local_clone $branch")
@@ -1470,11 +1460,11 @@ _antigen () {
         # Force bundle cache for btype = theme, until PR
         # https://github.com/robbyrussell/oh-my-zsh/pull/3743 is merged.
         if [[ $_ZCACHE_EXTENSION_BUNDLE == true || $btype == "theme" ]]; then
-          _sourcing_payload+="#-- SOURCE: $line\NL"
-          _sourcing_payload+=$(-zcache-process-source "$line" "$btype")
-          _sourcing_payload+="\NL;#-- END SOURCE\NL"
+          _sources+="#-- SOURCE: $line\NL"
+          _sources+=$(-zcache-process-source "$line" "$btype")
+          _sources+="\NL;#-- END SOURCE\NL"
         else
-          _sourcing_payload+="source \"$line\";\NL"
+          _sources+="source \"$line\";\NL"
         fi
       elif [[ -d "$line" ]]; then
         _binary_paths+=($line)
@@ -1496,320 +1486,29 @@ _antigen () {
     fi
   done
 
-  _payload+="\NL"
-  _payload+="$(functions -- _antigen)"
-  _payload+="\NL"
-  _payload+="$(functions -- -antigen-loader)"
-  _payload+="\NL"
-  _payload+="-antigen-loader"
-  _payload+="\NL"
-  _payload+='antigen () {\NLif [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then\NLsource "'$_ANTIGEN_SOURCE'"\NLeval antigen $@\NLfi\NL}'
-  _payload+="\NL"
-  _payload+="fpath+=(${_extensions_paths[@]})\NL"
-  _payload+="PATH=\"\$PATH:${_binary_paths[@]}\"\NL"
-  _payload+="autoload -Uz compinit\NL"
-  _payload+="compinit -C -d $ANTIGEN_COMPDUMPFILE\NL"
-  _payload+="compdef antigen _antigen\NL"
-  _payload+="unset __ZCACHE_FILE_PATH\NL"
-  _payload+=$_sourcing_payload
+  _payload="#-- START ZCACHE GENERATED FILE
+#-- GENERATED: $(date)
+#-- ANTIGEN v1.4.1
+$(functions -- _antigen)
+antigen () { [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" ]] && source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && eval antigen \$@}
+fpath+=(${_extensions_paths[@]}); PATH=\"\$PATH:${_binary_paths[@]}\"
+autoload -Uz compinit && compinit -C -d $ANTIGEN_COMPDUMPFILE
+compdef antigen _antigen
+unset __ZCACHE_FILE_PATH\NL"
+  _payload+=$_sources
   # \NL (\n) prefix is for backward compatibility
-  _payload+="_ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\""
-  _payload+=" _ZCACHE_CACHE_LOADED=true"
-  _payload+=" _ZCACHE_CACHE_VERSION=v1.4.1\NL"
+  _payload+="_ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"
+  _ZCACHE_CACHE_LOADED=true _ZCACHE_CACHE_VERSION=v1.4.1\NL"
 
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
   if [[ ! -z "$ZSH" ]]; then
-    _payload+="ZSH=\"$ZSH\"";
-    _payload+=" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
+    _payload+="ZSH=\"$ZSH\" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
   fi
-
   if [[ ! -z "$ZDOTDIR" ]]; then
-    _payload+=" ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
+    _payload+="ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
   fi
-
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
   zcompile "$_ZCACHE_PAYLOAD_PATH"
-  echo "$_ZCACHE_BUNDLES" >! "$_ZCACHE_BUNDLES_PATH"
 }
-
-# Generic hook function for various antigen-* commands.
-#
-# The function is used to defer the bundling performed by commands such as
-# bundle, theme and init. This way we can record all the bundled plugins and
-# install/source/cache in one single step.
-#
-# Usage
-#   -zcache-antigen-hook <arguments>
-#
-# Returns
-#   Nothing. Updates _ZACHE_BUNDLES array.
--zcache-antigen-hook () {
-  local cmd="$1"
-  local subcommand="$2"
-
-  if [[ "$cmd" == "antigen" ]]; then
-    if [[ ! -z "$subcommand" ]]; then
-      shift 2
-    fi
-    -zcache-antigen $subcommand $@
-  elif [[ "$cmd" == "antigen-bundles" ]]; then
-    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-      _ZCACHE_BUNDLES+=("${(j: :)line//\#*/}")
-    done
-  elif [[ "$cmd" == "antigen-bundle" ]]; then
-    shift 1
-    _ZCACHE_BUNDLES+=("${(j: :)@}")
-  elif [[ "$cmd" == "antigen-apply" ]]; then
-    zcache-done
-    antigen-apply
-  else
-    shift 1
-    -zcache-$cmd $@
-  fi
-}
-
-# Unhook antigen functions to be able to call antigen commands normally.
-#
-# After generating and loading of cache there is no need for defered command
-# calls, so we are leaving antigen as it was before zcache was loaded.
-#
-# Afected functions are antigen, antigen-bundle and antigen-apply.
-#
-# See -zcache-hook-antigen
-#
-# Usage
-#   -zcache-unhook-antigen
-#
-# Returns
-#   Nothing
--zcache-unhook-antigen () {
-  for function in ${(Mok)functions:#antigen*}; do
-    eval "function $(functions -- -zcache-$function | sed 's/-zcache-//')"
-  done
-}
-
-# Hooks various antigen functions to be able to defer command execution.
-#
-# To be able to record and cache multiple bundles when antigen runs we are
-# hooking into multiple antigen commands, either deferring it's execution
-# or dropping it.
-#
-# Afected functions are antigen* (key ones are antigen, antigen-bundle,
-# antigen-apply).
-#
-# See -zcache-unhook-antigen
-#
-# Usage
-#   -zcache-hook-antigen
-#
-# Returns
-#   Nothing
--zcache-hook-antigen () {
-  for function in ${(Mok)functions:#antigen*}; do
-    eval "function -zcache-$(functions -- $function)"
-    $function () { -zcache-antigen-hook $0 "$@" }
-  done
-}
-
-# Determines if cache is up-to-date with antigen configuration
-#
-# Usage
-#   -zcache-cache-invalidated
-#
-# Returns
-#   Either true or false depending if cache is up to date
--zcache-cache-invalidated () {
-  [[ $_ANTIGEN_AUTODETECT_CONFIG_CHANGES == true && ! -f $_ZCACHE_BUNDLES_PATH || $(cat $_ZCACHE_BUNDLES_PATH) != "$_ZCACHE_BUNDLES" ]];
-}
-
-local _ZCACHE_PATH="${_ANTIGEN_CACHE_PATH:-$ADOTDIR/.cache}"
-local _ZCACHE_PAYLOAD_PATH="$_ZCACHE_PATH/.zcache-payload"
-local _ZCACHE_BUNDLES_PATH="$_ZCACHE_PATH/.zcache-bundles"
-local _ZCACHE_EXTENSION_CLEAN_FUNCTIONS="${_ZCACHE_EXTENSION_CLEAN_FUNCTIONS:-true}"
-local _ZCACHE_EXTENSION_ACTIVE=false
-# Whether to use bundle or reference cache (since v1.4.0)
-local _ZCACHE_EXTENSION_BUNDLE=${_ZCACHE_EXTENSION_BUNDLE:-false}
-local -a _ZCACHE_BUNDLES
-
-# Starts zcache execution.
-#
-# Hooks into various antigen commands to be able to record and cache multiple
-# bundles, themes and plugins.
-#
-# Usage
-#   zcache-start
-#
-# Returns
-#   Nothing
-zcache-start () {
-  if [[ $_ZCACHE_EXTENSION_ACTIVE == true ]]; then
-    return
-  fi
-
-  [[ ! -d "$_ZCACHE_PATH" ]] && mkdir -p "$_ZCACHE_PATH"
-  -zcache-hook-antigen
-
-  # Avoid running in interactive mode. This handles an specific case
-  # where antigen is sourced from file (eval context) but antigen commands
-  # are issued from toplevel (interactively).
-  zle -N zle-line-init zcache-done
-  _ZCACHE_EXTENSION_ACTIVE=true
-}
-
-# Generates (if needed) and loads cache.
-#
-# Unhooks antigen commands and removes various zcache functions.
-#
-# Usage
-#   zcache-done
-#
-# Returns
-#   Nothing
-zcache-done () {
-  if [[ -z $_ZCACHE_EXTENSION_ACTIVE ]]; then
-    return 1
-  fi
-  unset _ZCACHE_EXTENSION_ACTIVE
-
-  -zcache-unhook-antigen
-
-  # Avoids seg fault on zsh 4.3.5
-  if [[ ${#_ZCACHE_BUNDLES} -gt 0 ]]; then
-    if ! zcache-cache-exists || -zcache-cache-invalidated; then
-      -zcache-generate-cache
-      -antigen-reset-compdump
-    fi
-
-    zcache-load-cache
-  fi
-
-  if [[ $_ZCACHE_EXTENSION_CLEAN_FUNCTIONS == true ]]; then
-    unfunction -- ${(Mok)functions:#-zcache*}
-  fi
-
-  eval "function -zcache-$(functions -- antigen-update)"
-  antigen-update () {
-    if -zcache-antigen-update "$@"; then
-      antigen-reset
-    fi
-  }
-
-  unset _ZCACHE_BUNDLES
-}
-
-# Returns true if cache is available.
-#
-# Usage
-#   zcache-cache-exists
-#
-# Returns
-#   Either 1 if cache exists or 0 if it does not exists
-zcache-cache-exists () {
-  [[ -f "$_ZCACHE_PAYLOAD_PATH" ]]
-}
-
-# Load bundles from cache (sourcing it)
-#
-# This function does not check if cache is available, do use zcache-cache-exists.
-#
-# Usage
-#   zcache-load-cache
-#
-# Returns
-#   Nothing
-zcache-load-cache () {
-  source "$_ZCACHE_PAYLOAD_PATH"
-}
-
-# Removes cache payload and metadata if available
-#
-# Usage
-#   zcache-cache-reset
-#
-# Returns
-#   Nothing
-antigen-reset () {
-  -zcache-remove-path () { [[ -f "$1" ]] && rm -f "$1" }
-  -zcache-remove-path "$_ZCACHE_PAYLOAD_PATH"
-  -zcache-remove-path "$_ZCACHE_BUNDLES_PATH"
-  unfunction -- -zcache-remove-path
-  echo 'Done. Please open a new shell to see the changes.'
-}
-
-# Deprecated for antigen-reset command
-#
-# Usage
-#   zcache-cache-reset
-#
-# Returns
-#   Nothing
-antigen-cache-reset () {
-  echo 'Deprecated in favor of antigen reset.'
-  antigen-reset
-}
-
-# Antigen command to load antigen configuration
-#
-# This method is slighlty more performing than using various antigen-* methods.
-#
-# Usage
-#   Referencing an antigen configuration file:
-#
-#       antigen-init "/path/to/antigenrc"
-#
-#   or using HEREDOCS:
-#
-#       antigen-init <<EOBUNDLES
-#           antigen use oh-my-zsh
-#
-#           antigen bundle zsh/bundle
-#           antigen bundle zsh/example
-#
-#           antigen theme zsh/theme
-#
-#           antigen apply
-#       EOBUNDLES
-#
-# Returns
-#   Nothing
-antigen-init () {
-  local src="$1"
-
-  if zcache-cache-exists; then
-    # Force cache to load - this does skip -zcache-cache-invalidate
-    _ZCACHE_BUNDLES=$(cat $_ZCACHE_BUNDLES_PATH)
-    zcache-done
-    return
-  fi
-
-  # If we're given an argument it should be a path to a file
-  if [[ -n "$src" ]]; then
-    if [[ -f "$src" ]]; then
-      source "$src"
-      return
-    else
-      echo "Antigen: invalid argument provided.";
-      return 1
-    fi
-  fi
-
-  # Otherwise we expect it to be a heredoc
-  grep '^[[:space:]]*[^[:space:]#]' | while read -r line; do
-    eval $line
-  done
-}
-
--antigen-interactive-mode # Updates _ANTIGEN_INTERACTIVE
-# Refusing to run in interactive mode
-if [[ $_ANTIGEN_CACHE_ENABLED == true ]]; then
-  if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
-    zcache-start
-  fi
-else
-  # Disable antigen-init and antigen-reset commands if cache is disabled
-  # and running in interactive modes
-  unfunction -- antigen-init antigen-reset antigen-cache-reset
-fi
-

@@ -18,12 +18,10 @@ _antigen () {
     'purge:Remove a cloned bundle from filesystem'
   );
 
-  if $_ANTIGEN_CACHE_ENABLED; then
-    _1st_arguments+=(
-      'reset:Clears antigen cache'
-      'init:Load Antigen configuration from file'
-    )
-  fi
+  _1st_arguments+=(
+    'reset:Clears antigen cache'
+    'init:Load Antigen configuration from file'
+  )
 
   _1st_arguments+=(
     'help:Show this message'

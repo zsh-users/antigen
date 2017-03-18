@@ -38,4 +38,6 @@ antigen-apply () {
     unset _old_zdotdir
   fi
   unset _zdotdir_set
+  
+  -zcache-generate-cache
 }

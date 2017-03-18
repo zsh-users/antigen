@@ -24,11 +24,3 @@ Can handle heredocs:
   use library
   bundle bundle/name
   apply
-
-Can load from cache, if available:
-
-  $ zcache-cache-exists () { true }
-  $ cat () { }
-  $ zcache-done () { echo Loaded cache. }
-  $ antigen-init /non-existing/file.zsh
-  Loaded cache.
