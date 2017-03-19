@@ -4,15 +4,11 @@
 # Homepage: http://antigen.sharats.me
 # License: MIT License <mitl.sharats.me>
 
+[[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
 # Each line in this string has the following entries separated by a space
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
 _ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD:-""}
-[[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
-_ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
-_ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
-_ANTIGEN_RESET_THEME_HOOKS=${_ANTIGEN_RESET_THEME_HOOKS:-true}
-_ANTIGEN_FORCE_RESET_COMPDUMP=${_ANTIGEN_FORCE_RESET_COMPDUMP:-true}
 
 # Do not load anything if git is not available.
 if (( ! $+commands[git] )); then

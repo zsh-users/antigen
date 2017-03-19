@@ -17,9 +17,9 @@
     mkdir -p $ADOTDIR
   fi
 
-  -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
+  -set-default _ANTIGEN_COMPDUMP "${ZDOTDIR:-$HOME}/.zcompdump"
 
-  -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
+  -set-default _ANTIGEN_LOG "$ADOTDIR/antigen.log"
   
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
   # for arguments that can be passed as `--key=value`.
@@ -28,10 +28,8 @@
 
   # Setup antigen's own completion.
   autoload -Uz compinit
-  if $_ANTIGEN_COMP_ENABLED; then
-    compinit -iuCd $ANTIGEN_COMPDUMPFILE
-    compdef _antigen antigen
-  fi
+  compinit -iuCd $_ANTIGEN_COMPDUMP
+  compdef _antigen antigen
 
   # Remove private functions.
   unfunction -- -set-default

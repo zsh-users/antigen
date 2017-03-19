@@ -1,32 +1,19 @@
 # Initialize completion
 antigen-apply () {
-  # We need to check for interactivity because if cache is configured
-  # antigen-apply is called by zcache-done, which calls -antigen-reset-compdump
-  # as well, so here we avoid to run -antigen-reset-compdump twice.
-  #
-  # We do not want to always call -antigen-reset-compdump, but only when
-  # - cache is reset
-  # - user issues antigen-apply command
-  # Here we are taking care of antigen-apply command. See zcache-done function
-  # for the former case.
-  -antigen-interactive-mode
-  if [[ $_ANTIGEN_INTERACTIVE == true ]]; then
-    # Force zcompdump reset
-    -antigen-reset-compdump
-  fi
+  \rm -f $_ANTIGEN_COMPDUMP
 
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
   autoload -Uz compinit
-  compinit -iuCd $ANTIGEN_COMPDUMPFILE
-  if [[ ! -f "$ANTIGEN_COMPDUMPFILE.zwc" ]]; then
+  compinit -iuCd $_ANTIGEN_COMPDUMP
+  if [[ ! -f "$_ANTIGEN_COMPDUMP.zwc" ]]; then
     # Apply all `compinit`s that have been deferred.
     local cdef
     for cdef in "${__deferred_compdefs[@]}"; do
       compdef "$cdef"
     done
 
-    zcompile $ANTIGEN_COMPDUMPFILE
+    zcompile $_ANTIGEN_COMPDUMP
   fi
 
   unset __deferred_compdefs

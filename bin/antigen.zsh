@@ -7,15 +7,11 @@
 # Homepage: http://antigen.sharats.me
 # License: MIT License <mitl.sharats.me>
 
+[[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
 # Each line in this string has the following entries separated by a space
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
 _ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD:-""}
-[[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
-_ANTIGEN_COMP_ENABLED=${_ANTIGEN_COMP_ENABLED:-true}
-_ANTIGEN_INTERACTIVE=${_ANTIGEN_INTERACTIVE_MODE:-false}
-_ANTIGEN_RESET_THEME_HOOKS=${_ANTIGEN_RESET_THEME_HOOKS:-true}
-_ANTIGEN_FORCE_RESET_COMPDUMP=${_ANTIGEN_FORCE_RESET_COMPDUMP:-true}
 
 # Do not load anything if git is not available.
 if (( ! $+commands[git] )); then
@@ -368,15 +364,6 @@ antigen () {
         "
 }
 
-# Forces to reset zcompdump file
-# Removes $ANTIGEN_COMPDUMPFILE as ${ZDOTDIR:-$HOME}/.zcompdump
-# Set $_ANTIGEN_FORCE_RESET_COMPDUMP to true to do so
--antigen-reset-compdump () {
-  if [[ $_ANTIGEN_FORCE_RESET_COMPDUMP == true && -f $ANTIGEN_COMPDUMPFILE ]]; then
-    rm -f $ANTIGEN_COMPDUMPFILE
-  fi
-}
-
 # Given an acceptable short/full form of a bundle's repo url, this function
 # echoes the full form of the repo's clone url.
 -antigen-resolve-bundle-url () {
@@ -443,7 +430,7 @@ antigen () {
     
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd "$clone_dir" &>>! $_ANTIGEN_LOG_PATH && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG_PATH)
+    (cd "$clone_dir" &>>! $_ANTIGEN_LOG && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG)
   }
 
   # Clone if it doesn't already exist.
@@ -460,7 +447,7 @@ antigen () {
   if [[ ! -d $clone_dir ]]; then
     install_or_update=true
     echo -n "Installing $(-antigen-bundle-short-name "$url" "$branch")... "
-    git clone ${=_ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
+    git clone ${=_ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG
     success=$?
   elif $update; then
     install_or_update=true
@@ -485,7 +472,7 @@ antigen () {
     if [[ $success -eq 0 ]]; then
       printf "Done. Took %ds.\n" $took
     else
-      printf "Error! See \"$_ANTIGEN_LOG_PATH\".\n";
+      printf "Error! See \"$_ANTIGEN_LOG\".\n";
     fi
   fi
 
@@ -520,9 +507,9 @@ antigen () {
     mkdir -p $ADOTDIR
   fi
 
-  -set-default ANTIGEN_COMPDUMPFILE "${ZDOTDIR:-$HOME}/.zcompdump"
+  -set-default _ANTIGEN_COMPDUMP "${ZDOTDIR:-$HOME}/.zcompdump"
 
-  -set-default _ANTIGEN_LOG_PATH "$ADOTDIR/antigen.log"
+  -set-default _ANTIGEN_LOG "$ADOTDIR/antigen.log"
   
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
   # for arguments that can be passed as `--key=value`.
@@ -531,10 +518,8 @@ antigen () {
 
   # Setup antigen's own completion.
   autoload -Uz compinit
-  if $_ANTIGEN_COMP_ENABLED; then
-    compinit -iuCd $ANTIGEN_COMPDUMPFILE
-    compdef _antigen antigen
-  fi
+  compinit -iuCd $_ANTIGEN_COMPDUMP
+  compdef _antigen antigen
 
   # Remove private functions.
   unfunction -- -set-default
@@ -718,33 +703,20 @@ antigen () {
 
 # Initialize completion
 antigen-apply () {
-  # We need to check for interactivity because if cache is configured
-  # antigen-apply is called by zcache-done, which calls -antigen-reset-compdump
-  # as well, so here we avoid to run -antigen-reset-compdump twice.
-  #
-  # We do not want to always call -antigen-reset-compdump, but only when
-  # - cache is reset
-  # - user issues antigen-apply command
-  # Here we are taking care of antigen-apply command. See zcache-done function
-  # for the former case.
-  -antigen-interactive-mode
-  if [[ $_ANTIGEN_INTERACTIVE == true ]]; then
-    # Force zcompdump reset
-    -antigen-reset-compdump
-  fi
+  \rm -f $_ANTIGEN_COMPDUMP
 
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
   autoload -Uz compinit
-  compinit -iuCd $ANTIGEN_COMPDUMPFILE
-  if [[ ! -f "$ANTIGEN_COMPDUMPFILE.zwc" ]]; then
+  compinit -iuCd $_ANTIGEN_COMPDUMP
+  if [[ ! -f "$_ANTIGEN_COMPDUMP.zwc" ]]; then
     # Apply all `compinit`s that have been deferred.
     local cdef
     for cdef in "${__deferred_compdefs[@]}"; do
       compdef "$cdef"
     done
 
-    zcompile $ANTIGEN_COMPDUMPFILE
+    zcompile $_ANTIGEN_COMPDUMP
   fi
 
   unset __deferred_compdefs
@@ -1085,9 +1057,7 @@ antigen-theme () {
   local record
   local result=0
 
-  if [[ $_ANTIGEN_RESET_THEME_HOOKS == true ]]; then
-    -antigen-theme-reset-hooks
-  fi
+  -antigen-theme-reset-hooks
 
   record=$(-antigen-find-record "theme")
 
@@ -1152,7 +1122,7 @@ antigen-update () {
   local bundle=$1
 
   # Clear log
-  :> $_ANTIGEN_LOG_PATH
+  :> $_ANTIGEN_LOG
 
   # Update revert-info data
   -antigen-revert-info
@@ -1316,9 +1286,9 @@ _antigen () {
 }
 
 -antigen-env-setup
-_ZCACHE_PAYLOAD_PATH="${_ANTIGEN_CACHE_PATH:-$ADOTDIR}/init.zsh"
+_ANTIGEN_CACHE="${_ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 # Whether to use bundle or reference cache (since v1.4.0)
-_ZCACHE_EXTENSION_BUNDLE=${_ZCACHE_EXTENSION_BUNDLE:-false}
+_ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
 # Removes cache payload and metadata if available
 #
@@ -1328,7 +1298,7 @@ _ZCACHE_EXTENSION_BUNDLE=${_ZCACHE_EXTENSION_BUNDLE:-false}
 # Returns
 #   Nothing
 antigen-reset () {
-  [[ -f "$_ZCACHE_PAYLOAD_PATH" ]] && rm -f "$_ZCACHE_PAYLOAD_PATH"
+  [[ -f "$_ANTIGEN_CACHE" ]] && rm -f "$_ANTIGEN_CACHE"
   echo 'Done. Please open a new shell to see the changes.'
 }
 
@@ -1379,7 +1349,7 @@ antigen-init () {
 # Clears $0 and ${0} references from cached sources.
 #
 # This is needed otherwise plugins trying to source from a different path
-# will break as those are now located at $_ZCACHE_PAYLOAD_PATH
+# will break as those are now located at $_ANTIGEN_CACHE
 #
 # This does avoid function-context $0 references.
 #
@@ -1425,19 +1395,18 @@ antigen-init () {
 
 # Generates cache from listed bundles.
 #
-# Iterates over _ZCACHE_BUNDLES and install them (if needed) then join all needed
-# sources into one, this is done through -antigen-load-list.
-# Result is stored in _ZCACHE_PAYLOAD_PATH. Loaded bundles and metadata is stored
+# Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
+# if this is done through -antigen-load-list.
+# Result is stored in _ANTIGEN_CACHE. Loaded bundles and metadata is stored
 # in _ZCACHE_META_PATH.
 #
 # _ANTIGEN_BUNDLE_RECORD and fpath is stored in cache.
 #
 # Usage
 #   -zcache-generate-cache
-#   Uses _ZCACHE_BUNDLES (array)
 #
 # Returns
-#   Nothing. Generates _ZCACHE_META_PATH and _ZCACHE_PAYLOAD_PATH
+#   Nothing. Generates _ANTIGEN_CACHE
 -zcache-generate-cache () {
   local -aU _extensions_paths
   local -aU _binary_paths
@@ -1459,7 +1428,7 @@ antigen-init () {
         # Whether to use bundle or reference cache
         # Force bundle cache for btype = theme, until PR
         # https://github.com/robbyrussell/oh-my-zsh/pull/3743 is merged.
-        if [[ $_ZCACHE_EXTENSION_BUNDLE == true || $btype == "theme" ]]; then
+        if [[ $_ZCACHE_BUNDLE == true || $btype == "theme" ]]; then
           _sources+="#-- SOURCE: $line\NL"
           _sources+=$(-zcache-process-source "$line" "$btype")
           _sources+="\NL;#-- END SOURCE\NL"
@@ -1492,13 +1461,12 @@ antigen-init () {
 $(functions -- _antigen)
 antigen () { [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" ]] && source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && eval antigen \$@}
 fpath+=(${_extensions_paths[@]}); PATH=\"\$PATH:${_binary_paths[@]}\"
-autoload -Uz compinit && compinit -C -d $ANTIGEN_COMPDUMPFILE
-compdef antigen _antigen
-unset __ZCACHE_FILE_PATH\NL"
+autoload -Uz compinit && compinit -C -d $_ANTIGEN_COMPDUMP
+compdef antigen _antigen\NL"
   _payload+=$_sources
   # \NL (\n) prefix is for backward compatibility
   _payload+="_ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"
-  _ZCACHE_CACHE_LOADED=true _ZCACHE_CACHE_VERSION=v1.4.1\NL"
+  _ANTIGEN_CACHE_LOADED=true _ANTIGEN_CACHE_VERSION=v1.4.1\NL"
 
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
   if [[ ! -z "$ZSH" ]]; then
@@ -1509,6 +1477,6 @@ unset __ZCACHE_FILE_PATH\NL"
   fi
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
-  echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
-  zcompile "$_ZCACHE_PAYLOAD_PATH"
+  echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ANTIGEN_CACHE"
+  zcompile "$_ANTIGEN_CACHE"
 }

@@ -1,6 +1,6 @@
-_ZCACHE_PAYLOAD_PATH="${_ANTIGEN_CACHE_PATH:-$ADOTDIR}/init.zsh"
+_ANTIGEN_CACHE="${_ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 # Whether to use bundle or reference cache (since v1.4.0)
-_ZCACHE_EXTENSION_BUNDLE=${_ZCACHE_EXTENSION_BUNDLE:-false}
+_ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
 # Removes cache payload and metadata if available
 #
@@ -10,7 +10,7 @@ _ZCACHE_EXTENSION_BUNDLE=${_ZCACHE_EXTENSION_BUNDLE:-false}
 # Returns
 #   Nothing
 antigen-reset () {
-  [[ -f "$_ZCACHE_PAYLOAD_PATH" ]] && rm -f "$_ZCACHE_PAYLOAD_PATH"
+  [[ -f "$_ANTIGEN_CACHE" ]] && rm -f "$_ANTIGEN_CACHE"
   echo 'Done. Please open a new shell to see the changes.'
 }
 
@@ -61,7 +61,7 @@ antigen-init () {
 # Clears $0 and ${0} references from cached sources.
 #
 # This is needed otherwise plugins trying to source from a different path
-# will break as those are now located at $_ZCACHE_PAYLOAD_PATH
+# will break as those are now located at $_ANTIGEN_CACHE
 #
 # This does avoid function-context $0 references.
 #
@@ -107,19 +107,18 @@ antigen-init () {
 
 # Generates cache from listed bundles.
 #
-# Iterates over _ZCACHE_BUNDLES and install them (if needed) then join all needed
-# sources into one, this is done through -antigen-load-list.
-# Result is stored in _ZCACHE_PAYLOAD_PATH. Loaded bundles and metadata is stored
+# Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
+# if this is done through -antigen-load-list.
+# Result is stored in _ANTIGEN_CACHE. Loaded bundles and metadata is stored
 # in _ZCACHE_META_PATH.
 #
 # _ANTIGEN_BUNDLE_RECORD and fpath is stored in cache.
 #
 # Usage
 #   -zcache-generate-cache
-#   Uses _ZCACHE_BUNDLES (array)
 #
 # Returns
-#   Nothing. Generates _ZCACHE_META_PATH and _ZCACHE_PAYLOAD_PATH
+#   Nothing. Generates _ANTIGEN_CACHE
 -zcache-generate-cache () {
   local -aU _extensions_paths
   local -aU _binary_paths
@@ -141,7 +140,7 @@ antigen-init () {
         # Whether to use bundle or reference cache
         # Force bundle cache for btype = theme, until PR
         # https://github.com/robbyrussell/oh-my-zsh/pull/3743 is merged.
-        if [[ $_ZCACHE_EXTENSION_BUNDLE == true || $btype == "theme" ]]; then
+        if [[ $_ZCACHE_BUNDLE == true || $btype == "theme" ]]; then
           _sources+="#-- SOURCE: $line\NL"
           _sources+=$(-zcache-process-source "$line" "$btype")
           _sources+="\NL;#-- END SOURCE\NL"
@@ -174,13 +173,12 @@ antigen-init () {
 $(functions -- _antigen)
 antigen () { [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" ]] && source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && eval antigen \$@}
 fpath+=(${_extensions_paths[@]}); PATH=\"\$PATH:${_binary_paths[@]}\"
-autoload -Uz compinit && compinit -C -d $ANTIGEN_COMPDUMPFILE
-compdef antigen _antigen
-unset __ZCACHE_FILE_PATH\NL"
+autoload -Uz compinit && compinit -C -d $_ANTIGEN_COMPDUMP
+compdef antigen _antigen\NL"
   _payload+=$_sources
   # \NL (\n) prefix is for backward compatibility
   _payload+="_ANTIGEN_BUNDLE_RECORD=\"\NL${(j:\NL:)_bundles_meta}\"
-  _ZCACHE_CACHE_LOADED=true _ZCACHE_CACHE_VERSION={{ANTIGEN_VERSION}}\NL"
+  _ANTIGEN_CACHE_LOADED=true _ANTIGEN_CACHE_VERSION={{ANTIGEN_VERSION}}\NL"
 
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
   if [[ ! -z "$ZSH" ]]; then
@@ -191,6 +189,6 @@ unset __ZCACHE_FILE_PATH\NL"
   fi
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
-  echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ZCACHE_PAYLOAD_PATH"
-  zcompile "$_ZCACHE_PAYLOAD_PATH"
+  echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ANTIGEN_CACHE"
+  zcompile "$_ANTIGEN_CACHE"
 }
