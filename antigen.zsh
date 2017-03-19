@@ -1,5 +1,6 @@
 # Enable or disable timestamp checks
 _ANTIGEN_CHECK_CHANGES=${_ANTIGEN_CHECK_CHANGES:-false}
+_ANTIGEN_CACHE="${_ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
 
 if [[ $_ANTIGEN_CHECK_CHANGES == true ]]; then
   [[ -z $_ANTIGEN_CHECK_FILES ]] && _ANTIGEN_CHECK_FILES=($HOME/.zshrc ${ADOTDIR:-$HOME}/.antigenrc)
@@ -37,7 +38,6 @@ if [[ $_ANTIGEN_CHECK_CHANGES == true ]]; then
   fi
 fi
 
-_ANTIGEN_CACHE="${_ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
 [[ -f $_ANTIGEN_CACHE && ! $_ANTIGEN_CACHE_LOADED == true ]] && source "$_ANTIGEN_CACHE" && return;
 _ANTIGEN_INSTALL_DIR=${0:A:h}
 source $_ANTIGEN_INSTALL_DIR/bin/antigen.zsh
