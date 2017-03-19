@@ -29,9 +29,6 @@ Should have listed bundles.
   $ antigen list | wc -l
   2
 
-  $ ls -A ${_ANTIGEN_CACHE:A:h} | wc -l
-  4
-
 Should not leak Antigen or OMZ environment variables.
 
   $ env | sed -e 's/\=.*//' | grep -i antigen | wc -l
