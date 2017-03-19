@@ -4,8 +4,6 @@ antigen-bundles () {
   # quoting rules applied.
   local line
   grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-    # Using `eval` so that we can use the shell-style quoting in each line
-    # piped to `antigen-bundles`.
-    eval antigen-bundle ${(q)line}
+    antigen-bundle ${=line}
   done
 }
