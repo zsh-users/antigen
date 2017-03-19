@@ -1,12 +1,11 @@
-# Used to fastboot antigen
 # Enable or disable timestamp checks
 _ANTIGEN_CHECK_CHANGES=${_ANTIGEN_CHECK_CHANGES:-false}
-[[ -z $_ANTIGEN_CHECK_FILES ]] && _ANTIGEN_CHECK_FILES=($HOME/.zshrc ${ADOTDIR:-$HOME}/.antigenrc)
-
-# Used to do full boostrap
-_ANTIGEN_CHECK_TIMESTAMP="${ADOTDIR:-$HOME/.antigen}/.timestamp"
 
 if [[ $_ANTIGEN_CHECK_CHANGES == true ]]; then
+  [[ -z $_ANTIGEN_CHECK_FILES ]] && _ANTIGEN_CHECK_FILES=($HOME/.zshrc ${ADOTDIR:-$HOME}/.antigenrc)
+  # Used to do full boostrap
+  _ANTIGEN_CHECK_TIMESTAMP="${ADOTDIR:-$HOME/.antigen}/.timestamp"
+
   # source: http://stackoverflow.com/q/17878684
   if stat -c %Y . >/dev/null 2>&1; then
     -antigen-get-timestamp() { stat -c %Y "$1" 2>/dev/null; }
