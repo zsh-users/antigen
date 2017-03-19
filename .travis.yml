@@ -44,9 +44,6 @@ matrix:
     - os: linux
       language: python
       env: ZSH_BUILD_VERSION=zsh-4.3.11
-    - os: linux
-      language: python
-      env: ZSH_BUILD_VERSION=zsh-4.3.7
 
 addons:
     apt:
@@ -90,9 +87,7 @@ before_script:
 # Run the tests.
 script:
   - "time make tests SH=$ZSH_BIN"
-  - "export ANTIGEN=$TRAVIS_BUILD_DIR"
-  - "make stats SH=$ZSH_BIN"
-  - "make stats SH=$ZSH_BIN STATS_USE_INIT=true"
+  - "make stats SH=$ZSH_BIN ANTIGEN=$TRAVIS_BUILD_DIR"
   # Ensure the checked-in build matches the build produced in CI. Since the CI
   # will run this on both OS X and Linux, the two platforms must also produce
   # the same build, else one of them will fail.
