@@ -239,68 +239,30 @@ antigen () {
   return _ANTIGEN_INTERACTIVE
 }
 
--antigen-load-list () {
-  local url="$1"
-  local loc="$2"
-  local make_local_clone="$3"
-  local btype="$4"
+# Parses and retrieves a remote branch given a branch name.
+#
+# If the branch name contains '*' it will retrieve remote branches
+# and try to match against tags and heads, returning the latest matching.
+#
+# Usage
+#     -antigen-parse-branch https://github.com/user/repo.git x.y.z
+#
+# Returns
+#     Branch name
+-antigen-parse-branch () {
+  local url=$1
+  local branch=$2
+  local branches
 
-  # The full location where the plugin is located.
-  local location="$url/"
-  if $make_local_clone; then
-    location="$(-antigen-get-clone-dir "$url")/"
+  if [[ "$branch" =~ '\*' ]]; then
+    branches=$(git ls-remote --tags -q "$url" "$branch"|cut -d'/' -f3|sort -n|tail -1)
+    # There is no --refs flag in git 1.8 and below, this way we
+    # emulate this flag -- also git 1.8 ref order is undefined.
+    branch=${${branches#*/*/}%^*} # Why you are like this?
   fi
 
-  if [[ $loc != "/" ]]; then
-    location="$location$loc"
-  fi
-
-  if [[ ! -f "$location" && ! -d "$location" ]]; then
-    return 1
-  fi
-
-  if [[ -f "$location" ]]; then
-    echo "$location"
-    return
-  fi
-
-  # Load `*.zsh-theme` for themes
-  if [[ "$btype" == "theme" ]]; then
-    local theme_plugin
-    theme_plugin=($location/*.zsh-theme(N[1]))
-    if [[ -f "$theme_plugin" ]]; then
-      echo "$theme_plugin"
-      return
-    fi
-  fi
-
-  # If we have a `*.plugin.zsh`, source it.
-  local script_plugin
-  script_plugin=($location/*.plugin.zsh(N[1]))
-  if [[ -f "$script_plugin" ]]; then
-    echo "$script_plugin"
-    return
-  fi
-
-  # Otherwise source init.
-  if [[ -f $location/init.zsh ]]; then
-    echo "$location/init.zsh"
-    return
-  fi
-
-  # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
-  local bundle_files
-  bundle_files=($location/*.zsh(N) $location/*.sh(N))
-  if [[ $#bundle_files -gt 0 ]]; then
-    echo "${(j:\n:)bundle_files}"
-    return
-  fi
-  
-  # Add to PATH (binary bundle)
-  echo "$location"
-  return
+  echo $branch
 }
-
 # Parses a bundle url in bundle-metadata format: url[|branch]
 -antigen-parse-bundle-url() {
   local url=$1
@@ -316,54 +278,6 @@ antigen () {
 
   echo $url
 }
-
--antigen-parse-bundle () {
-  # Bundle spec arguments' default values.
-  local url="$ANTIGEN_DEFAULT_REPO_URL"
-  local loc=/
-  local branch=
-  local no_local_clone=false
-  local btype=plugin
-
-  # Parse the given arguments. (Will overwrite the above values).
-  eval "$(-antigen-parse-args "$@")"
-  # Check if url is just the plugin name. Super short syntax.
-  if [[ "$url" != */* ]]; then
-    loc="plugins/$url"
-    url="$ANTIGEN_DEFAULT_REPO_URL"
-  fi
-
-  # Format url in bundle-metadata format: url[|branch]
-  url=$(-antigen-parse-bundle-url "$url" "$branch")
-
-  # The `make_local_clone` variable better represents whether there should be
-  # a local clone made. For cloning to be avoided, firstly, the `$url` should
-  # be an absolute local path and `$branch` should be empty. In addition to
-  # these two conditions, either the `--no-local-clone` option should be
-  # given, or `$url` should not a git repo.
-  local make_local_clone=true
-  if [[ $url == /* && -z $branch &&
-          ( $no_local_clone == true || ! -d $url/.git ) ]]; then
-    make_local_clone=false
-  fi
-
-  # Add the theme extension to `loc`, if this is a theme, but only
-  # if it's especified, ie, --loc=theme-name, in case when it's not
-  # specified antige-load-list will look for *.zsh-theme files
-  if [[ $btype == theme &&
-    $loc != "/" && $loc != *.zsh-theme ]]; then
-      loc="$loc.zsh-theme"
-  fi
-
-  # Bundle spec arguments' default values.
-  echo "local url=\""$url\""
-        local loc=\""$loc\""
-        local branch=\""$branch\""
-        local make_local_clone="$make_local_clone"
-        local btype=\""$btype\""
-        "
-}
-
 # Given an acceptable short/full form of a bundle's repo url, this function
 # echoes the full form of the repo's clone url.
 -antigen-resolve-bundle-url () {
@@ -381,18 +295,6 @@ antigen () {
   fi
 
   echo "$url"
-}
-
--antigen-update-remote () {
-  local clone_dir="$1"
-  local url="$2"
-
-  if [[ "$clone_dir" =~ "\/.zprezto" ]]; then
-    if [[ "$(cd $clone_dir && git config --get remote.origin.url)" != "$url" ]]; then
-      echo "Setting $(basename "$clone_dir") remote to $url."
-      --plugin-git remote set-url origin $url
-    fi
-  fi
 }
 
 # Ensure that a clone exists for the given repo url and branch. If the first
@@ -451,8 +353,6 @@ antigen () {
     success=$?
   elif $update; then
     install_or_update=true
-    # Update remote if needed.
-    -antigen-update-remote $clone_dir $url
     echo -n "Updating $(-antigen-bundle-short-name "$url" "$branch")... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
@@ -525,6 +425,68 @@ antigen () {
   unfunction -- -set-default
 }
 
+-antigen-load-list () {
+  local url="$1"
+  local loc="$2"
+  local make_local_clone="$3"
+  local btype="$4"
+
+  # The full location where the plugin is located.
+  local location="$url/"
+  if $make_local_clone; then
+    location="$(-antigen-get-clone-dir "$url")/"
+  fi
+
+  if [[ $loc != "/" ]]; then
+    location="$location$loc"
+  fi
+
+  if [[ ! -f "$location" && ! -d "$location" ]]; then
+    return 1
+  fi
+
+  if [[ -f "$location" ]]; then
+    echo "$location"
+    return
+  fi
+
+  # Load `*.zsh-theme` for themes
+  if [[ "$btype" == "theme" ]]; then
+    local theme_plugin
+    theme_plugin=($location/*.zsh-theme(N[1]))
+    if [[ -f "$theme_plugin" ]]; then
+      echo "$theme_plugin"
+      return
+    fi
+  fi
+
+  # If we have a `*.plugin.zsh`, source it.
+  local script_plugin
+  script_plugin=($location/*.plugin.zsh(N[1]))
+  if [[ -f "$script_plugin" ]]; then
+    echo "$script_plugin"
+    return
+  fi
+
+  # Otherwise source init.
+  if [[ -f $location/init.zsh ]]; then
+    echo "$location/init.zsh"
+    return
+  fi
+
+  # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
+  local bundle_files
+  bundle_files=($location/*.zsh(N) $location/*.sh(N))
+  if [[ $#bundle_files -gt 0 ]]; then
+    echo "${(j:\n:)bundle_files}"
+    return
+  fi
+  
+  # Add to PATH (binary bundle)
+  echo "$location"
+  return
+}
+
 # Load a given bundle by sourcing it.
 #
 # The function also modifies fpath to add the bundle path.
@@ -559,10 +521,10 @@ antigen () {
       # interactive bundle/theme loading, for static loading -99.9% of the time-
       # eval and subshells are not needed.
       if [[ "$btype" == "theme" ]]; then
-        eval "PREVDIR=$PWD; cd ${src:A:h};
+        eval "__LOAD_PREVDIR=$PWD; cd ${src:A:h};
               $(cat $src | sed -Ee '/\{$/,/^\}/!{
                s/^local //
-           }'); cd $PREVDIR"
+           }'); cd $__LOAD_PREVDIR"
       else
         source "$src"
       fi
@@ -634,30 +596,54 @@ antigen () {
   done
 }
 
-# Parses and retrieves a remote branch given a branch name.
-#
-# If the branch name contains '*' it will retrieve remote branches
-# and try to match against tags and heads, returning the latest matching.
-#
-# Usage
-#     -antigen-parse-branch https://github.com/user/repo.git x.y.z
-#
-# Returns
-#     Branch name
--antigen-parse-branch () {
-  local url=$1
-  local branch=$2
-  local branches
 
-  if [[ "$branch" =~ '\*' ]]; then
-    branches=$(git ls-remote --tags -q "$url" "$branch"|cut -d'/' -f3|sort -n|tail -1)
-    # There is no --refs flag in git 1.8 and below, this way we
-    # emulate this flag -- also git 1.8 ref order is undefined.
-    branch=${${branches#*/*/}%^*} # Why you are like this?
+-antigen-parse-bundle () {
+  # Bundle spec arguments' default values.
+  local url="$ANTIGEN_DEFAULT_REPO_URL"
+  local loc=/
+  local branch=
+  local no_local_clone=false
+  local btype=plugin
+
+  # Parse the given arguments. (Will overwrite the above values).
+  eval "$(-antigen-parse-args "$@")"
+  # Check if url is just the plugin name. Super short syntax.
+  if [[ "$url" != */* ]]; then
+    loc="plugins/$url"
+    url="$ANTIGEN_DEFAULT_REPO_URL"
   fi
 
-  echo $branch
+  # Format url in bundle-metadata format: url[|branch]
+  url=$(-antigen-parse-bundle-url "$url" "$branch")
+
+  # The `make_local_clone` variable better represents whether there should be
+  # a local clone made. For cloning to be avoided, firstly, the `$url` should
+  # be an absolute local path and `$branch` should be empty. In addition to
+  # these two conditions, either the `--no-local-clone` option should be
+  # given, or `$url` should not a git repo.
+  local make_local_clone=true
+  if [[ $url == /* && -z $branch &&
+          ( $no_local_clone == true || ! -d $url/.git ) ]]; then
+    make_local_clone=false
+  fi
+
+  # Add the theme extension to `loc`, if this is a theme, but only
+  # if it's especified, ie, --loc=theme-name, in case when it's not
+  # specified antige-load-list will look for *.zsh-theme files
+  if [[ $btype == theme &&
+    $loc != "/" && $loc != *.zsh-theme ]]; then
+      loc="$loc.zsh-theme"
+  fi
+
+  # Bundle spec arguments' default values.
+  echo "local url=\""$url\""
+        local loc=\""$loc\""
+        local branch=\""$branch\""
+        local make_local_clone="$make_local_clone"
+        local btype=\""$btype\""
+        "
 }
+
 # Updates revert-info data with git hash.
 #
 # This does process only cloned bundles.
@@ -701,6 +687,139 @@ antigen () {
   antigen-bundle $ANTIGEN_PREZTO_REPO_URL
 }
 
+_ANTIGEN_CACHE="${_ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
+# Whether to use bundle or reference cache (since v1.4.0)
+_ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
+
+# Clears $0 and ${0} references from cached sources.
+#
+# This is needed otherwise plugins trying to source from a different path
+# will break as those are now located at $_ANTIGEN_CACHE
+#
+# This does avoid function-context $0 references.
+#
+# This does handles the following patterns:
+#   $0
+#   ${0}
+#   ${funcsourcetrace[1]%:*}
+#   ${(%):-%N}
+#   ${(%):-%x}
+#
+# Usage
+#   -zcache-process-source "/path/to/source" ["theme"|"plugin"]
+#
+# Returns
+#   Returns the cached sources without $0 and ${0} references
+-zcache-process-source () {
+  local src="$1"
+  local btype="$2"
+
+  # Removes $0 references globally (exclusively)
+  local globals_only='/\{$/,/^\}/!{
+    /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
+    s/\$(.?)0(.?)/\$\1__ZCACHE_FILE_PATH\2/
+  }'
+
+  # Removes funcsourcetrace, and ${%} references globally
+  local globals='/.*/{
+    /\$.?(funcsourcetrace\[1\]\%\:\*|\(\%\)\:\-\%(N|x))/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
+    s/\$(.?)(funcsourcetrace\[1\]\%\:\*|\(\%\)\:\-\%(N|x))(.?)/\$\1__ZCACHE_FILE_PATH\4/
+  }'
+
+  # Removes `local` from temes globally
+  local sed_regexp_themes=''
+  if [[ "$btype" == "theme" ]]; then
+    themes='/\{$/,/^\}/!{
+      s/^local //
+    }'
+    sed_regexp_themes="-e "$themes
+  fi
+
+  cat "$src" | sed -E -e $globals -e $globals_only $sed_regexp_themes
+}
+
+# Generates cache from listed bundles.
+#
+# Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
+# if this is done through -antigen-load-list.
+# Result is stored in _ANTIGEN_CACHE. Loaded bundles and metadata is stored
+# in _ZCACHE_META_PATH.
+#
+# _ANTIGEN_BUNDLE_RECORD and fpath is stored in cache.
+#
+# Usage
+#   -zcache-generate-cache
+#
+# Returns
+#   Nothing. Generates _ANTIGEN_CACHE
+-zcache-generate-cache () {
+  local -aU _fpath _PATH
+  local _payload="" _sources="" location=""
+
+  for bundle in ${(@f)_ANTIGEN_BUNDLE_RECORD}; do
+    # -antigen-load-list "$url" "$loc" "$make_local_clone"
+    eval "$(-antigen-parse-bundle ${=bundle})"
+
+    if $make_local_clone; then
+      -antigen-ensure-repo "$url"
+    fi
+
+    -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
+      if [[ -f "$line" ]]; then
+        # Whether to use bundle or reference cache
+        # Force bundle cache for btype = theme, until PR
+        # https://github.com/robbyrussell/oh-my-zsh/pull/3743 is merged.
+        if [[ $_ZCACHE_BUNDLE == true || $btype == "theme" ]]; then
+          _sources+="#-- SOURCE: $line\NL"
+          _sources+=$(-zcache-process-source "$line" "$btype")
+          _sources+="\NL;#-- END SOURCE\NL"
+        else
+          _sources+="source \"$line\";\NL"
+        fi
+      elif [[ -d "$line" ]]; then
+        _PATH+=($line)
+      fi
+    done
+
+    if $make_local_clone; then
+      location="$(-antigen-get-clone-dir "$url")/$loc"
+    else
+      location="$url/"
+    fi
+
+    if [[ -d "$location" ]]; then
+      _fpath+=($location)
+    fi
+
+    if [[ -d "$location/functions" ]]; then
+      _fpath+=($location/functions)
+    fi
+  done
+
+  _payload="#-- START ZCACHE GENERATED FILE
+#-- GENERATED: $(date)
+#-- ANTIGEN v1.4.1
+$(functions -- _antigen)
+antigen () { [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" ]] && source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && eval antigen \$@}
+fpath+=(${_fpath[@]}); PATH=\"\$PATH:${_PATH[@]}\"
+autoload -Uz compinit && compinit -C -d $_ANTIGEN_COMPDUMP
+compdef antigen _antigen\NL"
+
+  _payload+=$_sources
+  _payload+="_ANTIGEN_BUNDLE_RECORD=\"$_ANTIGEN_BUNDLE_RECORD\" _ANTIGEN_CACHE_LOADED=true _ANTIGEN_CACHE_VERSION=v1.4.1\NL"
+
+  # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
+  if [[ -n "$ZSH" ]]; then
+    _payload+="ZSH=\"$ZSH\" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
+  fi
+  if [[ -n "$ZDOTDIR" ]]; then
+    _payload+="ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
+  fi
+  _payload+="#-- END ZCACHE GENERATED FILE\NL"
+
+  echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ANTIGEN_CACHE"
+  zcompile "$_ANTIGEN_CACHE"
+}
 # Initialize completion
 antigen-apply () {
   \rm -f $_ANTIGEN_COMPDUMP
@@ -896,6 +1015,7 @@ antigen-init () {
     eval $line
   done
 }
+
 # List instaled bundles either in long (record), short or simple format.
 #
 # Usage
@@ -1346,136 +1466,3 @@ _antigen () {
 }
 
 -antigen-env-setup
-_ANTIGEN_CACHE="${_ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
-# Whether to use bundle or reference cache (since v1.4.0)
-_ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
-
-# Clears $0 and ${0} references from cached sources.
-#
-# This is needed otherwise plugins trying to source from a different path
-# will break as those are now located at $_ANTIGEN_CACHE
-#
-# This does avoid function-context $0 references.
-#
-# This does handles the following patterns:
-#   $0
-#   ${0}
-#   ${funcsourcetrace[1]%:*}
-#   ${(%):-%N}
-#   ${(%):-%x}
-#
-# Usage
-#   -zcache-process-source "/path/to/source" ["theme"|"plugin"]
-#
-# Returns
-#   Returns the cached sources without $0 and ${0} references
--zcache-process-source () {
-  local src="$1"
-  local btype="$2"
-
-  # Removes $0 references globally (exclusively)
-  local globals_only='/\{$/,/^\}/!{
-    /\$.?0/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
-    s/\$(.?)0(.?)/\$\1__ZCACHE_FILE_PATH\2/
-  }'
-
-  # Removes funcsourcetrace, and ${%} references globally
-  local globals='/.*/{
-    /\$.?(funcsourcetrace\[1\]\%\:\*|\(\%\)\:\-\%(N|x))/i\'$'\n''__ZCACHE_FILE_PATH="'$src'"
-    s/\$(.?)(funcsourcetrace\[1\]\%\:\*|\(\%\)\:\-\%(N|x))(.?)/\$\1__ZCACHE_FILE_PATH\4/
-  }'
-
-  # Removes `local` from temes globally
-  local sed_regexp_themes=''
-  if [[ "$btype" == "theme" ]]; then
-    themes='/\{$/,/^\}/!{
-      s/^local //
-    }'
-    sed_regexp_themes="-e "$themes
-  fi
-
-  cat "$src" | sed -E -e $globals -e $globals_only $sed_regexp_themes
-}
-
-# Generates cache from listed bundles.
-#
-# Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
-# if this is done through -antigen-load-list.
-# Result is stored in _ANTIGEN_CACHE. Loaded bundles and metadata is stored
-# in _ZCACHE_META_PATH.
-#
-# _ANTIGEN_BUNDLE_RECORD and fpath is stored in cache.
-#
-# Usage
-#   -zcache-generate-cache
-#
-# Returns
-#   Nothing. Generates _ANTIGEN_CACHE
--zcache-generate-cache () {
-  local -aU _fpath _PATH
-  local _payload="" _sources="" location=""
-
-  for bundle in ${(@f)_ANTIGEN_BUNDLE_RECORD}; do
-    # -antigen-load-list "$url" "$loc" "$make_local_clone"
-    eval "$(-antigen-parse-bundle ${=bundle})"
-
-    if $make_local_clone; then
-      -antigen-ensure-repo "$url"
-    fi
-
-    -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
-      if [[ -f "$line" ]]; then
-        # Whether to use bundle or reference cache
-        # Force bundle cache for btype = theme, until PR
-        # https://github.com/robbyrussell/oh-my-zsh/pull/3743 is merged.
-        if [[ $_ZCACHE_BUNDLE == true || $btype == "theme" ]]; then
-          _sources+="#-- SOURCE: $line\NL"
-          _sources+=$(-zcache-process-source "$line" "$btype")
-          _sources+="\NL;#-- END SOURCE\NL"
-        else
-          _sources+="source \"$line\";\NL"
-        fi
-      elif [[ -d "$line" ]]; then
-        _PATH+=($line)
-      fi
-    done
-
-    if $make_local_clone; then
-      location="$(-antigen-get-clone-dir "$url")/$loc"
-    else
-      location="$url/"
-    fi
-
-    if [[ -d "$location" ]]; then
-      _fpath+=($location)
-    fi
-
-    if [[ -d "$location/functions" ]]; then
-      _fpath+=($location/functions)
-    fi
-  done
-
-  _payload="#-- START ZCACHE GENERATED FILE
-#-- GENERATED: $(date)
-#-- ANTIGEN v1.4.1
-$(functions -- _antigen)
-antigen () { [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" ]] && source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && eval antigen \$@}
-fpath+=(${_fpath[@]}); PATH=\"\$PATH:${_PATH[@]}\"
-autoload -Uz compinit && compinit -C -d $_ANTIGEN_COMPDUMP
-compdef antigen _antigen\NL"
-
-  _payload+=$_sources
-  _payload+="_ANTIGEN_BUNDLE_RECORD=\"$_ANTIGEN_BUNDLE_RECORD\" _ANTIGEN_CACHE_LOADED=true _ANTIGEN_CACHE_VERSION=v1.4.1\NL"
-
-  # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
-  if [[ -n "$ZSH" ]]; then
-    _payload+="ZSH=\"$ZSH\" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
-  fi
-  if [[ -n "$ZDOTDIR" ]]; then
-    _payload+="ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
-  fi
-  _payload+="#-- END ZCACHE GENERATED FILE\NL"
-
-  echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ANTIGEN_CACHE"
-  zcompile "$_ANTIGEN_CACHE"
-}

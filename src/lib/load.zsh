@@ -32,10 +32,10 @@
       # interactive bundle/theme loading, for static loading -99.9% of the time-
       # eval and subshells are not needed.
       if [[ "$btype" == "theme" ]]; then
-        eval "PREVDIR=$PWD; cd ${src:A:h};
+        eval "__PREVDIR=$PWD; cd ${src:A:h};
               $(cat $src | sed -Ee '/\{$/,/^\}/!{
                s/^local //
-           }'); cd $PREVDIR"
+           }'); cd $__PREVDIR"
       else
         source "$src"
       fi

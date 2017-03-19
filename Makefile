@@ -12,7 +12,7 @@ TARGET ?= ${BIN}/antigen.zsh
 SRC ?= ${PROJECT}/src
 GLOB ?= ${SRC}/*.zsh $(sort $(wildcard ${PWD}/src/helpers/*.zsh)) \
         ${SRC}/lib/*.zsh $(sort $(wildcard ${PWD}/src/commands/*.zsh)) \
-        ${SRC}/_antigen ${SRC}/ext/*.zsh
+        ${SRC}/_antigen
 
 VERSION_FILE=${PROJECT}/VERSION
 
