@@ -91,9 +91,8 @@ before_script:
 script:
   - "time make tests SH=$ZSH_BIN"
   - "export ANTIGEN=$TRAVIS_BUILD_DIR"
-  - "make stats _ANTIGEN_CACHE_ENABLED=false SH=$ZSH_BIN"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true SH=$ZSH_BIN"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true STATS_USE_INIT=true SH=$ZSH_BIN"
+  - "make stats SH=$ZSH_BIN"
+  - "make stats SH=$ZSH_BIN STATS_USE_INIT=true"
   # Ensure the checked-in build matches the build produced in CI. Since the CI
   # will run this on both OS X and Linux, the two platforms must also produce
   # the same build, else one of them will fail.
