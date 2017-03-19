@@ -409,7 +409,7 @@ antigen () {
 
   -set-default _ANTIGEN_COMPDUMP "${ZDOTDIR:-$HOME}/.zcompdump"
 
-  -set-default _ANTIGEN_LOG "$ADOTDIR/antigen.log"
+  -set-default _ANTIGEN_LOG "/dev/null"
   
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
   # for arguments that can be passed as `--key=value`.
@@ -521,10 +521,10 @@ antigen () {
       # interactive bundle/theme loading, for static loading -99.9% of the time-
       # eval and subshells are not needed.
       if [[ "$btype" == "theme" ]]; then
-        eval "__LOAD_PREVDIR=$PWD; cd ${src:A:h};
+        eval "__PREVDIR=$PWD; cd ${src:A:h};
               $(cat $src | sed -Ee '/\{$/,/^\}/!{
                s/^local //
-           }'); cd $__LOAD_PREVDIR"
+           }'); cd $__PREVDIR"
       else
         source "$src"
       fi

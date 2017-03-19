@@ -19,7 +19,7 @@
 
   -set-default _ANTIGEN_COMPDUMP "${ZDOTDIR:-$HOME}/.zcompdump"
 
-  -set-default _ANTIGEN_LOG "$ADOTDIR/antigen.log"
+  -set-default _ANTIGEN_LOG "/dev/null"
   
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
   # for arguments that can be passed as `--key=value`.

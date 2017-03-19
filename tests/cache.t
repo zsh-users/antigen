@@ -30,7 +30,7 @@ Should have listed bundles.
   2
 
   $ ls -A ${_ANTIGEN_CACHE:A:h} | wc -l
-  5
+  4
 
 Should not leak Antigen or OMZ environment variables.
 
