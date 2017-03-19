@@ -5,13 +5,25 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 # Removes cache payload and metadata if available
 #
 # Usage
-#   zcache-cache-reset
+#   antigen-reset
 #
 # Returns
 #   Nothing
 antigen-reset () {
   [[ -f "$_ANTIGEN_CACHE" ]] && rm -f "$_ANTIGEN_CACHE"
   echo 'Done. Please open a new shell to see the changes.'
+}
+
+# Generate static-cache file at $_ANTIGEN_CACHE using currently loaded
+# bundles from $_ANTIGEN_BUNDLE_RECORD
+#
+# Usage
+#   antigen-cache-gen
+#
+# Returns
+#   Nothing
+antigen-cache-gen () {
+  -zcache-generate-cache
 }
 
 # Antigen command to load antigen configuration

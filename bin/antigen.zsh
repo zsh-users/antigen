@@ -1207,25 +1207,23 @@ antigen-version () {
 _antigen () {
   local -a _1st_arguments
   _1st_arguments=(
+    'apply:Load all bundle completions'
     'bundle:Install and load the given plugin'
     'bundles:Bulk define bundles'
-    'update:Update all bundles'
-    'revert:Revert the state of all bundles to how they were before the last antigen update'
-    'list:List out the currently loaded bundles'
     'cleanup:Clean up the clones of repos which are not used by any bundles currently loaded'
-    'use:Load any (supported) zsh pre-packaged framework'
-    'theme:Switch the prompt theme'
-    'apply:Load all bundle completions'
-    'snapshot:Create a snapshot of all the active clones'
-    'restore:Restore the bundles state as specified in the snapshot'
-    'selfupdate:Update antigen itself'
-    'purge:Remove a cloned bundle from filesystem'
-  );
-
-  _1st_arguments+=(
-    'reset:Clears antigen cache'
+    'cache-gen:Generate cache'
     'init:Load Antigen configuration from file'
-  )
+    'list:List out the currently loaded bundles'
+    'purge:Remove a cloned bundle from filesystem'
+    'reset:Clears cache'
+    'restore:Restore the bundles state as specified in the snapshot'
+    'revert:Revert the state of all bundles to how they were before the last antigen update'
+    'selfupdate:Update antigen itself'
+    'snapshot:Create a snapshot of all the active clones'
+    'theme:Switch the prompt theme'
+    'update:Update all bundles'
+    'use:Load any (supported) zsh pre-packaged framework'
+  );
 
   _1st_arguments+=(
     'help:Show this message'
@@ -1237,8 +1235,7 @@ _antigen () {
       '--loc[Path to the location <path-to/location>]' \
       '--url[Path to the repository <github-account/repository>]' \
       '--branch[Git branch name]' \
-      '--no-local-clone[Do not create a clone]' \
-      '--btype[Indicates whether the bundle is a theme or a simple plugin]'
+      '--no-local-clone[Do not create a clone]'
   }
   __list() {
     _arguments \
@@ -1291,13 +1288,25 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 # Removes cache payload and metadata if available
 #
 # Usage
-#   zcache-cache-reset
+#   antigen-reset
 #
 # Returns
 #   Nothing
 antigen-reset () {
   [[ -f "$_ANTIGEN_CACHE" ]] && rm -f "$_ANTIGEN_CACHE"
   echo 'Done. Please open a new shell to see the changes.'
+}
+
+# Generate static-cache file at $_ANTIGEN_CACHE using currently loaded
+# bundles from $_ANTIGEN_BUNDLE_RECORD
+#
+# Usage
+#   antigen-cache-gen
+#
+# Returns
+#   Nothing
+antigen-cache-gen () {
+  -zcache-generate-cache
 }
 
 # Antigen command to load antigen configuration
