@@ -118,11 +118,11 @@ antigen () {
 }
 fpath+=(${_fpath[@]}); PATH=\"\$PATH:${_PATH[@]}\"
 _antigen_compinit () {
-  autoload -Uz compinit && compinit -C -d $_ANTIGEN_COMPDUMP; compdef antigen _antigen;
+  autoload -Uz compinit; compinit -iuCd $_ANTIGEN_COMPDUMP; compdef _antigen antigen
   add-zsh-hook -D precmd _antigen_compinit
 }
-autoload -Uz add-zsh-hook && add-zsh-hook precmd _antigen_compinit
-compdef compadd () {}\NL"
+autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
+compdef () {}\NL"
 
   _payload+=$_sources
   _payload+="_ANTIGEN_BUNDLE_RECORD=\"$_ANTIGEN_BUNDLE_RECORD\" _ANTIGEN_CACHE_LOADED=true _ANTIGEN_CACHE_VERSION={{ANTIGEN_VERSION}}\NL"
