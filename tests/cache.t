@@ -60,7 +60,7 @@ Both bundles are cached by reference.
   $ antigen apply &> /dev/null
 
   $ cat $_ANTIGEN_CACHE | grep source
-  antigen.* (re)
+  .* (re)
   source .*-SLASH-test-plugin//aliases.zsh.* (re)
   source .*-SLASH-test-plugin2//init.zsh.* (re)
 

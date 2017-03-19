@@ -800,10 +800,18 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #-- GENERATED: $(date)
 #-- ANTIGEN v1.4.1
 $(functions -- _antigen)
-antigen () { [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" ]] && source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && eval antigen \$@}
+antigen () {
+  [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" ]] && \
+    source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && \
+      eval antigen \$@
+}
 fpath+=(${_fpath[@]}); PATH=\"\$PATH:${_PATH[@]}\"
-autoload -Uz compinit && compinit -C -d $_ANTIGEN_COMPDUMP
-compdef antigen _antigen\NL"
+_antigen_compinit () {
+  autoload -Uz compinit && compinit -C -d $_ANTIGEN_COMPDUMP; compdef antigen _antigen;
+  add-zsh-hook -D precmd _antigen_compinit
+}
+autoload -Uz add-zsh-hook && add-zsh-hook precmd _antigen_compinit
+compdef compadd () {}\NL"
 
   _payload+=$_sources
   _payload+="_ANTIGEN_BUNDLE_RECORD=\"$_ANTIGEN_BUNDLE_RECORD\" _ANTIGEN_CACHE_LOADED=true _ANTIGEN_CACHE_VERSION=v1.4.1\NL"
