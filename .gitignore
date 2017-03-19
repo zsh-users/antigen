@@ -26,4 +26,4 @@ revert-info
 *.timestamp
 
 # cache init
-init.zsh
+/init.zsh

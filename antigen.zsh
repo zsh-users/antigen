@@ -6,7 +6,7 @@ _ANTIGEN_CHECK_CHANGES=${_ANTIGEN_CHECK_CHANGES:-false}
 # Used to do full boostrap
 _ANTIGEN_CHECK_TIMESTAMP="${ADOTDIR:-$HOME/.antigen}/.timestamp"
 
-if [[ $_ANTIGEN_CHECK_CHANGES == true ]]; then
+if [[ $_ANTIGEN_CHECK_CHANGES ]]; then
   # source: http://stackoverflow.com/q/17878684
   if stat -c %Y . >/dev/null 2>&1; then
     -antigen-get-timestamp() { stat -c %Y "$1" 2>/dev/null; }
