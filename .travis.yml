@@ -46,7 +46,7 @@ matrix:
       env: ZSH_BUILD_VERSION=zsh-4.3.11
     - os: linux
       language: python
-      env: ZSH_BUILD_VERSION=zsh-4.3.5
+      env: ZSH_BUILD_VERSION=zsh-4.3.7
 
 addons:
     apt:
