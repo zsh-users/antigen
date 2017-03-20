@@ -617,11 +617,9 @@ Defaults to `$HOME/.antigen`.
 `_ANTIGEN_CACHE` &mdash; This configures the path to the cache init file, where
 Antigen stores it's cached bundles.
 
-`_ANTIGEN_CHECK_CHANGES` &mdash; Use this configuration to define if Antigen should
+`_ANTIGEN_CHECK_FILES` &mdash; Use this configuration to define if Antigen should
 check for configuration changes or not, this is to avoid doing `antigen-reset`.
-
-`_ANTIGEN_CHECK_FILES` &mdash; If `_ANTIGEN_CHECK_CHANGES` is set to true this
-configuration is used to determine which files to check for changes.
+This configuration is used to determine which files to check for changes.
 
 ## Development
 

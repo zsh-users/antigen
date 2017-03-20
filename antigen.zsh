@@ -1,11 +1,9 @@
 # Enable or disable timestamp checks
-_ANTIGEN_CHECK_CHANGES=${_ANTIGEN_CHECK_CHANGES:-false}
 _ANTIGEN_CACHE="${_ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
 
-if [[ $_ANTIGEN_CHECK_CHANGES == true ]]; then
-  [[ -z $_ANTIGEN_CHECK_FILES ]] && _ANTIGEN_CHECK_FILES=($HOME/.zshrc ${ADOTDIR:-$HOME}/.antigenrc)
+if [[ -n $_ANTIGEN_CHECK_FILES ]]; then
   # Used to do full boostrap
-  _ANTIGEN_CHECK_TIMESTAMP="${ADOTDIR:-$HOME/.antigen}/.timestamp"
+  check_timestamp="${ADOTDIR:-$HOME/.antigen}/.timestamp"
 
   # source: http://stackoverflow.com/q/17878684
   if stat -c %Y . >/dev/null 2>&1; then
@@ -27,15 +25,19 @@ if [[ $_ANTIGEN_CHECK_CHANGES == true ]]; then
   done
 
   if [ -f $_ANTIGEN_CHECK_TIMESTAMP ]; then
-    saved=$(cat $_ANTIGEN_CHECK_TIMESTAMP)
+    saved=$(cat $check_timestamp)
     if [ $saved -lt $timestamp ]; then
       # Do full bootstrap
-      echo $timestamp>!$_ANTIGEN_CHECK_TIMESTAMP
+      echo $timestamp>!$check_timestamp
       [[ -f "$_ANTIGEN_CACHE" ]] && \rm -f "$_ANTIGEN_CACHE"
     fi
   else
-    echo $timestamp>!$_ANTIGEN_CHECK_TIMESTAMP
+    echo $timestamp>!$check_timestamp
   fi
+
+  unset check_timestamp
+  unset timestamp
+  unset saved
 fi
 
 [[ -f $_ANTIGEN_CACHE && ! $_ANTIGEN_CACHE_LOADED == true ]] && source "$_ANTIGEN_CACHE" && return;
