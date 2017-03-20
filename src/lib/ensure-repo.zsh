@@ -33,7 +33,7 @@
     
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd "$clone_dir" &>>! $_ANTIGEN_LOG_PATH && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG_PATH)
+    (cd "$clone_dir" &>>! $_ANTIGEN_LOG && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG)
   }
 
   # Clone if it doesn't already exist.
@@ -50,12 +50,10 @@
   if [[ ! -d $clone_dir ]]; then
     install_or_update=true
     echo -n "Installing $(-antigen-bundle-short-name "$url" "$branch")... "
-    git clone ${=_ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG_PATH
+    git clone ${=_ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG
     success=$?
   elif $update; then
     install_or_update=true
-    # Update remote if needed.
-    -antigen-update-remote $clone_dir $url
     echo -n "Updating $(-antigen-bundle-short-name "$url" "$branch")... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
@@ -75,7 +73,7 @@
     if [[ $success -eq 0 ]]; then
       printf "Done. Took %ds.\n" $took
     else
-      printf "Error! See \"$_ANTIGEN_LOG_PATH\".\n";
+      printf "Error! See \"$_ANTIGEN_LOG\".\n";
     fi
   fi
 

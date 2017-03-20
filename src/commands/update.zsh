@@ -9,7 +9,7 @@ antigen-update () {
   local bundle=$1
 
   # Clear log
-  :> $_ANTIGEN_LOG_PATH
+  :> $_ANTIGEN_LOG
 
   # Update revert-info data
   -antigen-revert-info
