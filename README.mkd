@@ -383,7 +383,7 @@ this includes any bundles installed on-the-fly.
 With `--long` flag it gives out five entries per line of output,
 denoting the following fields of each bundle.
 
-    <repo-url> <loc> <btype> <has-local-clone?> <branch> @ <branch|tag|ref>
+    <repo-url> <loc> <btype> <has-local-clone?> <branch>
 
 The `btype` field is an internal detail, that specifies if the bundle is a
 `plugin` or a `theme`.
