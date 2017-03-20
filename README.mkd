@@ -37,7 +37,7 @@ sample, if you will.
 
 Get and load Antigen.
 
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.4.1/bin/antigen.zsh > antigen.zsh
+    curl git.io/antigen > antigen.zsh
     source antigen.zsh
 
 There. You now have all the Antigen goodies. Let's try install some plugins. How
@@ -590,9 +590,9 @@ looks good as output on the command line.
 
 ## Installation
 
-Install Antigen from our main repository for the latests and greatests version available:
+Install Antigen from our main repository for the latest stable version available:
 
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.4.1/bin/antigen.zsh > antigen.zsh
+    curl git.io/antigen > antigen.zsh
 
 Or using your [system package manager](https://software.opensuse.org/download.html?project=shells%3Azsh-users%3Aantigen&package=antigen).
 
