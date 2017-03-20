@@ -35,9 +35,7 @@ if [[ -n $_ANTIGEN_CHECK_FILES ]]; then
     echo $timestamp>!$check_timestamp
   fi
 
-  unset check_timestamp
-  unset timestamp
-  unset saved
+  unset check_timestamp timestamp saved
 fi
 
 [[ -f $_ANTIGEN_CACHE && ! $_ANTIGEN_CACHE_LOADED == true ]] && source "$_ANTIGEN_CACHE" && return;
