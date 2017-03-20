@@ -800,9 +800,6 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #-- GENERATED: $(date)
 #-- ANTIGEN v1.4.1
 $(functions -- _antigen)
-# zsh <= 5.0
-$(functions -- -antigen-theme-reset-hooks)
--antigen-theme-reset-hooks
 antigen () {
   [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" ]] && \
     source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && \
