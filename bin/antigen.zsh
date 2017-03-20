@@ -8,7 +8,6 @@
 # License: MIT License <mitl.sharats.me>
 
 _ANTIGEN_CACHE="${_ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
-[[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
 
 if [[ -n $_ANTIGEN_CHECK_FILES ]]; then
   # Used to do full boostrap
@@ -48,6 +47,8 @@ if [[ -n $_ANTIGEN_CHECK_FILES ]]; then
 fi
 
 [[ -f $_ANTIGEN_CACHE && ! $_ANTIGEN_CACHE_LOADED == true ]] && source "$_ANTIGEN_CACHE" && return;
+[[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
+
 # Each line in this string has the following entries separated by a space
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
