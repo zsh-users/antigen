@@ -1,6 +1,6 @@
 .PHONY: itests tests install all
 SHELL ?= sh
-PYENV ?= 
+PYENV ?=
 TESTS ?= tests
 PREFIX ?= /usr/local
 SH ?= zsh
@@ -10,7 +10,7 @@ CRAM_OPTS ?= -v
 
 TARGET ?= ${BIN}/antigen.zsh
 SRC ?= ${PROJECT}/src
-GLOB ?= ${SRC}/*.zsh $(sort $(wildcard ${PWD}/src/helpers/*.zsh)) \
+GLOB ?= ${SRC}/boot.zsh ${SRC}/antigen.zsh $(sort $(wildcard ${PWD}/src/helpers/*.zsh)) \
         ${SRC}/lib/*.zsh $(sort $(wildcard ${PWD}/src/commands/*.zsh)) \
         ${SRC}/_antigen
 
@@ -34,19 +34,19 @@ release:
 	# Move to release branch
 	git checkout develop
 	git checkout -b release/$(version)
-	
+
 	# Update version references in README.md
 	$(call ised, "s/$$(cat ${VERSION_FILE})/$(version)/",README.mkd)
-	
+
 	# Update release version
 	echo "$(version)" > ${VERSION_FILE}
-	
+
 	# Make build and tests
 	make build && make tests
-	
+
 	# Update changelog
 	${EDITOR} CHANGELOG.md
-	
+
 	# Build release commit
 	git add CHANGELOG.md ${VERSION_FILE} README.mkd ${TARGET}
 	git commit -S -m "Build release $(version)"
