@@ -34,8 +34,8 @@ List command supports short format flag.
   .*/test-plugin2 @ master (re)
 
   $ antigen-list --long
-  .*/test-plugin / plugin true @ master (re)
-  .*/test-plugin2 / plugin true @ master (re)
+  .*/test-plugin / plugin true (re)
+  .*/test-plugin2 / plugin true (re)
 
 Can display feature branches.
 
@@ -48,8 +48,8 @@ Can display feature branches.
   .*/test-plugin2 @ .* (re)
 
   $ antigen-list --long
-  .*/test-plugin / plugin true @ master (re)
-  .*/test-plugin2 / plugin true @ .* (re)
+  .*/test-plugin / plugin true (re)
+  .*/test-plugin2 / plugin true (re)
 
 Find bundle/record internal function.
 
