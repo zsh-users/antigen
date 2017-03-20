@@ -590,7 +590,7 @@ looks good as output on the command line.
 
 ## Installation
 
-Install Antigen from our main repository for the latests and greatests version available:
+Install Antigen from our main repository for the latest stable version available:
 
     curl git.io/antigen > antigen.zsh
 
