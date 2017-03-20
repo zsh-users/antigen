@@ -1,10 +1,5 @@
-# Antigen: A simple plugin manager for zsh
-# Authors: Shrikant Sharat Kandula
-#          and Contributors <https://github.com/zsh-users/antigen/contributors>
-# Homepage: http://antigen.sharats.me
-# License: MIT License <mitl.sharats.me>
-
 [[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
+
 # Each line in this string has the following entries separated by a space
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
