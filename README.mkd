@@ -21,7 +21,7 @@ typical vim+pathogen setup. Antigen is to zsh, what [Vundle][] is to vim.
 Antigen has reached a certain level of stability and has been used in the wild
 for around a couple of years. If you face any problems, please open an issue.
 
-Antigen works with zsh versions `>= 4.3.5`.
+Antigen works with zsh versions `>= 4.3.11`.
 
 Note: Please read the commit comments of the changesets when you pull a new
 version of Antigen.
@@ -187,7 +187,7 @@ oh-my-zsh][oh-my-zsh] (can be changed by setting `ANTIGEN_DEFAULT_REPO_URL`).
 However, the above is just syntax sugar for the extended syntax of the
 `antigen bundle` command.
 
-    antigen bundle [<url> [<loc>]]
+    antigen bundle [<url>[@tag|branch] [<loc>]]
 
 where `<url>` is the repository url and it defaults to [robbyrussell's
 oh-my-zsh][oh-my-zsh] repo (can be changed by setting `ANTIGEN_DEFAULT_REPO_URL`
@@ -196,6 +196,9 @@ zsh plugin. This is typically the directory that contains a `*.plugin.zsh` file,
 but it could contain a completion file or just many `*.zsh` files to be sourced,
 or it could simply be a file (with any extension) that you want to source.
 `<loc>` defaults to `/`, which indicates the repository itself is a plugin.
+
+Use `@tag` or `@branch` to request a branch or tag. You may use semver-like format
+such as `antigen bundle zsh-users/zsh-syntax-highlighting@0.5.*`.
 
 An example invocation would be
 
@@ -241,7 +244,7 @@ be available every time you open a shell, put it in your `.zshrc`.
 
 Other keyword-only arguments accepted:
 
-`--branch={git-branch-name}` &mdash; Specify the branch of the git repo to be
+`--branch={git-branch-name|tag}` &mdash; Specify the branch of the git repo to be
 used for this bundle (without the braces of course). The default is whatever
 branch the clone comes with, which is usually `master`. For example,
 
@@ -318,19 +321,24 @@ Another thing to take into account is that variables (ex. environment variables)
 and especial builtin characters (`~`, `.`) won't work inside a heredoc, so you may
 have to change a `antigen-bundle` syntax to work with `antigen-bundles`.
 
+### antigen cache-gen
+
+Use this command to generate Antigen's cache with currently loaded bundles.
+
+    antigen cache-gen
+
+Takes no further arguments.
+
 ### antigen init
 
 Makes usage of caching in order to quickly load bundles. Improves performance greatly
-and it's recommened if you have an stable set of bundles. See wiki's [cookbook](https://github.com/zsh-users/antigen/wiki/Cookbook#init-command) section
-for further details.
+and it's recommened if you have an stable set of bundles.
 
     antigen init /path/to/.antigenrc
 
-Where `.antigenrc` contains your Antigen configuration (`antigen bundle`, `antigen bundles`,
-`antigen theme`, etc).
-
-This command is available only with cache enabled, ie: `_ANTIGEN_CACHE_ENABLED=true`.
-
+Where `.antigenrc` contains your Antigen configuration (`antigen bundle`,
+`antigen bundles`, `antigen theme`, etc). See wiki's [cookbook](https://github.com/zsh-users/antigen/wiki/Cookbook#init-command) section
+for further details.
 
 ### antigen update
 
@@ -354,7 +362,7 @@ real quirky.
 updating the bundles you are using with Antigen. To update your copy of Antigen,
 use the `selfupdate` command described further below.
 
-### antigen revert <sup>&alpha;</sup>
+### antigen revert
 
 Reverts the state of all your plugins to how they were before the last
 `antigen update`. This command is currently experimental, so don't rely too much
@@ -372,9 +380,6 @@ this includes any bundles installed on-the-fly.
 
     antigen list [--simple|--short|--long]
 
-Without arguments it gives out four entries per line of output, denoting the
-following fields of each bundle.
-
 With `--long` flag it gives out five entries per line of output,
 denoting the following fields of each bundle.
 
@@ -383,7 +388,7 @@ denoting the following fields of each bundle.
 The `btype` field is an internal detail, that specifies if the bundle is a
 `plugin` or a `theme`.
 
-The <has-local-clone> field is `true` or `false` reflecting whether there is
+The `<has-local-clone>` field is `true` or `false` reflecting whether there is
 a local clone for this bundle.
 
 With `--short` flag the output is simplier:
@@ -445,11 +450,7 @@ Additional arguments may be present depending on the framework you are
 
 #### oh-my-zsh
 
-This is (almost) the same as
-
-    antigen bundle --loc=lib
-
-So, it basically installs the oh-my-zsh's library as a bundle.
+It basically installs the oh-my-zsh's library as a bundle.
 
 One other thing it does is that some oh-my-zsh plugins expect a `$ZSH` set to
 the full path of the oh-my-zsh clone being used. This is also set to the
@@ -475,18 +476,15 @@ Use
 
 in  your `.zshrc`, before any `antigen bundle` declarations. It takes no further arguments.
 
-This initializes the community-supported fork of the prezto framework. Your
-.zshrc file could look like this:
+This initializes the prezto framework. Your `.zshrc` file could look like this:
 
     antigen use prezto
-    antigen bundle zsh-users/prezto modules/helper  # required for Git module
-    antigen bundle zsh-users/prezto modules/editor
-    antigen bundle zsh-users/prezto modules/git
-    antigen bundle zsh-users/prezto modules/prompt
+    antigen bundle sorin-ionescu/prezto modules/helper  # required for Git module
+    antigen bundle sorin-ionescu/prezto modules/editor
+    antigen bundle sorin-ionescu/prezto modules/git
+    antigen bundle sorin-ionescu/prezto modules/prompt
     antigen apply
 
-Please note that Prezto support is new and experimental. If you find any bugs, please
-report over on github issues.
 Also note that due to how Prezto is implemented Antigen has to alter `ZDOTDIR`
 environment variable, which is restored immediately after `antigen apply` command.
 
@@ -535,12 +533,6 @@ So, to avoid any trouble, run `antigen use oh-my-zsh` if you haven't already
 before experimenting with themes. If you have `antigen use oh-my-zsh` in your
 `.zshrc`, you're covered.
 
-**Note**: Do *not* provide the `--btype` argument to `antigen theme`. Its an
-internal argument.
-
-*For the interested, you can read more details on the purpose & workings of the
-`theme` command on the comments of issue #78.*
-
 ### antigen apply
 
 You have to add this command after defining all bundles you need, in your zshrc.
@@ -555,7 +547,7 @@ you have a good number of bundle specifications.
 However, if you can suggest a way so that this would not be necessary, I am very
 interested in discussing it. Please open up an issue with your details. Thanks.
 
-### antigen snapshot <sup>&alpha;</sup>
+### antigen snapshot
 
 Creates a snapshot of all the clones you currently have *active* including the
 git version hash they are at and save it to a snapshot file. *Active* means, the
@@ -569,7 +561,7 @@ that have a clone. That is, bundles that have `--no-local-clone` set or are
 directly sourced from your file system (without a git repo), are not recorded
 in the snapshot file.
 
-### antigen restore <sup>&alpha;</sup>
+### antigen restore
 
 Restore the bundles state as specified in the snapshot. Takes one required
 argument, the snapshot file name to read.
@@ -616,16 +608,20 @@ used for `bundle` commands. The default value is robbyrussell's oh-my-zsh repo,
 but you can set this to the fork url of your own fork.
 
 `ANTIGEN_PREZTO_REPO_URL` &mdash; This is the repository url for cloning and
-updating Prezto. The default value is the community fork (zsh-users/prezto),
-but you can set this to sorin-ionescu/prezto or to your own fork.
+updating Prezto. The default value is sorin's prezto repository (sorin-ionescu/prezto).
 
 `ADOTDIR` &mdash; This directory is used to store all the repo clones, your
 bundles, themes, caches and everything else Antigen requires to run smoothly.
 Defaults to `$HOME/.antigen`.
 
-**Note**: `ANTIGEN_REPO_CACHE` & `ANTIGEN_BUNDLE_DIR` &mdash; These variables
-were used previously but are now removed. Please use `ADOTDIR` instead, as
-mentioned above.
+`_ANTIGEN_CACHE` &mdash; This configures the path to the cache init file, where
+Antigen stores it's cached bundles.
+
+`_ANTIGEN_CHECK_CHANGES` &mdash; Use this configuration to define if Antigen should
+check for configuration changes or not, this is to avoid doing `antigen-reset`.
+
+`_ANTIGEN_CHECK_FILES` &mdash; If `_ANTIGEN_CHECK_CHANGES` is set to true this
+configuration is used to determine which files to check for changes.
 
 ## Development
 
