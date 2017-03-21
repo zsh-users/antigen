@@ -11,6 +11,7 @@ cp $ZSHRC $TMP
 
 cp $PROJECT/tests/.zshrc $HOME/.zshrc
 eval $CMD
+eval "$SHELL -ic 'antigen list'"
 
 for x in $(seq 1 20); do
     (eval time $CMD) &>> $MTIME
