@@ -1,3 +1,4 @@
+antigen use oh-my-zsh
 antigen bundles <<EOBUNDLES
   git
   command-not-found
@@ -16,9 +17,9 @@ antigen bundles <<EOBUNDLES
   caarlos0/jvm.git
   caarlos0/zsh-open-pr
   junegunn/fzf@0.16.*
-  mafredri/zsh-async@v1.5.*
+  mafredri/zsh-async@v1.5.* # use version v1.5.x
   mollifier/cd-gitroot
-  oz/safe-paste
+  oz/safe-paste # a comment
   caarlos0/ports
   supercrabtree/k@0.*
   Tarrasch/zsh-bd
@@ -26,6 +27,7 @@ antigen bundles <<EOBUNDLES
   heroku
   unixorn/git-extra-commands
   rimraf/k
+  # a bunch of bundles from default library
   gitfast
   jsontools
   github
