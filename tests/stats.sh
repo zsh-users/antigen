@@ -9,10 +9,11 @@ MTIME=/tmp/mtime
 # Back up configuration
 cp $ZSHRC $TMP 
 
-cp $PROJECT/tests/.zshrc $HOME/.zshrc
 echo Installing bundles...
 eval "$SHELL -ic 'rm $HOME/.antigen/init.zsh'"
 eval "$SHELL -ic 'rm -rf $HOME/.antigen/repos/'"
+
+cp $PROJECT/tests/.zshrc $HOME/.zshrc
 eval $CMD
 echo Done.
 echo
