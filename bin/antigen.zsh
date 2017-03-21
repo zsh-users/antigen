@@ -935,7 +935,7 @@ antigen-bundles () {
   # quoting rules applied.
   local line
   grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-    antigen-bundle ${=line}
+    antigen-bundle ${=line%#*}
   done
 }
 # Generate static-cache file at $_ANTIGEN_CACHE using currently loaded

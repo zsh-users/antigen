@@ -4,6 +4,6 @@ antigen-bundles () {
   # quoting rules applied.
   local line
   grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-    antigen-bundle ${=line}
+    antigen-bundle ${=line%#*}
   done
 }
