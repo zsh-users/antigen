@@ -36,8 +36,7 @@ antigen-theme () {
     if [[ "$record" =~ "$@" ]]; then
       return $result
     else
-      # Remove entire line plus $\n character
-      _ANTIGEN_BUNDLE_RECORD="${_ANTIGEN_BUNDLE_RECORD//$'\n'$record/}"
+      _ANTIGEN_BUNDLE_RECORD[$_ANTIGEN_BUNDLE_RECORD[(I)$record]]=()
     fi
   fi
 

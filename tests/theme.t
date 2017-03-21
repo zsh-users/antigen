@@ -15,10 +15,10 @@ Theme should be listed correctly in antigen-list.
 
 Should be registered correctly in BUNDLE_RECORD.
 
-  $ echo $_ANTIGEN_BUNDLE_RECORD | grep theme | wc -l
+  $ echo ${(j:\n:)_ANTIGEN_BUNDLE_RECORD} | grep theme | wc -l
   1
 
-  $ echo $_ANTIGEN_BUNDLE_RECORD | grep theme
+  $ echo ${(j:\n:)_ANTIGEN_BUNDLE_RECORD} | grep theme
   *silly.zsh-theme* (glob)
 
 Load a second theme in the same session.
@@ -32,21 +32,21 @@ Second theme is listed as expected in antigen-list.
   $ antigen-list | wc -l
   1
 
-  $ echo $_ANTIGEN_BUNDLE_RECORD | grep theme
+  $ echo ${(j:\n:)_ANTIGEN_BUNDLE_RECORD} | grep theme
   *arrow* (glob)
 
 Should be registered correctly in BUNDLE_RECORD.
 
-  $ echo $_ANTIGEN_BUNDLE_RECORD | grep theme | wc -l
+  $ echo ${(j:\n:)_ANTIGEN_BUNDLE_RECORD} | grep theme | wc -l
   1
 
-  $ echo $_ANTIGEN_BUNDLE_RECORD | grep theme
+  $ echo ${(j:\n:)_ANTIGEN_BUNDLE_RECORD} | grep theme
   *arrow.zsh-theme* (glob)
 
 Using the same theme does not change anything.
 
-  $ antigen-theme $PLUGIN_DIR arrow &> /dev/null
-  $ antigen-list --long | grep arrow
+  $ antigen-theme $PLUGIN_DIR arrow
+  $ antigen-list --long
   *arrow* (glob)
 
   $ antigen-theme $PLUGIN_DIR arrow &> /dev/null

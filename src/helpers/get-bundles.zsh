@@ -13,7 +13,7 @@
   local bundle_entry
   mode=${1:-"--short"}
 
-  for record in ${(@f)_ANTIGEN_BUNDLE_RECORD}; do
+  for record in $_ANTIGEN_BUNDLE_RECORD; do
     url="$(echo "$record" | cut -d' ' -f1)"
     bundle_name=$(-antigen-bundle-short-name $url)
 

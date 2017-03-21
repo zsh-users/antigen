@@ -67,7 +67,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
   local -aU _fpath _PATH
   local _payload="" _sources="" location=""
 
-  for bundle in ${(@f)_ANTIGEN_BUNDLE_RECORD}; do
+  for bundle in $_ANTIGEN_BUNDLE_RECORD; do
     # -antigen-load-list "$url" "$loc" "$make_local_clone"
     eval "$(-antigen-parse-bundle ${=bundle})"
 
@@ -125,7 +125,8 @@ autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
 compdef () {}\NL"
 
   _payload+=$_sources
-  _payload+="_ANTIGEN_BUNDLE_RECORD=\"$_ANTIGEN_BUNDLE_RECORD\" _ANTIGEN_CACHE_LOADED=true _ANTIGEN_CACHE_VERSION={{ANTIGEN_VERSION}}\NL"
+  _payload+="typeset -aU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
+  _payload+="_ANTIGEN_CACHE_LOADED=true _ANTIGEN_CACHE_VERSION={{ANTIGEN_VERSION}}\NL"
 
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
   if [[ -n "$ZSH" ]]; then

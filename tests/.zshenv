@@ -73,8 +73,8 @@ mkdir "$PLUGIN_DIR3"
 # A wrapper function over `git` to work with the test plugin repo.
 alias pg3='git --git-dir "$PLUGIN_DIR3/.git" --work-tree "$PLUGIN_DIR3"'
 
-echo "echo '######'" > "$PLUGIN_DIR3"/hr
-chmod u+x "$PLUGIN_DIR3"/hr
+echo "echo '######'" > "$PLUGIN_DIR3"/hr-plugin
+chmod u+x "$PLUGIN_DIR3"/hr-plugin
 
 {
     pg3 init
