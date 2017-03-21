@@ -8,7 +8,6 @@ antigen-apply () {
   compinit -iuCd $_ANTIGEN_COMPDUMP
   if [[ ! -f "$_ANTIGEN_COMPDUMP.zwc" ]]; then
     # Apply all `compinit`s that have been deferred.
-    local cdef
     for cdef in "${__deferred_compdefs[@]}"; do
       compdef "$cdef"
     done

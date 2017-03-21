@@ -9,7 +9,7 @@ antigen-list () {
   local format=$1
 
   # List all currently installed bundles.
-  if [[ -z "$_ANTIGEN_BUNDLE_RECORD" ]]; then
+  if [[ -z $_ANTIGEN_BUNDLE_RECORD ]]; then
     echo "You don't have any bundles." >&2
     return 1
   fi

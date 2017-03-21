@@ -52,7 +52,7 @@ fi
 # Each line in this string has the following entries separated by a space
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
-_ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD:-""}
+typeset -aU _ANTIGEN_BUNDLE_RECORD
 
 # Do not load anything if git is not available.
 if (( ! $+commands[git] )); then
@@ -114,9 +114,8 @@ antigen () {
 # Echo the bundle specs as in the record. The first line is not echoed since it
 # is a blank line.
 -antigen-echo-record () {
-  echo "$_ANTIGEN_BUNDLE_RECORD" | sed -n '1!p'
+  echo ${(j:\n:)_ANTIGEN_BUNDLE_RECORD}
 }
-
 # Filters _ANTIGEN_BUNDLE_RECORD for $1
 #
 # Usage
@@ -137,22 +136,13 @@ antigen () {
 #   String if record is found
 -antigen-find-record () {
   local bundle=$1
-  local _IFS
-
-  # Using typeset in order to support zsh <= 5.0.0
-  typeset -a records
   
   if [[ $# -eq 0 ]]; then
     return 1
   fi
 
-  _IFS="$IFS"
-  IFS=$'\n'
-  records=(${(@f)$(-antigen-echo-record)})
-  IFS="$_IFS"
-
   local record=${bundle/\|/\\\|}
-  echo "${records[(r)*$record*]}"
+  echo "${_ANTIGEN_BUNDLE_RECORD[(r)*$record*]}"
 }
 # Returns bundle names from _ANTIGEN_BUNDLE_RECORD
 #
@@ -169,7 +159,7 @@ antigen () {
   local bundle_entry
   mode=${1:-"--short"}
 
-  for record in ${(@f)_ANTIGEN_BUNDLE_RECORD}; do
+  for record in $_ANTIGEN_BUNDLE_RECORD; do
     url="$(echo "$record" | cut -d' ' -f1)"
     bundle_name=$(-antigen-bundle-short-name $url)
 
@@ -799,7 +789,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
   local -aU _fpath _PATH
   local _payload="" _sources="" location=""
 
-  for bundle in ${(@f)_ANTIGEN_BUNDLE_RECORD}; do
+  for bundle in $_ANTIGEN_BUNDLE_RECORD; do
     # -antigen-load-list "$url" "$loc" "$make_local_clone"
     eval "$(-antigen-parse-bundle ${=bundle})"
 
@@ -857,7 +847,8 @@ autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
 compdef () {}\NL"
 
   _payload+=$_sources
-  _payload+="_ANTIGEN_BUNDLE_RECORD=\"$_ANTIGEN_BUNDLE_RECORD\" _ANTIGEN_CACHE_LOADED=true _ANTIGEN_CACHE_VERSION=v1.4.1\NL"
+  _payload+="typeset -aU _ANTIGEN_BUNDLE_RECORD=("${(qq)_ANTIGEN_BUNDLE_RECORD}")\NL"
+  _payload+="_ANTIGEN_CACHE_LOADED=true _ANTIGEN_CACHE_VERSION=v1.4.1\NL"
 
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
   if [[ -n "$ZSH" ]]; then
@@ -881,7 +872,6 @@ antigen-apply () {
   compinit -iuCd $_ANTIGEN_COMPDUMP
   if [[ ! -f "$_ANTIGEN_COMPDUMP.zwc" ]]; then
     # Apply all `compinit`s that have been deferred.
-    local cdef
     for cdef in "${__deferred_compdefs[@]}"; do
       compdef "$cdef"
     done
@@ -936,14 +926,7 @@ antigen-bundle () {
   fi
 
   # Add it to the record.
-  local bundle_record="$url $loc $btype $make_local_clone"
-  # http://zsh-workers.zsh.narkive.com/QwfCWpW8/what-s-wrong-with-this-expression
-  if [[ "$_ANTIGEN_BUNDLE_RECORD" =~ "$bundle_record" ]]; then
-    return
-  else
-    # TODO Use array instead of string
-    _ANTIGEN_BUNDLE_RECORD="$_ANTIGEN_BUNDLE_RECORD"$'\n'"$bundle_record"
-  fi
+  _ANTIGEN_BUNDLE_RECORD+=("$url $loc $btype $make_local_clone")
 }
 
 antigen-bundles () {
@@ -1078,7 +1061,7 @@ antigen-list () {
   local format=$1
 
   # List all currently installed bundles.
-  if [[ -z "$_ANTIGEN_BUNDLE_RECORD" ]]; then
+  if [[ -z $_ANTIGEN_BUNDLE_RECORD ]]; then
     echo "You don't have any bundles." >&2
     return 1
   fi
@@ -1316,8 +1299,7 @@ antigen-theme () {
     if [[ "$record" =~ "$@" ]]; then
       return $result
     else
-      # Remove entire line plus $\n character
-      _ANTIGEN_BUNDLE_RECORD="${_ANTIGEN_BUNDLE_RECORD//$'\n'$record/}"
+      _ANTIGEN_BUNDLE_RECORD[$_ANTIGEN_BUNDLE_RECORD[(I)$record]]=()
     fi
   fi
 

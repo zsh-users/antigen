@@ -3,7 +3,7 @@
 # Each line in this string has the following entries separated by a space
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
-_ANTIGEN_BUNDLE_RECORD=${_ANTIGEN_BUNDLE_RECORD:-""}
+typeset -aU _ANTIGEN_BUNDLE_RECORD
 
 # Do not load anything if git is not available.
 if (( ! $+commands[git] )); then
