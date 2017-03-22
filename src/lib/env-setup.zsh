@@ -28,7 +28,7 @@
 
   # Setup antigen's own completion.
   autoload -Uz compinit
-  compinit -iuCd $_ANTIGEN_COMPDUMP
+  compinit -C -d "$_ANTIGEN_COMPDUMP"
   compdef _antigen antigen
 
   # Remove private functions.

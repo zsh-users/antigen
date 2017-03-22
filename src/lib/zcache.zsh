@@ -118,7 +118,7 @@ antigen () {
 }
 fpath+=(${_fpath[@]}); PATH=\"\$PATH:${_PATH[@]}\"
 _antigen_compinit () {
-  autoload -Uz compinit; compinit -iuCd $_ANTIGEN_COMPDUMP; compdef _antigen antigen
+  autoload -Uz compinit; compinit -C -d \"$_ANTIGEN_COMPDUMP\"; compdef _antigen antigen
   add-zsh-hook -D precmd _antigen_compinit
 }
 autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
