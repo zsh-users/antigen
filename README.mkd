@@ -621,6 +621,11 @@ Antigen stores it's cached bundles.
 check for configuration changes or not, this is to avoid doing `antigen-reset`.
 This configuration is used to determine which files to check for changes.
 
+`_ANTIGEN_COMPDUMP` &mdash; Use this configuration to define where [zsh's completion
+system](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) should store completion's dump file.
+
+`_ANTIGEN_LOG`  &mdash; Use this configuration to define where Antigen should store log information.
+
 ## Development
 
 When making changes, edit the files in `src/`. Do not directly edit
