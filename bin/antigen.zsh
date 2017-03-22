@@ -9,42 +9,12 @@
 
 _ANTIGEN_CACHE="${_ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
 
-if [[ -n $_ANTIGEN_CHECK_FILES ]]; then
-  # Used to do full boostrap
-  check_timestamp="${ADOTDIR:-$HOME/.antigen}/.timestamp"
-
-  # source: http://stackoverflow.com/q/17878684
-  if stat -c %Y . >/dev/null 2>&1; then
-    -antigen-get-timestamp() { stat -c %Y "$1" 2>/dev/null; }
-  elif stat -f %m . >/dev/null 2>&1; then
-    -antigen-get-timestamp() { stat -f %m "$1" 2>/dev/null; }
-  elif date -r . +%s >/dev/null 2>&1; then
-    -antigen-get-timestamp() { stat -r "$1" +%s 2>/dev/null; }
-  else
-    echo '-antigen-get-timestamp() is unsupported' >&2
-    -antigen-get-timestamp() { printf '%s' 0; }
+for config in $_ANTIGEN_CHECK_FILES; do
+  if [[ "$config" -nt "$config.zwc" ]]; then
+    zcompile "$config"
+    [[ -f "$_ANTIGEN_CACHE" ]] && \rm -f "$_ANTIGEN_CACHE"
   fi
-  timestamp=0
-  for config in $_ANTIGEN_CHECK_FILES; do
-    config_timestamp=$(-antigen-get-timestamp $config)
-    if [ $timestamp -lt "$config_timestamp" ]; then
-      timestamp=$config_timestamp
-    fi
-  done
-
-  if [ -f $_ANTIGEN_CHECK_TIMESTAMP ]; then
-    saved=$(cat $check_timestamp)
-    if [ $saved -lt $timestamp ]; then
-      # Do full bootstrap
-      echo $timestamp>!$check_timestamp
-      [[ -f "$_ANTIGEN_CACHE" ]] && \rm -f "$_ANTIGEN_CACHE"
-    fi
-  else
-    echo $timestamp>!$check_timestamp
-  fi
-
-  unset check_timestamp timestamp saved
-fi
+done
 
 [[ -f $_ANTIGEN_CACHE && ! $_ANTIGEN_CACHE_LOADED == true ]] && source "$_ANTIGEN_CACHE" && return;
 [[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
@@ -847,7 +817,8 @@ autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
 compdef () {}\NL"
 
   _payload+=$_sources
-  _payload+="typeset -aU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
+  _payload+="typeset -aU _ANTIGEN_BUNDLE_RECORD;\
+      _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
   _payload+="_ANTIGEN_CACHE_LOADED=true _ANTIGEN_CACHE_VERSION=v1.4.1\NL"
 
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
@@ -861,6 +832,11 @@ compdef () {}\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ANTIGEN_CACHE"
   zcompile "$_ANTIGEN_CACHE"
+  
+  # Compile config files, if any
+  [[ -n $_ANTIGEN_CHECK_FILES ]] && zcompile "$_ANTIGEN_CHECK_FILES"
+
+  return true
 }
 # Initialize completion
 antigen-apply () {
