@@ -375,7 +375,7 @@ antigen () {
     if [[ $success -eq 0 ]]; then
       printf "Done. Took %ds.\n" $took
     else
-      printf "Error! See \"$_ANTIGEN_LOG\".\n";
+      printf "Error! Activate logging and try again.\n";
     fi
   fi
 
