@@ -617,14 +617,18 @@ Defaults to `$HOME/.antigen`.
 `_ANTIGEN_CACHE` &mdash; This configures the path to the cache init file, where
 Antigen stores it's cached bundles.
 
+`_ANTIGEN_COMPDUMP` &mdash; Use this configuration to define where [zsh's completion
+system](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) should store completion's dump file. Defaults to `$ADOTDIR/.zcompdump`.
+
+`_ANTIGEN_LOG`  &mdash; Use this configuration to define where Antigen should
+store log information.
+
+`_ANTIGEN_BUNDLES`  &mdash; This directory is used to store bundle clones. Defaults
+to `$ADOTDIR/bundles`.
+
 `_ANTIGEN_CHECK_FILES` &mdash; Use this configuration to define if Antigen should
 check for configuration changes or not, this is to avoid doing `antigen-reset`.
 This configuration is used to determine which files to check for changes.
-
-`_ANTIGEN_COMPDUMP` &mdash; Use this configuration to define where [zsh's completion
-system](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) should store completion's dump file.
-
-`_ANTIGEN_LOG`  &mdash; Use this configuration to define where Antigen should store log information.
 
 ## Development
 

@@ -21,7 +21,7 @@ Nothing should be available for cleanup.
 
 Clear out the bundles record.
 
-  $ _ANTIGEN_BUNDLE_RECORD=""
+  $ _ANTIGEN_BUNDLE_RECORD=()
 
 Check the listing, after clearing the record.
 
@@ -31,15 +31,16 @@ Check the listing, after clearing the record.
 
 Confirm the plugin directory exists.
 
-  $ ls $ADOTDIR/repos | wc -l
-  2
+  $ ls $_ANTIGEN_BUNDLES | wc -l
+  1
 
 Do the cleanup.
 
   $ antigen-cleanup --force
   You have clones for the following repos, but are not used.
-    */test-plugin (glob)
-    */test-plugin2 (glob)
+  .* (re)
+  .*/test-plugin (re)
+  .*/test-plugin2 (re)
   
   
   Deleting clone for */test-plugin... done. (glob)
@@ -53,5 +54,5 @@ Check the listing, after cleanup.
 
 Confirm the plugin directory does not exist after cleanup.
 
-  $ ls $ADOTDIR/repos | wc -l
+  $ ls $_ANTIGEN_BUNDLES | wc -l
   0

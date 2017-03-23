@@ -59,8 +59,8 @@ Both bundles are cached by reference.
 
   $ cat $_ANTIGEN_CACHE | grep source
   .* (re)
-  source .*-SLASH-test-plugin//aliases.zsh.* (re)
-  source .*-SLASH-test-plugin2//init.zsh.* (re)
+  source .*test-plugin/aliases.zsh.* (re)
+  source .*test-plugin2/init.zsh.* (re)
 
 List command should work as expected.
 

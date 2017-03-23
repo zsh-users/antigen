@@ -9,7 +9,7 @@ Check if the plugin is loaded correctly.
 
 Confirm no clone is made.
 
-  $ test -d "$ADOTDIR/repos"
+  $ test -d "$_ANTIGEN_BUNDLES"
   [1]
 
 Load the plugin with a clone.

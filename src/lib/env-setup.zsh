@@ -12,14 +12,16 @@
       https://github.com/robbyrussell/oh-my-zsh.git
   -set-default ANTIGEN_PREZTO_REPO_URL \
       https://github.com/zsh-users/prezto.git
+  
   -set-default ADOTDIR $HOME/.antigen
-  if [[ ! -d $ADOTDIR ]]; then
-    mkdir -p $ADOTDIR
-  fi
+  [[ ! -d $ADOTDIR ]] && mkdir -p $ADOTDIR
+  
+  -set-default _ANTIGEN_BUNDLES $ADOTDIR/bundles
+  [[ ! -d $_ANTIGEN_BUNDLES ]] && mkdir -p $_ANTIGEN_BUNDLES
 
-  -set-default _ANTIGEN_COMPDUMP "${ZDOTDIR:-$HOME}/.zcompdump"
+  -set-default _ANTIGEN_COMPDUMP "${ADOTDIR:-$HOME}/.zcompdump"
 
-  -set-default _ANTIGEN_LOG "/dev/null"
+  -set-default _ANTIGEN_LOG /dev/null
   
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
   # for arguments that can be passed as `--key=value`.

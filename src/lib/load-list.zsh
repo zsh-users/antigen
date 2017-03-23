@@ -5,13 +5,13 @@
   local btype="$4"
 
   # The full location where the plugin is located.
-  local location="$url/"
+  local location="$url"
   if $make_local_clone; then
-    location="$(-antigen-get-clone-dir "$url")/"
+    location="$(-antigen-get-clone-dir "$url")"
   fi
 
   if [[ $loc != "/" ]]; then
-    location="$location$loc"
+    location="$location/$loc"
   fi
 
   if [[ ! -f "$location" && ! -d "$location" ]]; then

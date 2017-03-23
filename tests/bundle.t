@@ -32,8 +32,8 @@ Try to install an unexisting bundle.
 
 Confirm there is still only one repository.
 
-  $ ls $ADOTDIR/repos | wc -l
-  1
+  $ ls $_ANTIGEN_BUNDLES/ | wc -l
+  2
 
 Load a prezto style module. Should only source the `init.zsh` present in the
 module.

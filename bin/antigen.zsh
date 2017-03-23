@@ -154,33 +154,16 @@ antigen () {
 -antigen-get-clone-dir () {
   # Takes a repo url and mangles it, giving the path that this url will be
   # cloned to. Doesn't actually clone anything.
-  echo -n $ADOTDIR/repos/
+  echo -n $_ANTIGEN_BUNDLES/
 
   if [[ "$1" == "$ANTIGEN_PREZTO_REPO_URL" ]]; then
     # Prezto's directory *has* to be `.zprezto`.
     echo .zprezto
   else
-    local url="${1}"
-    url=${url//\//-SLASH-}
-    url=${url//\:/-COLON-}
-    url=${url//\*/-STAR-}
-    echo "${url//\|/-PIPE-}"
-  fi
-}
-
--antigen-get-clone-url () {
-  # Takes a repo's clone dir and unmangles it, to give the repo's original url
-  # that was used to create the given directory path.
-
-  if [[ "$1" == ".zprezto" ]]; then
-    echo "$(cd "$ADOTDIR/repos/.zprezto" && git config --get remote.origin.url)"
-  else
-    local _path="${1}"
-    _path=${_path//^\$ADOTDIR\/repos\/}
-    _path=${_path//-SLASH-/\/}
-    _path=${_path//-COLON-/\:}
-    _path=${_path//-STAR-/\*}
-    echo "${_path//-PIPE-/\|}"
+    local url=$(-antigen-bundle-short-name "$1")
+    url=${url//\|/-}
+    url=${url//\*/x}
+    echo $url
   fi
 }
 
@@ -405,14 +388,16 @@ antigen () {
       https://github.com/robbyrussell/oh-my-zsh.git
   -set-default ANTIGEN_PREZTO_REPO_URL \
       https://github.com/zsh-users/prezto.git
+  
   -set-default ADOTDIR $HOME/.antigen
-  if [[ ! -d $ADOTDIR ]]; then
-    mkdir -p $ADOTDIR
-  fi
+  [[ ! -d $ADOTDIR ]] && mkdir -p $ADOTDIR
+  
+  -set-default _ANTIGEN_BUNDLES $ADOTDIR/bundles
+  [[ ! -d $_ANTIGEN_BUNDLES ]] && mkdir -p $_ANTIGEN_BUNDLES
 
-  -set-default _ANTIGEN_COMPDUMP "${ZDOTDIR:-$HOME}/.zcompdump"
+  -set-default _ANTIGEN_COMPDUMP "${ADOTDIR:-$HOME}/.zcompdump"
 
-  -set-default _ANTIGEN_LOG "/dev/null"
+  -set-default _ANTIGEN_LOG /dev/null
   
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
   # for arguments that can be passed as `--key=value`.
@@ -435,13 +420,13 @@ antigen () {
   local btype="$4"
 
   # The full location where the plugin is located.
-  local location="$url/"
+  local location="$url"
   if $make_local_clone; then
-    location="$(-antigen-get-clone-dir "$url")/"
+    location="$(-antigen-get-clone-dir "$url")"
   fi
 
   if [[ $loc != "/" ]]; then
-    location="$location$loc"
+    location="$location/$loc"
   fi
 
   if [[ ! -f "$location" && ! -d "$location" ]]; then
@@ -685,7 +670,7 @@ antigen () {
   if (( _zdotdir_set )); then
     _old_zdotdir=$ZDOTDIR
   fi
-  ZDOTDIR=$ADOTDIR/repos/
+  ZDOTDIR=$_ANTIGEN_BUNDLES
 
   antigen-bundle $ANTIGEN_PREZTO_REPO_URL
 }
@@ -784,10 +769,13 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
       fi
     done
 
+    local location="$url"
     if $make_local_clone; then
-      location="$(-antigen-get-clone-dir "$url")/$loc"
-    else
-      location="$url/"
+      location="$(-antigen-get-clone-dir "$url")"
+    fi
+
+    if [[ $loc != "/" ]]; then
+      location="$location/$loc"
     fi
 
     if [[ -d "$location" ]]; then
@@ -808,7 +796,7 @@ antigen () {
     source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && \
       eval antigen \$@
 }
-fpath+=(${_fpath[@]}); PATH=\"\$PATH:${_PATH[@]}\"
+fpath+=(${_fpath[@]}); PATH=\"\$PATH:${(j/:/)_PATH}\"
 _antigen_compinit () {
   autoload -Uz compinit; compinit -C -d \"$_ANTIGEN_COMPDUMP\"; compdef _antigen antigen
   add-zsh-hook -D precmd _antigen_compinit
@@ -826,7 +814,7 @@ compdef () {}\NL"
     _payload+="ZSH=\"$ZSH\" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
   fi
   if [[ -n "$ZDOTDIR" ]]; then
-    _payload+="ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
+    _payload+="ZDOTDIR=\"$_ANTIGEN_BUNDLES\"\NL";
   fi
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
@@ -933,20 +921,23 @@ antigen-cleanup () {
     force=true
   fi
 
-  if [[ ! -d "$ADOTDIR/repos" || -z "$(\ls "$ADOTDIR/repos/")" ]]; then
+  if [[ ! -d "$_ANTIGEN_BUNDLES" || -z "$(\ls "$_ANTIGEN_BUNDLES")" ]]; then
     echo "You don't have any bundles."
     return 0
   fi
 
-  # Find directores in ADOTDIR/repos, that are not in the bundles record.
-  local unused_clones="$(comm -13 \
-    <(-antigen-echo-record |
-      awk '$4 == "true" {print $1}' |
-      while read line; do
-        -antigen-get-clone-dir "$line"
-      done |
-      sort -u) \
-    <(\ls -d "$ADOTDIR/repos/"* | sort -u))"
+  # Find directores in _ANTIGEN_BUNDLES, that are not in the bundles record.
+  typeset -a unused_clones clones;
+  
+  for bundle in $_ANTIGEN_BUNDLE_RECORD; do
+    clones+=($(-antigen-get-clone-dir ${=bundle% *}))
+  done
+
+  for bundle in $_ANTIGEN_BUNDLES/*/*(/); do    
+    if [[ $clones[(I)$bundle] == 0 ]]; then
+      unused_clones+=($bundle)
+    fi
+  done
 
   if [[ -z $unused_clones ]]; then
     echo "You don't have any unidentified bundles."
@@ -954,26 +945,27 @@ antigen-cleanup () {
   fi
 
   echo 'You have clones for the following repos, but are not used.'
-  echo "$unused_clones" |
-    while read line; do
-      -antigen-get-clone-url "$line"
-    done |
-    sed -e 's/^/  /' -e 's/|/, branch /'
+  echo "\n${(j:\n:)unused_clones}"
 
   if $force || (echo -n '\nDelete them all? [y/N] '; read -q); then
     echo
     echo
-    echo "$unused_clones" | while read line; do
-      echo -n "Deleting clone for $(-antigen-get-clone-url "$line")..."
-      rm -rf "$line"
+    for clone in $unused_clones; do
+      echo -n "Deleting clone \"$clone\"..."
+      \rm -rf "$clone"
       echo ' done.'
     done
   else
     echo
-    echo Nothing deleted.
+    echo "Nothing deleted."
+  fi
+  
+  # Remove empty clones
+  local empty_repos=($_ANTIGEN_BUNDLES/**/*(/^F))
+  if [[ -n $empty_repos ]]; then
+    \rm -d $empty_repos
   fi
 }
-
 antigen-help () {
   antigen-version
 

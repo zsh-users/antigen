@@ -5,20 +5,23 @@ antigen-cleanup () {
     force=true
   fi
 
-  if [[ ! -d "$ADOTDIR/repos" || -z "$(\ls "$ADOTDIR/repos/")" ]]; then
+  if [[ ! -d "$_ANTIGEN_BUNDLES" || -z "$(\ls "$_ANTIGEN_BUNDLES")" ]]; then
     echo "You don't have any bundles."
     return 0
   fi
 
-  # Find directores in ADOTDIR/repos, that are not in the bundles record.
-  local unused_clones="$(comm -13 \
-    <(-antigen-echo-record |
-      awk '$4 == "true" {print $1}' |
-      while read line; do
-        -antigen-get-clone-dir "$line"
-      done |
-      sort -u) \
-    <(\ls -d "$ADOTDIR/repos/"* | sort -u))"
+  # Find directores in _ANTIGEN_BUNDLES, that are not in the bundles record.
+  typeset -a unused_clones clones;
+  
+  for bundle in $_ANTIGEN_BUNDLE_RECORD; do
+    clones+=($(-antigen-get-clone-dir ${=bundle% *}))
+  done
+
+  for bundle in $_ANTIGEN_BUNDLES/*/*(/); do    
+    if [[ $clones[(I)$bundle] == 0 ]]; then
+      unused_clones+=($bundle)
+    fi
+  done
 
   if [[ -z $unused_clones ]]; then
     echo "You don't have any unidentified bundles."
@@ -26,23 +29,24 @@ antigen-cleanup () {
   fi
 
   echo 'You have clones for the following repos, but are not used.'
-  echo "$unused_clones" |
-    while read line; do
-      -antigen-get-clone-url "$line"
-    done |
-    sed -e 's/^/  /' -e 's/|/, branch /'
+  echo "\n${(j:\n:)unused_clones}"
 
   if $force || (echo -n '\nDelete them all? [y/N] '; read -q); then
     echo
     echo
-    echo "$unused_clones" | while read line; do
-      echo -n "Deleting clone for $(-antigen-get-clone-url "$line")..."
-      rm -rf "$line"
+    for clone in $unused_clones; do
+      echo -n "Deleting clone \"$clone\"..."
+      \rm -rf "$clone"
       echo ' done.'
     done
   else
     echo
-    echo Nothing deleted.
+    echo "Nothing deleted."
+  fi
+  
+  # Remove empty clones
+  local empty_repos=($_ANTIGEN_BUNDLES/**/*(/^F))
+  if [[ -n $empty_repos ]]; then
+    \rm -d $empty_repos
   fi
 }
-

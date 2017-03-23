@@ -92,10 +92,13 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
       fi
     done
 
+    local location="$url"
     if $make_local_clone; then
-      location="$(-antigen-get-clone-dir "$url")/$loc"
-    else
-      location="$url/"
+      location="$(-antigen-get-clone-dir "$url")"
+    fi
+
+    if [[ $loc != "/" ]]; then
+      location="$location/$loc"
     fi
 
     if [[ -d "$location" ]]; then
@@ -116,7 +119,7 @@ antigen () {
     source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && \
       eval antigen \$@
 }
-fpath+=(${_fpath[@]}); PATH=\"\$PATH:${_PATH[@]}\"
+fpath+=(${_fpath[@]}); PATH=\"\$PATH:${(j/:/)_PATH}\"
 _antigen_compinit () {
   autoload -Uz compinit; compinit -C -d \"$_ANTIGEN_COMPDUMP\"; compdef _antigen antigen
   add-zsh-hook -D precmd _antigen_compinit
@@ -134,7 +137,7 @@ compdef () {}\NL"
     _payload+="ZSH=\"$ZSH\" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
   fi
   if [[ -n "$ZDOTDIR" ]]; then
-    _payload+="ZDOTDIR=\"$ADOTDIR/repos/\"\NL";
+    _payload+="ZDOTDIR=\"$_ANTIGEN_BUNDLES\"\NL";
   fi
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
