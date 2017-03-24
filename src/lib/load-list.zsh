@@ -7,7 +7,7 @@
   # The full location where the plugin is located.
   local location="$url"
   if $make_local_clone; then
-    location="$(-antigen-get-clone-dir "$url")"
+    location="$(-antigen-get-clone-dir $url)"
   fi
 
   if [[ $loc != "/" ]]; then

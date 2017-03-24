@@ -26,14 +26,14 @@
   shift $#
 
   # Get the clone's directory as per the given repo url and branch.
-  local clone_dir="$(-antigen-get-clone-dir $url)"
+  local clone_dir=$(-antigen-get-clone-dir $url)
   if [[ -d "$clone_dir" && $update == false ]]; then
     return true
   fi
     
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd "$clone_dir" &>>! $_ANTIGEN_LOG && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG)
+    (cd "$clone_dir" && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG)
   }
 
   # Clone if it doesn't already exist.

@@ -69,16 +69,22 @@ antigen () {
   fi
   echo $ref
 }
+# Usage:
+#   -antigen-bundle-short-name "https://github.com/user/repo.git[|*]" "[branch/name]"
+# Returns:
+#   user/repo@branch/name
 -antigen-bundle-short-name () {
-  local bundle_name=$(echo "$1" | sed -E "s|.*/(.*/.*).*|\1|"|sed -E "s|\.git.*$||g")
-  local bundle_branch=$2
-    
-  if [[ "$bundle_branch" == "" ]]; then
-    echo $bundle_name
-    return
+  local bundle_name="${1%|*}"
+  local bundle_branch="$2"
+
+  [[ "$bundle_name" =~ '.*/(.*/.*).*$' ]] && bundle_name=$match[1]
+  bundle_name="${bundle_name%.git*}"
+  
+  if [[ -n $bundle_branch ]]; then
+    bundle_name="$bundle_name@$bundle_branch"
   fi
 
-  echo "$bundle_name@$bundle_branch"
+  echo $bundle_name
 }
 
 # Echo the bundle specs as in the record. The first line is not echoed since it
@@ -151,22 +157,34 @@ antigen () {
      esac
   done
 }
+# Usage:
+#  -antigen-get-clone-dir "https://github.com/zsh-users/zsh-syntax-highlighting.git[|feature/branch]"
+# Returns:
+#  $_ANTIGEN_BUNDLES/zsh-users/zsh-syntax-highlighting[-feature-branch]
 -antigen-get-clone-dir () {
+  local bundle="$1"
+  local url="${bundle%|*}"
+  local branch
+  [[ "$bundle" =~ "\|" ]] && branch="${bundle#*|}"
+    
   # Takes a repo url and mangles it, giving the path that this url will be
   # cloned to. Doesn't actually clone anything.
-  echo -n $_ANTIGEN_BUNDLES/
+  local clone_dir="$_ANTIGEN_BUNDLES"
 
-  if [[ "$1" == "$ANTIGEN_PREZTO_REPO_URL" ]]; then
+  if [[ "$bundle" == "$ANTIGEN_PREZTO_REPO_URL" ]]; then
     # Prezto's directory *has* to be `.zprezto`.
-    echo .zprezto
+    clone_dir="$clone_dir/.zprezto"
   else
-    local url=$(-antigen-bundle-short-name "$1")
-    url=${url//\|/-}
+    url=$(-antigen-bundle-short-name $url)
+    # Suffix with branch/tag name
+    [[ -n "$branch" ]] && url="$url-${branch//\//-}"
     url=${url//\*/x}
-    echo $url
-  fi
-}
 
+    clone_dir="$clone_dir/$url"
+  fi
+  
+  echo $clone_dir
+}
 # Returns bundles flagged as make_local_clone
 #
 # Usage
@@ -311,14 +329,14 @@ antigen () {
   shift $#
 
   # Get the clone's directory as per the given repo url and branch.
-  local clone_dir="$(-antigen-get-clone-dir $url)"
+  local clone_dir=$(-antigen-get-clone-dir $url)
   if [[ -d "$clone_dir" && $update == false ]]; then
     return true
   fi
     
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd "$clone_dir" &>>! $_ANTIGEN_LOG && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG)
+    (cd "$clone_dir" && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG)
   }
 
   # Clone if it doesn't already exist.
@@ -422,7 +440,7 @@ antigen () {
   # The full location where the plugin is located.
   local location="$url"
   if $make_local_clone; then
-    location="$(-antigen-get-clone-dir "$url")"
+    location="$(-antigen-get-clone-dir $url)"
   fi
 
   if [[ $loc != "/" ]]; then
@@ -519,9 +537,13 @@ antigen () {
     fi
   done
 
-  local location="$url/"
+  local location="$url"
+  if [[ "$loc" != "/" ]]; then
+    loc="/$loc"
+  fi
+
   if $make_local_clone; then
-    location="$(-antigen-get-clone-dir "$url")/$loc"
+    location="$(-antigen-get-clone-dir $url)$loc"
   fi
 
   # If there is no location either as a file or a directory
@@ -927,15 +949,17 @@ antigen-cleanup () {
   fi
 
   # Find directores in _ANTIGEN_BUNDLES, that are not in the bundles record.
-  typeset -a unused_clones clones;
+  typeset -a unused_clones clones
   
-  for bundle in $_ANTIGEN_BUNDLE_RECORD; do
-    clones+=($(-antigen-get-clone-dir ${=bundle% *}))
+  local url record clone
+  for record in $_ANTIGEN_BUNDLE_RECORD; do
+    url=${record% /*}
+    clones+=("$(-antigen-get-clone-dir $url)")
   done
 
-  for bundle in $_ANTIGEN_BUNDLES/*/*(/); do    
-    if [[ $clones[(I)$bundle] == 0 ]]; then
-      unused_clones+=($bundle)
+  for clone in $_ANTIGEN_BUNDLES/*/*(/); do
+    if [[ $clones[(I)$clone] == 0 ]]; then
+      unused_clones+=($clone)
     fi
   done
 
@@ -962,9 +986,7 @@ antigen-cleanup () {
   
   # Remove empty clones
   local empty_repos=($_ANTIGEN_BUNDLES/**/*(/^F))
-  if [[ -n $empty_repos ]]; then
-    \rm -r $empty_repos
-  fi
+  [[ -n $empty_repos ]] && \rm -r "$empty_repos"
 }
 antigen-help () {
   antigen-version

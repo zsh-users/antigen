@@ -11,15 +11,17 @@ antigen-cleanup () {
   fi
 
   # Find directores in _ANTIGEN_BUNDLES, that are not in the bundles record.
-  typeset -a unused_clones clones;
+  typeset -a unused_clones clones
   
-  for bundle in $_ANTIGEN_BUNDLE_RECORD; do
-    clones+=($(-antigen-get-clone-dir ${=bundle% *}))
+  local url record clone
+  for record in $_ANTIGEN_BUNDLE_RECORD; do
+    url=${record% /*}
+    clones+=("$(-antigen-get-clone-dir $url)")
   done
 
-  for bundle in $_ANTIGEN_BUNDLES/*/*(/); do    
-    if [[ $clones[(I)$bundle] == 0 ]]; then
-      unused_clones+=($bundle)
+  for clone in $_ANTIGEN_BUNDLES/*/*(/); do
+    if [[ $clones[(I)$clone] == 0 ]]; then
+      unused_clones+=($clone)
     fi
   done
 
@@ -46,7 +48,5 @@ antigen-cleanup () {
   
   # Remove empty clones
   local empty_repos=($_ANTIGEN_BUNDLES/**/*(/^F))
-  if [[ -n $empty_repos ]]; then
-    \rm -r $empty_repos
-  fi
+  [[ -n $empty_repos ]] && \rm -r "$empty_repos"
 }
