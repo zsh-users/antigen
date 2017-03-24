@@ -38,13 +38,13 @@ Do the cleanup.
 
   $ antigen-cleanup --force
   You have clones for the following repos, but are not used.
-  .* (re)
+  
   .*/test-plugin (re)
   .*/test-plugin2 (re)
   
   
-  Deleting clone for */test-plugin... done. (glob)
-  Deleting clone for */test-plugin2... done. (glob)
+  Deleting clone "*/test-plugin"... done. (glob)
+  Deleting clone "*/test-plugin2"... done. (glob)
 
 Check the listing, after cleanup.
 

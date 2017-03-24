@@ -30,5 +30,6 @@ Restore from the snapshot.
   $ antigen-restore snapshot-file
   Restoring from snapshot-file... done.
   Please open a new shell to get the restored changes.
-  $ ls $_ANTIGEN_BUNDLES | wc -l
+
+  $ ls $_ANTIGEN_BUNDLES/* | wc -l
   2

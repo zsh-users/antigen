@@ -14,71 +14,71 @@ unset TRAVIS_COMMIT_MESSAGE
 export ADOTDIR=$(mktemp -du "/tmp/dot-antigen/tmp-XXXX")
 [[ ! -d "$ADOTDIR" ]] && mkdir -p "$ADOTDIR"
 
-export TESTDIR=$(mktemp -du "/tmp/dot-plugins/tmp-XXXXX") # overwrites cram's TESTDIR env variable
 test -f "$TESTDIR/.zcompdump" && rm "$TESTDIR/.zcompdump"
-
-export ANTIGEN=${ANTIGEN:-/antigen}
-_ANTIGEN_CACHE_ENABLED=true
-_ANTIGEN_LOG_PATH=/tmp/antigen.log
-
-source "$ANTIGEN/antigen.zsh"
+source "$TESTDIR/../antigen.zsh"
 
 # A test plugin repository to test out antigen with.
 
-PLUGIN_DIR="$ADOTDIR/test-plugin"
-mkdir "$PLUGIN_DIR"
+PLUGIN_DIR="$PWD/test-plugin"
+# {
+  mkdir "$PLUGIN_DIR"
 
-# A wrapper function over `git` to work with the test plugin repo.
-alias pg='git --git-dir "$PLUGIN_DIR/.git" --work-tree "$PLUGIN_DIR"'
+  # A wrapper function over `git` to work with the test plugin repo.
+  alias pg='git --git-dir "$PLUGIN_DIR/.git" --work-tree "$PLUGIN_DIR"'
 
-echo 'alias hehe="echo hehe"' > "$PLUGIN_DIR"/aliases.zsh
-echo 'PS1="prompt>"' > "$PLUGIN_DIR"/silly.zsh-theme
-echo 'PS1=">"' > "$PLUGIN_DIR"/arrow.zsh-theme
+  echo 'alias hehe="echo hehe"' > "$PLUGIN_DIR"/aliases.zsh
+  echo 'PS1="prompt>"' > "$PLUGIN_DIR"/silly.zsh-theme
+  echo 'PS1=">"' > "$PLUGIN_DIR"/arrow.zsh-theme
 
-{
-    pg init
-    pg add .
-    pg commit -m 'Initial commit'
-} > /dev/null
-
-# Another test plugin.
-
-PLUGIN_DIR2="$ADOTDIR/test-plugin2"
-mkdir "$PLUGIN_DIR2"
-
-# A wrapper function over `git` to work with the test plugin repo.
-alias pg2='git --git-dir "$PLUGIN_DIR2/.git" --work-tree "$PLUGIN_DIR2"'
-
-echo 'alias hehe2="echo hehe2"' > "$PLUGIN_DIR2"/init.zsh
-echo -E 'alias prompt="\e]$ >\a\n"' >> "$PLUGIN_DIR2"/init.zsh
-echo 'local root=${0}' >> "$PLUGIN_DIR2"/init.zsh
-echo 'function root_source () {
-        echo $root/$0
-    }' >> "$PLUGIN_DIR2"/init.zsh
-echo 'alias unsourced-alias="echo unsourced-alias"' > "$PLUGIN_DIR2"/aliases.zsh
-
-{
-    pg2 init
-    pg2 add .
-    pg2 commit -m 'Initial commit'
-} > /dev/null
+  {
+      pg init
+      pg add .
+      pg commit -m 'Initial commit'
+  } > /dev/null
+# }
 
 # Another test plugin.
 
-export PLUGIN_DIR3="$ADOTDIR/test-plugin3"
-mkdir "$PLUGIN_DIR3"
+PLUGIN_DIR2="$PWD/test-plugin2"
+# {
+  mkdir "$PLUGIN_DIR2"
 
-# A wrapper function over `git` to work with the test plugin repo.
-alias pg3='git --git-dir "$PLUGIN_DIR3/.git" --work-tree "$PLUGIN_DIR3"'
+  # A wrapper function over `git` to work with the test plugin repo.
+  alias pg2='git --git-dir "$PLUGIN_DIR2/.git" --work-tree "$PLUGIN_DIR2"'
 
-echo "echo '######'" > "$PLUGIN_DIR3"/hr-plugin
-chmod u+x "$PLUGIN_DIR3"/hr-plugin
+  echo 'alias hehe2="echo hehe2"' > "$PLUGIN_DIR2"/init.zsh
+  echo -E 'alias prompt="\e]$ >\a\n"' >> "$PLUGIN_DIR2"/init.zsh
+  echo 'local root=${0}' >> "$PLUGIN_DIR2"/init.zsh
+  echo 'function root_source () {
+          echo $root/$0
+      }' >> "$PLUGIN_DIR2"/init.zsh
+  echo 'alias unsourced-alias="echo unsourced-alias"' > "$PLUGIN_DIR2"/aliases.zsh
 
-{
-    pg3 init
-    pg3 add .
-    pg3 commit -m 'Initial commit'
-} > /dev/null
+  {
+      pg2 init
+      pg2 add .
+      pg2 commit -m 'Initial commit'
+  } > /dev/null
+# }
+
+# Another test plugin.
+
+PLUGIN_DIR3="$PWD/test-plugin3"
+# {
+  mkdir "$PLUGIN_DIR3"
+
+  # A wrapper function over `git` to work with the test plugin repo.
+  alias pg3='git --git-dir "$PLUGIN_DIR3/.git" --work-tree "$PLUGIN_DIR3"'
+
+  echo "echo '######'" > "$PLUGIN_DIR3"/hr-plugin
+  chmod u+x "$PLUGIN_DIR3"/hr-plugin
+
+  {
+      pg3 init
+      pg3 add .
+      pg3 commit -m 'Initial commit'
+  } > /dev/null
+# }
 
 # Wrapper around \wc command to handle wc format differences between GNU and BSD
 # GNU:
