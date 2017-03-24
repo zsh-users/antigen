@@ -47,6 +47,6 @@ antigen-cleanup () {
   # Remove empty clones
   local empty_repos=($_ANTIGEN_BUNDLES/**/*(/^F))
   if [[ -n $empty_repos ]]; then
-    \rm -d $empty_repos
+    \rm -r $empty_repos
   fi
 }
