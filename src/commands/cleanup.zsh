@@ -14,7 +14,7 @@ antigen-cleanup () {
   typeset -a unused_clones clones
   
   local url record clone
-  for record in $_ANTIGEN_BUNDLE_RECORD; do
+  for record in $(-antigen-get-cloned-bundles); do
     url=${record% /*}
     clones+=("$(-antigen-get-clone-dir $url)")
   done
@@ -38,15 +38,18 @@ antigen-cleanup () {
     echo
     for clone in $unused_clones; do
       echo -n "Deleting clone \"$clone\"..."
-      \rm -rf "$clone"
+      \rm -r "$clone"
+
+      # Removing empty parent directory
+      local parent=${clone:A:h}
+      if [[ -z "$(ls -A $parent)" ]]; then
+        \rm -r "$parent"
+      fi
+
       echo ' done.'
     done
   else
     echo
     echo "Nothing deleted."
   fi
-  
-  # Remove empty clones
-  local empty_repos=($_ANTIGEN_BUNDLES/**/*(/^F))
-  [[ -n $empty_repos ]] && \rm -r "$empty_repos"
 }

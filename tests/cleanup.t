@@ -56,3 +56,19 @@ Confirm the plugin directory does not exist after cleanup.
 
   $ ls $_ANTIGEN_BUNDLES | wc -l
   0
+# TODO
+# Do not remove local bundles (--no-local-clone).
+# 
+#   $ ls $_ANTIGEN_BUNDLES
+# 
+#   $ _ANTIGEN_BUNDLE_RECORD=()
+#   $ antigen list &> /dev/null
+#   [1]
+#   $ antigen bundle $PLUGIN_DIR --no-local-clone
+#   $ antigen apply &> /dev/null
+#   $ antigen list --long
+#   .*cleanup.t/test-plugin / plugin false (re)
+# 
+#   $ antigen cleanup --force
+#   You don't have any bundles.
+
