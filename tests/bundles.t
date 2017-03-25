@@ -1,3 +1,7 @@
+Save env variables to test for leaks.
+
+  $ prev=$(env)
+
 Add multiple bundles.
 
   $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen-bundles &> /dev/null
@@ -11,10 +15,10 @@ Check if they are both applied.
 
 Should not leak Antigen or OMZ environment variables.
 
-  $ env | sed -e 's/\=.*//' | grep -i antigen | wc -l
+  $ diff <(env) <(echo $prev) | sed -e 's/\=.*//' | grep -i antigen | wc -l
   0
 
-  $ env | sed -e 's/\=.*//' | grep -i zsh | wc -l
+  $ diff <(env) <(echo $prev) | sed -e 's/\=.*//' | grep -i zsh | wc -l
   0
 
 Clean it all up.

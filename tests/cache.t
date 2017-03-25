@@ -1,5 +1,6 @@
 Enable extension.
 
+  $ prev=$(env)
   $ antigen reset
   Done. Please open a new shell to see the changes.
 
@@ -31,10 +32,10 @@ Should have listed bundles.
 
 Should not leak Antigen or OMZ environment variables.
 
-  $ env | sed -e 's/\=.*//' | grep -i antigen | wc -l
+  $ diff <(env) <(echo $prev) | sed -e 's/\=.*//' | grep -i antigen | wc -l
   0
 
-  $ env | sed -e 's/\=.*//' | grep -i zsh | wc -l
+  $ diff <(env) <(echo $prev) | sed -e 's/\=.*//' | grep -i zsh | wc -l
   0
 
 Both bundles are cached by bundle.

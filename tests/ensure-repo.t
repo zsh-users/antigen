@@ -1,6 +1,6 @@
 Set up functions and env variables:
 
-  $ export _ANTIGEN_LOG=/dev/stdout # We wanna see debug output
+  $ export _ANTIGEN_LOG='/proc/self/fd/1' # We wanna see debug output
   $ function git() { echo "\ngit $@\n" } # Wrap git to avoid the network
   $ REPO_NAME=user/repo
   $ REPO_URL=https://github.com/$REPO_NAME.git

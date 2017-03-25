@@ -804,7 +804,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #-- ANTIGEN v1.4.1
 $(functions -- _antigen)
 antigen () {
-  [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" ]] && \
+  [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" || \"\$ZSH_EVAL_CONTEXT\" =~ \"cmdarg:*\" ]] && \
     source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && \
       eval antigen \$@
 }

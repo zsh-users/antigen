@@ -1,12 +1,14 @@
 .PHONY: itests tests install all
 SHELL ?= sh
-PYENV ?=
-TESTS ?= tests
 PREFIX ?= /usr/local
-SH ?= zsh
-PROJECT ?= $$PWD
-BIN ?= ${PROJECT}/bin
+
+TESTS ?= tests
 CRAM_OPTS ?= -v
+
+PROJECT ?= $(CURDIR)
+BIN ?= ${PROJECT}/bin
+ZSH_VERSION ?= zsh-5.3
+CONTAINER_IMAGE ?= desyncr/zsh-docker-
 
 TARGET ?= ${BIN}/antigen.zsh
 SRC ?= ${PROJECT}/src
@@ -34,19 +36,14 @@ release:
 	# Move to release branch
 	git checkout develop
 	git checkout -b release/$(version)
-
 	# Update version references in README.md
 	$(call ised, "s/$$(cat ${VERSION_FILE})/$(version)/",README.mkd)
-
 	# Update release version
 	echo "$(version)" > ${VERSION_FILE}
-
 	# Make build and tests
 	make build && make tests
-
 	# Update changelog
 	${EDITOR} CHANGELOG.md
-
 	# Build release commit
 	git add CHANGELOG.md ${VERSION_FILE} README.mkd ${TARGET}
 	git commit -S -m "Build release $(version)"
@@ -70,16 +67,22 @@ clean:
 itests:
 	${MAKE} tests CRAM_OPTS=-i
 
+_container:
+	docker run --rm --privileged=true -it -v ${PROJECT}:/antigen ${CONTAINER_IMAGE}${ZSH_VERSION} ${COMMAND} 
+
+info:
+	${MAKE} _container COMMAND="sh -c 'cat /antigen/VERSION; zsh --version; git --version; env'"
+
 tests:
-	${PYENV} ZDOTDIR="${PROJECT}/tests" cram ${CRAM_OPTS} --shell=${SH} ${TESTS}
+	${MAKE} _container COMMAND="sh -c 'ZDOTDIR=/antigen/tests cram ${CRAM_OPTS} --shell=zsh /antigen/${TESTS}'"
+
+stats:
+	${MAKE} _container COMMAND="/antigen/tools/stats --zsh zsh --antigen /antigen"
 
 install:
 	mkdir -p ${PREFIX}/share && cp ${TARGET} ${PREFIX}/share/antigen.zsh
 
 deps:
-	pip install cram=='0.6.*'
-
-stats:
-	"${SH}" ${PROJECT}/tests/stats.sh "${PROJECT}" "${SH}"
+	sudo pip install cram=='0.6.*'
 
 all: clean build install
