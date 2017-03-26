@@ -975,13 +975,30 @@ antigen-cleanup () {
 }
 
 antigen-help () {
-  cat <<EOF
-Antigen is a plugin management system for zsh. It makes it easy to grab awesome
-shell scripts and utilities, put up on github. For further details and complete
-documentation, visit the project's page at 'http://antigen.sharats.me'.
-
-EOF
   antigen-version
+
+  cat <<EOF
+
+Antigen is a plugin management system for zsh. It makes it easy to grab awesome
+shell scripts and utilities, put up on Github.
+
+Usage: antigen <command> [args]
+
+Commands:
+  cache-gen    Generate Antigen's cache with currently loaded bundles.
+  init         Use caching to quickly load bundles.
+  update       Update plugins.
+  revert       *Experimental* Revert plugins to their state prior to the last
+               time 'antigen update' was run.
+  list         List currently loaded plugins.
+  cleanup      Remove clones of repos not used by any loaded plugins.
+  purge        Remove a bundle from the filesystem.
+  reset        Clean the generated cache.
+  use          Load a supported zsh pre-packaged framework.
+
+For further details and complete documentation, visit the project's page at
+'http://antigen.sharats.me'.
+EOF
 }
 # Antigen command to load antigen configuration
 #
