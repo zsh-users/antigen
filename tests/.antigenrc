@@ -17,7 +17,7 @@ antigen bundles <<EOBUNDLES
   caarlos0/jvm.git
   caarlos0/zsh-open-pr
   junegunn/fzf@0.16.*
-  mafredri/zsh-async@v1.5.* # use version v1.5.x
+  #mafredri/zsh-async@v1.5.* # use version v1.5.x
   mollifier/cd-gitroot
   oz/safe-paste # a comment
   caarlos0/ports

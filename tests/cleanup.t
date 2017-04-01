@@ -31,7 +31,7 @@ Check the listing, after clearing the record.
 
 Confirm the plugin directory exists.
 
-  $ ls dot-antigen/repos | wc -l
+  $ ls $ADOTDIR/repos | wc -l
   2
 
 Do the cleanup.
@@ -53,5 +53,5 @@ Check the listing, after cleanup.
 
 Confirm the plugin directory does not exist after cleanup.
 
-  $ ls dot-antigen/repos | wc -l
+  $ ls $ADOTDIR/repos | wc -l
   0

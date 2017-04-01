@@ -11,23 +11,21 @@ unset ZSH_BUILD_VERSION
 unset TRAVIS_COMMIT_MESSAGE
 
 # See cram's documentation for some of the variables used below.
-
-ADOTDIR="$PWD/dot-antigen"
+export ADOTDIR=$(mktemp -du "/tmp/dot-antigen/tmp-XXXX")
 [[ ! -d "$ADOTDIR" ]] && mkdir -p "$ADOTDIR"
 
-_ANTIGEN_CACHE_ENABLED=true
-_ANTIGEN_INTERACTIVE_MODE=true
-_ZCACHE_EXTENSION_CLEAN_FUNCTIONS=false
-_ANTIGEN_BUNDLE_RECORD=""
-_ANTIGEN_LOG_PATH=/tmp/antigen.log
-
+export TESTDIR=$(mktemp -du "/tmp/dot-plugins/tmp-XXXXX") # overwrites cram's TESTDIR env variable
 test -f "$TESTDIR/.zcompdump" && rm "$TESTDIR/.zcompdump"
 
-source "$TESTDIR/../antigen.zsh"
+export ANTIGEN=${ANTIGEN:-/antigen}
+_ANTIGEN_CACHE_ENABLED=true
+_ANTIGEN_LOG_PATH=/tmp/antigen.log
+
+source "$ANTIGEN/antigen.zsh"
 
 # A test plugin repository to test out antigen with.
 
-PLUGIN_DIR="$PWD/test-plugin"
+PLUGIN_DIR="$ADOTDIR/test-plugin"
 mkdir "$PLUGIN_DIR"
 
 # A wrapper function over `git` to work with the test plugin repo.
@@ -45,7 +43,7 @@ echo 'PS1=">"' > "$PLUGIN_DIR"/arrow.zsh-theme
 
 # Another test plugin.
 
-PLUGIN_DIR2="$PWD/test-plugin2"
+PLUGIN_DIR2="$ADOTDIR/test-plugin2"
 mkdir "$PLUGIN_DIR2"
 
 # A wrapper function over `git` to work with the test plugin repo.
@@ -67,7 +65,7 @@ echo 'alias unsourced-alias="echo unsourced-alias"' > "$PLUGIN_DIR2"/aliases.zsh
 
 # Another test plugin.
 
-export PLUGIN_DIR3="$PWD/test-plugin3"
+export PLUGIN_DIR3="$ADOTDIR/test-plugin3"
 mkdir "$PLUGIN_DIR3"
 
 # A wrapper function over `git` to work with the test plugin repo.

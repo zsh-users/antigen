@@ -2,7 +2,7 @@ Can source an dot-antigenrc file:
 
   $ zcache-cache-exists () { false }
   $ source () { echo $1 }
-  $ antigen-init $TESTDIR/.antigenrc
+  $ antigen-init $ANTIGEN/tests/.antigenrc
   .*/.antigenrc (re)
 
 Returns error if non-existing file is given:

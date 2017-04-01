@@ -27,3 +27,6 @@ revert-info
 
 # cache init
 /init.zsh
+.antigenrc
+.zshrc
+.zcomp*

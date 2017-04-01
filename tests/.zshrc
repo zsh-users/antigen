@@ -1,2 +1,2 @@
-source $ANTIGEN/antigen.zsh
-antigen init $ANTIGEN/tests/.antigenrc
+source /antigen/antigen.zsh
+antigen init /antigen/tests/.antigenrc

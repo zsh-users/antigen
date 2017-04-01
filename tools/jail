@@ -1,0 +1,120 @@
+#!/usr/bin/env zsh
+# vim: sw=2 ts=2 et
+JAIL=${1:-/tmp/jail-gen}
+JAIL_WRAPPER='chroot $jail sh -c "%s"'
+
+function jail/configure () {
+  if [[ -n $(unshare -V 2>/dev/null | grep '2.28.*') ]]; then
+    JAIL_WRAPPER="unshare -r sh -c 'chroot $jail sh -c \"%s\"'"
+  fi
+}
+
+function jail/usage () {
+  echo "Usage: $0 [-j|--jail] /path/to/jail [-i|--install|-c|--create|-k|--kill] [-e|--exec] exec"
+}
+
+function jail/main () {
+  zparseopts -A opts j:=jail -jail:=jail \
+  e:=exec -exec:=exec c=create -create=create k=kill -kill=kill \
+  i=install -install=install
+
+  local jail=$jail[2]
+  local exec=$exec[2]
+  local create=$create
+  local kill=$kill
+  local install=$install
+
+  jail/configure
+
+  if [[ -n $create ]]; then
+    jail/create $jail
+
+  elif [[ -n $kill ]]; then
+    jail/kill $jail
+
+  elif [[ -n $exec ]]; then
+    jail/exec $jail "$exec"
+
+  elif [[ -n $install ]]; then
+    jail/install
+
+  else
+    echo Missing arguments.
+    jail/usage
+    exit 1
+  fi
+
+  return 0
+}
+
+function jail/create () {
+  local jail=$1
+
+  if [[ -d $jail ]]; then
+    echo Jail directory already exists. Abort.
+    exit 1
+  fi
+
+  # Create jail if there is none available
+  jailing --root $jail --bind /usr/local
+  if (( $? != 0 )); then
+    echo Failed to create jail.
+    exit 1
+  fi
+
+  # add zsh builds on travis
+  if [[ -d /home/travis/.zsh-builds ]]; then
+    echo Custom zsh-build found. Binding.
+    jailing --root $jail --bind /home/travis/.zsh-builds:/builds
+    jailing --root $jail --bind /home/travis/.zsh-builds
+  else
+    echo No custom zsh-build found. Ignoring.
+  fi
+
+  echo Fix access to dev/null.
+  echo --\> rm $jail/dev/null
+  rm $jail/dev/null && cp /dev/null $jail/dev/null
+  chmod a+rwx $jail/dev/null
+  
+  echo Mount missing /proc
+  echo --\> mkdir -p $jail/proc
+  mkdir -p $jail/proc && mount -t proc proc $jail/proc
+
+  echo Add root user configs
+  mkdir -p $jail/root && cp ${0:A:h:h}/tests/.gitconfig $jail/root/
+
+  echo Creating antigen dir
+  echo --\> chmod a+rwx $jail/antigen/
+  mkdir $jail/antigen/ && chmod a+rwx $jail/antigen/
+
+  echo Done!
+  exit 0
+}
+
+function jail/kill () {
+  local jail=$1
+  jailing --root $jail --umount
+}
+
+
+function jail/exec () {
+  local jail=$1
+  eval $(printf $JAIL_WRAPPER "export HOME=/root; export ZDOTDIR=/antigen/tests; $2")
+}
+
+function jail/install () {
+  if [[ ! -f /usr/bin/jailing ]]; then
+    sudo git clone https://github.com/kazuho/jailing /usr/local/share/jailing || echo "Error creating jailing clone."
+    cd /usr/local/share/jailing || exit 1
+
+    perl Makefile.PL
+    make && make install
+    echo Jailing installed.
+  else
+    echo Jailing bin already exists. Abort.
+  fi
+}
+
+jail/main "$@"
+
+
