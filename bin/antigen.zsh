@@ -985,6 +985,8 @@ shell scripts and utilities, put up on Github.
 Usage: antigen <command> [args]
 
 Commands:
+  apply        Must be called in the zshrc after all calls to 'antigen bundle'.
+  bundle       Install and load a plugin.
   cache-gen    Generate Antigen's cache with currently loaded bundles.
   init         Use caching to quickly load bundles.
   update       Update plugins.
@@ -994,6 +996,7 @@ Commands:
   cleanup      Remove clones of repos not used by any loaded plugins.
   purge        Remove a bundle from the filesystem.
   reset        Clean the generated cache.
+  selfupdate   Update antigen.
   use          Load a supported zsh pre-packaged framework.
 
 For further details and complete documentation, visit the project's page at
