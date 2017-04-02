@@ -651,7 +651,7 @@ regenerate it.
 All the tests are in the `tests` folder and are run using the [cram][] test
 system, to install required dependencies use:
 
-   sudo make install-deps
+    sudo make install-deps
 
 With that, once you have cram installed, you can run the tests as:
 
