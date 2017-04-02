@@ -988,18 +988,18 @@ Commands:
   apply        Must be called in the zshrc after all calls to 'antigen bundle'.
   bundle       Install and load a plugin.
   cache-gen    Generate Antigen's cache with currently loaded bundles.
-  init         Use caching to quickly load bundles.
-  update       Update plugins.
-  revert       Revert plugins to their state prior to the last time 'antigen
-               update' was run.
-  list         List currently loaded plugins.
   cleanup      Remove clones of repos not used by any loaded plugins.
+  init         Use caching to quickly load bundles.
+  list         List currently loaded plugins.
   purge        Remove a bundle from the filesystem.
   reset        Clean the generated cache.
   restore      Restore plugin state from a snapshot file.
+  revert       Revert plugins to their state prior to the last time 'antigen
+               update' was run.
   selfupdate   Update antigen.
   snapshot     Create a snapshot of all active plugin repos and save it to a
                snapshot file.
+  update       Update plugins.
   use          Load a supported zsh pre-packaged framework.
 
 For further details and complete documentation, visit the project's page at
