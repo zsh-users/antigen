@@ -327,11 +327,11 @@ Use this command to generate Antigen's cache with currently loaded bundles.
 
     antigen cache-gen
 
-Takes no further arguments.
+Takes no arguments.
 
 ### antigen init
 
-Makes usage of caching in order to quickly load bundles. Improves performance greatly
+Makes use of caching in order to quickly load bundles. Improves performance greatly
 and it's recommened if you have an stable set of bundles.
 
     antigen init /path/to/.antigenrc
@@ -347,7 +347,7 @@ occasionally to update your plugins.
 
     antigen update [<bundle-name>]
 
-Where `<bundle-name>` is the bundle name to update. If no <bundle-name> is given
+Where `<bundle-name>` is the bundle name to update. If no `<bundle-name>` is given
 Antigen will update all loaded bundles (see `antigen-list`). Location, branch or
 any other bundle argument are not needed as those're retrieved from the `antigen-list`
 metadata.
@@ -365,8 +365,7 @@ use the `selfupdate` command described further below.
 ### antigen revert
 
 Reverts the state of all your plugins to how they were before the last
-`antigen update`. This command is currently experimental, so don't rely too much
-on it. There is a test for it, and it passes, so it should work fine though.
+`antigen update`.
 
 Takes no options.
 
@@ -580,8 +579,8 @@ Takes no options.
 
 ### antigen help
 
-Basic command information for the most common commands. Go to our [Wiki][wiki] page
-for extended documentation on commands, workflows and configuration descritions.
+Basic information for the most common commands. Go to our [Wiki][wiki] page for
+extended documentation on commands, workflows and configuration options.
 
 Takes no options.
 
@@ -600,16 +599,17 @@ Remember that your package manager may install an older version of Antigen.
 The following environment variables can be set to customize the behavior of
 Antigen. Make sure you set them *before* source-ing `antigen.zsh`.
 
-`ANTIGEN_DEFAULT_REPO_URL` &mdash; This is the default repository url that is
-used for `bundle` commands. The default value is robbyrussell's oh-my-zsh repo,
-but you can set this to the fork url of your own fork.
-
-`ANTIGEN_PREZTO_REPO_URL` &mdash; This is the repository url for cloning and
-updating Prezto. The default value is sorin's prezto repository (sorin-ionescu/prezto).
+### General
 
 `ADOTDIR` &mdash; This directory is used to store all the repo clones, your
 bundles, themes, caches and everything else Antigen requires to run smoothly.
 Defaults to `$HOME/.antigen`.
+
+`ANTIGEN_LOG`  &mdash; Use this configuration to define where Antigen should
+store log information. By default logging is disabled. Use `ANTIGEN_LOG=/path/to/antigen.log`
+to activate it, useful when debugging failing bundle installs.
+
+### Customizations
 
 `ANTIGEN_CACHE` &mdash; This configures the path to the cache init file, where
 Antigen stores it's cached bundles. Defaults to `$ADOTDIR/init.zsh`.
@@ -617,12 +617,10 @@ Antigen stores it's cached bundles. Defaults to `$ADOTDIR/init.zsh`.
 `ANTIGEN_COMPDUMP` &mdash; Use this configuration to define where [zsh's completion
 system](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) should store completion's dump file. Defaults to `$ADOTDIR/.zcompdump`.
 
-`ANTIGEN_LOG`  &mdash; Use this configuration to define where Antigen should
-store log information. By default logging is disabled. Use `ANTIGEN_LOG=/path/to/antigen.log`
-to activate it, useful when debugging failing bundle installs.
-
 `ANTIGEN_BUNDLES`  &mdash; This directory is used to store bundle clones. Defaults
 to `$ADOTDIR/bundles`.
+
+### Optimizations
 
 `ANTIGEN_CHECK_FILES` &mdash; Use this configuration to define if Antigen should
 check for configuration changes, this is to avoid doing `antigen-reset` manually.
@@ -630,8 +628,17 @@ Use `ANTIGEN_CHECK_FILES=(/path/to/.antigenrc /path/to/.zshrc /path/to/other)`
 to activate it.
 
 `ANTIGEN_CLONE_OPTS`, `ANTIGEN_SUBMODULE_OPTS` &mdash; Use to control how Antigen
-perform cloning and fetch submodules from bundles. These are flags for `git-clone`
-and `git-submodule` commands, respectivelly.
+perform cloning repositories and fetching submodules from bundles. These are flags
+for `git-clone` and `git-submodule` commands, respectivelly.
+
+### Misc.
+
+`ANTIGEN_DEFAULT_REPO_URL` &mdash; This is the default repository url that is
+used for `bundle` commands. The default value is robbyrussell's oh-my-zsh repo,
+but you can set this to the fork url of your own fork.
+
+`ANTIGEN_PREZTO_REPO_URL` &mdash; This is the repository url for cloning and
+updating Prezto. The default value is sorin's prezto repository (sorin-ionescu/prezto).
 
 ## Development
 
