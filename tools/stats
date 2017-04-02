@@ -79,6 +79,9 @@ function stats/exec() {
   export ANTIGEN=$ADOTDIR
 
   echo Installing bundles...
+  if [[ -d $ADOTDIR/bundles || -d $ADOTDIR/repos ]]; then
+    echo Bundles present in ADOTDIR.
+  fi
   $zsh -ic 'exit'
   echo
 
