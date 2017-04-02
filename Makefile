@@ -64,19 +64,19 @@ deploy:
 	git push upstream ${VERSION}
 
 .container:
-	docker run --rm --privileged=true -it -v ${PROJECT}:/antigen ${CONTAINER_IMAGE}${ZSH_VERSION} ${COMMAND} 
+	@docker run --rm --privileged=true -it -v ${PROJECT}:/antigen ${CONTAINER_IMAGE}${ZSH_VERSION} ${COMMAND} 
 
 info:
-	${MAKE} .container COMMAND="sh -c 'cat /antigen/VERSION; zsh --version; git --version; env'"
+	@${MAKE} .container COMMAND="sh -c 'cat /antigen/VERSION; zsh --version; git --version; env'"
 
 itests:
-	${MAKE} tests CRAM_OPTS=-i
+	@${MAKE} tests CRAM_OPTS=-i
 
 tests:
-	${MAKE} .container COMMAND="sh -c 'ZDOTDIR=/antigen/tests cram ${CRAM_OPTS} --shell=zsh /antigen/${TESTS}'"
+	@${MAKE} .container COMMAND="sh -c 'ZDOTDIR=/antigen/tests cram ${CRAM_OPTS} --shell=zsh /antigen/${TESTS}'"
 
 stats:
-	${MAKE} .container COMMAND="/antigen/tools/stats --zsh zsh --antigen /antigen"
+	@${MAKE} .container COMMAND="/antigen/tools/stats --zsh zsh --antigen /antigen"
 
 install:
 	mkdir -p ${PREFIX}/share && cp ${TARGET} ${PREFIX}/share/antigen.zsh
