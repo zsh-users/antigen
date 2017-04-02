@@ -17,7 +17,10 @@
   [[ ! -d $ADOTDIR ]] && mkdir -p $ADOTDIR
 
   -set-default ANTIGEN_BUNDLES $ADOTDIR/bundles
-  [[ ! -d $ANTIGEN_BUNDLES ]] && mkdir -p $ANTIGEN_BUNDLES
+  if [[ ! -d $ANTIGEN_BUNDLES ]]; then
+    mkdir -p $ANTIGEN_BUNDLES
+    [[ -d $ADOTDIR/repos ]] && -antigen-update-repos
+  fi
 
   -set-default ANTIGEN_COMPDUMP "${ADOTDIR:-$HOME}/.zcompdump"
 

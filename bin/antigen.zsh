@@ -16,13 +16,13 @@ for config in $ANTIGEN_CHECK_FILES; do
   fi
 done
 
-[[ -f $ANTIGEN_CACHE && ! $ANTIGEN_CACHE_LOADED == true ]] && source "$ANTIGEN_CACHE" && return;
+[[ -f $ANTIGEN_CACHE && ! $_ANTIGEN_CACHE_LOADED == true ]] && source "$ANTIGEN_CACHE" && return;
 [[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
 
 # Each line in this string has the following entries separated by a space
 # character.
 # <repo-url>, <plugin-location>, <bundle-type>, <has-local-clone>
-[[ $ANTIGEN_CACHE_LOADED != true ]] && typeset -aU _ANTIGEN_BUNDLE_RECORD
+[[ $_ANTIGEN_CACHE_LOADED != true ]] && typeset -aU _ANTIGEN_BUNDLE_RECORD
 
 # Do not load anything if git is not available.
 if (( ! $+commands[git] )); then
@@ -301,6 +301,55 @@ antigen () {
   echo "$url"
 }
 
+-antigen-update-repos () {
+  local repo bundle url target
+  local log=/tmp/antigen-v2-migrate.log
+
+  echo "It seems you have bundles cloned with Antigen v1.x."
+  echo "We'll try to convert directory structure to v2."
+  echo
+
+  echo -n "Moving bundles to '\$ADOTDIR/bundles'... "
+
+  # Migrate old repos -> bundles
+  local errors=0
+  for repo in $ADOTDIR/repos/*; do
+    bundle=${repo/$ADOTDIR\/repos\//}
+    bundle=${bundle//-SLASH-/\/}
+    bundle=${bundle//-COLON-/\:}
+    bundle=${bundle//-STAR-/\*}
+    url=${bundle//-PIPE-/\|}
+    target=$(-antigen-get-clone-dir $url)
+    mkdir -p "${target:A:h}"
+    echo " ---> ${repo/$ADOTDIR\/} -> ${target/$ADOTDIR\/}" | tee > $log
+    mv "$repo" "$target" &> $log
+    if [[ $? != 0 ]]; then
+      echo "Failed to migrate '$repo'!."
+      errors+=1
+    fi
+  done
+
+  if [[ $errors == 0 ]]; then
+    echo "Done."
+  else
+    echo "An error ocurred!"
+  fi
+  echo
+
+  if [[ "$(ls -A $ADOTDIR/repos | wc -l)" == 0 ]]; then
+    echo "You can safely remove \$ADOTDIR/repos."
+  else
+    echo "Some bundles couldn't be migrated. See \$ADOTDIR/repos."
+  fi
+
+  echo
+  if [[ $errors == 0 ]]; then
+    echo "Bundles migrated successfuly."
+    rm $log
+  else
+    echo "Some errors occured. Review migration log in '$log'."
+  fi
+}
 # Ensure that a clone exists for the given repo url and branch. If the first
 # argument is `update` and if a clone already exists for the given repo
 # and branch, it is pull-ed, i.e., updated.
@@ -411,7 +460,10 @@ antigen () {
   [[ ! -d $ADOTDIR ]] && mkdir -p $ADOTDIR
 
   -set-default ANTIGEN_BUNDLES $ADOTDIR/bundles
-  [[ ! -d $ANTIGEN_BUNDLES ]] && mkdir -p $ANTIGEN_BUNDLES
+  if [[ ! -d $ANTIGEN_BUNDLES ]]; then
+    mkdir -p $ANTIGEN_BUNDLES
+    [[ -d $ADOTDIR/repos ]] && -antigen-update-repos
+  fi
 
   -set-default ANTIGEN_COMPDUMP "${ADOTDIR:-$HOME}/.zcompdump"
 
@@ -828,7 +880,7 @@ compdef () {}\NL"
   _payload+=$_sources
   _payload+="typeset -aU _ANTIGEN_BUNDLE_RECORD;\
       _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
-  _payload+="ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='develop'\NL"
+  _payload+="_ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='develop'\NL"
 
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
   if [[ -n "$ZSH" ]]; then

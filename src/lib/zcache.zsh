@@ -130,7 +130,7 @@ compdef () {}\NL"
   _payload+=$_sources
   _payload+="typeset -aU _ANTIGEN_BUNDLE_RECORD;\
       _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
-  _payload+="ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='{{ANTIGEN_VERSION}}'\NL"
+  _payload+="_ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='{{ANTIGEN_VERSION}}'\NL"
 
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
   if [[ -n "$ZSH" ]]; then

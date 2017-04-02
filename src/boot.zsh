@@ -13,4 +13,4 @@ for config in $ANTIGEN_CHECK_FILES; do
   fi
 done
 
-[[ -f $ANTIGEN_CACHE && ! $ANTIGEN_CACHE_LOADED == true ]] && source "$ANTIGEN_CACHE" && return;
+[[ -f $ANTIGEN_CACHE && ! $_ANTIGEN_CACHE_LOADED == true ]] && source "$ANTIGEN_CACHE" && return;
