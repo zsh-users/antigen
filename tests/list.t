@@ -77,6 +77,6 @@ Find bundle/record internal function.
   $ -antigen-find-record test-plugin2
   *test-plugin2* (glob)
 
-  $ -antigen-find-record 'tmp-*/test-plugin2'
-  *test-plugin2* (glob)
+  $ -antigen-find-record '*.t/test-plugin2'
+  *.t/test-plugin2* (glob)
 
