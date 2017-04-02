@@ -12,7 +12,7 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
 for config in $ANTIGEN_CHECK_FILES; do
   if [[ "$config" -nt "$config.zwc" ]]; then
     zcompile "$config"
-    [[ -f "$ANTIGEN_CACHE" ]] && \rm -f "$ANTIGEN_CACHE"
+    [[ -f "$ANTIGEN_CACHE" ]] && rm -f "$ANTIGEN_CACHE"
   fi
 done
 
@@ -975,13 +975,7 @@ antigen-cleanup () {
     echo
     for clone in $unused_clones; do
       echo -n "Deleting clone \"$clone\"..."
-      \rm -r "$clone"
-
-      # Removing empty parent directory
-      local parent=${clone:A:h}
-      if [[ -z "$(ls -A $parent)" ]]; then
-        \rm -r "$parent"
-      fi
+      \rm -rf "$clone"
 
       echo ' done.'
     done
@@ -1132,7 +1126,7 @@ antigen-purge () {
 
   # local keyword doesn't work on zsh <= 5.0.0
   record=$(-antigen-find-record $bundle)
-  
+
   if [[ ! -n "$record" ]]; then
     echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
     return 1

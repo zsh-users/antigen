@@ -38,13 +38,7 @@ antigen-cleanup () {
     echo
     for clone in $unused_clones; do
       echo -n "Deleting clone \"$clone\"..."
-      \rm -r "$clone"
-
-      # Removing empty parent directory
-      local parent=${clone:A:h}
-      if [[ -z "$(ls -A $parent)" ]]; then
-        \rm -r "$parent"
-      fi
+      \rm -rf "$clone"
 
       echo ' done.'
     done

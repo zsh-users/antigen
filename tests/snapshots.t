@@ -25,7 +25,7 @@ Reset the antigen's bundle record and run cleanup.
 
 Restore from the snapshot.
 
-  $ ls $ANTIGEN_BUNDLES | wc -l
+  $ ls $ANTIGEN_BUNDLES/cram-testdir-* | wc -l
   0
   $ antigen-restore snapshot-file
   Restoring from snapshot-file... done.

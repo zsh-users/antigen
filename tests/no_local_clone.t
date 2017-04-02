@@ -44,4 +44,4 @@ The cleanup should list the bundle's clone.
   
   Deleting clone ".*/test-plugin"... done. (re)
 
-  $ ls $ANTIGEN_BUNDLES
+  $ ls $ANTIGEN_BUNDLES/cram-testdir-*

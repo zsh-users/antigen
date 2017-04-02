@@ -54,7 +54,7 @@ Check the listing, after cleanup.
 
 Confirm the plugin directory does not exist after cleanup.
 
-  $ ls $ANTIGEN_BUNDLES | wc -l
+  $ ls $ANTIGEN_BUNDLES/cram-testdir-* | wc -l
   0
 # TODO
 # Do not remove local bundles (--no-local-clone).
