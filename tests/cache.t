@@ -93,12 +93,9 @@ Cache is saved correctly.
 Cache version matches antigen version.
 
   $ source $_ANTIGEN_CACHE
-  $ ANTIGEN_VERSION=$(antigen version | sed 's/Antigen //')
-  $ cat $_ANTIGEN_CACHE | grep -c "$ANTIGEN_VERSION"
-  2
-
-  $ if [[ "$ANTIGEN_VERSION" == "$_ANTIGEN_CACHE_VERSION" ]]; then echo 1; else echo 0; fi
-  1
+  $ ANTIGEN_VERSION=$(antigen version | sed 's/Antigen //' | sed 's/ (.*//')
+  $ [[ "$_ANTIGEN_CACHE_VERSION" == "$ANTIGEN_VERSION" ]] && echo 0 || echo 1
+  0
 
 Can clear cache correctly.
 
