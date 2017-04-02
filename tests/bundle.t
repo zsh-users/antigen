@@ -30,10 +30,10 @@ Try to install an unexisting bundle.
   $ echo $fpath | grep -co test-plugin
   1
 
-Confirm there is still only one repository.
+Confirm bundle/unexisting does not exists.
 
-  $ ls $ADOTDIR/repos | wc -l
-  1
+  $ ls $ANTIGEN_BUNDLES/bundle/ | wc -l
+  0
 
 Load a prezto style module. Should only source the `init.zsh` present in the
 module.
@@ -71,6 +71,18 @@ Branch name is not display with short names.
 
   $ -antigen-bundle-short-name "https://github.com/example/bundle.git|branch"
   example/bundle
+
+  $ -antigen-bundle-short-name "https://github.com/example/bundle.git|feature/branch/git"
+  example/bundle
+
+  $ -antigen-bundle-short-name "https://github.com/example/bundle.git" "feature/branch/git"
+  example/bundle@feature/branch/git
+
+  $ -antigen-bundle-short-name "example/bundle.git" "feature/branch.git"
+  example/bundle@feature/branch.git
+
+  $ -antigen-bundle-short-name "example/bundle" "feature/branch.git"
+  example/bundle@feature/branch.git
 
 Handle shorter syntax.
 

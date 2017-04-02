@@ -23,7 +23,7 @@ Should not leak Antigen or OMZ environment variables.
 
 Clean it all up.
 
-  $ _ANTIGEN_BUNDLE_RECORD=""
+  $ _ANTIGEN_BUNDLE_RECORD=()
   $ antigen-cleanup --force &> /dev/null
 
 Specify with indentation.

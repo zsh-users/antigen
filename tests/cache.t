@@ -22,7 +22,7 @@ Check if they are both applied.
 
 Should exist cache payload.
 
-  $ ls $_ANTIGEN_CACHE | wc -l
+  $ ls $ANTIGEN_CACHE | wc -l
   1
 
 Should have listed bundles.
@@ -46,7 +46,7 @@ Both bundles are cached by bundle.
   $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen bundles > /dev/null
   $ antigen apply > /dev/null
 
-  $ cat $_ANTIGEN_CACHE | grep hehe
+  $ cat $ANTIGEN_CACHE | grep hehe
   alias hehe="echo hehe"
   alias hehe2="echo hehe2"
 
@@ -57,10 +57,10 @@ Both bundles are cached by reference.
   $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen bundles
   $ antigen apply &> /dev/null
 
-  $ cat $_ANTIGEN_CACHE | grep source
+  $ cat $ANTIGEN_CACHE | grep source
   .* (re)
-  source .*-SLASH-test-plugin//aliases.zsh.* (re)
-  source .*-SLASH-test-plugin2//init.zsh.* (re)
+  source .*test-plugin/aliases.zsh.* (re)
+  source .*test-plugin2/init.zsh.* (re)
 
 List command should work as expected.
 
@@ -76,25 +76,25 @@ Respect escape sequences.
   $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen bundles > /dev/null
   $ antigen apply > /dev/null
 
-  $ cat $_ANTIGEN_CACHE | grep 'alias prompt'
+  $ cat $ANTIGEN_CACHE | grep 'alias prompt'
   alias prompt="\e]$ >\a\n"
 
 Cache is saved correctly.
 
-  $ cat $_ANTIGEN_CACHE | grep -c 'alias prompt'
+  $ cat $ANTIGEN_CACHE | grep -c 'alias prompt'
   1
 
-  $ cat $_ANTIGEN_CACHE | grep -c 'root=\${__ZCACHE_FILE_PATH}'
+  $ cat $ANTIGEN_CACHE | grep -c 'root=\${__ZCACHE_FILE_PATH}'
   1
 
-  $ cat $_ANTIGEN_CACHE | grep -c 'echo \$root/\$0'
+  $ cat $ANTIGEN_CACHE | grep -c 'echo \$root/\$0'
   1
 
 Cache version matches antigen version.
 
-  $ source $_ANTIGEN_CACHE
+  $ source $ANTIGEN_CACHE
   $ ANTIGEN_VERSION=$(antigen version | sed 's/Antigen //' | sed 's/ (.*//')
-  $ [[ "$_ANTIGEN_CACHE_VERSION" == "$ANTIGEN_VERSION" ]] && echo 0 || echo 1
+  $ [[ "$ANTIGEN_CACHE_VERSION" == "$ANTIGEN_VERSION" ]] && echo 0 || echo 1
   0
 
 Can clear cache correctly.
@@ -102,5 +102,5 @@ Can clear cache correctly.
   $ antigen reset
   Done. Please open a new shell to see the changes.
 
-  $ [[ -f $_ANTIGEN_CACHE ]]
+  $ [[ -f $ANTIGEN_CACHE ]]
   [1]

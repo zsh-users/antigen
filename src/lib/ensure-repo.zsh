@@ -15,7 +15,7 @@
     echo "Antigen: Missing url argument."
     return 1
   fi
-  
+
   # The url. No sane default for this, so just empty.
   local url=$1
   # Check if we have to update.
@@ -26,31 +26,31 @@
   shift $#
 
   # Get the clone's directory as per the given repo url and branch.
-  local clone_dir="$(-antigen-get-clone-dir $url)"
+  local clone_dir=$(-antigen-get-clone-dir $url)
   if [[ -d "$clone_dir" && $update == false ]]; then
     return true
   fi
-    
+
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd "$clone_dir" &>>! $_ANTIGEN_LOG && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $_ANTIGEN_LOG)
+    (cd "$clone_dir" && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
   }
 
   # Clone if it doesn't already exist.
   local start=$(date +'%s')
   local install_or_update=false
   local success=false
-  
+
   # If its a specific branch that we want, checkout that branch.
   local branch="master" # TODO FIX THIS
   if [[ $url == *\|* ]]; then
     branch="$(-antigen-parse-branch ${url%|*} ${url#*|})"
   fi
-  
+
   if [[ ! -d $clone_dir ]]; then
     install_or_update=true
     echo -n "Installing $(-antigen-bundle-short-name "$url" "$branch")... "
-    git clone ${=_ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $_ANTIGEN_LOG
+    git clone ${=ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $ANTIGEN_LOG
     success=$?
   elif $update; then
     install_or_update=true
@@ -63,7 +63,7 @@
     success=$?
 
     # Update submodules.
-    --plugin-git submodule update ${=_ANTIGEN_SUBMODULE_OPTS}
+    --plugin-git submodule update ${=ANTIGEN_SUBMODULE_OPTS}
     # Get the new revision.
     local new_rev="$(--plugin-git rev-parse HEAD)"
   fi

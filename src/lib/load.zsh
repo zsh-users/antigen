@@ -42,9 +42,13 @@
     fi
   done
 
-  local location="$url/"
+  local location="$url"
+  if [[ "$loc" != "/" ]]; then
+    loc="/$loc"
+  fi
+
   if $make_local_clone; then
-    location="$(-antigen-get-clone-dir "$url")/$loc"
+    location="$(-antigen-get-clone-dir $url)$loc"
   fi
 
   # If there is no location either as a file or a directory

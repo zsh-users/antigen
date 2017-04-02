@@ -9,26 +9,39 @@ Check if the plugin is loaded correctly.
 
 Confirm no clone is made.
 
-  $ test -d "$ADOTDIR/repos"
-  [1]
+  $ ls $ANTIGEN_BUNDLES
 
 Load the plugin with a clone.
 
   $ antigen-bundle $PLUGIN_DIR &> /dev/null
+  $ ls $ANTIGEN_BUNDLES
+  cram-testdir-* (glob)
 
 Empty the record.
 
-  $ _ANTIGEN_BUNDLE_RECORD=
+  $ _ANTIGEN_BUNDLE_RECORD=()
+  $ antigen list
+  You don't have any bundles.
+  [1]
 
 Load the plugin again with no local clone.
 
   $ antigen-bundle $PLUGIN_DIR --no-local-clone
+  $ antigen list
+  cram-testdir-*/test-plugin @ master (glob)
+  $ ls $ANTIGEN_BUNDLES
+  cram-testdir-* (glob)
 
 The cleanup should list the bundle's clone.
 
+  $ _ANTIGEN_BUNDLE_RECORD=()
+  $ antigen-cache-gen
   $ antigen-cleanup --force
   You have clones for the following repos, but are not used.
-    */test-plugin (glob)
+  
+  .*/test-plugin (re)
   
   
-  Deleting clone for */test-plugin... done. (glob)
+  Deleting clone ".*/test-plugin"... done. (re)
+
+  $ ls $ANTIGEN_BUNDLES/cram-testdir-*

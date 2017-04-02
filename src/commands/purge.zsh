@@ -46,7 +46,7 @@ antigen-purge () {
 
   # local keyword doesn't work on zsh <= 5.0.0
   record=$(-antigen-find-record $bundle)
-  
+
   if [[ ! -n "$record" ]]; then
     echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
     return 1

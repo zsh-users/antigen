@@ -21,7 +21,7 @@ Run antigen's update.
 
 Confirm there is still only one repository.
 
-  $ ls $ADOTDIR/repos | wc -l
+  $ ls $ANTIGEN_BUNDLES | wc -l
   1
 
 The new alias should not activate.
