@@ -580,13 +580,10 @@ Takes no options.
 
 ### antigen help
 
-This exists so that there can be some help right in the command line. Currently
-it doesn't provide much help other than redirecting you to the project page for
-documentation. It is intended to provide more meaning and sub-command specific
-help in the future.
+Basic command information for the most common commands. Go to our [Wiki][wiki] page
+for extended documentation on commands, workflows and configuration descritions.
 
-I could use some help here as I'm not that good at writing documentation that
-looks good as output on the command line.
+Takes no options.
 
 ## Installation
 
@@ -615,24 +612,26 @@ bundles, themes, caches and everything else Antigen requires to run smoothly.
 Defaults to `$HOME/.antigen`.
 
 `ANTIGEN_CACHE` &mdash; This configures the path to the cache init file, where
-Antigen stores it's cached bundles.
+Antigen stores it's cached bundles. Defaults to `$ADOTDIR/init.zsh`.
 
 `ANTIGEN_COMPDUMP` &mdash; Use this configuration to define where [zsh's completion
 system](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) should store completion's dump file. Defaults to `$ADOTDIR/.zcompdump`.
 
 `ANTIGEN_LOG`  &mdash; Use this configuration to define where Antigen should
-store log information.
+store log information. By default logging is disabled. Use `ANTIGEN_LOG=/path/to/antigen.log`
+to activate it, useful when debugging failing bundle installs.
 
 `ANTIGEN_BUNDLES`  &mdash; This directory is used to store bundle clones. Defaults
 to `$ADOTDIR/bundles`.
 
 `ANTIGEN_CHECK_FILES` &mdash; Use this configuration to define if Antigen should
-check for configuration changes or not, this is to avoid doing `antigen-reset`.
-This configuration is used to determine which files to check for changes.
+check for configuration changes, this is to avoid doing `antigen-reset` manually.
+Use `ANTIGEN_CHECK_FILES=(/path/to/.antigenrc /path/to/.zshrc /path/to/other)`
+to activate it.
 
 `ANTIGEN_CLONE_OPTS`, `ANTIGEN_SUBMODULE_OPTS` &mdash; Use to control how Antigen
-perform cloning and fetch submodules from Bundles. These are flags for `git-clone`
-and `git-submodule` commands.
+perform cloning and fetch submodules from bundles. These are flags for `git-clone`
+and `git-submodule` commands, respectivelly.
 
 ## Development
 
@@ -643,20 +642,28 @@ regenerate it.
 ### Running the tests
 
 All the tests are in the `tests` folder and are run using the [cram][] test
-system. The latest version on that website, as of today is v0.5, which does not
-have the `--shell` argument which is required to run our tests. So, to get the
-correct version of cram, run
+system, to install required dependencies use:
 
-    pip install cram==0.0.6
+   sudo make install-deps
 
-With that, once you have cram installed, you can run the tests as
+With that, once you have cram installed, you can run the tests as:
 
-    make tests PYENV= SHELL=zsh
+    make tests
+
+By default it will run tests using [Docker][docker] with images from [DockerHub][dockerhub]
+using zsh version `5.3`. You can customize which Docker image it runs against
+as follows:
+
+    make tests CONTAINER_IMAGE=docker-hub/image-name ZSH_VERSION=
+
+Where `$CONTAINER_IMAGE` is a Docker Hub image name. By default `desyncr/zsh-docker-zsh-5.3`.
 
 If you are making a feature addition, I'd really appreciate if you can add a
 test for your feature. Even if you can add a test for an existing feature, that
 would be great as the tests are currently seriously lagging behind the full
 functionality of Antigen.
+
+Docker version used is `17.03.1-ce`.
 
 ## Notes on writing plugins
 
@@ -665,8 +672,7 @@ Most shell utilities/plugins are made up of just one file. For a plugin called
 
 That said, even if you write a single file as a `.sh` file with the goodness you
 want to create, Antigen will work just fine with it. The `*.plugin.zsh` way is
-recommended by Antigen, because it is widely used because of the [oh-my-zsh][]
-project.
+widely used because of the [oh-my-zsh][] project.
 
 If you want to know how Antigen loads the plugins, do continue.
 
@@ -674,7 +680,10 @@ Firstly, Antigen looks for a `*.plugin.zsh` file in the plugin directory. If
 present, it will source *only* this script. Nothing else is sourced. This is for
 oh-my-zsh style plugins.
 
-Secondly, it looks for a `init.zsh` file in the plugin directory. If present, Prezto will attempt to load the plugin with `pmodload`, removing "`modules/`" from the beginning of the plugin path if present. If `pmodload` is not available, Antigen will source *only* `init.zsh` and nothing else. This is for Prezto-style modules.
+Secondly, it looks for a `init.zsh` file in the plugin directory. If present,
+Prezto will attempt to load the plugin with `pmodload`, removing "`modules/`"
+from the beginning of the plugin path if present. If `pmodload` is not available,
+Antigen will source *only* `init.zsh` and nothing else. This is for Prezto-style modules.
 
 Otherwise, it looks for `*.zsh` files and if there are any, *all* of them are
 sourced. The order in which they are sourced is not currently defined. Please
@@ -777,3 +786,6 @@ you may find useful.
 [twitter]: http://twitter.com/sharat87
 [antigen-hs]: https://github.com/Tarrasch/antigen-hs
 [zgen]: https://github.com/tarjoilija/zgen
+[docker]: https://www.docker.com/
+[dockerhub]: https://hub.docker.com/
+[wiki]: https://github.com/zsh-users/antigen/wiki
