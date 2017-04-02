@@ -31,5 +31,5 @@ script:
   - make
   - SHACHECK=$(shasum -a 256 ./bin/antigen.zsh)
 
-  - echo "$SHASUM\n$SHACHECK"
+  - echo -e "$SHASUM\n$SHACHECK"
   - test "$SHASUM" == "$SHACHECK"
