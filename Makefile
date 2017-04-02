@@ -16,7 +16,6 @@ GLOB 	?= ${SRC}/boot.zsh ${SRC}/antigen.zsh $(sort $(wildcard ${PWD}/src/helpers
         ${SRC}/_antigen
 
 VERSION ?= develop
-REVISION = $(shell git rev-parse --short '@')
 VERSION_FILE = ${PROJECT}/VERSION
 
 BANNER_SEP=$(shell printf '%*s' 70 | tr ' ' '\#')
@@ -34,7 +33,7 @@ build:
 	@echo Building Antigen...
 	@printf "${BANNER}" > ${BIN}/antigen.zsh
 	@for src in ${GLOB}; do echo "----> $$src"; cat "$$src" >> ${TARGET}; done
-	@echo "${VERSION} (${REVISION})" > ${VERSION_FILE}
+	@echo "${VERSION}" > ${VERSION_FILE}
 	@$(call ised,"s/{{ANTIGEN_VERSION}}/$$(cat ${VERSION_FILE})/",${TARGET})
 	@echo Done.
 	@ls -sh ${TARGET}
