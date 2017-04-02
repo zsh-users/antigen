@@ -1,11 +1,11 @@
-_ANTIGEN_CACHE="${_ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
+ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 # Whether to use bundle or reference cache (since v1.4.0)
 _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
 # Clears $0 and ${0} references from cached sources.
 #
 # This is needed otherwise plugins trying to source from a different path
-# will break as those are now located at $_ANTIGEN_CACHE
+# will break as those are now located at $ANTIGEN_CACHE
 #
 # This does avoid function-context $0 references.
 #
@@ -53,7 +53,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #
 # Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
 # if this is done through -antigen-load-list.
-# Result is stored in _ANTIGEN_CACHE. Loaded bundles and metadata is stored
+# Result is stored in ANTIGEN_CACHE. Loaded bundles and metadata is stored
 # in _ZCACHE_META_PATH.
 #
 # _ANTIGEN_BUNDLE_RECORD and fpath is stored in cache.
@@ -62,7 +62,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #   -zcache-generate-cache
 #
 # Returns
-#   Nothing. Generates _ANTIGEN_CACHE
+#   Nothing. Generates ANTIGEN_CACHE
 -zcache-generate-cache () {
   local -aU _fpath _PATH
   local _payload="" _sources="" location=""
@@ -121,7 +121,7 @@ antigen () {
 }
 fpath+=(${_fpath[@]}); PATH=\"\$PATH:${(j/:/)_PATH}\"
 _antigen_compinit () {
-  autoload -Uz compinit; compinit -C -d \"$_ANTIGEN_COMPDUMP\"; compdef _antigen antigen
+  autoload -Uz compinit; compinit -C -d \"$ANTIGEN_COMPDUMP\"; compdef _antigen antigen
   add-zsh-hook -D precmd _antigen_compinit
 }
 autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
@@ -130,22 +130,22 @@ compdef () {}\NL"
   _payload+=$_sources
   _payload+="typeset -aU _ANTIGEN_BUNDLE_RECORD;\
       _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
-  _payload+="_ANTIGEN_CACHE_LOADED=true _ANTIGEN_CACHE_VERSION='{{ANTIGEN_VERSION}}'\NL"
+  _payload+="ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='{{ANTIGEN_VERSION}}'\NL"
 
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
   if [[ -n "$ZSH" ]]; then
     _payload+="ZSH=\"$ZSH\" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
   fi
   if [[ -n "$ZDOTDIR" ]]; then
-    _payload+="ZDOTDIR=\"$_ANTIGEN_BUNDLES\"\NL";
+    _payload+="ZDOTDIR=\"$ANTIGEN_BUNDLES\"\NL";
   fi
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
-  echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$_ANTIGEN_CACHE"
-  zcompile "$_ANTIGEN_CACHE"
+  echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$ANTIGEN_CACHE"
+  zcompile "$ANTIGEN_CACHE"
   
   # Compile config files, if any
-  [[ -n $_ANTIGEN_CHECK_FILES ]] && zcompile "$_ANTIGEN_CHECK_FILES"
+  [[ -n $ANTIGEN_CHECK_FILES ]] && zcompile "$ANTIGEN_CHECK_FILES"
 
   return true
 }

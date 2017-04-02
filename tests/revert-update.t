@@ -23,7 +23,7 @@ Save the new HEAD of the plugin.
 
 Define a convenience function to get the current version.
 
-  $ current-version () {(cd $_ANTIGEN_BUNDLES/*/* && git rev-parse HEAD)}
+  $ current-version () {(cd $ANTIGEN_BUNDLES/*/* && git rev-parse HEAD)}
 
 Confirm we currently have the old version.
 

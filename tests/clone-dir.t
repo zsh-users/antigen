@@ -1,6 +1,6 @@
 Set up functions and env variables:
 
-  $ _ANTIGEN_LOG=/dev/stdout # We wanna see debug output
+  $ ANTIGEN_LOG=/dev/stdout # We wanna see debug output
   $ function git() { echo "\ngit $@\n" } # Wrap git to avoid the network
 
 Bundles branches are stored in their own paths.

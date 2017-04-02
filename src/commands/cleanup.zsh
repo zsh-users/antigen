@@ -5,21 +5,21 @@ antigen-cleanup () {
     force=true
   fi
 
-  if [[ ! -d "$_ANTIGEN_BUNDLES" || -z "$(\ls "$_ANTIGEN_BUNDLES")" ]]; then
+  if [[ ! -d "$ANTIGEN_BUNDLES" || -z "$(\ls "$ANTIGEN_BUNDLES")" ]]; then
     echo "You don't have any bundles."
     return 0
   fi
 
-  # Find directores in _ANTIGEN_BUNDLES, that are not in the bundles record.
+  # Find directores in ANTIGEN_BUNDLES, that are not in the bundles record.
   typeset -a unused_clones clones
-  
+
   local url record clone
   for record in $(-antigen-get-cloned-bundles); do
     url=${record% /*}
     clones+=("$(-antigen-get-clone-dir $url)")
   done
 
-  for clone in $_ANTIGEN_BUNDLES/*/*(/); do
+  for clone in $ANTIGEN_BUNDLES/*/*(/); do
     if [[ $clones[(I)$clone] == 0 ]]; then
       unused_clones+=($clone)
     fi

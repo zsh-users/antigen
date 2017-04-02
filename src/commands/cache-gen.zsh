@@ -1,4 +1,4 @@
-# Generate static-cache file at $_ANTIGEN_CACHE using currently loaded
+# Generate static-cache file at $ANTIGEN_CACHE using currently loaded
 # bundles from $_ANTIGEN_BUNDLE_RECORD
 #
 # Usage

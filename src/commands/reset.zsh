@@ -6,6 +6,6 @@
 # Returns
 #   Nothing
 antigen-reset () {
-  [[ -f "$_ANTIGEN_CACHE" ]] && rm -f "$_ANTIGEN_CACHE"
+  [[ -f "$ANTIGEN_CACHE" ]] && rm -f "$ANTIGEN_CACHE"
   echo 'Done. Please open a new shell to see the changes.'
 }

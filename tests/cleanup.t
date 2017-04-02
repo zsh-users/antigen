@@ -31,7 +31,7 @@ Check the listing, after clearing the record.
 
 Confirm the plugin directory exists.
 
-  $ ls $_ANTIGEN_BUNDLES | wc -l
+  $ ls $ANTIGEN_BUNDLES | wc -l
   1
 
 Do the cleanup.
@@ -54,12 +54,12 @@ Check the listing, after cleanup.
 
 Confirm the plugin directory does not exist after cleanup.
 
-  $ ls $_ANTIGEN_BUNDLES | wc -l
+  $ ls $ANTIGEN_BUNDLES | wc -l
   0
 # TODO
 # Do not remove local bundles (--no-local-clone).
 # 
-#   $ ls $_ANTIGEN_BUNDLES
+#   $ ls $ANTIGEN_BUNDLES
 # 
 #   $ _ANTIGEN_BUNDLE_RECORD=()
 #   $ antigen list &> /dev/null

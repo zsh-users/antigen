@@ -32,7 +32,7 @@ Try to install an unexisting bundle.
 
 Confirm bundle/unexisting does not exists.
 
-  $ ls $_ANTIGEN_BUNDLES/bundle/ | wc -l
+  $ ls $ANTIGEN_BUNDLES/bundle/ | wc -l
   0
 
 Load a prezto style module. Should only source the `init.zsh` present in the

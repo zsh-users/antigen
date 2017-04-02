@@ -25,11 +25,11 @@ Reset the antigen's bundle record and run cleanup.
 
 Restore from the snapshot.
 
-  $ ls $_ANTIGEN_BUNDLES | wc -l
+  $ ls $ANTIGEN_BUNDLES | wc -l
   0
   $ antigen-restore snapshot-file
   Restoring from snapshot-file... done.
   Please open a new shell to get the restored changes.
 
-  $ ls $_ANTIGEN_BUNDLES/* | wc -l
+  $ ls $ANTIGEN_BUNDLES/* | wc -l
   2

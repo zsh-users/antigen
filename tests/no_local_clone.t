@@ -9,13 +9,13 @@ Check if the plugin is loaded correctly.
 
 Confirm no clone is made.
 
-  $ ls $_ANTIGEN_BUNDLES
+  $ ls $ANTIGEN_BUNDLES
 
 Load the plugin with a clone.
 
   $ antigen-bundle $PLUGIN_DIR &> /dev/null
-  $ ls $_ANTIGEN_BUNDLES
-  no_local_clone.t
+  $ ls $ANTIGEN_BUNDLES
+  cram-testdir-* (glob)
 
 Empty the record.
 
@@ -28,9 +28,9 @@ Load the plugin again with no local clone.
 
   $ antigen-bundle $PLUGIN_DIR --no-local-clone
   $ antigen list
-  no_local_clone.t/test-plugin @ master
-  $ ls $_ANTIGEN_BUNDLES
-  no_local_clone.t
+  cram-testdir-*/test-plugin @ master (glob)
+  $ ls $ANTIGEN_BUNDLES
+  cram-testdir-* (glob)
 
 The cleanup should list the bundle's clone.
 
@@ -44,4 +44,4 @@ The cleanup should list the bundle's clone.
   
   Deleting clone ".*/test-plugin"... done. (re)
 
-  $ ls $_ANTIGEN_BUNDLES
+  $ ls $ANTIGEN_BUNDLES

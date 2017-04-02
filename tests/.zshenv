@@ -1,25 +1,17 @@
 # zshrc file written for antigen's tests. Might not be a good one for daily use.
 
-# Clean the environment from CI so that environment tests will pass.
-
-unset ZSH_REMOTE_URL
-unset ZSH_SOURCE
-unset ZSH_BUILD_VERSION
-
-# Removes travis commit message that may interfere with env-leak tests.
-# See https://gitter.im/antigen-zsh/develop?at=58c35d257ceae5376a9f859a
-unset TRAVIS_COMMIT_MESSAGE
-
 # See cram's documentation for some of the variables used below.
 export ADOTDIR=$(mktemp -du "/tmp/dot-antigen/tmp-XXXX")
 [[ ! -d "$ADOTDIR" ]] && mkdir -p "$ADOTDIR"
 
+export ANTIGEN=${ANTIGEN:-"/antigen"}
+export TESTDIR=$(mktemp -d "/tmp/cram-testdir-XXXXX" || /tmp/cram-testdir)
 test -f "$TESTDIR/.zcompdump" && rm "$TESTDIR/.zcompdump"
-source "$TESTDIR/../antigen.zsh"
+source "$ANTIGEN/antigen.zsh"
 
 # A test plugin repository to test out antigen with.
 
-PLUGIN_DIR="$PWD/test-plugin"
+PLUGIN_DIR="$TESTDIR/test-plugin"
 # {
   mkdir "$PLUGIN_DIR"
 
@@ -39,7 +31,7 @@ PLUGIN_DIR="$PWD/test-plugin"
 
 # Another test plugin.
 
-PLUGIN_DIR2="$PWD/test-plugin2"
+PLUGIN_DIR2="$TESTDIR/test-plugin2"
 # {
   mkdir "$PLUGIN_DIR2"
 
@@ -63,7 +55,7 @@ PLUGIN_DIR2="$PWD/test-plugin2"
 
 # Another test plugin.
 
-PLUGIN_DIR3="$PWD/test-plugin3"
+PLUGIN_DIR3="$TESTDIR/test-plugin3"
 # {
   mkdir "$PLUGIN_DIR3"
 
@@ -92,4 +84,3 @@ PLUGIN_DIR3="$PWD/test-plugin3"
 function wc () {
     command wc "$@" | xargs
 }
-

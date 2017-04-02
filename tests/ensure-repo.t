@@ -1,6 +1,6 @@
 Set up functions and env variables:
 
-  $ _ANTIGEN_LOG=/dev/stdout # We wanna see debug output
+  $ ANTIGEN_LOG=/dev/stdout # We wanna see debug output
   $ function git() { echo "\ngit $@\n" } # Wrap git to avoid the network
   $ REPO_NAME=user/repo
   $ REPO_URL=https://github.com/$REPO_NAME.git
@@ -44,7 +44,7 @@ Effectively update a repository already cloned:
 
 Clone especific branch if required:
 
-  $ rm -r $_ANTIGEN_BUNDLES/*
+  $ rm -r $ANTIGEN_BUNDLES/*
   $ -antigen-ensure-repo "$REPO_URL|v5.0"
   Installing user/repo@v5.0... 
   git clone .* --branch v5.0 -- https://github.com/user/repo.git .*user/repo-v5.0 (re)

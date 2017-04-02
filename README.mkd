@@ -614,21 +614,25 @@ updating Prezto. The default value is sorin's prezto repository (sorin-ionescu/p
 bundles, themes, caches and everything else Antigen requires to run smoothly.
 Defaults to `$HOME/.antigen`.
 
-`_ANTIGEN_CACHE` &mdash; This configures the path to the cache init file, where
+`ANTIGEN_CACHE` &mdash; This configures the path to the cache init file, where
 Antigen stores it's cached bundles.
 
-`_ANTIGEN_COMPDUMP` &mdash; Use this configuration to define where [zsh's completion
+`ANTIGEN_COMPDUMP` &mdash; Use this configuration to define where [zsh's completion
 system](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) should store completion's dump file. Defaults to `$ADOTDIR/.zcompdump`.
 
-`_ANTIGEN_LOG`  &mdash; Use this configuration to define where Antigen should
+`ANTIGEN_LOG`  &mdash; Use this configuration to define where Antigen should
 store log information.
 
-`_ANTIGEN_BUNDLES`  &mdash; This directory is used to store bundle clones. Defaults
+`ANTIGEN_BUNDLES`  &mdash; This directory is used to store bundle clones. Defaults
 to `$ADOTDIR/bundles`.
 
-`_ANTIGEN_CHECK_FILES` &mdash; Use this configuration to define if Antigen should
+`ANTIGEN_CHECK_FILES` &mdash; Use this configuration to define if Antigen should
 check for configuration changes or not, this is to avoid doing `antigen-reset`.
 This configuration is used to determine which files to check for changes.
+
+`ANTIGEN_CLONE_OPTS`, `ANTIGEN_SUBMODULE_OPTS` &mdash; Use to control how Antigen
+perform cloning and fetch submodules from Bundles. These are flags for `git-clone`
+and `git-submodule` commands.
 
 ## Development
 
@@ -712,7 +716,7 @@ an [issue][] first so we can discuss it out. Thanks!
 
 ### Feedback please
 
-Any comments/suggestions/feedback welcome. Please say hello to us on 
+Any comments/suggestions/feedback welcome. Please say hello to us on
 [gitter](https://gitter.im/antigen-zsh/develop). Or open an issue to discuss something
 (anything!) about the project ;).
 
