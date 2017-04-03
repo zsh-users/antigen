@@ -25,11 +25,9 @@ matrix:
     - os: linux
       env: ZSH_VERSION=zsh-4.3.11
 
-before_install:
+script:
   - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install zsh; pip install cram; fi
   - if [ $TRAVIS_OS_NAME == 'osx' ]; then PROJECT=$TRAVIS_BUILD_DIR; else PROJECT=/antigen; fi
-
-script:
   - make info tests stats PROJECT=$PROJECT USE_CONTAINER=$USE_CONTAINER
 
   # Ensure the checked-in build matches the build produced in CI. Since the CI
