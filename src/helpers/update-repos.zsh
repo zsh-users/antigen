@@ -33,7 +33,7 @@
   fi
   echo
 
-  if [[ "$(ls -A $ADOTDIR/repos | wc -l)" == 0 ]]; then
+  if [[ "$(ls -A $ADOTDIR/repos | wc -l | xargs)" == 0 ]]; then
     echo "You can safely remove \$ADOTDIR/repos."
   else
     echo "Some bundles couldn't be migrated. See \$ADOTDIR/repos."
