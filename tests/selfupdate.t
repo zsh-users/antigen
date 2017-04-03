@@ -11,6 +11,8 @@ Create fake host repository
   $ cd $TEST_HOST
   $ git init
   Initialized empty Git repository in * (glob)
+  $ git config user.name 'test'
+  $ git config user.email 'test@test.test'
   $ echo 1 > ver
   $ git add ver
   $ git commit -m "1"
