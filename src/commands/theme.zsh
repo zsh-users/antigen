@@ -55,7 +55,7 @@ antigen-theme () {
   for hook in chpwd precmd preexec periodic; do
     add-zsh-hook -D "${hook}" "prompt_*"
     # common in omz themes
-    add-zsh-hook -D "${hook}" "*_${hook}" 
+    add-zsh-hook -D "${hook}" "*_${hook}"
     add-zsh-hook -d "${hook}" "vcs_info"
   done
 }
