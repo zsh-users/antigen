@@ -46,4 +46,5 @@
   else
     echo "Some errors occured. Review migration log in '$log'."
   fi
+  antigen-reset
 }

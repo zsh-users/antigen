@@ -349,6 +349,7 @@ antigen () {
   else
     echo "Some errors occured. Review migration log in '$log'."
   fi
+  antigen-reset
 }
 # Ensure that a clone exists for the given repo url and branch. If the first
 # argument is `update` and if a clone already exists for the given repo
