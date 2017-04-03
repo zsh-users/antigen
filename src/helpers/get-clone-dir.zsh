@@ -12,17 +12,11 @@
   # cloned to. Doesn't actually clone anything.
   local clone_dir="$ANTIGEN_BUNDLES"
 
-  if [[ "$bundle" == "$ANTIGEN_PREZTO_REPO_URL" ]]; then
-    # Prezto's directory *has* to be `.zprezto`.
-    clone_dir="$clone_dir/.zprezto"
-  else
-    url=$(-antigen-bundle-short-name $url)
-    # Suffix with branch/tag name
-    [[ -n "$branch" ]] && url="$url-${branch//\//-}"
-    url=${url//\*/x}
+  url=$(-antigen-bundle-short-name $url)
 
-    clone_dir="$clone_dir/$url"
-  fi
+  # Suffix with branch/tag name
+  [[ -n "$branch" ]] && url="$url-${branch//\//-}"
+  url=${url//\*/x}
 
-  echo $clone_dir
+  echo "$clone_dir/$url"
 }

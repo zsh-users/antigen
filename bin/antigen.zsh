@@ -171,19 +171,13 @@ antigen () {
   # cloned to. Doesn't actually clone anything.
   local clone_dir="$ANTIGEN_BUNDLES"
 
-  if [[ "$bundle" == "$ANTIGEN_PREZTO_REPO_URL" ]]; then
-    # Prezto's directory *has* to be `.zprezto`.
-    clone_dir="$clone_dir/.zprezto"
-  else
-    url=$(-antigen-bundle-short-name $url)
-    # Suffix with branch/tag name
-    [[ -n "$branch" ]] && url="$url-${branch//\//-}"
-    url=${url//\*/x}
+  url=$(-antigen-bundle-short-name $url)
 
-    clone_dir="$clone_dir/$url"
-  fi
+  # Suffix with branch/tag name
+  [[ -n "$branch" ]] && url="$url-${branch//\//-}"
+  url=${url//\*/x}
 
-  echo $clone_dir
+  echo "$clone_dir/$url"
 }
 # Returns bundles flagged as make_local_clone
 #
@@ -212,7 +206,7 @@ antigen () {
     local dir=$(-antigen-get-clone-dir $ANTIGEN_DEFAULT_REPO_URL)
     echo $(ls $dir/themes | sed 's/.zsh-theme//')
   fi
-  
+
   return 0
 }
 
@@ -740,13 +734,7 @@ antigen () {
 }
 
 -antigen-use-prezto () {
-  _zdotdir_set=${+parameters[ZDOTDIR]}
-  if (( _zdotdir_set )); then
-    _old_zdotdir=$ZDOTDIR
-  fi
-  ZDOTDIR=$ANTIGEN_BUNDLES
-
-  antigen-bundle $ANTIGEN_PREZTO_REPO_URL
+  antigen-bundle "$ANTIGEN_PREZTO_REPO_URL"
 }
 
 ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
@@ -918,14 +906,6 @@ antigen-apply () {
   fi
 
   unset __deferred_compdefs
-
-  if (( _zdotdir_set )); then
-    ZDOTDIR=$_old_zdotdir
-  else
-    unset ZDOTDIR
-    unset _old_zdotdir
-  fi
-  unset _zdotdir_set
 
   -zcache-generate-cache
 }
@@ -1381,7 +1361,7 @@ antigen-theme () {
   for hook in chpwd precmd preexec periodic; do
     add-zsh-hook -D "${hook}" "prompt_*"
     # common in omz themes
-    add-zsh-hook -D "${hook}" "*_${hook}" 
+    add-zsh-hook -D "${hook}" "*_${hook}"
     add-zsh-hook -d "${hook}" "vcs_info"
   done
 }

@@ -17,13 +17,5 @@ antigen-apply () {
 
   unset __deferred_compdefs
 
-  if (( _zdotdir_set )); then
-    ZDOTDIR=$_old_zdotdir
-  else
-    unset ZDOTDIR
-    unset _old_zdotdir
-  fi
-  unset _zdotdir_set
-
   -zcache-generate-cache
 }
