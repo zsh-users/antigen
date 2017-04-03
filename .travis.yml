@@ -8,13 +8,11 @@ cache:
 env:
   global:
     - USE_CONTAINER=docker
-    - PROJECT=/antigen
 matrix:
   include:
     - os: osx
       language: generic
       env:
-        - PROJECT=$TRAVIS_BUILD_DIR
         - USE_CONTAINER=no
     - os: linux
       env: ZSH_VERSION=zsh-5.3.1
@@ -33,7 +31,7 @@ matrix:
 
 script:
   - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install zsh; pip install cram; fi
-  - make info tests stats PROJECT=$PROJECT USE_CONTAINER=$USE_CONTAINER
+  - make info tests stats USE_CONTAINER=$USE_CONTAINER
 
   # Ensure the checked-in build matches the build produced in CI. Since the CI
   # will run this on both OS X and Linux, the two platforms must also produce
