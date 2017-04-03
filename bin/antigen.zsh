@@ -455,7 +455,7 @@ antigen () {
   -set-default ANTIGEN_DEFAULT_REPO_URL \
       https://github.com/robbyrussell/oh-my-zsh.git
   -set-default ANTIGEN_PREZTO_REPO_URL \
-      https://github.com/zsh-users/prezto.git
+      https://github.com/sorin-ionescu/prezto.git
 
   -set-default ADOTDIR $HOME/.antigen
   [[ ! -d $ADOTDIR ]] && mkdir -p $ADOTDIR
