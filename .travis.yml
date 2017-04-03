@@ -3,7 +3,8 @@ dist: trusty
 language: generic
 services:
   - docker
-
+cache:
+  pip: true
 matrix:
   include:
     - os: osx
@@ -25,7 +26,7 @@ matrix:
       env: ZSH_VERSION=zsh-4.3.11
 
 before_install:
-  - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install zsh; fi
+  - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install zsh; pip install cram; fi
   - if [ $TRAVIS_OS_NAME == 'osx' ]; then PROJECT=$TRAVIS_BUILD_DIR; else PROJECT=/antigen; fi
 
 script:
