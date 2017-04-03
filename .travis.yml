@@ -5,11 +5,17 @@ services:
   - docker
 cache:
   pip: true
+env:
+  global:
+    - USE_CONTAINER=docker
+    - PROJECT=/antigen
 matrix:
   include:
     - os: osx
       language: generic
-      env: USE_CONTAINER=no
+      env:
+        - PROJECT=$TRAVIS_BUILD_DIR
+        - USE_CONTAINER=no
     - os: linux
       env: ZSH_VERSION=zsh-5.3.1
     - os: linux
@@ -27,7 +33,6 @@ matrix:
 
 script:
   - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install zsh; pip install cram; fi
-  - if [ $TRAVIS_OS_NAME == 'osx' ]; then PROJECT=$TRAVIS_BUILD_DIR; else PROJECT=/antigen; fi
   - make info tests stats PROJECT=$PROJECT USE_CONTAINER=$USE_CONTAINER
 
   # Ensure the checked-in build matches the build produced in CI. Since the CI
