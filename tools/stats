@@ -34,7 +34,7 @@ function stats/main () {
   local antigenrc=$(mktemp -d /tmp/dot-antigen-stats-XXXXXX)
   local mtime=$antigenrc/stats-time.log
 
-  stats/configure $antigen $antigen/tests
+  stats/configure $antigenrc $antigen
   stats/exec $zsh $mtime $ITERATIONS
   stats/parse $mtime
 }
@@ -47,9 +47,12 @@ function stats/configure () {
 
   export ZDOTDIR=$ADOTDIR
   mkdir -p $ADOTDIR
-  cp $configs/.zshrc $ADOTDIR
-  cp $configs/.antigenrc $ADOTDIR
+  cp $configs/tests/.antigenrc $ADOTDIR
 
+  # Fix path for non-container based stats
+  sed -e "s|/antigen/tests|$ADOTDIR|" -e "s|/antigen|$configs|" $configs/tests/.zshrc > $ADOTDIR/.zshrc
+
+  echo "Antigen configuration path: $ADOTDIR"
   echo "Using zsh configuration from: $ADOTDIR/.zshrc"
 
   echo "System information:"

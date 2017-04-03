@@ -1,7 +1,6 @@
 # zshrc file written for antigen's tests. Might not be a good one for daily use.
-
 # See cram's documentation for some of the variables used below.
-export ADOTDIR=$(mktemp -du "/tmp/dot-antigen/tmp-XXXX")
+export ADOTDIR=$(mktemp -du "/tmp/dot-antigen-tmp-XXXXX")
 [[ ! -d "$ADOTDIR" ]] && mkdir -p "$ADOTDIR"
 
 export ANTIGEN=${ANTIGEN:-"/antigen"}
@@ -24,6 +23,8 @@ PLUGIN_DIR="$TESTDIR/test-plugin"
 
   {
       pg init
+      pg config user.name 'test'
+      pg config user.email 'test@test.test'
       pg add .
       pg commit -m 'Initial commit'
   } > /dev/null
@@ -48,6 +49,8 @@ PLUGIN_DIR2="$TESTDIR/test-plugin2"
 
   {
       pg2 init
+      pg2 config user.name 'test'
+      pg2 config user.email 'test@test.test'
       pg2 add .
       pg2 commit -m 'Initial commit'
   } > /dev/null
@@ -67,6 +70,8 @@ PLUGIN_DIR3="$TESTDIR/test-plugin3"
 
   {
       pg3 init
+      pg3 config user.name 'test'
+      pg3 config user.email 'test@test.test'
       pg3 add .
       pg3 commit -m 'Initial commit'
   } > /dev/null
