@@ -30,6 +30,8 @@ Create a submodule repository cloning from host
   $ cd $TEST_SUBMODULE
   $ git init
   Initialized empty Git repository in * (glob)
+  $ git config user.name 'test'
+  $ git config user.email 'test@test.test'
   $ git submodule add $TEST_HOST antigen &> /dev/null
   $ git commit -m "1"
   [master (root-commit) ???????] 1 (glob)
