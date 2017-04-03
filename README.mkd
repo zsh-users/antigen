@@ -653,7 +653,9 @@ system, to install required dependencies use:
 
     sudo make install-deps
 
-With that, once you have cram installed, you can run the tests as:
+**Note:** You'll need to install dependencies only if you are running without Docker.
+
+With that you can run the tests as:
 
     make tests
 
@@ -665,12 +667,16 @@ as follows:
 
 Where `$CONTAINER_IMAGE` is a Docker Hub image name. By default `desyncr/zsh-docker-zsh-5.3`.
 
+Docker version used is `17.03.1-ce`.
+
+You may as well run tests locally without Docker. Use:
+
+    make tests USE_CONTAINER=no
+
 If you are making a feature addition, I'd really appreciate if you can add a
 test for your feature. Even if you can add a test for an existing feature, that
 would be great as the tests are currently seriously lagging behind the full
 functionality of Antigen.
-
-Docker version used is `17.03.1-ce`.
 
 ## Notes on writing plugins
 
