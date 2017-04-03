@@ -1,0 +1,82 @@
+#!/usr/bin/env zsh
+# vim: ts=2 sw=2 et
+typeset -g ZSH_REMOTE_URL=https://github.com/zsh-users/zsh.git
+typeset -g ZSH_SOURCE_LOCATION=/usr/local/share/zsh
+typeset -g ZSH_BIN_LOCATION=/usr/local/bin/zsh
+
+# Build and install zsh version from source
+function builder/usage () {
+  echo "Usage: $0 --source /path/to/source --target /path/to/target --version ZSH_VERSION" 
+}
+
+function builder/main () {
+  zparseopts -A opts s:=src -source:=src \
+  v:=version -version:=version t=target -target=target || builder/usage
+
+  local src=$src[2]
+  if [[ -z $src ]]; then
+    src="${ZSH_SOURCE_LOCATION}"
+  fi
+
+  local version=$version[2]
+
+  local target=$target[2]
+  if [[ -z $target ]]; then
+    target="${ZSH_BIN_LOCATION}-$version"
+  fi
+
+  builder/exec $src $target $version
+}
+
+function builder/exec () {
+  local src=$1
+  local target=$2
+  local version=$3
+
+  # zsh source already exists
+  if [[ ! -d $src/.git ]]; then
+    echo "No zsh source found. Cloning from $ZSH_REMOTE_URL"
+    git clone $ZSH_REMOTE_URL $src
+  fi
+
+  # Get the code. Should cache it.
+  builder/compile $src $target $version
+}
+
+function builder/compile () {
+  local src=$1
+  local target=$2
+  local version=$3
+
+  echo "Compiling zsh version: $version from $src to $target"
+
+  cd $src || exit 1
+
+  # Build version
+  # Be sure to clean everything
+  make clean
+  git clean -fd
+  git checkout -- .
+
+  # Check out with branch to build, ie: master, zsh-5.0.1, etc
+  git checkout $version || exit 1
+
+  # Make configure
+  ./Util/preconfig
+
+  if [[ ! -d $target ]]; then
+    mkdir -p $target
+  fi
+
+  # Configure bindir for this branch
+  ./configure --bindir="$target/$version" --prefix="$target/$version"--without-tcsetpgrp
+
+  # Make
+  make -j5
+
+  make install
+
+  cd -
+}
+
+builder/main $@

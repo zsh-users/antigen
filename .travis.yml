@@ -1,104 +1,44 @@
-sudo: false
-
-# Python version to run tests with.
-python:
-  - "2.7"
-
+sudo: required
+dist: trusty
+language: generic
+services:
+  - docker
 cache:
   pip: true
-  apt: true
-  directories:
-    - $HOME/zsh
-    - $HOME/.zsh-builds
-    - $HOME/.antigen
-
 env:
   global:
-    - ZSH_REMOTE_URL=https://github.com/zsh-users/zsh.git
-    - BUILDS_PATH=$HOME/.zsh-builds
-    - ZSH_SOURCE=$HOME/zsh
-
+    - USE_CONTAINER=docker
 matrix:
   include:
     - os: osx
       language: generic
-      env: ZSH_BUILD_VERSION=master
+      env:
+        - USE_CONTAINER=no
     - os: linux
-      language: python
-      env: ZSH_BUILD_VERSION=master
+      env: ZSH_VERSION=zsh-5.3.1
     - os: linux
-      language: python
-      env: ZSH_BUILD_VERSION=zsh-5.3
+      env: ZSH_VERSION=zsh-5.3
     - os: linux
-      language: python
-      env: ZSH_BUILD_VERSION=zsh-5.2
+      env: ZSH_VERSION=zsh-5.2
     - os: linux
-      language: python
-      env: ZSH_BUILD_VERSION=zsh-5.1
+      env: ZSH_VERSION=zsh-5.1.1
     - os: linux
-      language: python
-      env: ZSH_BUILD_VERSION=zsh-5.0.0
+      env: ZSH_VERSION=zsh-5.0.0
     - os: linux
-      language: python
-      env: ZSH_BUILD_VERSION=zsh-4.3.17
+      env: ZSH_VERSION=zsh-4.3.17
     - os: linux
-      language: python
-      env: ZSH_BUILD_VERSION=zsh-4.3.11
-    - os: linux
-      language: python
-      env: ZSH_BUILD_VERSION=zsh-4.3.5
+      env: ZSH_VERSION=zsh-4.3.11
 
-addons:
-    apt:
-        sources:
-            - debian-sid
-        packages:
-            - shellcheck
-
-install:
-  # Install python requirements.
-  - "make deps"
-
-  # Install shellcheck (osx only)
-  - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install shellcheck; fi
-
-  # Install zsh versions from source.
-  - "./tests/build-zsh.sh $ZSH_BUILD_VERSION $BUILDS_PATH $ZSH_SOURCE"
-
-before_install:
-  # Show system information
-  - "uname -a"
-
-  # Show the git version being used to test.
-  - "git --version"
-
-  # Show environment variables 
-  - "env"
-
-before_script:
-  # Show zsh version being deployed.
-  - "ZSH_BIN=$BUILDS_PATH/$ZSH_BUILD_VERSION/zsh"
-  - "$ZSH_BIN --version"
-
-  # Test config for git.
-  - "git config --global user.name test"
-  - "git config --global user.email test@test.test"
-
-  # Run shell check
-  - "shellcheck ./bin/antigen.zsh --shell=ksh -e SC1036,SC1056,SC1072,SC1073,SC1009,SC1083,SC1046,SC1047"
-
-# Run the tests.
 script:
-  - "time make tests SH=$ZSH_BIN"
-  - "export ANTIGEN=$TRAVIS_BUILD_DIR"
-  - "make stats _ANTIGEN_CACHE_ENABLED=false SH=$ZSH_BIN"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true SH=$ZSH_BIN"
-  - "make stats _ANTIGEN_CACHE_ENABLED=true STATS_USE_INIT=true SH=$ZSH_BIN"
+  - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install zsh; pip install cram; fi
+  - make info tests stats USE_CONTAINER=$USE_CONTAINER
+
   # Ensure the checked-in build matches the build produced in CI. Since the CI
   # will run this on both OS X and Linux, the two platforms must also produce
   # the same build, else one of them will fail.
-  - "SHASUM=$(shasum -a 256 ./bin/antigen.zsh) && echo $SHASUM"
-  - "time make"
-  - "SHACHECK=$(shasum -a 256 ./bin/antigen.zsh) && echo $SHACHECK"
-  - "[[ $SHASUM == $SHACHECK ]]"
+  - SHASUM=$(shasum -a 256 ./bin/antigen.zsh)
+  - make USE_CONTAINER=$USE_CONTAINER
+  - SHACHECK=$(shasum -a 256 ./bin/antigen.zsh)
 
+  - echo -e "$SHASUM\n$SHACHECK"
+  - test "$SHASUM" == "$SHACHECK"

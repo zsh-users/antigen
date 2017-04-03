@@ -9,7 +9,7 @@ antigen-update () {
   local bundle=$1
 
   # Clear log
-  :> $_ANTIGEN_LOG_PATH
+  :> $ANTIGEN_LOG
 
   # Update revert-info data
   -antigen-revert-info
@@ -44,18 +44,18 @@ antigen-update () {
   local record=""
   local url=""
   local make_local_clone=""
-  
+
   if [[ $# -eq 0 ]]; then
     echo "Antigen: Missing argument."
     return 1
   fi
-  
+
   record=$(-antigen-find-record $bundle)
   if [[ ! -n "$record" ]]; then
     echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
     return 1
   fi
-  
+
   url="$(echo "$record" | cut -d' ' -f1)"
   make_local_clone=$(echo "$record" | cut -d' ' -f4)
 

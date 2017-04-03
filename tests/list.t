@@ -34,8 +34,8 @@ List command supports short format flag.
   .*/test-plugin2 @ master (re)
 
   $ antigen-list --long
-  .*/test-plugin / plugin true @ master (re)
-  .*/test-plugin2 / plugin true @ master (re)
+  .*/test-plugin / plugin true (re)
+  .*/test-plugin2 / plugin true (re)
 
 Can display feature branches.
 
@@ -48,8 +48,8 @@ Can display feature branches.
   .*/test-plugin2 @ .* (re)
 
   $ antigen-list --long
-  .*/test-plugin / plugin true @ master (re)
-  .*/test-plugin2 / plugin true @ .* (re)
+  .*/test-plugin / plugin true (re)
+  .*/test-plugin2 / plugin true (re)
 
 Find bundle/record internal function.
 
@@ -71,11 +71,12 @@ Find bundle/record internal function.
   $ -antigen-find-record plugin2
   *test-plugin2* (glob)
 
-  $ -antigen-find-record list.t/test-plugin
+  $ -antigen-find-record test-plugin
   *test-plugin* (glob)
 
-  $ -antigen-find-record list.t/test-plugin2
+  $ -antigen-find-record test-plugin2
   *test-plugin2* (glob)
 
-  $ -antigen-find-record list.t
-  *test-plugin* (glob)
+  $ -antigen-find-record 'cram-testdir-*/test-plugin2'
+  *cram-testdir-*/test-plugin2* (glob)
+

@@ -3,9 +3,8 @@ antigen-bundles () {
   # are ignored. Everything else is given to `antigen-bundle` as is, no
   # quoting rules applied.
   local line
+  setopt localoptions no_extended_glob # See https://github.com/zsh-users/antigen/issues/456
   grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-    # Using `eval` so that we can use the shell-style quoting in each line
-    # piped to `antigen-bundles`.
-    eval antigen-bundle ${(q)line}
+    antigen-bundle ${=line%#*}
   done
 }

@@ -14,6 +14,10 @@
   local btype="$4"
   local src
 
+  if [[ -d "$loc/functions" ]]; then
+    fpath=($loc/functions $fpath)
+  fi
+
   for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone" "$btype"); do
     # TODO Refactor this out
     if [[ -d "$src" ]]; then
@@ -28,19 +32,23 @@
       # interactive bundle/theme loading, for static loading -99.9% of the time-
       # eval and subshells are not needed.
       if [[ "$btype" == "theme" ]]; then
-        eval "$(cat $src | sed -Ee '/\{$/,/^\}/!{
-                s/^local //
-            }')"
+        eval "__PREVDIR=$PWD; cd ${src:A:h};
+              $(cat $src | sed -Ee '/\{$/,/^\}/!{
+               s/^local //
+           }'); cd $__PREVDIR"
       else
         source "$src"
       fi
     fi
-
   done
 
-  local location="$url/"
+  local location="$url"
+  if [[ "$loc" != "/" ]]; then
+    loc="/$loc"
+  fi
+
   if $make_local_clone; then
-    location="$(-antigen-get-clone-dir "$url")/$loc"
+    location="$(-antigen-get-clone-dir $url)$loc"
   fi
 
   # If there is no location either as a file or a directory

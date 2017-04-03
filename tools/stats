@@ -1,0 +1,121 @@
+#!/usr/bin/env zsh
+# vim: sw=2 ts=2 et
+#set -x
+typeset -g ITERATIONS=20
+
+function stats/usage () {
+  echo "Usage: $0 --zsh /path/to/zsh --antigen /path/to/antigen"
+}
+
+# Usage:
+#   stats/main $@
+function stats/main () {
+  zparseopts -A opts z:=zsh -zsh:=zsh \
+  a:=antigen -antigen:=antigen || stats/usage
+
+  local zsh=$zsh[2]
+  local antigen=$antigen[2]
+
+  if [[ ! -f "$zsh" ]]; then
+    if (( ! $+commands[zsh] )); then
+      echo "Define the path to ZSH binary with '--zsh' argument. Given: $zsh"
+      exit 1
+    fi
+  fi
+
+  if [[ ! -d "$antigen" ]]; then
+    echo "Define a path to Antigen with '--antigen' argument. Given: $antigen"
+    exit 1
+  fi
+  
+  echo "Using zsh: $zsh ($($zsh --version))"
+  echo "Using Antigen from: $antigen ($(cat $antigen/VERSION || echo unknown))"
+
+  local antigenrc=$(mktemp -d /tmp/dot-antigen-stats-XXXXXX)
+  local mtime=$antigenrc/stats-time.log
+
+  stats/configure $antigenrc $antigen
+  stats/exec $zsh $mtime $ITERATIONS
+  stats/parse $mtime
+}
+
+# Usage
+#   stats/configure $ADOTDIR /path/to/zshrc_antigenrc
+function stats/configure () {
+  export ADOTDIR=$1
+  local configs=$2
+
+  export ZDOTDIR=$ADOTDIR
+  mkdir -p $ADOTDIR
+  cp $configs/tests/.antigenrc $ADOTDIR
+
+  # Fix path for non-container based stats
+  sed -e "s|/antigen/tests|$ADOTDIR|" -e "s|/antigen|$configs|" $configs/tests/.zshrc > $ADOTDIR/.zshrc
+
+  echo "Antigen configuration path: $ADOTDIR"
+  echo "Using zsh configuration from: $ADOTDIR/.zshrc"
+
+  echo "System information:"
+  uname -a
+  lscpu
+  echo
+
+  echo "Configuration:"
+  echo ">>>>"
+  cat $ADOTDIR/.zshrc
+  echo "<<<<"
+  echo
+
+  echo "Antigen configuration:"
+  echo ">>>>"
+  cat $ADOTDIR/.antigenrc
+  echo "<<<<"
+  echo
+}
+
+# Usage:
+#   stats/exec $path_to_zsh $path_to_output_file $iterations_count
+function stats/exec() {
+  local zsh=$1
+  local output=$2
+  local iterations=${3:-20}
+  export ANTIGEN=$ADOTDIR
+
+  echo Installing bundles...
+  if [[ -d $ADOTDIR/bundles || -d $ADOTDIR/repos ]]; then
+    echo Bundles present in ADOTDIR.
+  fi
+  $zsh -ic 'exit'
+  echo
+
+  echo Installed bundles:
+  $zsh -ic 'antigen list'
+  echo
+
+  echo Performance testing...
+  :> $output
+
+  for x in $(seq 1 $iterations); do
+    (time $zsh -ic exit) 2>&1 | tr "\n" ' ' &>> $output
+    echo &>> $output
+
+    tail -1 $output
+  done
+}
+
+# Usage:
+#   stats/parse $path_to_output_file
+function stats/parse() {
+  local data=$1
+  awk '{
+    sub("m","",$7); total += $7;
+    sub("m","", $1); user += $1;
+    sub("m", "", $3); sys += $3;
+    count++
+  } END {
+    printf "\nAverage:\ntotal %.3fs user %.3fs sys %.3fs\n", total/count, user/count, sys/count
+  }' $data
+}
+
+stats/main $@
+

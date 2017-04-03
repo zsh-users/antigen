@@ -1,5 +1,5 @@
 # Running tests creates this completion dump file.
-tests/.zcompdump*
+.zcompdump*
 
 # Test failure reports
 tests/*.t.err
@@ -7,6 +7,7 @@ tests/*.t.err
 # If the $ADOTDIR is the same as the antigen's clone directory itself, the
 # following would be shown as untracked.
 repos/
+bundles/
 revert-info
 
 # Cache directory for ext/zcache
@@ -24,3 +25,9 @@ revert-info
 
 # Ignore timestamp file for zcache auto-reset config
 *.timestamp
+
+# cache init
+/init.zsh
+.antigenrc
+.zshrc
+.zcomp*

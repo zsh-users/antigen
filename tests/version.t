@@ -1,7 +1,7 @@
 Antigen version command.
 
   $ antigen-version
-  Antigen v* (glob)
+  Antigen * (glob)
 
   $ antigen version
-  Antigen v* (glob)
+  Antigen * (glob)
