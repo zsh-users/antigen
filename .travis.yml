@@ -31,7 +31,7 @@ matrix:
 notifications:
   webhooks:
     urls:
-      - "https://webhooks.gitter.im/e/0dcaf6c7f2bebfd57f3f"
+      - "https://webhooks.gitter.im/e/30fdb3abe241aa03af20"
     on_success: always
     on_failure: always
     on_start: always
