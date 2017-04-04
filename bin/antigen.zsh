@@ -564,7 +564,7 @@ antigen () {
       # interactive bundle/theme loading, for static loading -99.9% of the time-
       # eval and subshells are not needed.
       if [[ "$btype" == "theme" ]]; then
-        eval "__PREVDIR=$PWD; cd ${src:A:h};
+        eval "__PREVDIR=$PWD; cd ${line:A:h};
               $(cat $line | sed -Ee '/\{$/,/^\}/!{
                s/^local //
            }'); cd $__PREVDIR"
