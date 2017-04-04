@@ -554,6 +554,7 @@ antigen () {
   local make_local_clone="$3"
   local btype="$4"
   local src
+  local -aU _fpath _PATH
 
   -antigen-load-list "$url" "$loc" "$make_local_clone" "$btype" | while read line; do
     if [[ -f "$line" ]]; then
@@ -571,7 +572,7 @@ antigen () {
         source "$line"
       fi
     elif [[ -d "$line" ]]; then
-      PATH="$PATH:$line"
+      _PATH="$_PATH:$line"
     fi
   done
 
@@ -585,14 +586,24 @@ antigen () {
   fi
 
   if [[ -d "$location" ]]; then
-    fpath+=($location)
+    _fpath+=($location)
   fi
 
   if [[ -d "$location/functions" ]]; then
-    fpath+=($location/functions)
+    _fpath+=($location/functions)
   fi
 
-  return 0
+  local success=1
+  if [[ -f "$location" || -d "$location" ]]; then
+    PATH="$PATH:$_PATH"
+    if (( ! ${fpath[(I)$location]} )); then
+      fpath+=($_fpath)
+    fi
+
+    success=0
+  fi
+
+  return $success
 }
 -antigen-parse-args () {
   local key
@@ -869,7 +880,7 @@ compdef () {}\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$ANTIGEN_CACHE"
   zcompile "$ANTIGEN_CACHE"
-  
+
   # Compile config files, if any
   [[ -n $ANTIGEN_CHECK_FILES ]] && zcompile "$ANTIGEN_CHECK_FILES"
 

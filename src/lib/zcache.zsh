@@ -143,7 +143,7 @@ compdef () {}\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$ANTIGEN_CACHE"
   zcompile "$ANTIGEN_CACHE"
-  
+
   # Compile config files, if any
   [[ -n $ANTIGEN_CHECK_FILES ]] && zcompile "$ANTIGEN_CHECK_FILES"
 
