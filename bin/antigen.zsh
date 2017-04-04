@@ -556,29 +556,6 @@ antigen () {
   local src
   local -aU _fpath _PATH
 
-  -antigen-load-list "$url" "$loc" "$make_local_clone" "$btype" | while read line; do
-    if [[ -f "$line" ]]; then
-      # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
-      # This is needed to seek-and-destroy local variable definitions *outside*
-      # function-contexts. This is done in this particular way *only* for
-      # interactive bundle/theme loading, for static loading -99.9% of the time-
-      # eval and subshells are not needed.
-      if [[ "$btype" == "theme" ]]; then
-        eval "__PREVDIR=$PWD; cd ${line:A:h};
-              $(cat $line | sed -Ee '/\{$/,/^\}/!{
-               s/^local //
-           }'); cd $__PREVDIR"
-      # Missing pmodload for prezto modules
-      elif [[ "$src" =~ "init.zsh" && $+functions[pmodload] == 1 ]]; then
-        pmodload "${loc#modules}"
-      else
-        source "$line"
-      fi
-    elif [[ -d "$line" ]]; then
-      _PATH="$_PATH:$line"
-    fi
-  done
-
   local location="$url"
   if $make_local_clone; then
     location="$(-antigen-get-clone-dir "$url")"
@@ -605,6 +582,26 @@ antigen () {
 
     success=0
   fi
+
+  -antigen-load-list "$url" "$loc" "$make_local_clone" "$btype" | while read line; do
+    if [[ -f "$line" ]]; then
+      # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
+      # This is needed to seek-and-destroy local variable definitions *outside*
+      # function-contexts. This is done in this particular way *only* for
+      # interactive bundle/theme loading, for static loading -99.9% of the time-
+      # eval and subshells are not needed.
+      if [[ "$btype" == "theme" ]]; then
+        eval "__PREVDIR=$PWD; cd ${line:A:h};
+              $(cat $line | sed -Ee '/\{$/,/^\}/!{
+               s/^local //
+           }'); cd $__PREVDIR"
+      else
+        source "$line"
+      fi
+    elif [[ -d "$line" ]]; then
+      _PATH="$_PATH:$line"
+    fi
+  done
 
   return $success
 }
