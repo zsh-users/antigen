@@ -889,7 +889,6 @@ compdef () {}\NL"
 # Initialize completion
 antigen-apply () {
   \rm -f $ANTIGEN_COMPDUMP
-  autoload -Uz promptinit && promptinit
 
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
