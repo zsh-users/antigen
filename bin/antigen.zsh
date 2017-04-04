@@ -555,18 +555,8 @@ antigen () {
   local btype="$4"
   local src
 
-  if [[ -d "$loc/functions" ]]; then
-    fpath=($loc/functions $fpath)
-  fi
-
-  for src in $(-antigen-load-list "$url" "$loc" "$make_local_clone" "$btype"); do
-    # TODO Refactor this out
-    if [[ -d "$src" ]]; then
-      if (( ! ${fpath[(I)$src]} )); then
-          fpath=($src $fpath)
-      fi
-      PATH="$PATH:$src"
-    else
+  -antigen-load-list "$url" "$loc" "$make_local_clone" "$btype" | while read line; do
+    if [[ -f "$line" ]]; then
       # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
       # This is needed to seek-and-destroy local variable definitions *outside*
       # function-contexts. This is done in this particular way *only* for
@@ -574,39 +564,36 @@ antigen () {
       # eval and subshells are not needed.
       if [[ "$btype" == "theme" ]]; then
         eval "__PREVDIR=$PWD; cd ${src:A:h};
-              $(cat $src | sed -Ee '/\{$/,/^\}/!{
+              $(cat $line | sed -Ee '/\{$/,/^\}/!{
                s/^local //
            }'); cd $__PREVDIR"
       else
-        source "$src"
+        source "$line"
       fi
+    elif [[ -d "$line" ]]; then
+      PATH="$PATH:$line"
     fi
   done
 
   local location="$url"
-  if [[ "$loc" != "/" ]]; then
-    loc="/$loc"
-  fi
-
   if $make_local_clone; then
-    location="$(-antigen-get-clone-dir $url)$loc"
+    location="$(-antigen-get-clone-dir "$url")"
   fi
 
-  # If there is no location either as a file or a directory
-  # we assume there is an error in the given location
-  local success=0
-  if [[ -f "$location" || -d "$location" ]]; then
-    # Add to $fpath, for completion(s), if not in there already
-    if (( ! ${fpath[(I)$location]} )); then
-      fpath=($location $fpath)
-    fi
-  else
-    success=1
+  if [[ $loc != "/" ]]; then
+    location="$location/$loc"
   fi
 
-  return $success
+  if [[ -d "$location" ]]; then
+    fpath+=($location)
+  fi
+
+  if [[ -d "$location/functions" ]]; then
+    fpath+=($location/functions)
+  fi
+
+  return 0
 }
-
 -antigen-parse-args () {
   local key
   local value
@@ -891,6 +878,7 @@ compdef () {}\NL"
 # Initialize completion
 antigen-apply () {
   \rm -f $ANTIGEN_COMPDUMP
+  autoload -Uz promptinit && promptinit
 
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
