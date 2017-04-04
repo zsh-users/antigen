@@ -27,6 +27,9 @@
               $(cat $line | sed -Ee '/\{$/,/^\}/!{
                s/^local //
            }'); cd $__PREVDIR"
+      # Missing pmodload for prezto modules
+      elif [[ "$src" =~ "init.zsh" && $+functions[pmodload] == 1 ]]; then
+        pmodload "${loc#modules}"
       else
         source "$line"
       fi
