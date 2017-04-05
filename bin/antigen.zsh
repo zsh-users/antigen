@@ -798,10 +798,9 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #   Nothing. Generates ANTIGEN_CACHE
 -zcache-generate-cache () {
   local -aU _fpath _PATH
-  local _payload _sources location
+  local _payload _sources
 
   for bundle in $_ANTIGEN_BUNDLE_RECORD; do
-    # -antigen-load-list "$url" "$loc" "$make_local_clone"
     eval "$(-antigen-parse-bundle ${=bundle})"
 
     if $make_local_clone; then
