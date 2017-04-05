@@ -102,4 +102,3 @@ Load a binary bundle.
 
   $ echo $PATH | grep test-plugin3
   *plugin3* (glob)
-
