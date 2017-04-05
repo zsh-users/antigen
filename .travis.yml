@@ -28,7 +28,13 @@ matrix:
       env: ZSH_VERSION=zsh-4.3.17
     - os: linux
       env: ZSH_VERSION=zsh-4.3.11
-
+notifications:
+  webhooks:
+    urls:
+      - "https://webhooks.gitter.im/e/30fdb3abe241aa03af20"
+    on_success: always
+    on_failure: always
+    on_start: always
 script:
   - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install zsh; pip install cram; fi
   - make info tests stats USE_CONTAINER=$USE_CONTAINER

@@ -103,7 +103,7 @@ So, now that you're here, I suppose you are convinced and want Antigen running
 your shell all the time. Sweet. Let's do it.
 
 There are several installation methods available in the [Installation](#installation)
-section or you can use git:
+section. Let's try the `git` method.
 
 First, clone this repo, probably as a submodule if you have your dotfiles in a
 git repo,
@@ -197,8 +197,8 @@ but it could contain a completion file or just many `*.zsh` files to be sourced,
 or it could simply be a file (with any extension) that you want to source.
 `<loc>` defaults to `/`, which indicates the repository itself is a plugin.
 
-Use `@tag` or `@branch` to request a branch or tag. You may use semver-like format
-such as `antigen bundle zsh-users/zsh-syntax-highlighting@0.5.*`.
+Use `@tag` or `@branch` to request a tag or a branch. You may use semver-like format
+such as `0.5.*`.
 
 An example invocation would be
 
@@ -259,9 +259,9 @@ This is a small implementation detail and shouldn't influence you in any way.
 `--no-local-clone` &mdash; This command can be useful if you are developing a
 plugin and already have a clone on your local file system. If this argument is
 not given, even if the given repo url is a local path, a clone is made in the
-`$ADOTDIR/repos`, and the plugin is loaded from that clone. But, if you give
-this argument, the plugin is sourced straight from the repo location, without
-creating a clone. For example,
+`$ANTIGEN_BUNDLES` directory, and the plugin is loaded from that clone. But, if
+you give this argument, the plugin is sourced straight from the repo location,
+without creating a clone. For example,
 
     antigen bundle /absolute/path/to/the/plugin --no-local-clone
 
@@ -277,12 +277,8 @@ dotfiles repo. For example,
 
     antigen bundle $HOME/dotfiles/oh-my-zsh/custom
 
-In addition to the above discussed arguments, `antigen bundle` also takes a
-`btype` keyword-only argument, that is used internally. You shouldn't be
-concerned with this argument, its only used internally and will probably go away
-in the future.  It indicates whether the bundle is a theme or a simple plugin.
-
-For details on what constitutes a valid bundle and how Antigen handles different types of bundles, see the [Notes on writing plugins](#notes-on-writing-plugins) section.
+For details on what constitutes a valid bundle and how Antigen handles different
+types of bundles, see the [Notes on writing plugins](#notes-on-writing-plugins) section.
 
 ### antigen bundles
 
@@ -483,9 +479,6 @@ This initializes the prezto framework. Your `.zshrc` file could look like this:
     antigen bundle sorin-ionescu/prezto modules/git
     antigen bundle sorin-ionescu/prezto modules/prompt
     antigen apply
-
-Also note that due to how Prezto is implemented Antigen has to alter `ZDOTDIR`
-environment variable, which is restored immediately after `antigen apply` command.
 
 #### custom library
 
