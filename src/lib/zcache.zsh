@@ -135,9 +135,7 @@ compdef () {}\NL"
   if [[ -n "$ZSH" ]]; then
     _payload+="ZSH=\"$ZSH\" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
   fi
-  if [[ -n "$ZDOTDIR" ]]; then
-    _payload+="ZDOTDIR=\"$ANTIGEN_BUNDLES\"\NL";
-  fi
+
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$ANTIGEN_CACHE"
