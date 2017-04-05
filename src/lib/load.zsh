@@ -13,7 +13,6 @@
   local make_local_clone="$3"
   local btype="$4"
   local src
-  local -aU _fpath _PATH
 
   local location="$url"
   if $make_local_clone; then
@@ -25,24 +24,19 @@
   fi
 
   if [[ -d "$location" ]]; then
-    _fpath+=($location)
+    fpath+=($location)
   fi
 
   if [[ -d "$location/functions" ]]; then
-    _fpath+=($location/functions)
+    fpath+=($location/functions)
   fi
 
   local success=1
-  if [[ -f "$location" || -d "$location" ]]; then
-    PATH="$PATH:$_PATH"
-    if (( ! ${fpath[(I)$location]} )); then
-      fpath+=($_fpath)
+  -antigen-load-list "$url" "$loc" "$make_local_clone" "$btype" | while read line; do
+    if [[ -f "$line" || -d "$line" ]]; then
+      success=0
     fi
 
-    success=0
-  fi
-
-  -antigen-load-list "$url" "$loc" "$make_local_clone" "$btype" | while read line; do
     if [[ -f "$line" ]]; then
       # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
       # This is needed to seek-and-destroy local variable definitions *outside*
@@ -58,7 +52,7 @@
         source "$line"
       fi
     elif [[ -d "$line" ]]; then
-      _PATH="$_PATH:$line"
+      PATH="$PATH:$line"
     fi
   done
 

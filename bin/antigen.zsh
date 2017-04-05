@@ -11,7 +11,7 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
 
 for config in $ANTIGEN_CHECK_FILES; do
   if [[ "$config" -nt "$config.zwc" ]]; then
-    zcompile "$config"
+    { zcompile "$config" } &!
     [[ -f "$ANTIGEN_CACHE" ]] && rm -f "$ANTIGEN_CACHE"
   fi
 done
@@ -445,6 +445,8 @@ antigen () {
     eval "test -z \"\$$arg_name\" && $arg_name='$arg_value'"
   }
 
+  typeset -gU fpath path
+
   # Pre-startup initializations.
   -set-default ANTIGEN_DEFAULT_REPO_URL \
       https://github.com/robbyrussell/oh-my-zsh.git
@@ -554,7 +556,6 @@ antigen () {
   local make_local_clone="$3"
   local btype="$4"
   local src
-  local -aU _fpath _PATH
 
   local location="$url"
   if $make_local_clone; then
@@ -566,24 +567,19 @@ antigen () {
   fi
 
   if [[ -d "$location" ]]; then
-    _fpath+=($location)
+    fpath+=($location)
   fi
 
   if [[ -d "$location/functions" ]]; then
-    _fpath+=($location/functions)
+    fpath+=($location/functions)
   fi
 
   local success=1
-  if [[ -f "$location" || -d "$location" ]]; then
-    PATH="$PATH:$_PATH"
-    if (( ! ${fpath[(I)$location]} )); then
-      fpath+=($_fpath)
+  -antigen-load-list "$url" "$loc" "$make_local_clone" "$btype" | while read line; do
+    if [[ -f "$line" || -d "$line" ]]; then
+      success=0
     fi
 
-    success=0
-  fi
-
-  -antigen-load-list "$url" "$loc" "$make_local_clone" "$btype" | while read line; do
     if [[ -f "$line" ]]; then
       # Hack away local variables. See https://github.com/zsh-users/antigen/issues/122
       # This is needed to seek-and-destroy local variable definitions *outside*
@@ -599,7 +595,7 @@ antigen () {
         source "$line"
       fi
     elif [[ -d "$line" ]]; then
-      _PATH="$_PATH:$line"
+      PATH="$PATH:$line"
     fi
   done
 
@@ -802,7 +798,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #   Nothing. Generates ANTIGEN_CACHE
 -zcache-generate-cache () {
   local -aU _fpath _PATH
-  local _payload="" _sources="" location=""
+  local _payload _sources location
 
   for bundle in $_ANTIGEN_BUNDLE_RECORD; do
     # -antigen-load-list "$url" "$loc" "$make_local_clone"
@@ -810,6 +806,23 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
     if $make_local_clone; then
       -antigen-ensure-repo "$url"
+    fi
+
+    local location="$url"
+    if $make_local_clone; then
+      location="$(-antigen-get-clone-dir "$url")"
+    fi
+
+    if [[ $loc != "/" ]]; then
+      location="$location/$loc"
+    fi
+
+    if [[ -d "$location" ]]; then
+      _fpath+=($location)
+    fi
+
+    if [[ -d "$location/functions" ]]; then
+      _fpath+=($location/functions)
     fi
 
     -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
@@ -828,23 +841,6 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
         _PATH+=($line)
       fi
     done
-
-    local location="$url"
-    if $make_local_clone; then
-      location="$(-antigen-get-clone-dir "$url")"
-    fi
-
-    if [[ $loc != "/" ]]; then
-      location="$location/$loc"
-    fi
-
-    if [[ -d "$location" ]]; then
-      _fpath+=($location)
-    fi
-
-    if [[ -d "$location/functions" ]]; then
-      _fpath+=($location/functions)
-    fi
   done
 
   _payload="#-- START ZCACHE GENERATED FILE
@@ -879,7 +875,7 @@ compdef () {}\NL"
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$ANTIGEN_CACHE"
-  zcompile "$ANTIGEN_CACHE"
+  { zcompile "$ANTIGEN_CACHE" } &!
 
   # Compile config files, if any
   [[ -n $ANTIGEN_CHECK_FILES ]] && zcompile "$ANTIGEN_CHECK_FILES"

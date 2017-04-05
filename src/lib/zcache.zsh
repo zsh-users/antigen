@@ -65,7 +65,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #   Nothing. Generates ANTIGEN_CACHE
 -zcache-generate-cache () {
   local -aU _fpath _PATH
-  local _payload="" _sources="" location=""
+  local _payload _sources location
 
   for bundle in $_ANTIGEN_BUNDLE_RECORD; do
     # -antigen-load-list "$url" "$loc" "$make_local_clone"
@@ -73,6 +73,23 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
     if $make_local_clone; then
       -antigen-ensure-repo "$url"
+    fi
+
+    local location="$url"
+    if $make_local_clone; then
+      location="$(-antigen-get-clone-dir "$url")"
+    fi
+
+    if [[ $loc != "/" ]]; then
+      location="$location/$loc"
+    fi
+
+    if [[ -d "$location" ]]; then
+      _fpath+=($location)
+    fi
+
+    if [[ -d "$location/functions" ]]; then
+      _fpath+=($location/functions)
     fi
 
     -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
@@ -91,23 +108,6 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
         _PATH+=($line)
       fi
     done
-
-    local location="$url"
-    if $make_local_clone; then
-      location="$(-antigen-get-clone-dir "$url")"
-    fi
-
-    if [[ $loc != "/" ]]; then
-      location="$location/$loc"
-    fi
-
-    if [[ -d "$location" ]]; then
-      _fpath+=($location)
-    fi
-
-    if [[ -d "$location/functions" ]]; then
-      _fpath+=($location/functions)
-    fi
   done
 
   _payload="#-- START ZCACHE GENERATED FILE
@@ -142,7 +142,7 @@ compdef () {}\NL"
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$ANTIGEN_CACHE"
-  zcompile "$ANTIGEN_CACHE"
+  { zcompile "$ANTIGEN_CACHE" } &!
 
   # Compile config files, if any
   [[ -n $ANTIGEN_CHECK_FILES ]] && zcompile "$ANTIGEN_CHECK_FILES"

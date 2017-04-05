@@ -7,6 +7,8 @@
     eval "test -z \"\$$arg_name\" && $arg_name='$arg_value'"
   }
 
+  typeset -gU fpath path
+
   # Pre-startup initializations.
   -set-default ANTIGEN_DEFAULT_REPO_URL \
       https://github.com/robbyrussell/oh-my-zsh.git

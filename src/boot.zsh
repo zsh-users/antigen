@@ -8,7 +8,7 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
 
 for config in $ANTIGEN_CHECK_FILES; do
   if [[ "$config" -nt "$config.zwc" ]]; then
-    zcompile "$config"
+    { zcompile "$config" } &!
     [[ -f "$ANTIGEN_CACHE" ]] && rm -f "$ANTIGEN_CACHE"
   fi
 done
