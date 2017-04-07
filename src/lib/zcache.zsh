@@ -70,10 +70,6 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
   for bundle in $_ANTIGEN_BUNDLE_RECORD; do
     eval "$(-antigen-parse-bundle ${=bundle})"
 
-    if $make_local_clone; then
-      -antigen-ensure-repo "$url"
-    fi
-
     local location="$url"
     if $make_local_clone; then
       location="$(-antigen-get-clone-dir "$url")"
