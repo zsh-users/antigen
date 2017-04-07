@@ -723,11 +723,9 @@ your `.zshrc`.
 
 ### Helping out
 
-Antigen is licensed with the [MIT License][license].
+We welcome new contributors! We have a number of issues marked as ["Help wanted"](https://github.com/zsh-users/antigen/issues?q=is%3Aissue+is%3Aopen+label%3A%22Help+wanted%22) that are good places to jump in and get started. Take a look at our [Roadmap](https://trello.com/b/P0xrGgfT/antigen) to see future projects and discuss ideas.
 
-To contribute, please read the [contributing wiki page][contributing] before
-sending pull requests. If its a long/complicated change, please consider opening
-an [issue][] first so we can discuss it out. Thanks!
+Please be sure to check our [Contributing guidelines](https://github.com/zsh-users/antigen/wiki/Contributing) to understand our workflow, and our [Coding conventions](https://github.com/zsh-users/antigen/wiki/Styleguide).
 
 ### Feedback please
 
