@@ -1,21 +1,7 @@
 # CHANGELOG
+
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
-
-## Next release
-
-The next time you run `antigen update`, you will automatically be migrated to
-the [Prezto community fork][]. To remain on [sorin-ionescu/prezto][], set
-`ANTIGEN_PREZTO_REPO_URL=sorin-ionescu/prezto`.
-
-If you have changed your Prezto remote manually, be sure it's in sync with
-`ANTIGEN_PREZTO_REPO_URL` before you run `antigen update`.
-
-New environment variables:
-  - `ANTIGEN_PREZTO_REPO_URL`: The URL to use when cloning or updating Prezto.
-
-[Prezto community fork]: https://github.com/zsh-users/prezto
-[sorin-ionsecu/prezto]: https://github.com/sorin-ionescu/prezto
 
 ## [1.4.1] - 2017-02-26
 
@@ -336,6 +322,7 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 - [#162] Fix issue with antigen update after revert
 
 ## [1.0.4] - 2016-08-27
+
 ### Added
 - [#188] Add CONTRIBUTING.md to documentation
 - [#183] Update README.md to use rawgit in examples
@@ -349,15 +336,42 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 - [#169] Load Antigen's own completions at load time
 
 ## [1.0.3] - 2016-08-20
+
 ### Changed
 - [#172] Fix TravisCI configuration 
 
 ## [1.0.2] - 2016-08-11
+
 ### Changed
 - [#168] Update README.md example code thanks to @chadmoore
 
 ## [1.0.1] - 2016-07-21
+
 ### Added
 - [#141] Performance improvements thanks to @outcoldman
 - Added CHANGELOG.md
 - Following [Semantic Versioning](http://semver.org/)
+
+[1.4.1]: https://github.com/zsh-users/antigen/compare/v1.4.0...v1.4.1
+[1.4.0]: https://github.com/zsh-users/antigen/compare/v1.3.5...v1.4.0
+[1.3.5]: https://github.com/zsh-users/antigen/compare/v1.3.4...v1.3.5
+[1.3.4]: https://github.com/zsh-users/antigen/compare/v1.3.3...v1.3.4
+[1.3.3]: https://github.com/zsh-users/antigen/compare/v1.3.2...v1.3.3
+[1.3.2]: https://github.com/zsh-users/antigen/compare/v1.3.1...v1.3.2
+[1.3.1]: https://github.com/zsh-users/antigen/compare/v1.3.0...v1.3.1
+[1.3.0]: https://github.com/zsh-users/antigen/compare/v1.2.4...v1.3.0
+[1.2.4]: https://github.com/zsh-users/antigen/compare/v1.2.3...v1.2.4
+[1.2.3]: https://github.com/zsh-users/antigen/compare/v1.2.2...v1.2.3
+[1.2.2]: https://github.com/zsh-users/antigen/compare/v1.2.1...v1.2.2
+[1.2.1]: https://github.com/zsh-users/antigen/compare/v1.2.0...v1.2.1
+[1.2.0]: https://github.com/zsh-users/antigen/compare/v1.1.4...v1.2.0
+[1.1.4]: https://github.com/zsh-users/antigen/compare/v1.1.3...v1.1.4
+[1.1.3]: https://github.com/zsh-users/antigen/compare/v1.1.2...v1.1.3
+[1.1.2]: https://github.com/zsh-users/antigen/compare/v1.1.1...v1.1.2
+[1.1.1]: https://github.com/zsh-users/antigen/compare/v1.1.0...v1.1.1
+[1.1.0]: https://github.com/zsh-users/antigen/compare/v1.0.4...v1.1.0
+[1.0.4]: https://github.com/zsh-users/antigen/compare/v1.0.3...v1.0.4
+[1.0.3]: https://github.com/zsh-users/antigen/compare/v1.0.2...v1.0.3
+[1.0.2]: https://github.com/zsh-users/antigen/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/zsh-users/antigen/compare/v1...v1.0.1
+
