@@ -1,19 +1,23 @@
-Use unknown library.
+Use url library.
+  $ antigen-bundle () { echo $@ }
+  $ antigen-use https://github.com/zsh-users/prezto.git
+  https://github.com/zsh-users/prezto.git
+  $ echo $ANTIGEN_DEFAULT_REPO_URL
+  https://github.com/zsh-users/prezto.git
 
-  $ antigen-use unknown
-  Usage: antigen-use <library-name>
-  Where <library-name> is any one of the following:
-   * oh-my-zsh
-   * prezto
-  [1]
+Accept antigen-bundle semantics.
+  $ antigen-bundle () { echo $@ }
+  $ antigen-use https://github.com/zsh-users/prezto.git --loc=lib
+  https://github.com/zsh-users/prezto.git --loc=lib
 
 Missing argument.
 
   $ antigen-use
-  Usage: antigen-use <library-name>
+  Usage: antigen-use <library-name|url>
   Where <library-name> is any one of the following:
    * oh-my-zsh
    * prezto
+  <url> is the full url.
   [1]
 
 Mock out the library loading functions.

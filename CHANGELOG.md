@@ -2,6 +2,27 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.1] - 2017-02-26
+
+### Changed
+- [#402, #409] `antige-use` command handle library url
+- [#404, #408] Update README.md with new antigen-related articles
+
+### Fixed
+- [#403, #407] Disable OS X builds on TravisCI
+
+Thanks everyone who reported issues and provided feedback.
+
+## [1.4.0] - 2017-02-11
+
+### Changed
+- [#386, #387] Use reference cache rather than source bundle
+
+### Fixed
+- [#400, #391] Cache library handle environment variables for default libraries
+
+Thanks @lukechilds, @shoeffner and everyone who reported issues and provided feedback.
+
 ## [1.3.5] - 2017-02-03
 
 ### Changed
