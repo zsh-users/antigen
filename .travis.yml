@@ -43,7 +43,7 @@ script:
   # will run this on both OS X and Linux, the two platforms must also produce
   # the same build, else one of them will fail.
   - SHASUM=$(shasum -a 256 ./bin/antigen.zsh)
-  - make USE_CONTAINER=$USE_CONTAINER
+  - VERSION=$(cat ./VERSION) make USE_CONTAINER=$USE_CONTAINER
   - SHACHECK=$(shasum -a 256 ./bin/antigen.zsh)
 
   - echo -e "$SHASUM\n$SHACHECK"
