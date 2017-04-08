@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0] - 2017-04-08
+
+There are functions and configurations being either removed or renamed, please
+review this document before updating your Antigen installation.
+
+Removed functions:
+
+  - `-antigen-lib`        - Deprecated since v1
+  - `-antigen-prezto-lib` - Deprecated since v1
+
+Deprecated configuration:
+
+  - `_ANTIGEN_FORCE_RESET_COMPDUMP`
+  - `_ANTIGEN_RESET_THEME_HOOKS`
+  - `_ANTIGEN_AUTODETECT_CONFIG_CHANGES`
+  - `_ANTIGEN_CACHE_ENABLED`
+  - `_ANTIGEN_COMP_ENABLED`
+
+Renamed configuration:
+
+  - `_ANTIGEN_LOG_PATH`     ~> `ANTIGEN_LOG`
+  - `_ANTIGEN_CACHE_PATH`   ~> `ANTIGEN_CACHE`
+  - `_ANTIGEN_COMPDUMPFILE` ~> `ANTIGEN_COMPDUMP`
+
+Added configurations:
+
+  - `ANTIGEN_CHECK_FILES`     - Use to configure which files to check for changes
+  - `ANTIGEN_SUBMODULE_OPTS`  - Use to pass arguments to `git submodule` command
+  - `ANTIGEN_CLONE_OPTS`      - Use to pass arguments to `git clone` command
+  - `ANTIGEN_BUNDLES`         - Use to configure bundle path location
+  - `ANTIGEN_PREZTO_REPO_URL` - Use to configure Prezto default url
+
+### Removed
+- [#197, #298] Removed `-antigen-lib`, `-antigen-prezto-lib`
+
+### Added
+- [#309] Use `git` shallow cloning to speed up bundle install
+- [#299, #261] Handles `$PATH`
+- [#415] Added link to multiple OS install methods
+- [#423, #262] Support semver-like bundling
+- [#461] Use Docker container for tests and stats generation
+- [#462, #466] Add extended help text for `antigen-help` command
+- [#467, #465] Show version hash on `antgen-version` command
+- [#469] Function to migrate old bundle paths to new format
+- [#464] Update wiki pages for new version
+
+### Changed
+- [#326, #259] Support updating a single bundle
+- [#352] Support `antigen-update` tab completion
+- [#351, #379] Update `Makefile` release tasks
+- [#411, #371, #445] `antigen-list` show version information (tag, branch, git hash)
+- [#420] Support reference cache (vs bundle cache)
+- [#450] Refactor `_ANTIGEN_BUNDLE_RECORD`
+- [#454] Simplify change detection
+- [#457, #460] Change bundle path generation function
+
+### Fixed
+- [#353] `antigen-update` properly handles `--no-local-clone`
+- [#419] Don't require confirmation when cleaning up
+- [#439, #442, #438] Fix `antigen-selfupdate` failing with sym-links
+- [#441, #440] `antigen-init` command checks input
+- [#453, #452] Respect `_ANTIGEN_COMPDUMP` configuration
+
+Thanks everyone who reported issues and provided feedback.
+
 ## [1.4.1] - 2017-02-26
 
 ### Changed
@@ -352,6 +417,7 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 - Added CHANGELOG.md
 - Following [Semantic Versioning](http://semver.org/)
 
+[2.0.0]: https://github.com/zsh-users/antigen/compare/v1.4.1...v2.0.0
 [1.4.1]: https://github.com/zsh-users/antigen/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/zsh-users/antigen/compare/v1.3.5...v1.4.0
 [1.3.5]: https://github.com/zsh-users/antigen/compare/v1.3.4...v1.3.5
