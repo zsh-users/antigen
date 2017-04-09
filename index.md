@@ -31,7 +31,7 @@ sample, if you will.
 
 Get and load antigen.
 
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.4.0/bin/antigen.zsh > antigen.zsh
+    curl https://cdn.rawgit.com/zsh-users/antigen/v1.4.1/bin/antigen.zsh > antigen.zsh
     source antigen.zsh
 
 There. You now have all the antigen goodies. Let's try install some plugins. How
@@ -95,6 +95,9 @@ and continue until you're tired. At which point you can come back to this page
 
 So, now that you're here, I suppose you are convinced and want antigen running
 your shell all the time. Sweet. Let's do it.
+
+There are several installation methods available in the [Installation](#installation)
+section or you can use git:
 
 First, clone this repo, probably as a submodule if you have your dotfiles in a
 git repo,
@@ -356,7 +359,9 @@ Insider detail: The information for reverting is stored in
 Use this command to list out the currently *loaded* plugins. Keep in mind that
 this includes any bundles installed on-the-fly.
 
-Takes no arguments. Gives out four entries per line of output, denoting the
+    antigen list [--short]
+
+Without arguments it gives out four entries per line of output, denoting the
 following fields of each bundle.
 
     <repo-url> <loc> <btype> <has-local-clone?>
@@ -366,6 +371,8 @@ The `btype` field is an internal detail, that specifies if the bundle is a
 
 The final field is `true` or `false` reflecting whether there is a local clone
 for this bundle.
+
+With `--short` argument it will only print short bundle names only.
 
 ### antigen cleanup
 
@@ -407,7 +414,7 @@ Takes no further arguments.
 ### antigen use
 
 This command lets you load any (supported) zsh pre-packaged framework, like
-oh-my-zsh. Usage is
+oh-my-zsh, as well as any library from custom url. Usage is
 
     antigen use oh-my-zsh
 
@@ -459,6 +466,15 @@ Please note that Prezto support is new and experimental. If you find any bugs, p
 report over on github issues.
 Also note that due to how Prezto is implemented Antigen has to alter `ZDOTDIR`
 environment variable, which is restored immediately after `antigen apply` command.
+
+#### custom library
+
+Use
+
+    antigen use https://github.com/custom/lib.git
+
+in your `.zshrc`, before any `antigen bundle` declarations. It take all arguments
+`antigen-bundle` command does.
 
 ### antigen theme
 
@@ -561,7 +577,7 @@ looks good as output on the command line.
 
 Install Antigen from our main repository for the latests and greatests version available:
 
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.4.0/bin/antigen.zsh > antigen.zsh
+    curl https://cdn.rawgit.com/zsh-users/antigen/v1.4.1/bin/antigen.zsh > antigen.zsh
 
 Or using your system package manager:
 
@@ -680,11 +696,9 @@ Any comments/suggestions/feedback welcome. Please say hello to us on
 
 These are some external articles wrote by Antigen users.
 
-- [Awesome cmd line with antigen (zsh plugin manager)](https://medium.com/cocoaacademymag/awesome-cmd-line-with-antigen-zsh-plugin-manager-d497574f7b5)
-
 - [Oh-my-zsh is the Disease and Antigen is the Vaccine](http://joshldavis.com/2014/07/26/oh-my-zsh-is-a-disease-antigen-is-the-vaccine/)
 
-- [Personalizando zsh: antigen](http://antonio-mario.com/personalizando-zsh-antigen/)
+- [Awesome cmd line with antigen (zsh plugin manager)](https://medium.com/cocoaacademymag/awesome-cmd-line-with-antigen-zsh-plugin-manager-d497574f7b5)
 
 - [Just discovered.. zsh!](https://arteymix.github.io/2015/01/20/just-discovered-zsh.html)
 
@@ -711,6 +725,8 @@ These are some external articles wrote by Antigen users.
 - [antigen - دانیال نیک نام](https://blog.niknam.org/1395/09/23/antigen/)
 
 - [What Can Antigen Do For You?](http://blog.andrewlang.net/post/150662693408/what-can-antigen-do-for-you)
+
+- [A Modern Terminal Workflow](http://wrotenwrites.com/a_modern_terminal_workflow_3/)
 
 
 ### Plugins and Alternatives
