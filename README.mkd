@@ -617,7 +617,7 @@ to `$ADOTDIR/bundles`.
 
 `ANTIGEN_CHECK_FILES` &mdash; Use this configuration to define if Antigen should
 check for configuration changes, this is to avoid doing `antigen-reset` manually.
-Use `typeset -A ANTIGEN_CHECK_FILES=(/path/to/.antigenrc /path/to/.zshrc /path/to/other)`
+Use `typeset -a ANTIGEN_CHECK_FILES=(/path/to/.antigenrc /path/to/.zshrc /path/to/other)`
 to activate it.
 
 `ANTIGEN_CLONE_OPTS`, `ANTIGEN_SUBMODULE_OPTS` &mdash; Use to control how Antigen
