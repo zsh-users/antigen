@@ -840,7 +840,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
   _payload="#-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
-#-- ANTIGEN v2.0.0
+#-- ANTIGEN develop
 $(functions -- _antigen)
 antigen () {
   [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" || \"\$ZSH_EVAL_CONTEXT\" =~ \"cmdarg:*\" ]] && \
@@ -855,15 +855,16 @@ _antigen_compinit () {
 autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
 compdef () {}\NL"
 
-  _payload+=$_sources
-  _payload+="typeset -aU _ANTIGEN_BUNDLE_RECORD;\
-      _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
-  _payload+="_ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='v2.0.0'\NL"
-
   # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
   if [[ -n "$ZSH" ]]; then
     _payload+="ZSH=\"$ZSH\" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
   fi
+
+  _payload+=$_sources
+
+  _payload+="typeset -aU _ANTIGEN_BUNDLE_RECORD;\
+      _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
+  _payload+="_ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='develop'\NL"
 
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
@@ -871,7 +872,7 @@ compdef () {}\NL"
   { zcompile "$ANTIGEN_CACHE" } &!
 
   # Compile config files, if any
-  [[ -n $ANTIGEN_CHECK_FILES ]] && zcompile "$ANTIGEN_CHECK_FILES"
+  [[ -n $ANTIGEN_CHECK_FILES ]] && { zcompile "$ANTIGEN_CHECK_FILES" } &!
 
   return true
 }
@@ -1448,7 +1449,7 @@ antigen-version () {
     revision=" ($(git --git-dir=$_ANTIGEN_INSTALL_DIR/.git rev-parse --short '@'))"
   fi
 
-  echo "Antigen v2.0.0$revision"
+  echo "Antigen develop$revision"
 }
 
 #compdef _antigen
