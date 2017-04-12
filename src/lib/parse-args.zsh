@@ -27,9 +27,20 @@
         case $index in
           0)
             key=url
-            if [[ "$value" =~ '@' ]]; then
-              echo "local branch='${value#*@}'"
-              value="${value%@*}"
+            local domain=""
+            local url_path=$value
+            if [[ "$value" =~ "://" || "$value" =~ ":" ]]; then # Full url with protocol or ssh github url (github.com:org/repo)
+              if [[ "$value" =~ [@.][^/:]+[:]?[0-9]*[:/]?(.*)@?$ ]]; then
+                url_path=$match[1]
+                domain=${value/$url_path/}
+              fi
+            fi
+
+            if [[ "$url_path" =~ '@' ]]; then
+              echo "local branch='${url_path#*@}'"
+              value="$domain${url_path%@*}"
+            else
+              value="$domain$url_path"
             fi
           ;;
           1) key=loc ;;
