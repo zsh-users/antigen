@@ -732,9 +732,6 @@ antigen () {
 }
 
 ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
-# Whether to use bundle or reference cache (since v1.4.0)
-_ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
-
 # Clears $0 and ${0} references from cached sources.
 #
 # This is needed otherwise plugins trying to source from a different path
@@ -798,10 +795,15 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #   Nothing. Generates ANTIGEN_CACHE
 -zcache-generate-cache () {
   local -aU _fpath _PATH
-  local _payload _sources
+  local bundle _payload _sources
 
   for bundle in $_ANTIGEN_BUNDLE_RECORD; do
-    eval "$(-antigen-parse-bundle ${=bundle})"
+    # Extract bundle metadata to pass them to -antigen-parse-bundle function.
+    # TODO -antigen-parse-bundle should be refactored for next major to support multiple positional arguments.
+    bundle=(${(@s/ /)bundle})
+    local no_local_clone=""
+    [[ $bundle[4] == "false" ]] && no_local_clone="--no-local-clone"
+    eval "$(-antigen-parse-bundle $bundle[1] $bundle[2] --btype=$bundle[3] $no_local_clone)"
 
     local location="$url"
     if $make_local_clone; then
@@ -822,10 +824,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
     -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
       if [[ -f "$line" ]]; then
-        # Whether to use bundle or reference cache
-        # Force bundle cache for btype = theme, until PR
-        # https://github.com/robbyrussell/oh-my-zsh/pull/3743 is merged.
-        if [[ $_ZCACHE_BUNDLE == true || $btype == "theme" ]]; then
+        if [[ $btype == "theme" ]]; then
           _sources+="#-- SOURCE: $line\NL"
           _sources+=$(-zcache-process-source "$line" "$btype")
           _sources+="\NL;#-- END SOURCE\NL"
