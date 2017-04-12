@@ -39,7 +39,7 @@ antigen bundles <<EOBUNDLES
   sprunge
   desyncr/gitr@develop
   git://repo.or.cz/safe-rm.git
-  git@github.com:reem/watch.git
+  #git@github.com:reem/watch.git
 EOBUNDLES
 
 antigen apply
