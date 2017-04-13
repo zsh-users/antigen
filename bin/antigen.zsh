@@ -53,13 +53,19 @@ antigen () {
 # Returns the bundle's git revision
 #
 # Usage
-#   -antigen-bundle-rev bundle-name
+#   -antigen-bundle-rev bundle-name [make_local_clone]
 #
 # Returns
 #   Bundle rev-parse output (branch name or short ref name)
 -antigen-bundle-rev () {
   local bundle=$1
-  local bundle_path=$(-antigen-get-clone-dir $bundle)
+  local make_local_clone=$2
+
+  local bundle_path=$bundle
+  if [[ "$make_local_clone" == "true" ]]; then
+    bundle_path=$(-antigen-get-clone-dir $bundle)
+  fi
+
   local ref
   ref=$(git --git-dir="$bundle_path/.git" rev-parse --abbrev-ref '@')
 
@@ -128,11 +134,7 @@ antigen () {
 # Returns
 #   List of bundles installed
 -antigen-get-bundles () {
-  local mode
-  local revision
-  local url
-  local bundle_name
-  local bundle_entry
+  local mode revision url bundle_name bundle_entry loc no_local_clone
   mode=${1:-"--short"}
 
   for record in $_ANTIGEN_BUNDLE_RECORD; do
@@ -141,8 +143,9 @@ antigen () {
 
     case "$mode" in
         --short)
-          revision=$(-antigen-bundle-rev $url)
           loc="$(echo "$record" | cut -d' ' -f2)"
+          make_local_clone="$(echo "$record" | cut -d' ' -f4)"
+          revision=$(-antigen-bundle-rev $url $make_local_clone)
           if [[ $loc != '/' ]]; then
             bundle_name="$bundle_name ~ $loc"
           fi
@@ -783,8 +786,7 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 #
 # Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
 # if this is done through -antigen-load-list.
-# Result is stored in ANTIGEN_CACHE. Loaded bundles and metadata is stored
-# in _ZCACHE_META_PATH.
+# Result is stored in ANTIGEN_CACHE.
 #
 # _ANTIGEN_BUNDLE_RECORD and fpath is stored in cache.
 #
@@ -799,7 +801,8 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 
   for bundle in $_ANTIGEN_BUNDLE_RECORD; do
     # Extract bundle metadata to pass them to -antigen-parse-bundle function.
-    # TODO -antigen-parse-bundle should be refactored for next major to support multiple positional arguments.
+    # TODO -antigen-parse-bundle should be refactored for next major to
+    # support multiple positional arguments.
     bundle=(${(@s/ /)bundle})
     local no_local_clone=""
     [[ $bundle[4] == "false" ]] && no_local_clone="--no-local-clone"

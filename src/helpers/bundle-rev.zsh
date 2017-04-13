@@ -1,13 +1,19 @@
 # Returns the bundle's git revision
 #
 # Usage
-#   -antigen-bundle-rev bundle-name
+#   -antigen-bundle-rev bundle-name [make_local_clone]
 #
 # Returns
 #   Bundle rev-parse output (branch name or short ref name)
 -antigen-bundle-rev () {
   local bundle=$1
-  local bundle_path=$(-antigen-get-clone-dir $bundle)
+  local make_local_clone=$2
+
+  local bundle_path=$bundle
+  if [[ "$make_local_clone" == "true" ]]; then
+    bundle_path=$(-antigen-get-clone-dir $bundle)
+  fi
+
   local ref
   ref=$(git --git-dir="$bundle_path/.git" rev-parse --abbrev-ref '@')
 

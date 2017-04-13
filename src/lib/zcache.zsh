@@ -50,8 +50,7 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 #
 # Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
 # if this is done through -antigen-load-list.
-# Result is stored in ANTIGEN_CACHE. Loaded bundles and metadata is stored
-# in _ZCACHE_META_PATH.
+# Result is stored in ANTIGEN_CACHE.
 #
 # _ANTIGEN_BUNDLE_RECORD and fpath is stored in cache.
 #
@@ -66,7 +65,8 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 
   for bundle in $_ANTIGEN_BUNDLE_RECORD; do
     # Extract bundle metadata to pass them to -antigen-parse-bundle function.
-    # TODO -antigen-parse-bundle should be refactored for next major to support multiple positional arguments.
+    # TODO -antigen-parse-bundle should be refactored for next major to
+    # support multiple positional arguments.
     bundle=(${(@s/ /)bundle})
     local no_local_clone=""
     [[ $bundle[4] == "false" ]] && no_local_clone="--no-local-clone"
