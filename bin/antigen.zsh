@@ -53,16 +53,17 @@ antigen () {
 # Returns the bundle's git revision
 #
 # Usage
-#   -antigen-bundle-rev bundle-name [make_local_clone]
+#   -antigen-bundle-rev bundle-name [is_local_clone]
 #
 # Returns
 #   Bundle rev-parse output (branch name or short ref name)
 -antigen-bundle-rev () {
   local bundle=$1
-  local make_local_clone=$2
+  local is_local_clone=$2
 
   local bundle_path=$bundle
-  if [[ "$make_local_clone" == "true" ]]; then
+  # Get bunde path inside $ADOTDIR if bundle was effectively cloned
+  if [[ "$is_local_clone" == "true" ]]; then
     bundle_path=$(-antigen-get-clone-dir $bundle)
   fi
 
@@ -71,7 +72,8 @@ antigen () {
 
   # Avoid 'HEAD' when in detached mode
   if [[ $ref == "HEAD" ]]; then
-    ref=$(git --git-dir="$bundle_path/.git" describe --tags --exact-match 2>/dev/null || git --git-dir="$bundle_path/.git" rev-parse --short '@')
+    ref=$(git --git-dir="$bundle_path/.git" describe --tags --exact-match 2>/dev/null \
+	    || git --git-dir="$bundle_path/.git" rev-parse --short '@' 2>/dev/null || "-")
   fi
   echo $ref
 }
@@ -735,7 +737,7 @@ antigen () {
 }
 
 ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
-# Whether to use bundle or reference cache (since v1.4.0)		
+# Whether to use bundle or reference cache (since v1.4.0)
 _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
 # Clears $0 and ${0} references from cached sources.
@@ -830,6 +832,9 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
     -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
       if [[ -f "$line" ]]; then
+        # Whether to use bundle or reference cache
+        # Force bundle cache for btype = theme, until PR
+        # https://github.com/robbyrussell/oh-my-zsh/pull/3743 is merged.
         if [[ $_ZCACHE_BUNDLE == true || $btype == "theme" ]]; then
           _sources+="#-- SOURCE: $line\NL"
           _sources+=$(-zcache-process-source "$line" "$btype")

@@ -1,5 +1,5 @@
 ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
-# Whether to use bundle or reference cache (since v1.4.0)		
+# Whether to use bundle or reference cache (since v1.4.0)
 _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
 # Clears $0 and ${0} references from cached sources.
@@ -94,6 +94,9 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
     -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
       if [[ -f "$line" ]]; then
+        # Whether to use bundle or reference cache
+        # Force bundle cache for btype = theme, until PR
+        # https://github.com/robbyrussell/oh-my-zsh/pull/3743 is merged.
         if [[ $_ZCACHE_BUNDLE == true || $btype == "theme" ]]; then
           _sources+="#-- SOURCE: $line\NL"
           _sources+=$(-zcache-process-source "$line" "$btype")
