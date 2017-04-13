@@ -53,8 +53,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #
 # Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
 # if this is done through -antigen-load-list.
-# Result is stored in ANTIGEN_CACHE. Loaded bundles and metadata is stored
-# in _ZCACHE_META_PATH.
+# Result is stored in ANTIGEN_CACHE.
 #
 # _ANTIGEN_BUNDLE_RECORD and fpath is stored in cache.
 #
@@ -65,10 +64,16 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #   Nothing. Generates ANTIGEN_CACHE
 -zcache-generate-cache () {
   local -aU _fpath _PATH
-  local _payload _sources
+  local bundle _payload _sources
 
   for bundle in $_ANTIGEN_BUNDLE_RECORD; do
-    eval "$(-antigen-parse-bundle ${=bundle})"
+    # Extract bundle metadata to pass them to -antigen-parse-bundle function.
+    # TODO -antigen-parse-bundle should be refactored for next major to
+    # support multiple positional arguments.
+    bundle=(${(@s/ /)bundle})
+    local no_local_clone=""
+    [[ $bundle[4] == "false" ]] && no_local_clone="--no-local-clone"
+    eval "$(-antigen-parse-bundle $bundle[1] $bundle[2] --btype=$bundle[3] $no_local_clone)"
 
     local location="$url"
     if $make_local_clone; then

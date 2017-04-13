@@ -53,19 +53,27 @@ antigen () {
 # Returns the bundle's git revision
 #
 # Usage
-#   -antigen-bundle-rev bundle-name
+#   -antigen-bundle-rev bundle-name [is_local_clone]
 #
 # Returns
 #   Bundle rev-parse output (branch name or short ref name)
 -antigen-bundle-rev () {
   local bundle=$1
-  local bundle_path=$(-antigen-get-clone-dir $bundle)
+  local is_local_clone=$2
+
+  local bundle_path=$bundle
+  # Get bunde path inside $ADOTDIR if bundle was effectively cloned
+  if [[ "$is_local_clone" == "true" ]]; then
+    bundle_path=$(-antigen-get-clone-dir $bundle)
+  fi
+
   local ref
   ref=$(git --git-dir="$bundle_path/.git" rev-parse --abbrev-ref '@')
 
   # Avoid 'HEAD' when in detached mode
   if [[ $ref == "HEAD" ]]; then
-    ref=$(git --git-dir="$bundle_path/.git" describe --tags --exact-match 2>/dev/null || git --git-dir="$bundle_path/.git" rev-parse --short '@')
+    ref=$(git --git-dir="$bundle_path/.git" describe --tags --exact-match 2>/dev/null \
+	    || git --git-dir="$bundle_path/.git" rev-parse --short '@' 2>/dev/null || "-")
   fi
   echo $ref
 }
@@ -128,11 +136,7 @@ antigen () {
 # Returns
 #   List of bundles installed
 -antigen-get-bundles () {
-  local mode
-  local revision
-  local url
-  local bundle_name
-  local bundle_entry
+  local mode revision url bundle_name bundle_entry loc no_local_clone
   mode=${1:-"--short"}
 
   for record in $_ANTIGEN_BUNDLE_RECORD; do
@@ -141,8 +145,9 @@ antigen () {
 
     case "$mode" in
         --short)
-          revision=$(-antigen-bundle-rev $url)
           loc="$(echo "$record" | cut -d' ' -f2)"
+          make_local_clone="$(echo "$record" | cut -d' ' -f4)"
+          revision=$(-antigen-bundle-rev $url $make_local_clone)
           if [[ $loc != '/' ]]; then
             bundle_name="$bundle_name ~ $loc"
           fi
@@ -798,8 +803,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #
 # Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
 # if this is done through -antigen-load-list.
-# Result is stored in ANTIGEN_CACHE. Loaded bundles and metadata is stored
-# in _ZCACHE_META_PATH.
+# Result is stored in ANTIGEN_CACHE.
 #
 # _ANTIGEN_BUNDLE_RECORD and fpath is stored in cache.
 #
@@ -810,10 +814,16 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #   Nothing. Generates ANTIGEN_CACHE
 -zcache-generate-cache () {
   local -aU _fpath _PATH
-  local _payload _sources
+  local bundle _payload _sources
 
   for bundle in $_ANTIGEN_BUNDLE_RECORD; do
-    eval "$(-antigen-parse-bundle ${=bundle})"
+    # Extract bundle metadata to pass them to -antigen-parse-bundle function.
+    # TODO -antigen-parse-bundle should be refactored for next major to
+    # support multiple positional arguments.
+    bundle=(${(@s/ /)bundle})
+    local no_local_clone=""
+    [[ $bundle[4] == "false" ]] && no_local_clone="--no-local-clone"
+    eval "$(-antigen-parse-bundle $bundle[1] $bundle[2] --btype=$bundle[3] $no_local_clone)"
 
     local location="$url"
     if $make_local_clone; then
