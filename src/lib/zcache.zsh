@@ -1,4 +1,7 @@
 ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
+# Whether to use bundle or reference cache (since v1.4.0)		
+_ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
+
 # Clears $0 and ${0} references from cached sources.
 #
 # This is needed otherwise plugins trying to source from a different path
@@ -91,7 +94,7 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 
     -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
       if [[ -f "$line" ]]; then
-        if [[ $btype == "theme" ]]; then
+        if [[ $_ZCACHE_BUNDLE == true || $btype == "theme" ]]; then
           _sources+="#-- SOURCE: $line\NL"
           _sources+=$(-zcache-process-source "$line" "$btype")
           _sources+="\NL;#-- END SOURCE\NL"
