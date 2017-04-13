@@ -59,3 +59,12 @@ Can load a theme without specifying a theme name:
   $ antigen-list --long | grep arrow
   *arrow* (glob)
 
+Do not change current directory.
+
+  $ cd /tmp/ 
+  $ antigen-theme $PLUGIN_DIR
+  $ antigen-list --long | grep arrow
+  *arrow* (glob)
+  $ pwd
+  /tmp
+
