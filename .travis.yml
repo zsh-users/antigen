@@ -35,6 +35,8 @@ notifications:
     on_success: always
     on_failure: always
     on_start: always
+# https://github.com/travis-ci/travis-ci/issues/1588
+before_script: echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 script:
   - if [ $TRAVIS_OS_NAME == 'osx' ]; then brew install zsh; pip install cram; fi
   - make info tests stats USE_CONTAINER=$USE_CONTAINER
