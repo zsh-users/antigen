@@ -140,14 +140,21 @@ antigen () {
   mode=${1:-"--short"}
 
   for record in $_ANTIGEN_BUNDLE_RECORD; do
-    url="$(echo "$record" | cut -d' ' -f1)"
+    bundle=(${(@s/ /)record})
+    url=$bundle[1]
+    loc=$bundle[2]
+    make_local_clone=$bundle[4]
+
     bundle_name=$(-antigen-bundle-short-name $url)
 
     case "$mode" in
         --short)
-          loc="$(echo "$record" | cut -d' ' -f2)"
-          make_local_clone="$(echo "$record" | cut -d' ' -f4)"
-          revision=$(-antigen-bundle-rev $url $make_local_clone)
+          # Only check revision for bundle with a requested branch
+	  if [[ $url == *\|* ]]; then
+            revision=$(-antigen-bundle-rev $url $make_local_clone)
+	  else
+	    revision="master"
+	  fi
           if [[ $loc != '/' ]]; then
             bundle_name="$bundle_name ~ $loc"
           fi
