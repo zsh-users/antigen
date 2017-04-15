@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/) [v2.0.0](http://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2017-04-15
+
+### Changed
+- [#489] Update `CHANGELOG` link to semver documentation
+- [#497, #498] Improve `antigen-list` command performance
+
+### Fixed
+- [#487] Fix documentation regarding `ANTIGEN_CHECK_FILES`
+- [#486, #485] Missing env vars for Oh-My-Zsh 
+- [#492, #490] Fix parsing git/ssh URLS
+- [#495, #494] Fix `antigen-theme` command changing CWD
+- [#493, #491] Fix `no-local-clone` flag being ignored
+
+Thanks everyone who reported issues and provided feedback.
+
 ## [2.0.0] - 2017-04-08
 
 There are functions and configurations being either removed or renamed, please
@@ -417,6 +432,7 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 - Added CHANGELOG.md
 - Following [Semantic Versioning](http://semver.org/)
 
+[2.0.1]: https://github.com/zsh-users/antigen/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/zsh-users/antigen/compare/v1.4.1...v2.0.0
 [1.4.1]: https://github.com/zsh-users/antigen/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/zsh-users/antigen/compare/v1.3.5...v1.4.0
