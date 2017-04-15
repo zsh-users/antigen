@@ -77,6 +77,13 @@ PLUGIN_DIR3="$TESTDIR/test-plugin3"
   } > /dev/null
 # }
 
+PLUGIN_DIR4="$TESTDIR/test-plugin4"
+# {
+  mkdir "$PLUGIN_DIR4"
+  echo "echo hello world" > "$PLUGIN_DIR4/hello-world"
+  chmod u+x "$PLUGIN_DIR4/hello-world"
+# }
+
 # Wrapper around \wc command to handle wc format differences between GNU and BSD
 # GNU:
 #  echo 1 | wc -l
