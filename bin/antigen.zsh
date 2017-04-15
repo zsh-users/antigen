@@ -68,7 +68,7 @@ antigen () {
   fi
 
   local ref
-  ref=$(git --git-dir="$bundle_path/.git" rev-parse --abbrev-ref '@')
+  ref=$(git --git-dir="$bundle_path/.git" rev-parse --abbrev-ref '@' 2>/dev/null)
 
   # Avoid 'HEAD' when in detached mode
   if [[ $ref == "HEAD" ]]; then

@@ -80,3 +80,13 @@ Find bundle/record internal function.
   $ -antigen-find-record 'cram-testdir-*/test-plugin2'
   *cram-testdir-*/test-plugin2* (glob)
 
+List bundle no git repo.
+
+  $ antigen bundle $PLUGIN_DIR4
+  $ antigen list
+  *test-plugin @ master (glob)
+  *test-plugin2 @ master (glob)
+  *test-plugin4 @ master (glob)
+  $ hello-world
+  hello world
+
