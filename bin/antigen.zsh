@@ -923,9 +923,11 @@ antigen-apply () {
   \rm -f $ANTIGEN_COMPDUMP
 
   # Auto determine check_files
-  if [[ -z "$ANTIGEN_CHECK_FILES" ]]; then
-    local src="${${funcfiletrace[2]%:*}##* }"
-    ANTIGEN_CHECK_FILES+=($src)
+
+  if [[ ! "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" && ! "$ZSH_EVAL_CONTEXT" =~ "cmdarg:*" ]]; then
+    if [[ -z "$ANTIGEN_CHECK_FILES" ]]; then
+      ANTIGEN_CHECK_FILES+=("${${funcfiletrace[2]%:*}##* }")
+    fi
   fi
 
   # Load the compinit module. This will readefine the `compdef` function to
