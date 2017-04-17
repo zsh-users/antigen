@@ -115,9 +115,8 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #-- ANTIGEN {{ANTIGEN_VERSION}}
 $(functions -- _antigen)
 antigen () {
-  [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" || \"\$ZSH_EVAL_CONTEXT\" =~ \"cmdarg:*\" ]] && \
-    source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && \
-      eval antigen \$@
+  [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" || \"\$ZSH_EVAL_CONTEXT\" =~ \"cmdarg:*\" ]] && source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && eval antigen \$@;
+  return 0;
 }
 fpath+=(${_fpath[@]}); PATH=\"\$PATH:${(j/:/)_PATH}\"
 _antigen_compinit () {
