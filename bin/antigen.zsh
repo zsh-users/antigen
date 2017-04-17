@@ -6,8 +6,18 @@
 #          and Contributors <https://github.com/zsh-users/antigen/contributors>
 # Homepage: http://antigen.sharats.me
 # License: MIT License <mitl.sharats.me>
+zmodload zsh/parameter
 
 ANTIGEN_CACHE="${ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
+ANTIGEN_RSRC="${ADOTDIR:-$HOME/.antigen}/.resources"
+
+typeset -a ANTIGEN_CHECK_FILES
+if [[ -n $ANTIGEN_CHECK_FILES ]]; then
+  ANTIGEN_CHECK_FILES=$ANTIGEN_CHECK_FILES
+elif [[ -f $ANTIGEN_RSRC ]]; then
+  ANTIGEN_CHECK_FILES=$(cat $ANTIGEN_RSRC 2> /dev/null)
+  ANTIGEN_CHECK_FILES=(${(@f)ANTIGEN_CHECK_FILES})
+fi
 
 for config in $ANTIGEN_CHECK_FILES; do
   if [[ "$config" -nt "$config.zwc" ]]; then
@@ -869,7 +879,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
   _payload="#-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
-#-- ANTIGEN v2.0.1
+#-- ANTIGEN develop
 $(functions -- _antigen)
 antigen () {
   [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" || \"\$ZSH_EVAL_CONTEXT\" =~ \"cmdarg:*\" ]] && \
@@ -893,7 +903,7 @@ compdef () {}\NL"
 
   _payload+="typeset -aU _ANTIGEN_BUNDLE_RECORD;\
       _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
-  _payload+="_ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='v2.0.1'\NL"
+  _payload+="_ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='develop'\NL"
 
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
@@ -901,13 +911,22 @@ compdef () {}\NL"
   { zcompile "$ANTIGEN_CACHE" } &!
 
   # Compile config files, if any
-  [[ -n $ANTIGEN_CHECK_FILES ]] && { zcompile "$ANTIGEN_CHECK_FILES" } &!
+  [[ -n $ANTIGEN_CHECK_FILES ]] && {
+    echo "$ANTIGEN_CHECK_FILES" >! "$ANTIGEN_RSRC"
+    zcompile $ANTIGEN_CHECK_FILES
+  } &!
 
   return true
 }
 # Initialize completion
 antigen-apply () {
   \rm -f $ANTIGEN_COMPDUMP
+
+  # Auto determine check_files
+  if [[ -z "$ANTIGEN_CHECK_FILES" ]]; then
+    local src="${${funcfiletrace[2]%:*}##* }"
+    ANTIGEN_CHECK_FILES+=($src)
+  fi
 
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
@@ -1209,6 +1228,7 @@ antigen-purge () {
 #   Nothing
 antigen-reset () {
   [[ -f "$ANTIGEN_CACHE" ]] && rm -f "$ANTIGEN_CACHE"
+  [[ -f "$ADOTDIR/.resources" ]] && rm -f "$ADOTDIR/.resources"
   echo 'Done. Please open a new shell to see the changes.'
 }
 antigen-restore () {
@@ -1478,7 +1498,7 @@ antigen-version () {
     revision=" ($(git --git-dir=$_ANTIGEN_INSTALL_DIR/.git rev-parse --short '@'))"
   fi
 
-  echo "Antigen v2.0.1$revision"
+  echo "Antigen develop$revision"
 }
 
 #compdef _antigen
