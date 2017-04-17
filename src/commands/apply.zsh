@@ -5,7 +5,9 @@ antigen-apply () {
   # Auto determine check_files
 
   if [[ ! "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" && ! "$ZSH_EVAL_CONTEXT" =~ "cmdarg:*" ]]; then
-    if [[ -z "$ANTIGEN_CHECK_FILES" ]]; then
+    # There always should be 2 steps from original source as the recommended way is to use
+    # `antigen` wrapper not `antigen-apply` directly.
+    if [[ -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 2 ]]; then
       ANTIGEN_CHECK_FILES+=("${${funcfiletrace[2]%:*}##* }")
     fi
   fi
