@@ -44,7 +44,7 @@ Effectively update a repository already cloned:
 
 Clone especific branch if required:
 
-  $ rm -r $ANTIGEN_BUNDLES/*
+  $ rm -r $ANTIGEN_BUNDLES
   $ -antigen-ensure-repo "$REPO_URL|v5.0"
   Installing user/repo@v5.0... 
   git clone .* --branch v5.0 -- https://github.com/user/repo.git .*user/repo-v5.0 (re)
