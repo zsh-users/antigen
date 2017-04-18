@@ -632,10 +632,13 @@ to `$ADOTDIR/bundles`.
 
 ### Optimizations
 
-`ANTIGEN_CHECK_FILES` &mdash; Use this configuration to define if Antigen should
-check for configuration changes, this is to avoid doing `antigen-reset` manually.
-Use `typeset -a ANTIGEN_CHECK_FILES=(/path/to/.antigenrc /path/to/.zshrc /path/to/other)`
-to activate it.
+`ANTIGEN_AUTO_CONFIG` &mdash; This configuration determines if Antigen should auto
+detect configuration files to check for changes (see `ANTIGEN_CHECK_FILES`). Default `true`.
+
+`ANTIGEN_CHECK_FILES` &mdash; Use this configuration to tell Antigen which files
+to check for configuration changes, this is to avoid doing `antigen-reset` manually.
+It's auto-determined if `ANTIGEN_AUTO_CONFIG` is enabled (default), otherwise use
+`typeset -a ANTIGEN_CHECK_FILES=(/path/to/.antigenrc /path/to/.zshrc /path/to/other)`.
 
 `ANTIGEN_CLONE_OPTS`, `ANTIGEN_SUBMODULE_OPTS` &mdash; Use to control how Antigen
 perform cloning repositories and fetching submodules from bundles. These are flags

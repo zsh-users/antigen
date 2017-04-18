@@ -6,20 +6,26 @@
 #          and Contributors <https://github.com/zsh-users/antigen/contributors>
 # Homepage: http://antigen.sharats.me
 # License: MIT License <mitl.sharats.me>
+zmodload zsh/parameter
 
 if [[ $ANTIGEN_CACHE != false ]]; then
   ANTIGEN_CACHE="${ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
+  ANTIGEN_RSRC="${ADOTDIR:-$HOME/.antigen}/.resources"
 
-  for config in $ANTIGEN_CHECK_FILES; do
-    if [[ "$config" -nt "$config.zwc" ]]; then
-      { zcompile "$config" } &!
-      [[ -f "$ANTIGEN_CACHE" ]] && rm -f "$ANTIGEN_CACHE"
-    fi
-  done
+  if [[ $ANTIGEN_AUTO_CONFIG != false && -f $ANTIGEN_RSRC ]]; then
+    ANTIGEN_CHECK_FILES=$(cat $ANTIGEN_RSRC 2> /dev/null)
+    ANTIGEN_CHECK_FILES=(${(@f)ANTIGEN_CHECK_FILES})
+
+    for config in $ANTIGEN_CHECK_FILES; do
+      if [[ "$config" -nt "$config.zwc" ]]; then
+        { zcompile "$config" } &!
+        [[ -f "$ANTIGEN_CACHE" ]] && rm -f "$ANTIGEN_CACHE"
+      fi
+    done
+  fi
 
   [[ -f $ANTIGEN_CACHE && ! $_ANTIGEN_CACHE_LOADED == true ]] && source "$ANTIGEN_CACHE" && return 0;
 fi
-
 
 [[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
 
@@ -226,11 +232,7 @@ antigen () {
   return 0
 }
 
-# Updates _ANTIGEN_INTERACTIVE environment variable to reflect
-# if antigen is running in an interactive shell or from sourcing.
-#
-# This function check ZSH_EVAL_CONTEXT if available or functrace otherwise.
-# If _ANTIGEN_INTERACTIVE is set to true it won't re-check again.
+# This function check ZSH_EVAL_CONTEXT to determine if running in interactive shell. 
 #
 # Usage
 #   -antigen-interactive-mode
@@ -238,19 +240,7 @@ antigen () {
 # Returns
 #   Either true or false depending if we are running in interactive mode
 -antigen-interactive-mode () {
-  # Check if we are in any way running in interactive mode
-  if [[ $_ANTIGEN_INTERACTIVE == false ]]; then
-    if [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" ]]; then
-      _ANTIGEN_INTERACTIVE=true
-    elif [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
-      zmodload zsh/parameter
-      if [[ "${functrace[$#functrace]%:*}" == "zsh" ]]; then
-        _ANTIGEN_INTERACTIVE=true
-      fi
-    fi
-  fi
-
-  return _ANTIGEN_INTERACTIVE
+  return [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" || "$ZSH_EVAL_CONTEXT" =~ "cmdarg:*" ]];
 }
 
 # Parses and retrieves a remote branch given a branch name.
@@ -481,6 +471,8 @@ antigen () {
   -set-default ANTIGEN_COMPDUMP "${ADOTDIR:-$HOME}/.zcompdump"
 
   -set-default ANTIGEN_LOG /dev/null
+
+  -set-default ANTIGEN_AUTO_CONFIG true
 
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
   # for arguments that can be passed as `--key=value`.
@@ -826,7 +818,7 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 
   _payload="#-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
-#-- ANTIGEN v2.0.2
+#-- ANTIGEN develop
 $(functions -- _antigen)
 antigen () {
   [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" || \"\$ZSH_EVAL_CONTEXT\" =~ \"cmdarg:*\" ]] && source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && eval antigen \$@;
@@ -849,7 +841,7 @@ compdef () {}\NL"
 
   _payload+="typeset -aU _ANTIGEN_BUNDLE_RECORD;\
       _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
-  _payload+="_ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='v2.0.2'\NL"
+  _payload+="_ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='develop'\NL"
 
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
@@ -857,13 +849,25 @@ compdef () {}\NL"
   { zcompile "$ANTIGEN_CACHE" } &!
 
   # Compile config files, if any
-  [[ -n $ANTIGEN_CHECK_FILES ]] && { zcompile "$ANTIGEN_CHECK_FILES" } &!
+  [[ $ANTIGEN_AUTO_CONFIG == true && -n $ANTIGEN_CHECK_FILES ]] && {
+    echo "$ANTIGEN_CHECK_FILES" >! "$ANTIGEN_RSRC"
+    zcompile "$ANTIGEN_CHECK_FILES"
+  } &!
 
   return true
 }
 # Initialize completion
 antigen-apply () {
   \rm -f $ANTIGEN_COMPDUMP
+
+  # Auto determine check_files
+  if (( ! -antigen-interactive-mode )); then
+    # There always should be 2 steps from original source as the recommended way is to use
+    # `antigen` wrapper not `antigen-apply` directly.
+    if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 2 ]]; then
+      ANTIGEN_CHECK_FILES+=("${${funcfiletrace[2]%:*}##* }")
+    fi
+  fi
 
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
@@ -1165,6 +1169,7 @@ antigen-purge () {
 #   Nothing
 antigen-reset () {
   [[ -f "$ANTIGEN_CACHE" ]] && rm -f "$ANTIGEN_CACHE"
+  [[ -f "$ANTIGEN_RSRC" ]] && rm -f "$ANTIGEN_RSRC"
   echo 'Done. Please open a new shell to see the changes.'
 }
 antigen-restore () {
@@ -1434,7 +1439,7 @@ antigen-version () {
     revision=" ($(git --git-dir=$_ANTIGEN_INSTALL_DIR/.git rev-parse --short '@'))"
   fi
 
-  echo "Antigen v2.0.2$revision"
+  echo "Antigen develop$revision"
 }
 
 #compdef _antigen
