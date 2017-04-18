@@ -469,6 +469,8 @@ antigen () {
 
   -set-default ANTIGEN_LOG /dev/null
 
+  -set-default ANTIGEN_AUTO_CONFIG true
+
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
   # for arguments that can be passed as `--key=value`.
   -set-default ANTIGEN_CLONE_OPTS "--single-branch --recursive --depth=1"
