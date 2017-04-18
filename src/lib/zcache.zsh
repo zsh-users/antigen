@@ -144,9 +144,9 @@ compdef () {}\NL"
   { zcompile "$ANTIGEN_CACHE" } &!
 
   # Compile config files, if any
-  [[ -n $ANTIGEN_CHECK_FILES ]] && {
+  [[ $ANTIGEN_AUTO_CONFIG == true && -n $ANTIGEN_CHECK_FILES ]] && {
     echo "$ANTIGEN_CHECK_FILES" >! "$ANTIGEN_RSRC"
-    zcompile $ANTIGEN_CHECK_FILES
+    zcompile "$ANTIGEN_CHECK_FILES"
   } &!
 
   return true

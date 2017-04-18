@@ -3,11 +3,10 @@ antigen-apply () {
   \rm -f $ANTIGEN_COMPDUMP
 
   # Auto determine check_files
-
-  if [[ ! "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" && ! "$ZSH_EVAL_CONTEXT" =~ "cmdarg:*" ]]; then
+  if (( ! -antigen-interactive-mode )); then
     # There always should be 2 steps from original source as the recommended way is to use
     # `antigen` wrapper not `antigen-apply` directly.
-    if [[ -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 2 ]]; then
+    if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 2 ]]; then
       ANTIGEN_CHECK_FILES+=("${${funcfiletrace[2]%:*}##* }")
     fi
   fi

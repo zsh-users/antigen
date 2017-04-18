@@ -8,10 +8,7 @@ zmodload zsh/parameter
 ANTIGEN_CACHE="${ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
 ANTIGEN_RSRC="${ADOTDIR:-$HOME/.antigen}/.resources"
 
-typeset -a ANTIGEN_CHECK_FILES
-if [[ -n $ANTIGEN_CHECK_FILES ]]; then
-  ANTIGEN_CHECK_FILES=$ANTIGEN_CHECK_FILES
-elif [[ -f $ANTIGEN_RSRC ]]; then
+if [[ $ANTIGEN_AUTO_CONFIG == true && -f $ANTIGEN_RSRC ]]; then
   ANTIGEN_CHECK_FILES=$(cat $ANTIGEN_RSRC 2> /dev/null)
   ANTIGEN_CHECK_FILES=(${(@f)ANTIGEN_CHECK_FILES})
 fi
