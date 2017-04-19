@@ -525,6 +525,23 @@ So, to avoid any trouble, run `antigen use oh-my-zsh` if you haven't already
 before experimenting with themes. If you have `antigen use oh-my-zsh` in your
 `.zshrc`, you're covered.
 
+**Note**: Antigen compiles bundles to avoid loading them each time a terminal launches. That behaviour can leads to a side effect when a theme isn't loading when you try to do so from your .zshrc. For example: 
+    
+    antigen theme bhilburn/powerlevel9k powerlevel9k
+    antigen apply
+    
+This will be changed in the future, however until that a workaround is to use `ANTIGEN_CACHE`:
+    
+    case ${TERM} in
+    xterm*|rxvt*|Eterm|aterm|kterm|gnome*)
+        ANTIGEN_CACHE=$HOME/.antigen/init-xterm.zsh
+    ;;
+    *)
+        ANTIGEN_CACHE=$HOME/.antigen/init-other.zsh
+    ;;
+    esac
+
+
 ### antigen apply
 
 You have to add this command after defining all bundles you need, in your zshrc.
