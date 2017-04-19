@@ -6,7 +6,7 @@
 # Returns
 #    Nothing. Performs a `git pull`.
 antigen-update () {
-  local bundle=$1
+  local bundle=$1 url
 
   # Clear log
   :> $ANTIGEN_LOG

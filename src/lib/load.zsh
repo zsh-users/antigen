@@ -8,11 +8,8 @@
 # Returns
 #   Integer. 0 if success 1 if an error ocurred.
 -antigen-load () {
-  local url="$1"
-  local loc="$2"
-  local make_local_clone="$3"
-  local btype="$4"
-  local src
+  local url="$1" loc="$2" make_local_clone="$3" btype="$4"
+  local src line
 
   local location="$url"
   if $make_local_clone; then

@@ -1,4 +1,5 @@
 antigen-restore () {
+  local line
   if [[ $# == 0 ]]; then
     echo 'Please provide a snapshot file to restore from.' >&2
     return 1
@@ -28,4 +29,3 @@ antigen-restore () {
   echo ' done.'
   echo 'Please open a new shell to get the restored changes.'
 }
-
