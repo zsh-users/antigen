@@ -1372,7 +1372,9 @@ antigen-theme () {
 
   # Clear out prompts
   PROMPT=""
-  RPROMPT=""
+  if [[ -n $RPROMPT ]]; then
+    RPROMPT=""
+  fi
 
   for hook in chpwd precmd preexec periodic; do
     add-zsh-hook -D "${hook}" "prompt_*"
