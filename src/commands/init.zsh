@@ -23,7 +23,7 @@
 # Returns
 #   Nothing
 antigen-init () {
-  local src="$1"
+  local src="$1" line
 
   # If we're given an argument it should be a path to a file
   if [[ -n "$src" ]]; then
@@ -41,4 +41,3 @@ antigen-init () {
     eval $line
   done
 }
-

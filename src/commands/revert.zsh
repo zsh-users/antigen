@@ -1,5 +1,6 @@
 # Reads $ADORDIR/revert-info and restores bundles' revision
 antigen-revert () {
+  local line
   if [[ -f $ADOTDIR/revert-info ]]; then
     cat $ADOTDIR/revert-info | sed -n '1!p' | while read line; do
       local dir="$(echo "$line" | cut -d: -f1)"
@@ -15,4 +16,3 @@ antigen-revert () {
     return 1
   fi
 }
-

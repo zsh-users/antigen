@@ -7,4 +7,3 @@
   fi
   antigen-bundle --loc=lib
 }
-

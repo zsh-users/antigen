@@ -1,7 +1,6 @@
 -antigen-parse-args () {
-  local key
-  local value
-  local index=0
+  local argkey key value index=0
+  local match mbegin mend MATCH MBEGIN MEND
 
   while [[ $# -gt 0 ]]; do
     argkey="${1%\=*}"
@@ -53,4 +52,3 @@
     shift
   done
 }
-
