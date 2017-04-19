@@ -35,4 +35,3 @@ antigen-bundle () {
   # Add it to the record.
   _ANTIGEN_BUNDLE_RECORD+=("$url $loc $btype $make_local_clone")
 }
-
