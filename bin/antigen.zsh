@@ -920,6 +920,7 @@ antigen-apply () {
   compinit -C -d "$ANTIGEN_COMPDUMP"
   if [[ ! -f "$ANTIGEN_COMPDUMP.zwc" || "$ANTIGEN_COMPDUMP" -nt "$ANTIGEN_COMPDUMP.zwc" ]]; then
     # Apply all `compinit`s that have been deferred.
+    local cdef
     for cdef in "${__deferred_compdefs[@]}"; do
       compdef "$cdef"
     done
