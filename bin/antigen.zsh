@@ -381,7 +381,9 @@ antigen () {
 
   # Get the clone's directory as per the given repo url and branch.
   local clone_dir=$(-antigen-get-clone-dir $url)
-  if [[ -d "$clone_dir" && $update == false ]]; then
+  # TODO It will not check for local bundles
+  if [[ $url != /* && -d "$clone_dir" && $update == false ]]; then
+    printf "Seems %s is already installed!\n" $(-antigen-bundle-short-name $url)
     return true
   fi
 
@@ -919,7 +921,6 @@ antigen-bundle () {
   # Add it to the record.
   _ANTIGEN_BUNDLE_RECORD+=("$url $loc $btype $make_local_clone")
 }
-
 antigen-bundles () {
   # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
   # are ignored. Everything else is given to `antigen-bundle` as is, no
