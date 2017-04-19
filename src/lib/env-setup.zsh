@@ -46,4 +46,7 @@
 
   # Remove private functions.
   unfunction -- -set-default
+
+  # Initialize cache unless disabled
+  [[ ! $ANTIGEN_CACHE == false ]] && -antigen-cache-init
 }

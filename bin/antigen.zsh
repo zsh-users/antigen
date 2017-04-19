@@ -241,9 +241,8 @@ antigen () {
 # Returns
 #   Either true or false depending if we are running in interactive mode
 -antigen-interactive-mode () {
-  return [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" || "$ZSH_EVAL_CONTEXT" =~ "cmdarg:*" ]];
+  [[ "$ZSH_EVAL_CONTEXT" == toplevel* || "$ZSH_EVAL_CONTEXT" == cmdarg* ]];
 }
-
 # Parses and retrieves a remote branch given a branch name.
 #
 # If the branch name contains '*' it will retrieve remote branches
@@ -494,6 +493,9 @@ antigen () {
 
   # Remove private functions.
   unfunction -- -set-default
+
+  # Initialize cache unless disabled
+  [[ ! $ANTIGEN_CACHE == false ]] && -antigen-cache-init
 }
 -antigen-load-list () {
   local url="$1"
@@ -856,30 +858,74 @@ compdef () {}\NL"
 
   return true
 }
+
+# Initializes caching mechanism.
+#
+# Hooks `antigen-bundle` and `antigen-apply` in order to defer bundle install
+# and load. All bundles are loaded from generated cache rather than dynamically
+# as these are bundled.
+#
+# Usage
+#  -antigen-cache-init
+# Returns
+#  Nothing
+-antigen-cache-init () {
+  eval "function --$(functions -- antigen-apply)"
+  antigen-apply () {
+      # Auto determine check_files
+      if ! -antigen-interactive-mode; then
+          # There always should be 2 steps from original source as the recommended way is to use
+          # `antigen` wrapper not `antigen-apply` directly.
+          if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 2 ]]; then
+            ANTIGEN_CHECK_FILES+=("${${funcfiletrace[2]%:*}##* }")
+          fi
+      fi
+      --antigen-apply
+
+      -zcache-generate-cache
+      [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
+  }
+
+  eval "function --$(functions -- antigen-bundle)"
+  antigen-bundle () {  
+    # Bundle spec arguments' default values.
+    local url="$ANTIGEN_DEFAULT_REPO_URL"
+    local loc=/
+    local branch=
+    local no_local_clone=false
+    local btype=plugin
+
+    if [[ -z "$1" ]]; then
+      echo "Antigen: Must provide a bundle url or name."
+      return 1
+    fi
+
+    eval "$(-antigen-parse-bundle "$@")"
+
+    # Runnin in interactive shell?
+    if -antigen-interactive-mode; then
+      --antigen-bundle "$@"
+    else
+      # Add it to the record.
+      _ANTIGEN_BUNDLE_RECORD+=("$url $loc $btype $make_local_clone")
+    fi
+  }
+}
 # Initialize completion
 antigen-apply () {
   \rm -f $ANTIGEN_COMPDUMP
-
-  # Auto determine check_files
-  if (( ! -antigen-interactive-mode )); then
-    # There always should be 2 steps from original source as the recommended way is to use
-    # `antigen` wrapper not `antigen-apply` directly.
-    if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 2 ]]; then
-      ANTIGEN_CHECK_FILES+=("${${funcfiletrace[2]%:*}##* }")
-    fi
-  fi
 
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
   autoload -Uz compinit
   compinit -C -d "$ANTIGEN_COMPDUMP"
-  if [[ ! -f "$ANTIGEN_COMPDUMP.zwc" ]]; then
+  if [[ ! -f "$ANTIGEN_COMPDUMP.zwc" || "$ANTIGEN_COMPDUMP" -nt "$ANTIGEN_COMPDUMP.zwc" ]]; then
     # Apply all `compinit`s that have been deferred.
     for cdef in "${__deferred_compdefs[@]}"; do
       compdef "$cdef"
     done
 
-    zcompile "$ANTIGEN_COMPDUMP"
+    { zcompile "$ANTIGEN_COMPDUMP" } &!
   fi
 
   unset __deferred_compdefs
