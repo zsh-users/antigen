@@ -37,4 +37,3 @@ antigen-snapshot () {
 
   } > "$snapshot_file"
 }
-
