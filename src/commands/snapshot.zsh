@@ -1,12 +1,12 @@
 antigen-snapshot () {
   local snapshot_file="${1:-antigen-shapshot}"
+  local urls url dir version_hash snapshot_content
+  local -a bundles
 
   # The snapshot content lines are pairs of repo-url and git version hash, in
   # the form:
   #   <version-hash> <repo-url>
-  local urls=$(-antigen-echo-record | awk '$4 == "true" {print $1}' | sort -u)
-  local url dir version_hash snapshot_content
-  local -a bundles
+  urls=$(-antigen-echo-record | awk '$4 == "true" {print $1}' | sort -u)
   for url in ${(f)urls}; do
     dir="$(-antigen-get-clone-dir "$url")"
     version_hash="$(cd "$dir" && git rev-parse HEAD)"
