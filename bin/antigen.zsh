@@ -91,17 +91,17 @@ antigen () {
 -antigen-bundle-short-name () {
   local bundle_name="${1%|*}"
   local bundle_branch="$2"
+  local match mbegin mend MATCH MBEGIN MEND
 
   [[ "$bundle_name" =~ '.*/(.*/.*).*$' ]] && bundle_name=$match[1]
   bundle_name="${bundle_name%.git*}"
-  
+
   if [[ -n $bundle_branch ]]; then
     bundle_name="$bundle_name@$bundle_branch"
   fi
 
   echo $bundle_name
 }
-
 # Echo the bundle specs as in the record. The first line is not echoed since it
 # is a blank line.
 -antigen-echo-record () {
@@ -144,6 +144,7 @@ antigen () {
 #   List of bundles installed
 -antigen-get-bundles () {
   local mode revision url bundle_name bundle_entry loc no_local_clone
+  local record bundle make_local_clone
   mode=${1:-"--short"}
 
   for record in $_ANTIGEN_BUNDLE_RECORD; do
@@ -183,7 +184,7 @@ antigen () {
 -antigen-get-clone-dir () {
   local bundle="$1"
   local url="${bundle%|*}"
-  local branch
+  local branch match mbegin mend MATCH MBEGIN MEND
   [[ "$bundle" =~ "\|" ]] && branch="${bundle#*|}"
 
   # Takes a repo url and mangles it, giving the path that this url will be
@@ -445,7 +446,7 @@ antigen () {
   -set-default () {
     local arg_name="$1"
     local arg_value="$2"
-    eval "test -z \"\$$arg_name\" && $arg_name='$arg_value'"
+    eval "test -z \"\$$arg_name\" && typeset -g $arg_name='$arg_value'"
   }
 
   typeset -gU fpath path
@@ -556,11 +557,8 @@ antigen () {
 # Returns
 #   Integer. 0 if success 1 if an error ocurred.
 -antigen-load () {
-  local url="$1"
-  local loc="$2"
-  local make_local_clone="$3"
-  local btype="$4"
-  local src
+  local url="$1" loc="$2" make_local_clone="$3" btype="$4"
+  local src line
 
   local location="$url"
   if $make_local_clone; then
@@ -608,9 +606,8 @@ antigen () {
   return $success
 }
 -antigen-parse-args () {
-  local key
-  local value
-  local index=0
+  local argkey key value index=0
+  local match mbegin mend MATCH MBEGIN MEND
 
   while [[ $# -gt 0 ]]; do
     argkey="${1%\=*}"
@@ -662,7 +659,6 @@ antigen () {
     shift
   done
 }
-
 
 -antigen-parse-bundle () {
   # Bundle spec arguments' default values.
@@ -721,6 +717,7 @@ antigen () {
 # Returns
 #    Nothing. Generates/updates $ADOTDIR/revert-info.
 -antigen-revert-info() {
+  local url
   # Update your bundles, i.e., `git pull` in all the plugin repos.
   date >! $ADOTDIR/revert-info
 
@@ -733,7 +730,6 @@ antigen () {
     fi
   done
 }
-
 -antigen-use-oh-my-zsh () {
   if [[ -z "$ZSH" ]]; then
     ZSH="$(-antigen-get-clone-dir "$ANTIGEN_DEFAULT_REPO_URL")"
@@ -743,11 +739,9 @@ antigen () {
   fi
   antigen-bundle --loc=lib
 }
-
 -antigen-use-prezto () {
   antigen-bundle "$ANTIGEN_PREZTO_REPO_URL"
 }
-
 ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 # Whether to use bundle or reference cache (since v1.4.0)
 _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
@@ -815,6 +809,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 -zcache-generate-cache () {
   local -aU _fpath _PATH
   local bundle _payload _sources
+  local line themes
 
   for bundle in $_ANTIGEN_BUNDLE_RECORD; do
     # Extract bundle metadata to pass them to -antigen-parse-bundle function.
@@ -865,6 +860,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 #-- ANTIGEN develop
 $(functions -- _antigen)
 antigen () {
+  local MATCH MBEGIN MEND
   [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" || \"\$ZSH_EVAL_CONTEXT\" =~ \"cmdarg:*\" ]] && source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && eval antigen \$@;
   return 0;
 }
@@ -1095,7 +1091,7 @@ EOF
 # Returns
 #   Nothing
 antigen-init () {
-  local src="$1"
+  local src="$1" line
 
   # If we're given an argument it should be a path to a file
   if [[ -n "$src" ]]; then
@@ -1113,7 +1109,6 @@ antigen-init () {
     eval $line
   done
 }
-
 # List instaled bundles either in long (record), short or simple format.
 #
 # Usage
@@ -1217,6 +1212,7 @@ antigen-reset () {
   echo 'Done. Please open a new shell to see the changes.'
 }
 antigen-restore () {
+  local line
   if [[ $# == 0 ]]; then
     echo 'Please provide a snapshot file to restore from.' >&2
     return 1
@@ -1246,9 +1242,9 @@ antigen-restore () {
   echo ' done.'
   echo 'Please open a new shell to get the restored changes.'
 }
-
 # Reads $ADORDIR/revert-info and restores bundles' revision
 antigen-revert () {
+  local line
   if [[ -f $ADOTDIR/revert-info ]]; then
     cat $ADOTDIR/revert-info | sed -n '1!p' | while read line; do
       local dir="$(echo "$line" | cut -d: -f1)"
@@ -1264,7 +1260,6 @@ antigen-revert () {
     return 1
   fi
 }
-
 # Update (with `git pull`) antigen itself.
 # TODO: Once update is finished, show a summary of the new commits, as a kind of
 # "what's new" message.
@@ -1336,8 +1331,8 @@ antigen-snapshot () {
 # Returns
 #   0 if everything was succesfully
 antigen-theme () {
-  local record
-  local result=0
+  local record result=0
+  local match mbegin mend MATCH MBEGIN MEND
 
   -antigen-theme-reset-hooks
 
@@ -1387,7 +1382,6 @@ antigen-theme () {
     add-zsh-hook -d "${hook}" "vcs_info"
   done
 }
-
 # Updates the bundles or a single bundle.
 #
 # Usage
@@ -1396,7 +1390,7 @@ antigen-theme () {
 # Returns
 #    Nothing. Performs a `git pull`.
 antigen-update () {
-  local bundle=$1
+  local bundle=$1 url
 
   # Clear log
   :> $ANTIGEN_LOG

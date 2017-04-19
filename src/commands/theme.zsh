@@ -8,8 +8,8 @@
 # Returns
 #   0 if everything was succesfully
 antigen-theme () {
-  local record
-  local result=0
+  local record result=0
+  local match mbegin mend MATCH MBEGIN MEND
 
   -antigen-theme-reset-hooks
 
@@ -59,4 +59,3 @@ antigen-theme () {
     add-zsh-hook -d "${hook}" "vcs_info"
   done
 }
-
