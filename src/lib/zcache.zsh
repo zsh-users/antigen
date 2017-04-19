@@ -85,9 +85,8 @@ compdef () {}\NL"
 
   _payload+=$_sources
 
-  _payload+="typeset -aU _ANTIGEN_BUNDLE_RECORD;\
-      _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
-  _payload+="_ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='{{ANTIGEN_VERSION}}'\NL"
+  _payload+="typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
+  _payload+="typeset -g _ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='{{ANTIGEN_VERSION}}'\NL"
 
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
