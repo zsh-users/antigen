@@ -1287,15 +1287,15 @@ antigen-snapshot () {
   # The snapshot content lines are pairs of repo-url and git version hash, in
   # the form:
   #   <version-hash> <repo-url>
-  local snapshot_content="$(
-    -antigen-echo-record |
-    awk '$4 == "true" {print $1}' |
-    sort -u |
-    while read url; do
-      local dir="$(-antigen-get-clone-dir "$url")"
-      local version_hash="$(cd "$dir" && git rev-parse HEAD)"
-      echo "$version_hash $url"
-    done)"
+  local urls=$(-antigen-echo-record | awk '$4 == "true" {print $1}' | sort -u)
+  local url dir version_hash snapshot_content
+  local -a bundles
+  for url in ${(f)urls}; do
+    dir="$(-antigen-get-clone-dir "$url")"
+    version_hash="$(cd "$dir" && git rev-parse HEAD)"
+    bundles+=("$version_hash $url");
+  done
+  snapshot_content=${(j:\n:)bundles}
 
   {
     # The first line in the snapshot file is for metadata, in the form:
@@ -1320,7 +1320,6 @@ antigen-snapshot () {
 
   } > "$snapshot_file"
 }
-
 # Loads a given theme.
 #
 # Shares the same syntax as antigen-bundle command.
