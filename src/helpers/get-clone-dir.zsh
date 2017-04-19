@@ -5,7 +5,7 @@
 -antigen-get-clone-dir () {
   local bundle="$1"
   local url="${bundle%|*}"
-  local branch
+  local branch match mbegin mend MATCH MBEGIN MEND
   [[ "$bundle" =~ "\|" ]] && branch="${bundle#*|}"
 
   # Takes a repo url and mangles it, giving the path that this url will be

@@ -16,6 +16,7 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 -zcache-generate-cache () {
   local -aU _fpath _PATH
   local bundle _payload _sources
+  local line themes
 
   for bundle in $_ANTIGEN_BUNDLE_RECORD; do
     # Extract bundle metadata to pass them to -antigen-parse-bundle function.
@@ -65,6 +66,7 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 #-- ANTIGEN {{ANTIGEN_VERSION}}
 $(functions -- _antigen)
 antigen () {
+  local MATCH MBEGIN MEND
   [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" || \"\$ZSH_EVAL_CONTEXT\" =~ \"cmdarg:*\" ]] && source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && eval antigen \$@;
   return 0;
 }

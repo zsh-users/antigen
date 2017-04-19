@@ -8,8 +8,8 @@
 # Returns
 #   0 if everything was succesfully
 antigen-theme () {
-  local record
-  local result=0
+  local record result=0
+  local match mbegin mend MATCH MBEGIN MEND
 
   -antigen-theme-reset-hooks
 
@@ -50,7 +50,9 @@ antigen-theme () {
 
   # Clear out prompts
   PROMPT=""
-  RPROMPT=""
+  if [[ -n $RPROMPT ]]; then
+    RPROMPT=""
+  fi
 
   for hook in chpwd precmd preexec periodic; do
     add-zsh-hook -D "${hook}" "prompt_*"
@@ -59,4 +61,3 @@ antigen-theme () {
     add-zsh-hook -d "${hook}" "vcs_info"
   done
 }
-

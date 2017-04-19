@@ -8,6 +8,7 @@
 # Returns
 #    Nothing. Generates/updates $ADOTDIR/revert-info.
 -antigen-revert-info() {
+  local url
   # Update your bundles, i.e., `git pull` in all the plugin repos.
   date >! $ADOTDIR/revert-info
 
@@ -20,4 +21,3 @@
     fi
   done
 }
-

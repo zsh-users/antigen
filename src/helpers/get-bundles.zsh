@@ -7,6 +7,7 @@
 #   List of bundles installed
 -antigen-get-bundles () {
   local mode revision url bundle_name bundle_entry loc no_local_clone
+  local record bundle make_local_clone
   mode=${1:-"--short"}
 
   for record in $_ANTIGEN_BUNDLE_RECORD; do
