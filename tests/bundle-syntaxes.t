@@ -1,6 +1,7 @@
 Test helper and mock functions.
 
   $ ANTIGEN_DEFAULT_REPO_URL=gh-user/repo
+  $ ANTIGEN_WARN_DUPLICATES=false
 
   $ b () {
   >     antigen-bundle "$@"

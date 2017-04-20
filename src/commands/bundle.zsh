@@ -17,6 +17,13 @@ antigen-bundle () {
 
   eval "$(-antigen-parse-bundle "$@")"
 
+
+  local record="$url $loc $btype $make_local_clone"
+
+  if [[ $ANTIGEN_WARN_DUPLICATES == true && ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} != 0 ]]; then
+    printf "Seems %s is already installed!\n" $(-antigen-bundle-short-name $url)
+  fi
+
   # Ensure a clone exists for this repo, if needed.
   if $make_local_clone; then
     if ! -antigen-ensure-repo "$url"; then
@@ -33,5 +40,5 @@ antigen-bundle () {
   fi
 
   # Add it to the record.
-  _ANTIGEN_BUNDLE_RECORD+=("$url $loc $btype $make_local_clone")
+  _ANTIGEN_BUNDLE_RECORD+=($record)
 }

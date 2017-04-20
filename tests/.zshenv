@@ -8,6 +8,8 @@ export ADOTDIR=$(mktemp -du "/tmp/dot-antigen-tmp-XXXXX")
 
 export ANTIGEN=${ANTIGEN:-"/antigen"}
 export ANTIGEN_AUTO_CONFIG=false
+export ANTIGEN_WARN_DUPLICATES=false
+
 export TESTDIR=$(mktemp -d "/tmp/cram-testdir-XXXXX" || /tmp/cram-testdir)
 test -f "$TESTDIR/.zcompdump" && rm "$TESTDIR/.zcompdump"
 source "$ANTIGEN/antigen.zsh"

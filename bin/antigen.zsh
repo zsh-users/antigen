@@ -380,9 +380,7 @@ antigen () {
 
   # Get the clone's directory as per the given repo url and branch.
   local clone_dir=$(-antigen-get-clone-dir $url)
-  # TODO It will not check for local bundles
-  if [[ $url != /* && -d "$clone_dir" && $update == false ]]; then
-    printf "Seems %s is already installed!\n" $(-antigen-bundle-short-name $url)
+  if [[ -d "$clone_dir" && $update == false ]]; then
     return true
   fi
 
@@ -482,6 +480,8 @@ antigen () {
   -set-default ANTIGEN_GIT_ENV "GIT_TERMINAL_PROMPT=0"
   -set-default ANTIGEN_CLONE_OPTS "--single-branch --recursive --depth=1"
   -set-default ANTIGEN_SUBMODULE_OPTS "--recursive --depth=1"
+  
+  -set-default ANTIGEN_WARN_DUPLICATES true
 
   # Compatibility with oh-my-zsh themes.
   -set-default _ANTIGEN_THEME_COMPAT true
@@ -951,6 +951,13 @@ antigen-bundle () {
 
   eval "$(-antigen-parse-bundle "$@")"
 
+
+  local record="$url $loc $btype $make_local_clone"
+
+  if [[ $ANTIGEN_WARN_DUPLICATES == true && ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} != 0 ]]; then
+    printf "Seems %s is already installed!\n" $(-antigen-bundle-short-name $url)
+  fi
+
   # Ensure a clone exists for this repo, if needed.
   if $make_local_clone; then
     if ! -antigen-ensure-repo "$url"; then
@@ -967,7 +974,7 @@ antigen-bundle () {
   fi
 
   # Add it to the record.
-  _ANTIGEN_BUNDLE_RECORD+=("$url $loc $btype $make_local_clone")
+  _ANTIGEN_BUNDLE_RECORD+=($record)
 }
 antigen-bundles () {
   # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
