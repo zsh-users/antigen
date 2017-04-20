@@ -779,6 +779,8 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
     # TODO -antigen-parse-bundle should be refactored for next major to
     # support multiple positional arguments.
     bundle=(${(@s/ /)bundle})
+    -antigen-ensure-repo $bundle[1] false false
+
     local no_local_clone=""
     [[ $bundle[4] == "false" ]] && no_local_clone="--no-local-clone"
     eval "$(-antigen-parse-bundle $bundle[1] $bundle[2] --btype=$bundle[3] $no_local_clone)"
@@ -847,6 +849,7 @@ compdef () {}\NL"
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
   echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$ANTIGEN_CACHE"
+
   { zcompile "$ANTIGEN_CACHE" } &!
 
   # Compile config files, if any
