@@ -23,7 +23,7 @@ antigen-bundle () {
   fi
 
   local record="${url/\|/\\|} $loc $btype $make_local_clone"
-  if [[ $ANTIGEN_WARN_DUPLICATES != false && ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} != 0 ]]; then
+  if [[ $_ANTIGEN_WARN_DUPLICATES != false && ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} != 0 ]]; then
     # TODO DRY-out duplicate from get-bundles
     local bundle_name=$(-antigen-bundle-short-name $url)
     if [[ $loc != '/' ]]; then

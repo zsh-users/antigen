@@ -35,8 +35,8 @@
   -set-default ANTIGEN_GIT_ENV "GIT_TERMINAL_PROMPT=0"
   -set-default ANTIGEN_CLONE_OPTS "--single-branch --recursive --depth=1"
   -set-default ANTIGEN_SUBMODULE_OPTS "--recursive --depth=1"
-  
-  -set-default ANTIGEN_WARN_DUPLICATES true
+
+  -set-default _ANTIGEN_WARN_DUPLICATES true
 
   # Compatibility with oh-my-zsh themes.
   -set-default _ANTIGEN_THEME_COMPAT true

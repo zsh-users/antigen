@@ -106,14 +106,14 @@ Load a binary bundle.
 Warns about duplicate bundle.
 
   $ antigen-bundle $PLUGIN_DIR3 &> /dev/null
-  $ ANTIGEN_WARN_DUPLICATES=true
+  $ _ANTIGEN_WARN_DUPLICATES=true
   $ antigen-bundle $PLUGIN_DIR3
   Seems .* is already installed! (re)
   [1]
 
-  $ ANTIGEN_WARN_DUPLICATES=false
+  $ _ANTIGEN_WARN_DUPLICATES=false
   $ antigen-theme $PLUGIN_DIR silly &> /dev/null
-  $ ANTIGEN_WARN_DUPLICATES=true
+  $ _ANTIGEN_WARN_DUPLICATES=true
   $ antigen-theme $PLUGIN_DIR silly
   Seems .* is already installed! (re)
   [1]

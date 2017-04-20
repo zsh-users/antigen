@@ -463,8 +463,8 @@ antigen () {
   -set-default ANTIGEN_GIT_ENV "GIT_TERMINAL_PROMPT=0"
   -set-default ANTIGEN_CLONE_OPTS "--single-branch --recursive --depth=1"
   -set-default ANTIGEN_SUBMODULE_OPTS "--recursive --depth=1"
-  
-  -set-default ANTIGEN_WARN_DUPLICATES true
+
+  -set-default _ANTIGEN_WARN_DUPLICATES true
 
   # Compatibility with oh-my-zsh themes.
   -set-default _ANTIGEN_THEME_COMPAT true
@@ -942,7 +942,7 @@ antigen-bundle () {
   fi
 
   local record="${url/\|/\\|} $loc $btype $make_local_clone"
-  if [[ $ANTIGEN_WARN_DUPLICATES != false && ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} != 0 ]]; then
+  if [[ $_ANTIGEN_WARN_DUPLICATES != false && ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} != 0 ]]; then
     # TODO DRY-out duplicate from get-bundles
     local bundle_name=$(-antigen-bundle-short-name $url)
     if [[ $loc != '/' ]]; then
