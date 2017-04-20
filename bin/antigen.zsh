@@ -951,11 +951,19 @@ antigen-bundle () {
 
   eval "$(-antigen-parse-bundle "$@")"
 
-
   local record="$url $loc $btype $make_local_clone"
+  if [[ $ANTIGEN_WARN_DUPLICATES != false && -n ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} ]]; then
+    # TODO DRY-out duplicate from get-bundles
+    local bundle_name=$(-antigen-bundle-short-name $url)
+    if [[ $loc != '/' ]]; then
+      bundle_name="$bundle_name ~ $loc"
+    fi
+    if [[ -n $branch ]]; then
+      bundle_name="$bundle_name @ $branch"
+    fi
 
-  if [[ $ANTIGEN_WARN_DUPLICATES == true && ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} != 0 ]]; then
-    printf "Seems %s is already installed!\n" $(-antigen-bundle-short-name $url)
+    printf "Seems %s is already installed!\n"  $bundle_name
+    return 1
   fi
 
   # Ensure a clone exists for this repo, if needed.
