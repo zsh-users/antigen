@@ -30,7 +30,7 @@ Try to install an unexisting bundle.
   $ echo $fpath | grep -co test-plugin
   1
 
-Confirm bundle/unexisting does not exists.
+Confirm bundle/unexisting does not exists (parent directory will not be removed).
 
   $ ls $ANTIGEN_BUNDLES/bundle/ | wc -l
   0
@@ -102,3 +102,18 @@ Load a binary bundle.
 
   $ echo $PATH | grep test-plugin3
   *plugin3* (glob)
+
+Warns about duplicate bundle.
+
+  $ antigen-bundle $PLUGIN_DIR3 &> /dev/null
+  $ ANTIGEN_WARN_DUPLICATES=true
+  $ antigen-bundle $PLUGIN_DIR3
+  Seems .* is already installed! (re)
+  [1]
+
+  $ ANTIGEN_WARN_DUPLICATES=false
+  $ antigen-theme $PLUGIN_DIR silly &> /dev/null
+  $ ANTIGEN_WARN_DUPLICATES=true
+  $ antigen-theme $PLUGIN_DIR silly
+  Seems .* is already installed! (re)
+  [1]
