@@ -18,7 +18,7 @@ antigen-bundle () {
   eval "$(-antigen-parse-bundle "$@")"
 
   local record="$url $loc $btype $make_local_clone"
-  if [[ $ANTIGEN_WARN_DUPLICATES != false && -n ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} ]]; then
+  if [[ $ANTIGEN_WARN_DUPLICATES != false && ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} != 0 ]]; then
     # TODO DRY-out duplicate from get-bundles
     local bundle_name=$(-antigen-bundle-short-name $url)
     if [[ $loc != '/' ]]; then

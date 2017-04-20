@@ -771,8 +771,7 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 #   Nothing. Generates ANTIGEN_CACHE
 -zcache-generate-cache () {
   local -aU _fpath _PATH
-  local bundle _payload _sources
-  local line themes
+  local bundle _payload _sources line themes
 
   for bundle in $_ANTIGEN_BUNDLE_RECORD; do
     # Extract bundle metadata to pass them to -antigen-parse-bundle function.
@@ -955,7 +954,7 @@ antigen-bundle () {
   eval "$(-antigen-parse-bundle "$@")"
 
   local record="$url $loc $btype $make_local_clone"
-  if [[ $ANTIGEN_WARN_DUPLICATES != false && -n ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} ]]; then
+  if [[ $ANTIGEN_WARN_DUPLICATES != false && ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} != 0 ]]; then
     # TODO DRY-out duplicate from get-bundles
     local bundle_name=$(-antigen-bundle-short-name $url)
     if [[ $loc != '/' ]]; then
