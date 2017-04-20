@@ -4,7 +4,7 @@ Test helper and mock functions.
   $ ANTIGEN_WARN_DUPLICATES=false
 
   $ b () {
-  >     antigen-bundle "$@"
+  >     antigen-bundle "$@" | tail -3
   > }
 
   $ -antigen-ensure-repo () {}

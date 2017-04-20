@@ -389,9 +389,6 @@ antigen () {
     (cd -q "$clone_dir" && eval ${ANTIGEN_GIT_ENV} git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
   }
 
-  # Clone if it doesn't already exist.
-  local start=$(date +'%s')
-  local install_or_update=false
   local success=false
 
   # If its a specific branch that we want, checkout that branch.
@@ -401,13 +398,9 @@ antigen () {
   fi
 
   if [[ ! -d $clone_dir ]]; then
-    install_or_update=true
-    echo -n "Installing $(-antigen-bundle-short-name "$url" "$branch")... "
     eval ${ANTIGEN_GIT_ENV} git clone ${=ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $ANTIGEN_LOG
     success=$?
   elif $update; then
-    install_or_update=true
-    echo -n "Updating $(-antigen-bundle-short-name "$url" "$branch")... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
     # Pull changes if update requested.
@@ -419,16 +412,6 @@ antigen () {
     --plugin-git submodule update ${=ANTIGEN_SUBMODULE_OPTS}
     # Get the new revision.
     local new_rev="$(--plugin-git rev-parse HEAD)"
-  fi
-
-
-  if $install_or_update; then
-    local took=$(( $(date +'%s') - $start ))
-    if [[ $success -eq 0 ]]; then
-      printf "Done. Took %ds.\n" $took
-    else
-      printf "Error! Activate logging and try again.\n";
-    fi
   fi
 
   if [[ -n $old_rev && $old_rev != $new_rev ]]; then
@@ -953,7 +936,12 @@ antigen-bundle () {
 
   eval "$(-antigen-parse-bundle "$@")"
 
-  local record="$url $loc $btype $make_local_clone"
+  local branch="master"
+  if [[ $url == *\|* ]]; then
+    branch="$(-antigen-parse-branch ${url%|*} ${url#*|})"
+  fi
+
+  local record="${url/\|/\\|} $loc $btype $make_local_clone"
   if [[ $ANTIGEN_WARN_DUPLICATES != false && ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} != 0 ]]; then
     # TODO DRY-out duplicate from get-bundles
     local bundle_name=$(-antigen-bundle-short-name $url)
@@ -969,11 +957,30 @@ antigen-bundle () {
   fi
 
   # Ensure a clone exists for this repo, if needed.
-  if $make_local_clone; then
+  # Get the clone's directory as per the given repo url and branch.
+  local clone_dir=$(-antigen-get-clone-dir $url)
+  # Clone if it doesn't already exist.
+  local start=$(date +'%s')
+  
+  if [[ $make_local_clone == true ]]; then
+    local no_clone_present=false
+    if [[ ! -d "$clone_dir" ]]; then
+      local no_clone_present=true
+    fi
+    
+    if [[ $no_clone_present == true ]]; then
+      printf "Installing %s... " $(-antigen-bundle-short-name "$url" "$branch")
+    fi
+
     if ! -antigen-ensure-repo "$url"; then
       # Return immediately if there is an error cloning
-      # Error message is displayed from -antigen-ensure-repo
+      printf "Error! Activate logging and try again.\n";
       return 1
+    fi
+
+    if [[ $no_clone_present == true ]]; then
+      local took=$(( $(date +'%s') - $start ))
+      printf "Done. Took %ds.\n" $took
     fi
   fi
 
@@ -1420,7 +1427,7 @@ antigen-update () {
 
   # Update revert-info data
   -antigen-revert-info
-
+    
   # If no argument is given we update all bundles
   if [[ $# -eq 0  ]]; then
     # Here we're ignoring all non cloned bundles (ie, --no-local-clone)
@@ -1451,7 +1458,8 @@ antigen-update () {
   local record=""
   local url=""
   local make_local_clone=""
-
+  local start=$(date +'%s')
+    
   if [[ $# -eq 0 ]]; then
     echo "Antigen: Missing argument."
     return 1
@@ -1465,7 +1473,14 @@ antigen-update () {
 
   url="$(echo "$record" | cut -d' ' -f1)"
   make_local_clone=$(echo "$record" | cut -d' ' -f4)
+  
+  local branch="master"
+  if [[ $url == *\|* ]]; then
+    branch="$(-antigen-parse-branch ${url%|*} ${url#*|})"
+  fi
 
+  printf "Updating %s... " $(-antigen-bundle-short-name "$url" "$branch")
+  
   if [[ $make_local_clone == "false" ]]; then
     echo "Bundle has no local clone. Will not be updated."
     return 1
@@ -1473,8 +1488,12 @@ antigen-update () {
 
   # update=true verbose=false
   if ! -antigen-ensure-repo "$url" true false; then
+    printf "Error! Activate logging and try again.\n";
     return 1
   fi
+  
+  local took=$(( $(date +'%s') - $start ))
+  printf "Done. Took %ds.\n" $took
 }
 antigen-use () {
   if [[ $1 == oh-my-zsh ]]; then

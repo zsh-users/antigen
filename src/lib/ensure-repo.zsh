@@ -36,9 +36,6 @@
     (cd -q "$clone_dir" && eval ${ANTIGEN_GIT_ENV} git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
   }
 
-  # Clone if it doesn't already exist.
-  local start=$(date +'%s')
-  local install_or_update=false
   local success=false
 
   # If its a specific branch that we want, checkout that branch.
@@ -48,13 +45,9 @@
   fi
 
   if [[ ! -d $clone_dir ]]; then
-    install_or_update=true
-    echo -n "Installing $(-antigen-bundle-short-name "$url" "$branch")... "
     eval ${ANTIGEN_GIT_ENV} git clone ${=ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $ANTIGEN_LOG
     success=$?
   elif $update; then
-    install_or_update=true
-    echo -n "Updating $(-antigen-bundle-short-name "$url" "$branch")... "
     # Save current revision.
     local old_rev="$(--plugin-git rev-parse HEAD)"
     # Pull changes if update requested.
@@ -66,16 +59,6 @@
     --plugin-git submodule update ${=ANTIGEN_SUBMODULE_OPTS}
     # Get the new revision.
     local new_rev="$(--plugin-git rev-parse HEAD)"
-  fi
-
-
-  if $install_or_update; then
-    local took=$(( $(date +'%s') - $start ))
-    if [[ $success -eq 0 ]]; then
-      printf "Done. Took %ds.\n" $took
-    else
-      printf "Error! Activate logging and try again.\n";
-    fi
   fi
 
   if [[ -n $old_rev && $old_rev != $new_rev ]]; then

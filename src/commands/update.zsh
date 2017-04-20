@@ -13,7 +13,7 @@ antigen-update () {
 
   # Update revert-info data
   -antigen-revert-info
-
+    
   # If no argument is given we update all bundles
   if [[ $# -eq 0  ]]; then
     # Here we're ignoring all non cloned bundles (ie, --no-local-clone)
@@ -44,7 +44,8 @@ antigen-update () {
   local record=""
   local url=""
   local make_local_clone=""
-
+  local start=$(date +'%s')
+    
   if [[ $# -eq 0 ]]; then
     echo "Antigen: Missing argument."
     return 1
@@ -58,7 +59,14 @@ antigen-update () {
 
   url="$(echo "$record" | cut -d' ' -f1)"
   make_local_clone=$(echo "$record" | cut -d' ' -f4)
+  
+  local branch="master"
+  if [[ $url == *\|* ]]; then
+    branch="$(-antigen-parse-branch ${url%|*} ${url#*|})"
+  fi
 
+  printf "Updating %s... " $(-antigen-bundle-short-name "$url" "$branch")
+  
   if [[ $make_local_clone == "false" ]]; then
     echo "Bundle has no local clone. Will not be updated."
     return 1
@@ -66,6 +74,10 @@ antigen-update () {
 
   # update=true verbose=false
   if ! -antigen-ensure-repo "$url" true false; then
+    printf "Error! Activate logging and try again.\n";
     return 1
   fi
+  
+  local took=$(( $(date +'%s') - $start ))
+  printf "Done. Took %ds.\n" $took
 }
