@@ -11,6 +11,7 @@ antigen-theme () {
   local record
   local result=0
 
+  -antigen-theme-reset-hooks
 
   record=$(-antigen-find-record "theme")
 
