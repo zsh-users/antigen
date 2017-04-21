@@ -44,11 +44,9 @@
       # interactive bundle/theme loading, for static loading -99.9% of the time-
       # eval and subshells are not needed.
       if [[ "$btype" == "theme" ]]; then
-        pushd "${line:A:h}" > /dev/null
-        eval "$(cat $line | sed -Ee '/\{$/,/^\}/!{
+        eval "$(cd ${line:A:h}; cat $line | sed -Ee '/\{$/,/^\}/!{
                s/^local //
            }');"
-        popd > /dev/null
       else
         source "$line"
       fi
