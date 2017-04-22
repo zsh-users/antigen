@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/) [v2.0.0](http://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2017-04-22
+
+### Changed
+- [#521, #515] Update TravisCI Badges' labels
+- [#509] Use "Roadmap" for Trello where possible
+
+### Added
+- [#514] FAQ for dynamic `antigen-theme` usage
+
+### Fixed
+- [#510] Remove possibly destructive command on broken tests
+- [#508, #507] Fix status code non-zero when last command is `antigen` wrapper
+
+Thanks everyone who reported issues and provided feedback.
+
 ## [2.0.1] - 2017-04-15
 
 ### Changed
@@ -432,6 +447,7 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 - Added CHANGELOG.md
 - Following [Semantic Versioning](http://semver.org/)
 
+[2.0.2]: https://github.com/zsh-users/antigen/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/zsh-users/antigen/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/zsh-users/antigen/compare/v1.4.1...v2.0.0
 [1.4.1]: https://github.com/zsh-users/antigen/compare/v1.4.0...v1.4.1
