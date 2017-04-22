@@ -525,6 +525,23 @@ So, to avoid any trouble, run `antigen use oh-my-zsh` if you haven't already
 before experimenting with themes. If you have `antigen use oh-my-zsh` in your
 `.zshrc`, you're covered.
 
+**Note**: Antigen caches bundles to provide fast start up times. This functionality may cause issues if you're dynamically loading bundles based on environment variables or other conditionals. For example:
+
+    case ${TERM} in
+    xterm*|rxvt*|Eterm|aterm|kterm|gnome*)
+        antigen theme bhilburn/powerlevel9k powerlevel9k
+     ;;
+    *)
+        antigen theme pure
+    ;;
+    esac
+    
+In this scenario you have a couple of options:
+
+* You may disable caching with `ANTIGEN_CACHE=false`. This will affect start up time when you've more than 10 bundles.
+* You may use cache for the different environments with `ANTIGEN_CACHE=$HOME/.antigen/init-${TERM}.zsh` for the above example.
+
+
 ### antigen apply
 
 You have to add this command after defining all bundles you need, in your zshrc.
