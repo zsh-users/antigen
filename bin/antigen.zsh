@@ -869,7 +869,7 @@ _ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
   _payload="#-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
-#-- ANTIGEN develop
+#-- ANTIGEN v2.0.1
 $(functions -- _antigen)
 antigen () {
   [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" || \"\$ZSH_EVAL_CONTEXT\" =~ \"cmdarg:*\" ]] && source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && eval antigen \$@;
@@ -892,7 +892,7 @@ compdef () {}\NL"
 
   _payload+="typeset -aU _ANTIGEN_BUNDLE_RECORD;\
       _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
-  _payload+="_ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='develop'\NL"
+  _payload+="_ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='v2.0.1'\NL"
 
   _payload+="#-- END ZCACHE GENERATED FILE\NL"
 
@@ -1477,7 +1477,7 @@ antigen-version () {
     revision=" ($(git --git-dir=$_ANTIGEN_INSTALL_DIR/.git rev-parse --short '@'))"
   fi
 
-  echo "Antigen develop$revision"
+  echo "Antigen v2.0.1$revision"
 }
 
 #compdef _antigen
