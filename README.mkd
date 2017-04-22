@@ -538,7 +538,7 @@ before experimenting with themes. If you have `antigen use oh-my-zsh` in your
     
 In this scenario you have a couple of options:
 
-* You may disable caching with `ANTIGEN_CACHE=false`. This will affect start up time when you've more than 10 bundles.
+* You may disable caching with `ANTIGEN_CACHE=false` (`v2.1.0` and above). This will negatively affect start up time.
 * You may use cache for the different environments with `ANTIGEN_CACHE=$HOME/.antigen/init-${TERM}.zsh` for the above example.
 
 
