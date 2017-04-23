@@ -1,6 +1,6 @@
 Helper alias.
 
-  $ alias resolve=-antigen-resolve-bundle-url
+  $ resolve () {typeset -A response; -antigen-parse-args 'response' $1; echo "${response[url]}" }
 
 Complete urls.
 

@@ -1,6 +1,12 @@
 # Initialize completion
 antigen-apply () {
+  local bundle
   \rm -f $ANTIGEN_COMPDUMP
+
+  # install bundles
+  if ! -antigen-interactive-mode; then
+    -install-bundles
+  fi
 
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
@@ -19,4 +25,19 @@ antigen-apply () {
   unset __deferred_compdefs
 
   [[ $ANTIGEN_CACHE != false ]] && -zcache-generate-cache
+}
+
+-install-bundles () {
+  for bundle in $_ANTIGEN_BUNDLE_RECORD; do
+    bundle=(${(@s/ /)bundle})
+
+    local url=$bundle[1]
+    local loc=$bundle[2]
+    local btype=$bundle[3]
+    local make_local_clone=$bundle[4]
+
+    if -antigen-bundle-install "$url" "$loc" "$btype" "$make_local_clone"; then
+      return 1
+    fi
+  done
 }

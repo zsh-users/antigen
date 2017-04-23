@@ -22,11 +22,15 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
     # TODO -antigen-parse-bundle should be refactored for next major to
     # support multiple positional arguments.
     bundle=(${(@s/ /)bundle})
-    -antigen-ensure-repo $bundle[1] false false
 
-    local no_local_clone=""
-    [[ $bundle[4] == "false" ]] && no_local_clone="--no-local-clone"
-    eval "$(-antigen-parse-bundle $bundle[1] $bundle[2] --btype=$bundle[3] $no_local_clone)"
+    local url=$bundle[1]
+    local loc=$bundle[2]
+    local btype=$bundle[3]
+    local make_local_clone=$bundle[4]
+
+    if -antigen-bundle-install "$url" "$loc" "$btype" "$make_local_clone"; then
+      return 1
+    fi
 
     local location="$url"
     if $make_local_clone; then
@@ -145,14 +149,15 @@ compdef () {}\NL"
       return 1
     fi
 
-    eval "$(-antigen-parse-bundle "$@")"
+    typeset -A bundle
+    -antigen-parse-bundle 'bundle' $@
 
     # Runnin in interactive shell?
     if -antigen-interactive-mode; then
       --antigen-bundle "$@"
     else
       # Add it to the record.
-      _ANTIGEN_BUNDLE_RECORD+=("$url $loc $btype $make_local_clone")
+      _ANTIGEN_BUNDLE_RECORD+=("${bundle[url]} ${bundle[loc]} ${bundle[btype]} ${bundle[make_local_clone]}")
     fi
   }
 }

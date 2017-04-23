@@ -1,17 +1,16 @@
 -antigen-load-list () {
-  local url="$1"
-  local loc="$2"
-  local make_local_clone="$3"
-  local btype="$4"
+  typeset -A bundle; bundle=($@)
+  local var=$1
+  shift;
 
   # The full location where the plugin is located.
-  local location="$url"
-  if $make_local_clone; then
-    location="$(-antigen-get-clone-dir $url)"
+  local location="${bundle[url]}"
+  if [[ ${bundle[make_local_clone]} == true ]]; then
+    location="${bundle[path]}"
   fi
 
-  if [[ $loc != "/" ]]; then
-    location="$location/$loc"
+  if [[ ${bundle[loc]} != "/" ]]; then
+    location="$location/${bundle[loc]}"
   fi
 
   if [[ ! -f "$location" && ! -d "$location" ]]; then
@@ -19,16 +18,16 @@
   fi
 
   if [[ -f "$location" ]]; then
-    echo "$location"
+    list+="$location"
     return
   fi
 
   # Load `*.zsh-theme` for themes
-  if [[ "$btype" == "theme" ]]; then
+  if [[ "${bundle[btype]}" == "theme" ]]; then
     local theme_plugin
     theme_plugin=($location/*.zsh-theme(N[1]))
     if [[ -f "$theme_plugin" ]]; then
-      echo "$theme_plugin"
+      list+="$theme_plugin"
       return
     fi
   fi
@@ -37,26 +36,21 @@
   local script_plugin
   script_plugin=($location/*.plugin.zsh(N[1]))
   if [[ -f "$script_plugin" ]]; then
-    echo "$script_plugin"
+    list+="$script_plugin"
     return
   fi
 
   # Otherwise source init.
   if [[ -f $location/init.zsh ]]; then
-    echo "$location/init.zsh"
+    list+="$location/init.zsh"
     return
   fi
 
   # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
-  local bundle_files
-  bundle_files=($location/*.zsh(N) $location/*.sh(N))
-  if [[ $#bundle_files -gt 0 ]]; then
-    echo "${(j:\n:)bundle_files}"
-    return
-  fi
+  list+=($location/*.zsh(N) $location/*.sh(N))
   
   # Add to PATH (binary bundle)
-  echo "$location"
-  return
+  list+="$location"
+  
+  return 0
 }
-
