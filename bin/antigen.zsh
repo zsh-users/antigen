@@ -446,62 +446,6 @@ antigen () {
   # Initialize cache unless disabled
   #[[ ! $ANTIGEN_CACHE == false ]] && -antigen-cache-init
 }
--antigen-load-list () {
-  typeset -A bundle; bundle=($@)
-  local var=$1
-  shift;
-
-  # The full location where the plugin is located.
-  local location="${bundle[url]}"
-  if [[ ${bundle[make_local_clone]} == true ]]; then
-    location="${bundle[path]}"
-  fi
-
-  if [[ ${bundle[loc]} != "/" ]]; then
-    location="$location/${bundle[loc]}"
-  fi
-
-  if [[ ! -f "$location" && ! -d "$location" ]]; then
-    return 1
-  fi
-
-  if [[ -f "$location" ]]; then
-    list+="$location"
-    return
-  fi
-
-  # Load `*.zsh-theme` for themes
-  if [[ "${bundle[btype]}" == "theme" ]]; then
-    local theme_plugin
-    theme_plugin=($location/*.zsh-theme(N[1]))
-    if [[ -f "$theme_plugin" ]]; then
-      list+="$theme_plugin"
-      return
-    fi
-  fi
-
-  # If we have a `*.plugin.zsh`, source it.
-  local script_plugin
-  script_plugin=($location/*.plugin.zsh(N[1]))
-  if [[ -f "$script_plugin" ]]; then
-    list+="$script_plugin"
-    return
-  fi
-
-  # Otherwise source init.
-  if [[ -f $location/init.zsh ]]; then
-    list+="$location/init.zsh"
-    return
-  fi
-
-  # If there is no `*.plugin.zsh` file, source *all* the `*.zsh` files.
-  list+=($location/*.zsh(N) $location/*.sh(N))
-  
-  # Add to PATH (binary bundle)
-  list+="$location"
-  
-  return 0
-}
 # Load a given bundle by sourcing it.
 #
 # The function also modifies fpath to add the bundle path.
@@ -514,39 +458,55 @@ antigen () {
 -antigen-load () {
   typeset -A bundle; bundle=($@)
 
-  typeset -a strategies=(location dot-plugin zsh-theme init zsh sh)
+  # should be configurable, ie: form theme context should only look for .zsh-theme,
+  # or loc, for bundle context should only look for .plugin.zsh or loc, if given
+  # a loc it should fail when no $loc/$loc.plugin.zsh/$loc.zsh-theme/$loc.zs etc
+  # do no exist
+  typeset -a strategies=(location init) # dot-plugin zsh-theme zsh sh)
   typeset -a list;
+  -antigen-load-list $strategies
+
+  for line in $list; do
+    source "$line"
+    return 0
+  done
+  
+  return 1
+}
+
+-antigen-load-list () {
   for strategy in $strategies; do
     -antigen-load-strategy-$strategy ${(kv)bundle}
     if [[ ! "${#list}" == 0 ]]; then
       break;
     fi
   done
-
-  for line in $list; do
-    source "$line"
-  done
-}
-
--antigen-load-strategy-dot-plugin () {
-  typeset -A bundle; bundle=($@)
-  list+=(${bundle[path]}/*.plugin.zsh(N[1]))
 }
 
 -antigen-load-strategy-location () {
   typeset -A bundle; bundle=($@)
+  if [[ ${bundle[loc]} == '/' ]]; then
+    return
+  fi
+
   local files=("${bundle[path]}/${bundle[loc]}.plugin.zsh"
     "${bundle[path]}/${bundle[loc]}.zsh-theme"
     "${bundle[path]}/${bundle[loc]}.zsh"
     "${bundle[path]}/${bundle[loc]}"
   )
 
+  local file
   for file in $files; do
     if [[ -f $file ]]; then
       list+=$file
       break;
     fi
   done
+}
+
+-antigen-load-strategy-dot-plugin () {
+  typeset -A bundle; bundle=($@)
+  list+=(${bundle[path]}/*.plugin.zsh(N[1]))
 }
 
 -antigen-load-strategy-init () {
@@ -700,14 +660,19 @@ antigen () {
   args[name]="$name"
 
   # Bundle path
-  local bundle_path="${args[name]}"
-  if [[ -n "${args[branch]}" ]]; then
-    # Suffix with branch/tag name
-    bundle_path="$bundle_path-${args[branch]//\//-}"
-  fi
-  bundle_path=${bundle_path//\*/x}
+  if [[ ${bundle[make_local_clone]} == true ]]; then
+    local bundle_path="${args[name]}"
+    if [[ -n "${args[branch]}" ]]; then
+      # Suffix with branch/tag name
+      bundle_path="$bundle_path-${args[branch]//\//-}"
+    fi
+    bundle_path=${bundle_path//\*/x}
 
-  args[path]="$ANTIGEN_BUNDLES/$bundle_path"
+    args[path]="$ANTIGEN_BUNDLES/$bundle_path"
+  else
+    # if it's local then path is just the "url" argument, loc remains the same
+    args[path]=${args[url]}
+  fi
   
   # Escape url and branch
   args[url]="${(qq)args[url]}"
@@ -716,13 +681,6 @@ antigen () {
   fi
 
   eval "${var}=(${(kv)args})"
-
-  return 0
-}
-
--antigen-parse-bundle () {
-  # Parse the given arguments. (Will overwrite the above values).
-  -antigen-parse-args 'bundle' $@
 
   return 0
 }
@@ -929,11 +887,6 @@ antigen-apply () {
   local bundle
   \rm -f $ANTIGEN_COMPDUMP
 
-  # install bundles
-  if ! -antigen-interactive-mode; then
-    -install-bundles
-  fi
-
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
   autoload -Uz compinit
@@ -951,21 +904,6 @@ antigen-apply () {
   unset __deferred_compdefs
 
   [[ $ANTIGEN_CACHE != false ]] && -zcache-generate-cache
-}
-
--install-bundles () {
-  for bundle in $_ANTIGEN_BUNDLE_RECORD; do
-    bundle=(${(@s/ /)bundle})
-
-    local url=$bundle[1]
-    local loc=$bundle[2]
-    local btype=$bundle[3]
-    local make_local_clone=$bundle[4]
-
-    if -antigen-bundle-install "$url" "$loc" "$btype" "$make_local_clone"; then
-      return 1
-    fi
-  done
 }
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]

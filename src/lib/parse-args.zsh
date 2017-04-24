@@ -127,14 +127,19 @@
   args[name]="$name"
 
   # Bundle path
-  local bundle_path="${args[name]}"
-  if [[ -n "${args[branch]}" ]]; then
-    # Suffix with branch/tag name
-    bundle_path="$bundle_path-${args[branch]//\//-}"
-  fi
-  bundle_path=${bundle_path//\*/x}
+  if [[ ${bundle[make_local_clone]} == true ]]; then
+    local bundle_path="${args[name]}"
+    if [[ -n "${args[branch]}" ]]; then
+      # Suffix with branch/tag name
+      bundle_path="$bundle_path-${args[branch]//\//-}"
+    fi
+    bundle_path=${bundle_path//\*/x}
 
-  args[path]="$ANTIGEN_BUNDLES/$bundle_path"
+    args[path]="$ANTIGEN_BUNDLES/$bundle_path"
+  else
+    # if it's local then path is just the "url" argument, loc remains the same
+    args[path]=${args[url]}
+  fi
   
   # Escape url and branch
   args[url]="${(qq)args[url]}"
