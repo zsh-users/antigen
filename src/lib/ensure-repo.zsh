@@ -33,7 +33,7 @@
 
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd "$clone_dir" && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
+    (cd -q "$clone_dir" && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
   }
 
   # Clone if it doesn't already exist.

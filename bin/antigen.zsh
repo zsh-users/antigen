@@ -392,7 +392,7 @@ antigen () {
 
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd "$clone_dir" && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
+    (cd -q "$clone_dir" && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
   }
 
   # Clone if it doesn't already exist.
@@ -599,7 +599,7 @@ antigen () {
       # interactive bundle/theme loading, for static loading -99.9% of the time-
       # eval and subshells are not needed.
       if [[ "$btype" == "theme" ]]; then
-        eval "$(cd ${line:A:h}; cat $line | sed -Ee '/\{$/,/^\}/!{
+        eval "$(cd -q ${line:A:h}; cat $line | sed -Ee '/\{$/,/^\}/!{
                s/^local //
            }');"
       else
@@ -733,7 +733,7 @@ antigen () {
     local clone_dir="$(-antigen-get-clone-dir "$url")"
     if [[ -d "$clone_dir" ]]; then
       (echo -n "$clone_dir:"
-        cd "$clone_dir"
+        cd -q "$clone_dir"
         git rev-parse HEAD) >> $ADOTDIR/revert-info
     fi
   done
@@ -1232,7 +1232,7 @@ antigen-restore () {
           git clone "$url" "$clone_dir" &> /dev/null
       fi
 
-      (cd "$clone_dir" && git checkout $version_hash) &> /dev/null
+      (cd -q "$clone_dir" && git checkout $version_hash) &> /dev/null
     done
 
   echo ' done.'
@@ -1261,7 +1261,7 @@ antigen-revert () {
 # TODO: Once update is finished, show a summary of the new commits, as a kind of
 # "what's new" message.
 antigen-selfupdate () {
-  ( cd $_ANTIGEN_INSTALL_DIR
+  ( cd -q $_ANTIGEN_INSTALL_DIR
    if [[ ! ( -d .git || -f .git ) ]]; then
      echo "Your copy of antigen doesn't appear to be a git clone. " \
        "The 'selfupdate' command cannot work in this case."
@@ -1290,7 +1290,7 @@ antigen-snapshot () {
     sort -u |
     while read url; do
       local dir="$(-antigen-get-clone-dir "$url")"
-      local version_hash="$(cd "$dir" && git rev-parse HEAD)"
+      local version_hash="$(cd -q "$dir" && git rev-parse HEAD)"
       echo "$version_hash $url"
     done)"
 

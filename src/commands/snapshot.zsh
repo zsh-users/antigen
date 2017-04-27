@@ -10,7 +10,7 @@ antigen-snapshot () {
     sort -u |
     while read url; do
       local dir="$(-antigen-get-clone-dir "$url")"
-      local version_hash="$(cd "$dir" && git rev-parse HEAD)"
+      local version_hash="$(cd -q "$dir" && git rev-parse HEAD)"
       echo "$version_hash $url"
     done)"
 
