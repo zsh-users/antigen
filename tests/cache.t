@@ -1,5 +1,7 @@
 Enable extension.
 
+  $ ANTIGEN_CACHE=$ADOTDIR/init.zsh
+
   $ prev=$(env)
   $ antigen reset
   Done. Please open a new shell to see the changes.
@@ -70,3 +72,5 @@ Can clear cache correctly.
 
   $ [[ -f $ANTIGEN_CACHE ]]
   [1]
+
+  $ ANTIGEN_CACHE=false

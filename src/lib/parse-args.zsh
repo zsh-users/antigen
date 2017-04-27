@@ -23,7 +23,7 @@
     case "$argkey" in
       --url|--loc|--branch|--btype)
         if [[ "$value" == "$argkey" ]]; then
-          printf "Required argument for '%s' not provided." $key >&2
+          printf "Required argument for '%s' not provided.\n" $key >&2
         else
           args[$key]="$value"
         fi
@@ -32,7 +32,7 @@
         args[make_local_clone]=false
       ;;
       --*)
-        printf "Unknown argument '%s'." $key >&2
+        printf "Unknown argument '%s'.\n" $key >&2
       ;;
       *)
         value=$key
@@ -80,26 +80,21 @@
           $url != http://* &&
           $url != ssh://* &&
           $url != /* &&
-          $url != git@github.com:*/*
+          $url != *github.com:*/*
           ]]; then
     url="https://github.com/${url%.git}.git"
   fi
   args[url]="$url"
 
-  # Add the branch information to the url.
-  # Format url in bundle-metadata format: url[|branch]
-  if [[ ! -z "${args[branch]}" ]]; then
-    args[url]="${args[url]}|${args[branch]}"
+  # Ignore local clone if url given is not a git directory
+  if [[ ${args[url]} == /* && ! -d ${args[url]}/.git ]]; then
+    args[make_local_clone]=false
   fi
 
-  # The `make_local_clone` variable better represents whether there should be
-  # a local clone made. For cloning to be avoided, firstly, the `$url` should
-  # be an absolute local path and `$branch` should be empty. In addition to
-  # these two conditions, either the `--no-local-clone` option should be
-  # given, or `$url` should not a git repo.
-  if [[ ${args[url]} == /* && -z ${args[branch]} &&
-          ( ${args[make_local_clone]} == true || ! -d ${args[url]}/.git ) ]]; then
-    args[make_local_clone]=false
+  # Add the branch information to the url if we need to create a local clone.
+  # Format url in bundle-metadata format: url[|branch]
+  if [[ ! -z "${args[branch]}" && ${args[make_local_clone]} == true ]]; then
+    args[url]="${args[url]}|${args[branch]}"
   fi
 
   # Add the theme extension to `loc`, if this is a theme, but only
@@ -110,32 +105,30 @@
       args[loc]="${args[loc]}.zsh-theme"
   fi
 
-
-  # Bundle name
-  local url="${args[url]}"
-  local name="${url%|*}"
-
+  # Format bundle name
+  local name="${args[url]%|*}"
   if [[ "$name" =~ '.*/(.*/.*).*$' ]]; then
     name="${match[1]}"
   fi
   name="${name%.git*}"
-
   if [[ -n ${args[branch]} ]]; then
     name="$name@${args[branch]}"
   fi
-  
   args[name]="$name"
 
   # Bundle path
-  if [[ ${bundle[make_local_clone]} == true ]]; then
-    local bundle_path="${args[name]}"
+  if [[ ${args[make_local_clone]} == true ]]; then
+    local bpath="${args[name]}"
+    # Suffix with branch/tag name
     if [[ -n "${args[branch]}" ]]; then
-      # Suffix with branch/tag name
-      bundle_path="$bundle_path-${args[branch]//\//-}"
+      # bpath is in the form of repo/name@version => repo/name-version
+      bpath="${bpath//\@/-}"
+      # If branch/tag is semver-like do replace * by x.
+      bpath=${bpath//\*/x}
     fi
-    bundle_path=${bundle_path//\*/x}
 
-    args[path]="$ANTIGEN_BUNDLES/$bundle_path"
+    bpath="$ANTIGEN_BUNDLES/$bpath"
+    args[path]="${(qq)bpath}"
   else
     # if it's local then path is just the "url" argument, loc remains the same
     args[path]=${args[url]}
@@ -143,7 +136,7 @@
   
   # Escape url and branch
   args[url]="${(qq)args[url]}"
-  if [[ ! -z "${args[branch]}" ]]; then
+  if [[ -n "${args[branch]}" ]]; then
     args[branch]="${(qq)args[branch]}"
   fi
 

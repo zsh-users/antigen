@@ -10,6 +10,9 @@ antigen-bundle () {
 
   typeset -A bundle
   -antigen-parse-args 'bundle' "$@"
+  if [[ -z ${bundle[btype]} ]]; then
+    bundle[btype]=bundle
+  fi
 
   local record="${bundle[url]} ${bundle[loc]} ${bundle[btype]} ${bundle[make_local_clone]}"
   if [[ $_ANTIGEN_WARN_DUPLICATES == true && ! ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} == 0 ]]; then
@@ -17,8 +20,11 @@ antigen-bundle () {
     return 1
   fi
  
-  if ! -antigen-bundle-install ${(kv)bundle}; then
-    return 1
+  # Clone bundle if we haven't done do already.
+  if [[ ! -d "${bundle[path]}" ]]; then
+    if ! -antigen-bundle-install ${(kv)bundle}; then
+      return 1
+    fi
   fi
 
   # Load the plugin.
@@ -41,12 +47,9 @@ antigen-bundle () {
 
   # Ensure a clone exists for this repo, if needed.
   # Get the clone's directory as per the given repo url and branch.
-  local bundle_path="${bundle[path]}"
+  local bpath="${bundle[path]}"
   # Clone if it doesn't already exist.
   local start=$(date +'%s')
-  if [[ -d "$bundle_path" ]]; then
-    return 0
-  fi
 
   printf "Installing %s... " "${bundle[name]}"
 

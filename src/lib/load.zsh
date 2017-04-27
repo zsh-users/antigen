@@ -10,76 +10,30 @@
 -antigen-load () {
   typeset -A bundle; bundle=($@)
 
-  # should be configurable, ie: form theme context should only look for .zsh-theme,
-  # or loc, for bundle context should only look for .plugin.zsh or loc, if given
-  # a loc it should fail when no $loc/$loc.plugin.zsh/$loc.zsh-theme/$loc.zs etc
-  # do no exist
-  typeset -a strategies=(location init) # dot-plugin zsh-theme zsh sh)
-  typeset -a list;
-  -antigen-load-list $strategies
-
-  for line in $list; do
-    source "$line"
-    return 0
-  done
+  typeset -Ua list; list=()
+  local location=${bundle[path]}/${bundle[loc]}
   
-  return 1
-}
+  list+=(${location}(N.) ${location}*.plugin.zsh(N[1]) ${location}init.zsh(N) ${location}*.zsh(N) ${location}*.sh(N))
 
--antigen-load-list () {
-  for strategy in $strategies; do
-    -antigen-load-strategy-$strategy ${(kv)bundle}
-    if [[ ! "${#list}" == 0 ]]; then
-      break;
-    fi
-  done
-}
-
--antigen-load-strategy-location () {
-  typeset -A bundle; bundle=($@)
-  if [[ ${bundle[loc]} == '/' ]]; then
-    return
+  # Load to path if there is no sourceable
+  if [[ ${bundle[loc]} == "/" && $#list == 0 ]]; then
+    PATH="$PATH:${location:A}"
+    fpath+=("${location:A}")
+    return 0
   fi
 
-  local files=("${bundle[path]}/${bundle[loc]}.plugin.zsh"
-    "${bundle[path]}/${bundle[loc]}.zsh-theme"
-    "${bundle[path]}/${bundle[loc]}.zsh"
-    "${bundle[path]}/${bundle[loc]}"
-  )
-
-  local file
-  for file in $files; do
-    if [[ -f $file ]]; then
-      list+=$file
-      break;
-    fi
-  done
-}
-
--antigen-load-strategy-dot-plugin () {
-  typeset -A bundle; bundle=($@)
-  list+=(${bundle[path]}/*.plugin.zsh(N[1]))
-}
-
--antigen-load-strategy-init () {
-  typeset -A bundle; bundle=($@)
-  local file="${bundle[path]}/init.zsh"
-  if [[ -f $file ]]; then
-    list+=$file
+  # If there is any sourceable try to load it
+  if ! -antigen-load-source; then
+    return 1
   fi
+
+  # Load to PATH
+  PATH="$PATH:${location:A}"
+  fpath+=("${location:A}")
+
+  return 0
 }
 
--antigen-load-strategy-zsh-theme () {
-  typeset -A bundle; bundle=($@)
-  list+=(${bundle[path]}/*.zsh-theme(N[1]))
-}
-
--antigen-load-strategy-zsh () {
-  typeset -A bundle; bundle=($@)
-  list+=(${bundle[path]}/*.zsh(N))
-}
-
--antigen-load-strategy-sh () {
-  typeset -A bundle; bundle=($@)
-  list+=(${bundle[path]}/*.sh(N))
+-antigen-load-source () {
+  source "${list[1]}" 2>/dev/null
 }

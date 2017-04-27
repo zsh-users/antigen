@@ -444,7 +444,7 @@ antigen () {
   unfunction -- -set-default
 
   # Initialize cache unless disabled
-  #[[ ! $ANTIGEN_CACHE == false ]] && -antigen-cache-init
+  [[ ! $ANTIGEN_CACHE == false ]] && -antigen-cache-init
 }
 # Load a given bundle by sourcing it.
 #
@@ -458,78 +458,32 @@ antigen () {
 -antigen-load () {
   typeset -A bundle; bundle=($@)
 
-  # should be configurable, ie: form theme context should only look for .zsh-theme,
-  # or loc, for bundle context should only look for .plugin.zsh or loc, if given
-  # a loc it should fail when no $loc/$loc.plugin.zsh/$loc.zsh-theme/$loc.zs etc
-  # do no exist
-  typeset -a strategies=(location init) # dot-plugin zsh-theme zsh sh)
-  typeset -a list;
-  -antigen-load-list $strategies
-
-  for line in $list; do
-    source "$line"
-    return 0
-  done
+  typeset -Ua list; list=()
+  local location=${bundle[path]}/${bundle[loc]}
   
-  return 1
-}
+  list+=(${location}(N.) ${location}*.plugin.zsh(N[1]) ${location}init.zsh(N) ${location}*.zsh(N) ${location}*.sh(N))
 
--antigen-load-list () {
-  for strategy in $strategies; do
-    -antigen-load-strategy-$strategy ${(kv)bundle}
-    if [[ ! "${#list}" == 0 ]]; then
-      break;
-    fi
-  done
-}
-
--antigen-load-strategy-location () {
-  typeset -A bundle; bundle=($@)
-  if [[ ${bundle[loc]} == '/' ]]; then
-    return
+  # Load to path if there is no sourceable
+  if [[ ${bundle[loc]} == "/" && $#list == 0 ]]; then
+    PATH="$PATH:${location:A}"
+    fpath+=("${location:A}")
+    return 0
   fi
 
-  local files=("${bundle[path]}/${bundle[loc]}.plugin.zsh"
-    "${bundle[path]}/${bundle[loc]}.zsh-theme"
-    "${bundle[path]}/${bundle[loc]}.zsh"
-    "${bundle[path]}/${bundle[loc]}"
-  )
-
-  local file
-  for file in $files; do
-    if [[ -f $file ]]; then
-      list+=$file
-      break;
-    fi
-  done
-}
-
--antigen-load-strategy-dot-plugin () {
-  typeset -A bundle; bundle=($@)
-  list+=(${bundle[path]}/*.plugin.zsh(N[1]))
-}
-
--antigen-load-strategy-init () {
-  typeset -A bundle; bundle=($@)
-  local file="${bundle[path]}/init.zsh"
-  if [[ -f $file ]]; then
-    list+=$file
+  # If there is any sourceable try to load it
+  if ! -antigen-load-source; then
+    return 1
   fi
+
+  # Load to PATH
+  PATH="$PATH:${location:A}"
+  fpath+=("${location:A}")
+
+  return 0
 }
 
--antigen-load-strategy-zsh-theme () {
-  typeset -A bundle; bundle=($@)
-  list+=(${bundle[path]}/*.zsh-theme(N[1]))
-}
-
--antigen-load-strategy-zsh () {
-  typeset -A bundle; bundle=($@)
-  list+=(${bundle[path]}/*.zsh(N))
-}
-
--antigen-load-strategy-sh () {
-  typeset -A bundle; bundle=($@)
-  list+=(${bundle[path]}/*.sh(N))
+-antigen-load-source () {
+  source "${list[1]}" 2>/dev/null
 }
 # Usage:
 #   -antigen-parse-args output_assoc_arr <args...>
@@ -556,7 +510,7 @@ antigen () {
     case "$argkey" in
       --url|--loc|--branch|--btype)
         if [[ "$value" == "$argkey" ]]; then
-          printf "Required argument for '%s' not provided." $key >&2
+          printf "Required argument for '%s' not provided.\n" $key >&2
         else
           args[$key]="$value"
         fi
@@ -565,7 +519,7 @@ antigen () {
         args[make_local_clone]=false
       ;;
       --*)
-        printf "Unknown argument '%s'." $key >&2
+        printf "Unknown argument '%s'.\n" $key >&2
       ;;
       *)
         value=$key
@@ -613,26 +567,21 @@ antigen () {
           $url != http://* &&
           $url != ssh://* &&
           $url != /* &&
-          $url != git@github.com:*/*
+          $url != *github.com:*/*
           ]]; then
     url="https://github.com/${url%.git}.git"
   fi
   args[url]="$url"
 
-  # Add the branch information to the url.
-  # Format url in bundle-metadata format: url[|branch]
-  if [[ ! -z "${args[branch]}" ]]; then
-    args[url]="${args[url]}|${args[branch]}"
+  # Ignore local clone if url given is not a git directory
+  if [[ ${args[url]} == /* && ! -d ${args[url]}/.git ]]; then
+    args[make_local_clone]=false
   fi
 
-  # The `make_local_clone` variable better represents whether there should be
-  # a local clone made. For cloning to be avoided, firstly, the `$url` should
-  # be an absolute local path and `$branch` should be empty. In addition to
-  # these two conditions, either the `--no-local-clone` option should be
-  # given, or `$url` should not a git repo.
-  if [[ ${args[url]} == /* && -z ${args[branch]} &&
-          ( ${args[make_local_clone]} == true || ! -d ${args[url]}/.git ) ]]; then
-    args[make_local_clone]=false
+  # Add the branch information to the url if we need to create a local clone.
+  # Format url in bundle-metadata format: url[|branch]
+  if [[ ! -z "${args[branch]}" && ${args[make_local_clone]} == true ]]; then
+    args[url]="${args[url]}|${args[branch]}"
   fi
 
   # Add the theme extension to `loc`, if this is a theme, but only
@@ -643,32 +592,30 @@ antigen () {
       args[loc]="${args[loc]}.zsh-theme"
   fi
 
-
-  # Bundle name
-  local url="${args[url]}"
-  local name="${url%|*}"
-
+  # Format bundle name
+  local name="${args[url]%|*}"
   if [[ "$name" =~ '.*/(.*/.*).*$' ]]; then
     name="${match[1]}"
   fi
   name="${name%.git*}"
-
   if [[ -n ${args[branch]} ]]; then
     name="$name@${args[branch]}"
   fi
-  
   args[name]="$name"
 
   # Bundle path
-  if [[ ${bundle[make_local_clone]} == true ]]; then
-    local bundle_path="${args[name]}"
+  if [[ ${args[make_local_clone]} == true ]]; then
+    local bpath="${args[name]}"
+    # Suffix with branch/tag name
     if [[ -n "${args[branch]}" ]]; then
-      # Suffix with branch/tag name
-      bundle_path="$bundle_path-${args[branch]//\//-}"
+      # bpath is in the form of repo/name@version => repo/name-version
+      bpath="${bpath//\@/-}"
+      # If branch/tag is semver-like do replace * by x.
+      bpath=${bpath//\*/x}
     fi
-    bundle_path=${bundle_path//\*/x}
 
-    args[path]="$ANTIGEN_BUNDLES/$bundle_path"
+    bpath="$ANTIGEN_BUNDLES/$bpath"
+    args[path]="${(qq)bpath}"
   else
     # if it's local then path is just the "url" argument, loc remains the same
     args[path]=${args[url]}
@@ -676,7 +623,7 @@ antigen () {
   
   # Escape url and branch
   args[url]="${(qq)args[url]}"
-  if [[ ! -z "${args[branch]}" ]]; then
+  if [[ -n "${args[branch]}" ]]; then
     args[branch]="${(qq)args[branch]}"
   fi
 
@@ -749,42 +696,6 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
     local btype=$bundle[3]
     local make_local_clone=$bundle[4]
 
-    if -antigen-bundle-install "$url" "$loc" "$btype" "$make_local_clone"; then
-      return 1
-    fi
-
-    local location="$url"
-    if $make_local_clone; then
-      location="$(-antigen-get-clone-dir "$url")"
-    fi
-
-    if [[ $loc != "/" ]]; then
-      location="$location/$loc"
-    fi
-
-    if [[ -d "$location" ]]; then
-      _fpath+=($location)
-    fi
-
-    if [[ -d "$location/functions" ]]; then
-      _fpath+=($location/functions)
-    fi
-
-    -antigen-load-list "$url" "$loc" "$make_local_clone" | while read line; do
-      if [[ -f "$line" ]]; then
-        if [[ "$btype" == "theme" && $_ANTIGEN_THEME_COMPAT == true ]]; then
-          local compat="${line:A}.antigen-compat"
-          echo "# Generated by Antigen. Do not edit!" >! "$compat"
-          cat $line | sed -Ee '/\{$/,/^\}/!{
-                 s/^local //
-             }' >>! "$compat"
-          line="$compat"
-        fi
-        _sources+="source \"$line\";\NL"
-      elif [[ -d "$line" ]]; then
-        _PATH+=($line)
-      fi
-    done
   done
 
   _payload="#-- START ZCACHE GENERATED FILE
@@ -842,45 +753,17 @@ compdef () {}\NL"
 -antigen-cache-init () {
   eval "function --$(functions -- antigen-apply)"
   antigen-apply () {
-      # Auto determine check_files
-      if ! -antigen-interactive-mode; then
-          # There always should be 2 steps from original source as the recommended way is to use
-          # `antigen` wrapper not `antigen-apply` directly.
-          if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 2 ]]; then
-            ANTIGEN_CHECK_FILES+=("${${funcfiletrace[2]%:*}##* }")
-          fi
-      fi
-      --antigen-apply
-
-      -zcache-generate-cache
-      [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
+    -zcache-generate-cache
+    [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
   }
 
-  eval "function --$(functions -- antigen-bundle)"
-  antigen-bundle () {  
-    # Bundle spec arguments' default values.
-    local url="$ANTIGEN_DEFAULT_REPO_URL"
-    local loc=/
-    local branch=
-    local no_local_clone=false
-    local btype=plugin
+  # Defer cloning.
+  eval "function --$(functions -- antigen-bundle-install)"
+  -antigen-bundle-install () {}
 
-    if [[ -z "$1" ]]; then
-      echo "Antigen: Must provide a bundle url or name."
-      return 1
-    fi
-
-    typeset -A bundle
-    -antigen-parse-bundle 'bundle' $@
-
-    # Runnin in interactive shell?
-    if -antigen-interactive-mode; then
-      --antigen-bundle "$@"
-    else
-      # Add it to the record.
-      _ANTIGEN_BUNDLE_RECORD+=("${bundle[url]} ${bundle[loc]} ${bundle[btype]} ${bundle[make_local_clone]}")
-    fi
-  }
+  # Defer loading.
+  eval "function --$(functions -- antigen-load)"
+  -antigen-load () {}
 }
 # Initialize completion
 antigen-apply () {
@@ -917,6 +800,9 @@ antigen-bundle () {
 
   typeset -A bundle
   -antigen-parse-args 'bundle' "$@"
+  if [[ -z ${bundle[btype]} ]]; then
+    bundle[btype]=bundle
+  fi
 
   local record="${bundle[url]} ${bundle[loc]} ${bundle[btype]} ${bundle[make_local_clone]}"
   if [[ $_ANTIGEN_WARN_DUPLICATES == true && ! ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} == 0 ]]; then
@@ -924,8 +810,11 @@ antigen-bundle () {
     return 1
   fi
  
-  if ! -antigen-bundle-install ${(kv)bundle}; then
-    return 1
+  # Clone bundle if we haven't done do already.
+  if [[ ! -d "${bundle[path]}" ]]; then
+    if ! -antigen-bundle-install ${(kv)bundle}; then
+      return 1
+    fi
   fi
 
   # Load the plugin.
@@ -948,12 +837,9 @@ antigen-bundle () {
 
   # Ensure a clone exists for this repo, if needed.
   # Get the clone's directory as per the given repo url and branch.
-  local bundle_path="${bundle[path]}"
+  local bpath="${bundle[path]}"
   # Clone if it doesn't already exist.
   local start=$(date +'%s')
-  if [[ -d "$bundle_path" ]]; then
-    return 0
-  fi
 
   printf "Installing %s... " "${bundle[name]}"
 
@@ -994,7 +880,7 @@ antigen-cleanup () {
     force=true
   fi
 
-  if [[ ! -d "$ANTIGEN_BUNDLES" || -z "$(\ls "$ANTIGEN_BUNDLES")" ]]; then
+  if [[ ! -d "$ANTIGEN_BUNDLES" || -z "$(\ls -A "$ANTIGEN_BUNDLES")" ]]; then
     echo "You don't have any bundles."
     return 0
   fi
