@@ -763,8 +763,6 @@ antigen () {
 }
 
 ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
-# Whether to use bundle or reference cache (since v1.4.0)
-_ZCACHE_BUNDLE=${_ZCACHE_BUNDLE:-false}
 
 # Generates cache from listed bundles.
 #
