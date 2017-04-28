@@ -38,19 +38,7 @@ Should not leak Antigen or OMZ environment variables.
   $ diff <(env) <(echo $prev) | sed -e 's/\=.*//' | grep -i zsh | wc -l
   0
 
-Both bundles are cached by bundle.
-
-  $ _ZCACHE_BUNDLE=true
-  $ antigen reset > /dev/null
-
-  $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen bundles > /dev/null
-  $ antigen apply > /dev/null
-
-  $ cat $ANTIGEN_CACHE | grep hehe
-  alias hehe="echo hehe"
-  alias hehe2="echo hehe2"
-
-Both bundles are cached by reference.
+Both bundles are cached.
 
   $ _ZCACHE_BUNDLE=false
   $ antigen reset &> /dev/null
@@ -67,28 +55,6 @@ List command should work as expected.
   $ antigen list
   .*/test-plugin @ master (re)
   .*/test-plugin2 @ master (re)
-
-Respect escape sequences.
-
-  $ _ZCACHE_BUNDLE=true
-  $ antigen reset > /dev/null
-
-  $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen bundles > /dev/null
-  $ antigen apply > /dev/null
-
-  $ cat $ANTIGEN_CACHE | grep 'alias prompt'
-  alias prompt="\e]$ >\a\n"
-
-Cache is saved correctly.
-
-  $ cat $ANTIGEN_CACHE | grep -c 'alias prompt'
-  1
-
-  $ cat $ANTIGEN_CACHE | grep -c 'root=\${__ZCACHE_FILE_PATH}'
-  1
-
-  $ cat $ANTIGEN_CACHE | grep -c 'echo \$root/\$0'
-  1
 
 Cache version matches antigen version.
 
