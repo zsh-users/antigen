@@ -35,7 +35,7 @@
 
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd "$clone_dir" && git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
+    (cd "$clone_dir" && eval ${ANTIGEN_GIT_ENV} git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
   }
 
   # Clone if it doesn't already exist.
@@ -52,7 +52,7 @@
   if [[ ! -d $clone_dir ]]; then
     install_or_update=true
     echo -n "Installing $(-antigen-bundle-short-name "$url" "$branch")... "
-    git clone ${=ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $ANTIGEN_LOG
+    eval ${ANTIGEN_GIT_ENV} git clone ${=ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $ANTIGEN_LOG
     success=$?
   elif $update; then
     install_or_update=true
@@ -69,6 +69,7 @@
     # Get the new revision.
     local new_rev="$(--plugin-git rev-parse HEAD)"
   fi
+
 
   if $install_or_update; then
     local took=$(( $(date +'%s') - $start ))
