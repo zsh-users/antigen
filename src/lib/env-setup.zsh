@@ -33,6 +33,9 @@
   -set-default ANTIGEN_CLONE_OPTS "--single-branch --recursive --depth=1"
   -set-default ANTIGEN_SUBMODULE_OPTS "--recursive --depth=1"
 
+  # Compatibility with oh-my-zsh themes.
+  -set-default _ANTIGEN_THEME_COMPAT true
+
   # Setup antigen's own completion.
   autoload -Uz compinit
   compinit -C -d "$ANTIGEN_COMPDUMP"

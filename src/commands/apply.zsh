@@ -17,5 +17,5 @@ antigen-apply () {
 
   unset __deferred_compdefs
 
-  -zcache-generate-cache
+  [[ $ANTIGEN_CACHE != false ]] && -zcache-generate-cache
 }
