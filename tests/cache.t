@@ -1,5 +1,6 @@
 Enable extension.
 
+  $ -antigen-cache-init
   $ ANTIGEN_CACHE=$ADOTDIR/init.zsh
 
   $ prev=$(env)

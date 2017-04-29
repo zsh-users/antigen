@@ -1,5 +1,4 @@
-ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
-
+_ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
 # Generates cache from listed bundles.
 #
 # Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
@@ -15,19 +14,16 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 #   Nothing. Generates ANTIGEN_CACHE
 -zcache-generate-cache () {
   local -aU _fpath _PATH
-  local bundle _payload _sources line themes
+  local _payload _sources record
 
-  for bundle in $_ANTIGEN_BUNDLE_RECORD; do
-    # Extract bundle metadata to pass them to -antigen-parse-bundle function.
-    # TODO -antigen-parse-bundle should be refactored for next major to
-    # support multiple positional arguments.
-    bundle=(${(@s/ /)bundle})
-
-    local url=$bundle[1]
-    local loc=$bundle[2]
-    local btype=$bundle[3]
-    local make_local_clone=$bundle[4]
-
+  for record in $_ZCACHE_BUNDLE_SOURCE; do
+    record=${record:A}
+    if [[ -f $record ]]; then
+      _sources+="source \"${record}\";\NL"
+    elif [[ -d $record ]]; then
+      _PATH+=("${record}")
+      _fpath+=("${record}")
+    fi
   done
 
   _payload="#-- START ZCACHE GENERATED FILE
@@ -82,18 +78,63 @@ compdef () {}\NL"
 #  -antigen-cache-init
 # Returns
 #  Nothing
+typeset -ga _ZCACHE_BUNDLE_SOURCE; _ZCACHE_BUNDLE_SOURCE=()
+typeset -ga _ZCACHE_CAPTURE_BUNDLE; _ZCACHE_CAPTURE_BUNDLE=()
+typeset -a _ZCACHE_CAPTURE_FUNCTIONS;
+_ZCACHE_CAPTURE_FUNCTIONS=(antigen-bundle -antigen-load-env -antigen-load-source antigen-apply)
 -antigen-cache-init () {
-  eval "function --$(functions -- antigen-apply)"
-  antigen-apply () {
-    -zcache-generate-cache
-    [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
+  # Capture functions
+  --cache-capture () {
+    local f; for f in $_ZCACHE_CAPTURE_FUNCTIONS; do
+      eval "function ${_ZCACHE_CAPTURE_PREFIX}$(functions -- ${f})"
+    done
   }
 
-  # Defer cloning.
-  eval "function --$(functions -- antigen-bundle-install)"
-  -antigen-bundle-install () {}
+  # Release previously captured functions
+  --cache-release-function () {
+    local f=$1
+    eval "function $(functions -- ${_ZCACHE_CAPTURE_PREFIX}${f} | sed s/${_ZCACHE_CAPTURE_PREFIX}//)"
+    unfunction -- ${_ZCACHE_CAPTURE_PREFIX}${f} &> /dev/null
+  }
+
+  --cache-release () {
+    local f; for f in $_ZCACHE_CAPTURE_FUNCTIONS; do
+      --cache-release-function $f
+    done
+  }
+  
+  --cache-capture
+  antigen-apply () {
+    # Release function to apply
+    --cache-release-function antigen-bundle
+    local bundle
+    for bundle in "${_ZCACHE_CAPTURE_BUNDLE[@]}"; do
+      antigen-bundle "${=bundle[@]}"
+    done
+    -zcache-generate-cache
+    --cache-release
+    [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
+  }
+  
+  antigen-bundle () {
+    _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${(q)@}}")
+  }
 
   # Defer loading.
-  eval "function --$(functions -- antigen-load)"
-  -antigen-load () {}
+  -antigen-load-env () {
+    typeset -A bundle; bundle=($@)
+    local location=${bundle[path]}/${bundle[loc]}
+    
+    # Load to path if there is no sourceable
+    if [[ ${bundle[loc]} == "/" ]]; then
+      _ZCACHE_BUNDLE_SOURCE+=("${location}")
+      return
+    fi
+
+    _ZCACHE_BUNDLE_SOURCE+=("${location}")
+  }
+  
+  -antigen-load-source () {
+    _ZCACHE_BUNDLE_SOURCE+=(${list})
+  }
 }

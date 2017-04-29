@@ -13,27 +13,43 @@
   typeset -Ua list; list=()
   local location=${bundle[path]}/${bundle[loc]}
   
-  list+=(${location}(N.) ${location}*.plugin.zsh(N[1]) ${location}init.zsh(N) ${location}*.zsh(N) ${location}*.sh(N))
-
-  # Load to path if there is no sourceable
-  if [[ ${bundle[loc]} == "/" && $#list == 0 ]]; then
-    PATH="$PATH:${location:A}"
-    fpath+=("${location:A}")
-    return 0
+  # Prioritize given location
+  if [[ -f ${location} ]]; then
+    list=(${location})
+  else
+    # Prioritize common frameworks
+    list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]))
+    if [[ $#list == 0 ]]; then
+      # Default to zsh and sh
+      list=(${location}*.zsh(N) ${location}*.sh(N)) # ${location}*.zsh-theme(N)
+    fi
   fi
+
+  -antigen-load-env ${(kv)bundle}
 
   # If there is any sourceable try to load it
-  if ! -antigen-load-source; then
+  if ! -antigen-load-source && [[ ${bundle[loc]} != "/" ]]; then
     return 1
   fi
-
-  # Load to PATH
-  PATH="$PATH:${location:A}"
-  fpath+=("${location:A}")
 
   return 0
 }
 
+-antigen-load-env () {
+  typeset -A bundle; bundle=($@)
+  local location=${bundle[path]}/${bundle[loc]}
+  
+  # Load to path if there is no sourceable
+  if [[ ${bundle[loc]} == "/" ]]; then
+    PATH="$PATH:${location:A}"
+    fpath+=("${location:A}")
+    return
+  fi
+
+  PATH="$PATH:${location:A:h}"
+  fpath+=("${location:A:h}")
+}
+
 -antigen-load-source () {
-  source "${list[1]}" 2>/dev/null
+  source "${list[@]}" 2>/dev/null
 }

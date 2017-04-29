@@ -28,8 +28,6 @@
 
   -set-default ANTIGEN_LOG /dev/null
 
-  -set-default ANTIGEN_AUTO_CONFIG true
-
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
   # for arguments that can be passed as `--key=value`.
   -set-default ANTIGEN_GIT_ENV "GIT_TERMINAL_PROMPT=0"
@@ -40,6 +38,13 @@
 
   # Compatibility with oh-my-zsh themes.
   -set-default _ANTIGEN_THEME_COMPAT true
+
+  # Cache auto config files to check for changes (.zshrc, .antigenrc etc)
+  -set-default ANTIGEN_AUTO_CONFIG true
+  
+  # Default cache path.
+  -set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
+  -set-default ANTIGEN_RSRC $ADOTDIR/.resources
 
   # Setup antigen's own completion.
   autoload -Uz compinit

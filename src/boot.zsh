@@ -23,4 +23,3 @@ if [[ $ANTIGEN_CACHE != false ]]; then
 
   [[ -f $ANTIGEN_CACHE && ! $_ANTIGEN_CACHE_LOADED == true ]] && source "$ANTIGEN_CACHE" && return 0;
 fi
-

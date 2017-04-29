@@ -50,8 +50,11 @@ The alias defined in the other zsh file should not be available.
 
 Fpath should be updated correctly.
 
-  $ echo ${(j:\n:)fpath} | grep -co test-plugin
-  2
+  $ echo ${(j:\n:)fpath}
+  .*/site-functions (re)
+  .*/functions (re)
+  .*/test-plugin (re)
+  .*/test-plugin2 (re)
 
 Load plugin multiple times, doesn't cluters _ANTIGEN_BUNDLE_RECORD
 

@@ -26,7 +26,6 @@ if [[ $ANTIGEN_CACHE != false ]]; then
 
   [[ -f $ANTIGEN_CACHE && ! $_ANTIGEN_CACHE_LOADED == true ]] && source "$ANTIGEN_CACHE" && return 0;
 fi
-
 [[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
 
 # Each line in this string has the following entries separated by a space
@@ -422,8 +421,6 @@ antigen () {
 
   -set-default ANTIGEN_LOG /dev/null
 
-  -set-default ANTIGEN_AUTO_CONFIG true
-
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
   # for arguments that can be passed as `--key=value`.
   -set-default ANTIGEN_GIT_ENV "GIT_TERMINAL_PROMPT=0"
@@ -434,6 +431,13 @@ antigen () {
 
   # Compatibility with oh-my-zsh themes.
   -set-default _ANTIGEN_THEME_COMPAT true
+
+  # Cache auto config files to check for changes (.zshrc, .antigenrc etc)
+  -set-default ANTIGEN_AUTO_CONFIG true
+  
+  # Default cache path.
+  -set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
+  -set-default ANTIGEN_RSRC $ADOTDIR/.resources
 
   # Setup antigen's own completion.
   autoload -Uz compinit
@@ -461,29 +465,45 @@ antigen () {
   typeset -Ua list; list=()
   local location=${bundle[path]}/${bundle[loc]}
   
-  list+=(${location}(N.) ${location}*.plugin.zsh(N[1]) ${location}init.zsh(N) ${location}*.zsh(N) ${location}*.sh(N))
-
-  # Load to path if there is no sourceable
-  if [[ ${bundle[loc]} == "/" && $#list == 0 ]]; then
-    PATH="$PATH:${location:A}"
-    fpath+=("${location:A}")
-    return 0
+  # Prioritize given location
+  if [[ -f ${location} ]]; then
+    list=(${location})
+  else
+    # Prioritize common frameworks
+    list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]))
+    if [[ $#list == 0 ]]; then
+      # Default to zsh and sh
+      list=(${location}*.zsh(N) ${location}*.sh(N)) # ${location}*.zsh-theme(N)
+    fi
   fi
+
+  -antigen-load-env ${(kv)bundle}
 
   # If there is any sourceable try to load it
-  if ! -antigen-load-source; then
+  if ! -antigen-load-source && [[ ${bundle[loc]} != "/" ]]; then
     return 1
   fi
-
-  # Load to PATH
-  PATH="$PATH:${location:A}"
-  fpath+=("${location:A}")
 
   return 0
 }
 
+-antigen-load-env () {
+  typeset -A bundle; bundle=($@)
+  local location=${bundle[path]}/${bundle[loc]}
+  
+  # Load to path if there is no sourceable
+  if [[ ${bundle[loc]} == "/" ]]; then
+    PATH="$PATH:${location:A}"
+    fpath+=("${location:A}")
+    return
+  fi
+
+  PATH="$PATH:${location:A:h}"
+  fpath+=("${location:A:h}")
+}
+
 -antigen-load-source () {
-  source "${list[1]}" 2>/dev/null
+  source "${list[@]}" 2>/dev/null
 }
 # Usage:
 #   -antigen-parse-args output_assoc_arr <args...>
@@ -666,8 +686,7 @@ antigen () {
 -antigen-use-prezto () {
   antigen-bundle "$ANTIGEN_PREZTO_REPO_URL"
 }
-ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
-
+_ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
 # Generates cache from listed bundles.
 #
 # Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
@@ -683,19 +702,16 @@ ANTIGEN_CACHE="${ANTIGEN_CACHE:-$ADOTDIR/init.zsh}"
 #   Nothing. Generates ANTIGEN_CACHE
 -zcache-generate-cache () {
   local -aU _fpath _PATH
-  local bundle _payload _sources line themes
+  local _payload _sources record
 
-  for bundle in $_ANTIGEN_BUNDLE_RECORD; do
-    # Extract bundle metadata to pass them to -antigen-parse-bundle function.
-    # TODO -antigen-parse-bundle should be refactored for next major to
-    # support multiple positional arguments.
-    bundle=(${(@s/ /)bundle})
-
-    local url=$bundle[1]
-    local loc=$bundle[2]
-    local btype=$bundle[3]
-    local make_local_clone=$bundle[4]
-
+  for record in $_ZCACHE_BUNDLE_SOURCE; do
+    record=${record:A}
+    if [[ -f $record ]]; then
+      _sources+="source \"${record}\";\NL"
+    elif [[ -d $record ]]; then
+      _PATH+=("${record}")
+      _fpath+=("${record}")
+    fi
   done
 
   _payload="#-- START ZCACHE GENERATED FILE
@@ -750,20 +766,65 @@ compdef () {}\NL"
 #  -antigen-cache-init
 # Returns
 #  Nothing
+typeset -ga _ZCACHE_BUNDLE_SOURCE; _ZCACHE_BUNDLE_SOURCE=()
+typeset -ga _ZCACHE_CAPTURE_BUNDLE; _ZCACHE_CAPTURE_BUNDLE=()
+typeset -a _ZCACHE_CAPTURE_FUNCTIONS;
+_ZCACHE_CAPTURE_FUNCTIONS=(antigen-bundle -antigen-load-env -antigen-load-source antigen-apply)
 -antigen-cache-init () {
-  eval "function --$(functions -- antigen-apply)"
-  antigen-apply () {
-    -zcache-generate-cache
-    [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
+  # Capture functions
+  --cache-capture () {
+    local f; for f in $_ZCACHE_CAPTURE_FUNCTIONS; do
+      eval "function ${_ZCACHE_CAPTURE_PREFIX}$(functions -- ${f})"
+    done
   }
 
-  # Defer cloning.
-  eval "function --$(functions -- antigen-bundle-install)"
-  -antigen-bundle-install () {}
+  # Release previously captured functions
+  --cache-release-function () {
+    local f=$1
+    eval "function $(functions -- ${_ZCACHE_CAPTURE_PREFIX}${f} | sed s/${_ZCACHE_CAPTURE_PREFIX}//)"
+    unfunction -- ${_ZCACHE_CAPTURE_PREFIX}${f} &> /dev/null
+  }
+
+  --cache-release () {
+    local f; for f in $_ZCACHE_CAPTURE_FUNCTIONS; do
+      --cache-release-function $f
+    done
+  }
+  
+  --cache-capture
+  antigen-apply () {
+    # Release function to apply
+    --cache-release-function antigen-bundle
+    local bundle
+    for bundle in "${_ZCACHE_CAPTURE_BUNDLE[@]}"; do
+      antigen-bundle "${=bundle[@]}"
+    done
+    -zcache-generate-cache
+    --cache-release
+    [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
+  }
+  
+  antigen-bundle () {
+    _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${(q)@}}")
+  }
 
   # Defer loading.
-  eval "function --$(functions -- antigen-load)"
-  -antigen-load () {}
+  -antigen-load-env () {
+    typeset -A bundle; bundle=($@)
+    local location=${bundle[path]}/${bundle[loc]}
+    
+    # Load to path if there is no sourceable
+    if [[ ${bundle[loc]} == "/" ]]; then
+      _ZCACHE_BUNDLE_SOURCE+=("${location}")
+      return
+    fi
+
+    _ZCACHE_BUNDLE_SOURCE+=("${location}")
+  }
+  
+  -antigen-load-source () {
+    _ZCACHE_BUNDLE_SOURCE+=(${list})
+  }
 }
 # Initialize completion
 antigen-apply () {
@@ -785,8 +846,6 @@ antigen-apply () {
   fi
 
   unset __deferred_compdefs
-
-  [[ $ANTIGEN_CACHE != false ]] && -zcache-generate-cache
 }
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
