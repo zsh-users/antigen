@@ -701,49 +701,49 @@ _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
 # Returns
 #   Nothing. Generates ANTIGEN_CACHE
 -zcache-generate-cache () {
-  local -aU _fpath _PATH
-  local _payload _sources record
+  local -aU _fpath _PATH _sources
+  local record
 
   for record in $_ZCACHE_BUNDLE_SOURCE; do
     record=${record:A}
     if [[ -f $record ]]; then
-      _sources+="source \"${record}\";\NL"
+      # Adding $'\n' as a suffix as j:\n: doesn't work inside a heredoc.
+      _sources+=("source '${record}';"$'\n')
     elif [[ -d $record ]]; then
       _PATH+=("${record}")
       _fpath+=("${record}")
     fi
   done
 
-  _payload="#-- START ZCACHE GENERATED FILE
+cat > $ANTIGEN_CACHE <<EOC
+#-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
 #-- ANTIGEN develop
 $(functions -- _antigen)
 antigen () {
   local MATCH MBEGIN MEND
-  [[ \"\$ZSH_EVAL_CONTEXT\" =~ \"toplevel:*\" || \"\$ZSH_EVAL_CONTEXT\" =~ \"cmdarg:*\" ]] && source \""$_ANTIGEN_INSTALL_DIR/antigen.zsh"\" && eval antigen \$@;
+  [[ "\$ZSH_EVAL_CONTEXT" =~ "toplevel:*" || "\$ZSH_EVAL_CONTEXT" =~ "cmdarg:*" ]] && source "$_ANTIGEN_INSTALL_DIR/antigen.zsh" && eval antigen \$@;
   return 0;
 }
-fpath+=(${_fpath[@]}); PATH=\"\$PATH:${(j/:/)_PATH}\"
+fpath+=(${_fpath[@]}); PATH="\$PATH:${(j/:/)_PATH}"
 _antigen_compinit () {
-  autoload -Uz compinit; compinit -C -d \"$ANTIGEN_COMPDUMP\"; compdef _antigen antigen
+  autoload -Uz compinit; compinit -C -d "$ANTIGEN_COMPDUMP"; compdef _antigen antigen
   add-zsh-hook -D precmd _antigen_compinit
 }
 autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
-compdef () {}\NL"
+compdef () {}
 
-  # Cache omz/prezto env variables. See https://github.com/zsh-users/antigen/pull/387
-  if [[ -n "$ZSH" ]]; then
-    _payload+="ZSH=\"$ZSH\" ZSH_CACHE_DIR=\"$ZSH_CACHE_DIR\"\NL";
-  fi
+if [[ -n "$ZSH" ]]; then
+  ZSH="\$ZSH"; ZSH_CACHE_DIR="\$ZSH_CACHE_DIR"
+fi
+#--- BUNDLES BEGIN
+${(j::)_sources}
+#--- BUNDLES END
+typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=($(print ${(qq)_ANTIGEN_BUNDLE_RECORD}))
+typeset -g _ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='develop'
 
-  _payload+=$_sources
-
-  _payload+="typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=("$(print ${(qq)_ANTIGEN_BUNDLE_RECORD})")\NL"
-  _payload+="typeset -g _ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='develop'\NL"
-
-  _payload+="#-- END ZCACHE GENERATED FILE\NL"
-
-  echo -E $_payload | sed 's/\\NL/\'$'\n/g' >! "$ANTIGEN_CACHE"
+#-- END ZCACHE GENERATED FILE
+EOC
 
   { zcompile "$ANTIGEN_CACHE" } &!
 
