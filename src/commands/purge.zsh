@@ -10,7 +10,7 @@ antigen-purge () {
   local force=$2
 
   if [[ $# -eq 0  ]]; then
-    echo "Antigen: Missing argument."
+    echo "Antigen: Missing argument." >&2
     return 1
   fi
 
@@ -40,7 +40,7 @@ antigen-purge () {
   local make_local_clone=""
 
   if [[ $# -eq 0  ]]; then
-    echo "Antigen: Missing argument."
+    echo "Antigen: Missing argument." >&2
     return 1
   fi
 
@@ -48,7 +48,7 @@ antigen-purge () {
   record=$(-antigen-find-record $bundle)
 
   if [[ ! -n "$record" ]]; then
-    echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
+    echo "Bundle not found in record. Try 'antigen bundle $bundle' first." >&2
     return 1
   fi
 
@@ -56,7 +56,7 @@ antigen-purge () {
   make_local_clone=$(echo "$record" | cut -d' ' -f4)
 
   if [[ $make_local_clone == "false" ]]; then
-    echo "Bundle has no local clone. Will not be removed."
+    echo "Bundle has no local clone. Will not be removed." >&2
     return 1
   fi
 

@@ -1,6 +1,5 @@
 # Initialize completion
 antigen-apply () {
-  local bundle
   \rm -f $ANTIGEN_COMPDUMP
 
   # Load the compinit module. This will readefine the `compdef` function to

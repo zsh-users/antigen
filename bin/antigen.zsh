@@ -828,7 +828,6 @@ _ZCACHE_CAPTURE_FUNCTIONS=(antigen-bundle -antigen-load-env -antigen-load-source
 }
 # Initialize completion
 antigen-apply () {
-  local bundle
   \rm -f $ANTIGEN_COMPDUMP
 
   # Load the compinit module. This will readefine the `compdef` function to
@@ -878,7 +877,7 @@ antigen-bundle () {
 
   # Load the plugin.
   if ! -antigen-load ${(kv)bundle}; then
-    printf "Antigen: Failed to load %s.\n" ${bundle[btype]}  >&2
+    printf "Antigen: Failed to load %s.\n" ${bundle[btype]} >&2
     return 1
   fi
   
@@ -904,7 +903,7 @@ antigen-bundle () {
 
   if ! -antigen-ensure-repo "${bundle[url]}"; then
     # Return immediately if there is an error cloning
-    printf "Error! Activate logging and try again.\n";
+    printf "Error! Activate logging and try again.\n" >&2
     return 1
   fi
 
@@ -1046,7 +1045,7 @@ antigen-init () {
       source "$src"
       return
     else
-      echo "Antigen: invalid argument provided.";
+      printf "Antigen: invalid argument provided.\n" >&2
       return 1
     fi
   fi
@@ -1086,7 +1085,7 @@ antigen-purge () {
   local force=$2
 
   if [[ $# -eq 0  ]]; then
-    echo "Antigen: Missing argument."
+    echo "Antigen: Missing argument." >&2
     return 1
   fi
 
@@ -1116,7 +1115,7 @@ antigen-purge () {
   local make_local_clone=""
 
   if [[ $# -eq 0  ]]; then
-    echo "Antigen: Missing argument."
+    echo "Antigen: Missing argument." >&2
     return 1
   fi
 
@@ -1124,7 +1123,7 @@ antigen-purge () {
   record=$(-antigen-find-record $bundle)
 
   if [[ ! -n "$record" ]]; then
-    echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
+    echo "Bundle not found in record. Try 'antigen bundle $bundle' first." >&2
     return 1
   fi
 
@@ -1132,7 +1131,7 @@ antigen-purge () {
   make_local_clone=$(echo "$record" | cut -d' ' -f4)
 
   if [[ $make_local_clone == "false" ]]; then
-    echo "Bundle has no local clone. Will not be removed."
+    echo "Bundle has no local clone. Will not be removed." >&2
     return 1
   fi
 
@@ -1345,7 +1344,7 @@ antigen-update () {
 
   # Update revert-info data
   -antigen-revert-info
-    
+
   # If no argument is given we update all bundles
   if [[ $# -eq 0  ]]; then
     # Here we're ignoring all non cloned bundles (ie, --no-local-clone)
@@ -1379,13 +1378,13 @@ antigen-update () {
   local start=$(date +'%s')
     
   if [[ $# -eq 0 ]]; then
-    echo "Antigen: Missing argument."
+    printf "Antigen: Missing argument.\n" >&2
     return 1
   fi
 
   record=$(-antigen-find-record $bundle)
   if [[ ! -n "$record" ]]; then
-    echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
+    printf "Bundle not found in record. Try 'antigen bundle %s' first.\n" $bundle >&2
     return 1
   fi
 
@@ -1400,13 +1399,13 @@ antigen-update () {
   printf "Updating %s... " $(-antigen-bundle-short-name "$url" "$branch")
   
   if [[ $make_local_clone == "false" ]]; then
-    echo "Bundle has no local clone. Will not be updated."
+    printf "Bundle has no local clone. Will not be updated.\n" >&2
     return 1
   fi
 
   # update=true verbose=false
   if ! -antigen-ensure-repo "$url" true false; then
-    printf "Error! Activate logging and try again.\n";
+    printf "Error! Activate logging and try again.\n" >&2
     return 1
   fi
   

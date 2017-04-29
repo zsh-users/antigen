@@ -29,7 +29,7 @@ antigen-bundle () {
 
   # Load the plugin.
   if ! -antigen-load ${(kv)bundle}; then
-    printf "Antigen: Failed to load %s.\n" ${bundle[btype]}  >&2
+    printf "Antigen: Failed to load %s.\n" ${bundle[btype]} >&2
     return 1
   fi
   
@@ -55,7 +55,7 @@ antigen-bundle () {
 
   if ! -antigen-ensure-repo "${bundle[url]}"; then
     # Return immediately if there is an error cloning
-    printf "Error! Activate logging and try again.\n";
+    printf "Error! Activate logging and try again.\n" >&2
     return 1
   fi
 
