@@ -134,11 +134,14 @@
     args[path]=${args[url]}
   fi
   
-  # Escape url and branch
+  # Escape url and branch (may contain semver-like and pipe characters)
   args[url]="${(qq)args[url]}"
   if [[ -n "${args[branch]}" ]]; then
     args[branch]="${(qq)args[branch]}"
   fi
+  
+  # Escape bundle name (may contain semver-like characters)
+  args[name]="${(qq)args[name]}"
 
   eval "${var}=(${(kv)args})"
 

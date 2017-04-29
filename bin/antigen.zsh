@@ -253,9 +253,9 @@ antigen () {
 # Returns
 #     Branch name
 -antigen-parse-branch () {
-  local url=$1
-  local branch=$2
-  local branches
+  local url="$1" branch="$2" branches
+  
+  local match mbegin mend MATCH MBEGIN MEND
 
   if [[ "$branch" =~ '\*' ]]; then
     branches=$(git ls-remote --tags -q "$url" "$branch"|cut -d'/' -f3|sort -n|tail -1)
@@ -643,11 +643,14 @@ antigen () {
     args[path]=${args[url]}
   fi
   
-  # Escape url and branch
+  # Escape url and branch (may contain semver-like and pipe characters)
   args[url]="${(qq)args[url]}"
   if [[ -n "${args[branch]}" ]]; then
     args[branch]="${(qq)args[branch]}"
   fi
+  
+  # Escape bundle name (may contain semver-like characters)
+  args[name]="${(qq)args[name]}"
 
   eval "${var}=(${(kv)args})"
 
