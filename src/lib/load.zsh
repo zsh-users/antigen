@@ -17,6 +17,8 @@
   if [[ -f ${location} ]]; then
     list=(${location})
   else
+    # Directory locations must be suffixed with slash
+    location="$location/"
     # Prioritize common frameworks
     list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]))
     if [[ $#list == 0 ]]; then
