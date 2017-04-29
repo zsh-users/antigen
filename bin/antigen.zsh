@@ -480,7 +480,7 @@ antigen () {
   -antigen-load-env ${(kv)bundle}
 
   # If there is any sourceable try to load it
-  if ! -antigen-load-source && [[ ${bundle[loc]} != "/" ]]; then
+  if ! -antigen-load-source && [[ ! -d ${location} ]]; then
     return 1
   fi
 
@@ -492,7 +492,7 @@ antigen () {
   local location=${bundle[path]}/${bundle[loc]}
   
   # Load to path if there is no sourceable
-  if [[ ${bundle[loc]} == "/" ]]; then
+  if [[ -d ${location} ]]; then
     PATH="$PATH:${location:A}"
     fpath+=("${location:A}")
     return
