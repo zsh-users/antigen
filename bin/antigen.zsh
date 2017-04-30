@@ -474,7 +474,7 @@ antigen () {
     # Directory locations must be suffixed with slash
     location="$location/"
     # Prioritize common frameworks
-    list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]) ${location}*.zsh-theme(N[1]))
+    list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]))
     if [[ $#list == 0 ]]; then
       # Default to zsh and sh
       list=(${location}*.zsh(N) ${location}*.sh(N)) # ${location}*.zsh-theme(N)
@@ -693,7 +693,11 @@ antigen () {
 -antigen-use-prezto () {
   antigen-bundle "$ANTIGEN_PREZTO_REPO_URL"
 }
+typeset -ga _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
+typeset -g _ZCACHE_CAPTURE_PREFIX
+_ZCACHE_CAPTURE_FUNCTIONS=(antigen-bundle -antigen-load-env -antigen-load-source antigen-apply)
 _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
+
 # Generates cache from listed bundles.
 #
 # Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
@@ -773,35 +777,36 @@ EOC
 #  -antigen-cache-init
 # Returns
 #  Nothing
-typeset -ga _ZCACHE_BUNDLE_SOURCE; _ZCACHE_BUNDLE_SOURCE=()
-typeset -ga _ZCACHE_CAPTURE_BUNDLE; _ZCACHE_CAPTURE_BUNDLE=()
-typeset -a _ZCACHE_CAPTURE_FUNCTIONS;
-_ZCACHE_CAPTURE_FUNCTIONS=(antigen-bundle -antigen-load-env -antigen-load-source antigen-apply)
+# Capture functions
+-zcache-capture () {
+  local f; for f in $_ZCACHE_CAPTURE_FUNCTIONS; do
+    eval "function ${_ZCACHE_CAPTURE_PREFIX}$(functions -- ${f})"
+  done
+}
+
+# Release previously captured functions
+-zcache-release-function () {
+  local f=$1
+  eval "function $(functions -- ${_ZCACHE_CAPTURE_PREFIX}${f} | sed s/${_ZCACHE_CAPTURE_PREFIX}//)"
+  unfunction -- ${_ZCACHE_CAPTURE_PREFIX}${f} &> /dev/null
+}
+
+-zcache-release () {
+  local f; for f in $_ZCACHE_CAPTURE_FUNCTIONS; do
+    -zcache-release-function $f
+  done
+}
+
 -antigen-cache-init () {
-  # Capture functions
-  --cache-capture () {
-    local f; for f in $_ZCACHE_CAPTURE_FUNCTIONS; do
-      eval "function ${_ZCACHE_CAPTURE_PREFIX}$(functions -- ${f})"
-    done
-  }
-
-  # Release previously captured functions
-  --cache-release-function () {
-    local f=$1
-    eval "function $(functions -- ${_ZCACHE_CAPTURE_PREFIX}${f} | sed s/${_ZCACHE_CAPTURE_PREFIX}//)"
-    unfunction -- ${_ZCACHE_CAPTURE_PREFIX}${f} &> /dev/null
-  }
-
-  --cache-release () {
-    local f; for f in $_ZCACHE_CAPTURE_FUNCTIONS; do
-      --cache-release-function $f
-    done
-  }
+  _ZCACHE_BUNDLE_SOURCE=()
+  _ZCACHE_CAPTURE_BUNDLE=()
   
-  --cache-capture
+  # Release any previously hooked functions
+  -zcache-release
+  -zcache-capture
   antigen-apply () {
     # Release function to apply
-    --cache-release-function antigen-bundle
+    -zcache-release-function antigen-bundle
 
     # Auto determine check_files
     # There always should be 2 steps from original source as the correct way is to use
@@ -819,9 +824,11 @@ _ZCACHE_CAPTURE_FUNCTIONS=(antigen-bundle -antigen-load-env -antigen-load-source
     -zcache-generate-cache
     
     # Release all hooked functions
-    --cache-release
+    -zcache-release
 
     [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
+    
+    unset _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
 
     # Do apply compdump
     antigen-apply
