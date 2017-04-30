@@ -6,8 +6,8 @@
 # Returns
 #   Nothing
 antigen-reset () {
-  [[ -f "$ANTIGEN_CACHE" ]] && rm -f "$ANTIGEN_CACHE"
-  [[ -f "$ANTIGEN_RSRC" ]] && rm -f "$ANTIGEN_RSRC"
-  [[ -f "$ANTIGEN_COMPDUMP" ]] && rm -f "$ANTIGEN_COMPDUMP"
+  [[ -f "$ANTIGEN_CACHE" ]] && rm -f "$ANTIGEN_CACHE" "$ANTIGEN_CACHE.zwc" 2> /dev/null
+  [[ -f "$ANTIGEN_RSRC" ]] && rm -f "$ANTIGEN_RSRC" 2> /dev/null
+  [[ -f "$ANTIGEN_COMPDUMP" ]] && rm -f "$ANTIGEN_COMPDUMP" "$ANTIGEN_COMPDUMP.zwc" 2> /dev/null
   echo 'Done. Please open a new shell to see the changes.'
 }

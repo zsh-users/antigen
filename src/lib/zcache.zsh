@@ -46,7 +46,7 @@ autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
 compdef () {}
 
 if [[ -n "$ZSH" ]]; then
-  ZSH="\$ZSH"; ZSH_CACHE_DIR="\$ZSH_CACHE_DIR"
+  ZSH="$ZSH"; ZSH_CACHE_DIR="$ZSH_CACHE_DIR"
 fi
 #--- BUNDLES BEGIN
 ${(j::)_sources}
@@ -107,13 +107,29 @@ _ZCACHE_CAPTURE_FUNCTIONS=(antigen-bundle -antigen-load-env -antigen-load-source
   antigen-apply () {
     # Release function to apply
     --cache-release-function antigen-bundle
+
+    # Auto determine check_files
+    # There always should be 2 steps from original source as the correct way is to use
+    # `antigen` wrapper not `antigen-apply` directly.
+    if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 2 ]]; then
+      ANTIGEN_CHECK_FILES+=("${${funcfiletrace[2]%:*}##* }")
+    fi
+ 
     local bundle
     for bundle in "${_ZCACHE_CAPTURE_BUNDLE[@]}"; do
       antigen-bundle "${=bundle[@]}"
     done
+
+    # Generate and compile cache
     -zcache-generate-cache
+    
+    # Release all hooked functions
     --cache-release
+
     [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
+
+    # Do apply compdump
+    antigen-apply
   }
   
   antigen-bundle () {
