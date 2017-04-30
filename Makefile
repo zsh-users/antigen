@@ -1,23 +1,23 @@
 SHELL     ?= sh
-PREFIX	  ?= /usr/local
+PREFIX    ?= /usr/local
 
 CRAM_OPTS ?= -v
 
 PROJECT   ?= $(CURDIR)
-BIN 	  ?= ${PROJECT}/bin
+BIN       ?= ${PROJECT}/bin
 SRC       ?= ${PROJECT}/src
 TESTS     ?= ${PROJECT}/tests
 TOOLS     ?= ${PROJECT}/tools
 TEST      ?= ${PROJECT}/tests
 
-ZSH_VERSION 	?= zsh-5.3
+ZSH_VERSION     ?= zsh-5.3
 CONTAINER_ROOT  ?= /antigen
 USE_CONTAINER   ?= docker
 CONTAINER_IMAGE ?= desyncr/zsh-docker-
 
 TARGET    ?= ${BIN}/antigen.zsh
-SRC 	  ?= ${SRC}
-GLOB 	  ?= ${SRC}/boot.zsh ${SRC}/antigen.zsh $(sort $(wildcard ${PWD}/src/helpers/*.zsh)) \
+SRC       ?= ${SRC}
+GLOB      ?= ${SRC}/boot.zsh ${SRC}/antigen.zsh $(sort $(wildcard ${PWD}/src/helpers/*.zsh)) \
         ${SRC}/lib/*.zsh ${SRC}/ext/*.zsh $(sort $(wildcard ${PWD}/src/commands/*.zsh)) \
         ${SRC}/_antigen
 

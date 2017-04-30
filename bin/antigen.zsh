@@ -55,8 +55,10 @@ antigen () {
 
   if (( $+functions[antigen-$cmd] )); then
       "antigen-$cmd" "$@"
+      return $?
   else
       echo "Antigen: Unknown command: $cmd" >&2
+      return 1
   fi
 }
 # Returns the bundle's git revision
