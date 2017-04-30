@@ -8,6 +8,7 @@ BIN 	  ?= ${PROJECT}/bin
 SRC       ?= ${PROJECT}/src
 TESTS     ?= ${PROJECT}/tests
 TOOLS     ?= ${PROJECT}/tools
+TEST      ?= ${PROJECT}/tests
 
 ZSH_VERSION 	?= zsh-5.3
 CONTAINER_ROOT  ?= /antigen
@@ -81,7 +82,7 @@ itests:
 	@${MAKE} tests CRAM_OPTS=-i
 
 tests:
-	@${MAKE} .container COMMAND="sh -c 'ZDOTDIR=${TESTS} ANTIGEN=${PROJECT} cram ${CRAM_OPTS} --shell=zsh ${TESTS}'"
+	@${MAKE} .container COMMAND="sh -c 'ZDOTDIR=${TESTS} ANTIGEN=${PROJECT} cram ${CRAM_OPTS} --shell=zsh ${TEST}'"
 
 stats:
 	@${MAKE} .container COMMAND="${TOOLS}/stats --zsh zsh --antigen ${PROJECT}"

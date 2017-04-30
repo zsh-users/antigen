@@ -6,6 +6,5 @@
 # Returns
 #   Either true or false depending if we are running in interactive mode
 -antigen-interactive-mode () {
-  return [[ "$ZSH_EVAL_CONTEXT" =~ "toplevel:*" || "$ZSH_EVAL_CONTEXT" =~ "cmdarg:*" ]];
+  [[ "$ZSH_EVAL_CONTEXT" == toplevel* || "$ZSH_EVAL_CONTEXT" == cmdarg* ]];
 }
-

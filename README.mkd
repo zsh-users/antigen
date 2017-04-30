@@ -622,7 +622,8 @@ to activate it, useful when debugging failing bundle installs.
 ### Customizations
 
 `ANTIGEN_CACHE` &mdash; This configures the path to the cache init file, where
-Antigen stores it's cached bundles. Defaults to `$ADOTDIR/init.zsh`.
+Antigen stores it's cached bundles. Defaults to `$ADOTDIR/init.zsh`. Set to `false`
+to disable caching mechanism.
 
 `ANTIGEN_COMPDUMP` &mdash; Use this configuration to define where [zsh's completion
 system](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) should store completion's dump file. Defaults to `$ADOTDIR/.zcompdump`.

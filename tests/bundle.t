@@ -25,12 +25,12 @@ Try to load an unexisting plugin from a cloned bundle.
 Try to install an unexisting bundle.
 
   $ antigen-bundle https://127.0.0.1/bundle/unexisting.git
-  Installing bundle/unexisting@master... Error! Activate logging and try again.
+  Installing bundle/unexisting... Error! Activate logging and try again.
   [1]
   $ echo $fpath | grep -co test-plugin
   1
 
-Confirm bundle/unexisting does not exists.
+Confirm bundle/unexisting does not exists (parent directory will not be removed).
 
   $ ls $ANTIGEN_BUNDLES/bundle/ | wc -l
   0
@@ -50,8 +50,11 @@ The alias defined in the other zsh file should not be available.
 
 Fpath should be updated correctly.
 
-  $ echo ${(j:\n:)fpath} | grep -co test-plugin
-  2
+  $ echo ${(j:\n:)fpath}
+  .*/site-functions (re)
+  .*/functions (re)
+  .*/test-plugin (re)
+  .*/test-plugin2 (re)
 
 Load plugin multiple times, doesn't cluters _ANTIGEN_BUNDLE_RECORD
 
@@ -102,3 +105,18 @@ Load a binary bundle.
 
   $ echo $PATH | grep test-plugin3
   *plugin3* (glob)
+
+Warns about duplicate bundle.
+
+  $ antigen-bundle $PLUGIN_DIR3 &> /dev/null
+  $ _ANTIGEN_WARN_DUPLICATES=true
+  $ antigen-bundle $PLUGIN_DIR3
+  Seems .* is already installed! (re)
+  [1]
+
+  $ _ANTIGEN_WARN_DUPLICATES=false
+  $ antigen-theme $PLUGIN_DIR silly &> /dev/null
+  $ _ANTIGEN_WARN_DUPLICATES=true
+  $ antigen-theme $PLUGIN_DIR silly
+  Seems .* is already installed! (re)
+  [1]

@@ -31,7 +31,7 @@ antigen-init () {
       source "$src"
       return
     else
-      echo "Antigen: invalid argument provided.";
+      printf "Antigen: invalid argument provided.\n" >&2
       return 1
     fi
   fi

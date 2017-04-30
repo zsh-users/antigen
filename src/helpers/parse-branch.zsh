@@ -9,9 +9,9 @@
 # Returns
 #     Branch name
 -antigen-parse-branch () {
-  local url=$1
-  local branch=$2
-  local branches
+  local url="$1" branch="$2" branches
+  
+  local match mbegin mend MATCH MBEGIN MEND
 
   if [[ "$branch" =~ '\*' ]]; then
     branches=$(git ls-remote --tags -q "$url" "$branch"|cut -d'/' -f3|sort -n|tail -1)

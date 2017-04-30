@@ -44,28 +44,40 @@ antigen-update () {
   local record=""
   local url=""
   local make_local_clone=""
-
+  local start=$(date +'%s')
+    
   if [[ $# -eq 0 ]]; then
-    echo "Antigen: Missing argument."
+    printf "Antigen: Missing argument.\n" >&2
     return 1
   fi
 
   record=$(-antigen-find-record $bundle)
   if [[ ! -n "$record" ]]; then
-    echo "Bundle not found in record. Try 'antigen bundle $bundle' first."
+    printf "Bundle not found in record. Try 'antigen bundle %s' first.\n" $bundle >&2
     return 1
   fi
 
   url="$(echo "$record" | cut -d' ' -f1)"
   make_local_clone=$(echo "$record" | cut -d' ' -f4)
+  
+  local branch="master"
+  if [[ $url == *\|* ]]; then
+    branch="$(-antigen-parse-branch ${url%|*} ${url#*|})"
+  fi
 
+  printf "Updating %s... " $(-antigen-bundle-short-name "$url" "$branch")
+  
   if [[ $make_local_clone == "false" ]]; then
-    echo "Bundle has no local clone. Will not be updated."
+    printf "Bundle has no local clone. Will not be updated.\n" >&2
     return 1
   fi
 
   # update=true verbose=false
   if ! -antigen-ensure-repo "$url" true false; then
+    printf "Error! Activate logging and try again.\n" >&2
     return 1
   fi
+  
+  local took=$(( $(date +'%s') - $start ))
+  printf "Done. Took %ds.\n" $took
 }

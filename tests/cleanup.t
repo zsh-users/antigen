@@ -71,4 +71,3 @@ Confirm the plugin directory does not exist after cleanup.
 # 
 #   $ antigen cleanup --force
 #   You don't have any bundles.
-
