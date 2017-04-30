@@ -28,6 +28,13 @@ _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
     elif [[ -d $record ]]; then
       _PATH+=("${record}")
       _fpath+=("${record}")
+
+      # Support prezto function loading. See https://github.com/zsh-users/antigen/pull/428
+      if [[ -d "${record}/functions" ]]; then
+        _PATH+=("${record}/functions")
+        _fpath+=("${record}/functions")
+      fi
+
     fi
   done
 

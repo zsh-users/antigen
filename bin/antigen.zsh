@@ -466,18 +466,27 @@ antigen () {
 
   typeset -Ua list; list=()
   local location=${bundle[path]}/${bundle[loc]}
-  
-  # Prioritize given location
+
+  # Prioritize location when given.
   if [[ -f ${location} ]]; then
     list=(${location})
   else
     # Directory locations must be suffixed with slash
     location="$location/"
-    # Prioritize common frameworks
-    list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]))
+
+    # Prioritize theme with antigen-theme
+    if [[ ${bundle[btype]} == "theme" ]]; then
+      list=(${location}*.zsh-theme(N[1]))
+    fi
+
+    # Common frameworks
     if [[ $#list == 0 ]]; then
-      # Default to zsh and sh
-      list=(${location}*.zsh(N) ${location}*.sh(N)) # ${location}*.zsh-theme(N)
+      list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]))
+    fi
+
+    # Default to zsh and sh
+    if [[ $#list == 0 ]]; then
+      list=(${location}*.zsh(N) ${location}*.sh(N))
     fi
   fi
 
@@ -494,6 +503,12 @@ antigen () {
 -antigen-load-env () {
   typeset -A bundle; bundle=($@)
   local location=${bundle[path]}/${bundle[loc]}
+  
+  # Support prezto function loading. See https://github.com/zsh-users/antigen/pull/428
+  if [[ -d "${location}/functions" ]]; then
+    PATH="$PATH:${location:A}/functions"
+    fpath+=("${location:A}/functions")
+  fi
   
   # Load to path if there is no sourceable
   if [[ -d ${location} ]]; then
@@ -723,6 +738,13 @@ _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
     elif [[ -d $record ]]; then
       _PATH+=("${record}")
       _fpath+=("${record}")
+
+      # Support prezto function loading. See https://github.com/zsh-users/antigen/pull/428
+      if [[ -d "${record}/functions" ]]; then
+        _PATH+=("${record}/functions")
+        _fpath+=("${record}/functions")
+      fi
+
     fi
   done
 
