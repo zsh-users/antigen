@@ -58,4 +58,10 @@
   if [[ ! $ANTIGEN_CACHE == false ]] && ! -antigen-interactive-mode; then
     -antigen-cache-init
   fi
+  
+  # Initialize lock. It doesn't make sense to activate it in interactive mode.
+  if ! -antigen-interactive-mode; then
+    -antigen-lock-init
+  fi
+
 }
