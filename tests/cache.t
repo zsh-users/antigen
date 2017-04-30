@@ -1,5 +1,8 @@
 Enable extension.
 
+  $ -antigen-cache-init
+  $ ANTIGEN_CACHE=$ADOTDIR/init.zsh
+
   $ prev=$(env)
   $ antigen reset
   Done. Please open a new shell to see the changes.
@@ -40,15 +43,16 @@ Should not leak Antigen or OMZ environment variables.
 
 Both bundles are cached.
 
-  $ _ZCACHE_BUNDLE=false
-  $ antigen reset &> /dev/null
+  $ ANTIGEN_CACHE=$ADOTDIR/init.zsh
+  $ antigen reset > /dev/null
+  $ -antigen-cache-init
   $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen bundles
-  $ antigen apply &> /dev/null
+  $ antigen apply
 
   $ cat $ANTIGEN_CACHE | grep source
-  .* (re)
-  source .*test-plugin/aliases.zsh.* (re)
-  source .*test-plugin2/init.zsh.* (re)
+  .*/antigen.zsh.* (re)
+  source '.*test-plugin/aliases.zsh'; (re)
+  source '.*test-plugin2/init.zsh'; (re)
 
 List command should work as expected.
 
@@ -70,3 +74,5 @@ Can clear cache correctly.
 
   $ [[ -f $ANTIGEN_CACHE ]]
   [1]
+
+  $ ANTIGEN_CACHE=false

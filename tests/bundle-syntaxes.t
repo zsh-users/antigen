@@ -1,17 +1,19 @@
 Test helper and mock functions.
 
   $ ANTIGEN_DEFAULT_REPO_URL=gh-user/repo
+  $ ANTIGEN_WARN_DUPLICATES=false
 
   $ b () {
-  >     antigen-bundle "$@"
+  >     antigen-bundle "$@" | tail -3
   > }
 
   $ -antigen-ensure-repo () {}
 
   $ -antigen-load () {
-  >     echo "url:    $1"
-  >     echo "dir:    $2"
-  >     echo "clone?: $3"
+  >   typeset -A bundle; bundle=($@)
+  >     echo "url:    ${bundle[url]}"
+  >     echo "dir:    ${bundle[loc]}"
+  >     echo "clone?: ${bundle[make_local_clone]}"
   > }
 
 Short and sweet.

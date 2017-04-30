@@ -1,6 +1,10 @@
 Helper alias.
 
-  $ alias parse='-antigen-parse-args '
+  $ typeset -A bundle
+  $ parse () {
+  >    bundle=()
+  >   -antigen-parse-args bundle "$@"
+  > }
 
 No arguments (since all are specified as optional).
 
@@ -8,29 +12,37 @@ No arguments (since all are specified as optional).
 
 One positional argument.
 
-  $ parse name
-  local url='name'
+  $ parse plugin/url
+  $ echo ${bundle[url]}
+  https://github.com/plugin/url.git
 
 Two arguments.
 
-  $ parse url location
-  local url='url'
-  local loc='location'
+  $ parse plugin/url location
+  $ echo ${bundle[url]}
+  https://github.com/plugin/url.git
+  $ echo ${bundle[loc]}
+  location
 
 Three arguments.
 
-  $ parse url location crap
-  local url='url'
-  local loc='location'
-  local crap='crap'
+  $ parse plugin/url location crap
+  $ echo ${bundle[url]}
+  https://github.com/plugin/url.git
+  $ echo ${bundle[loc]}
+  location
 
 Keywordo magic.
 
-  $ parse url location --btype=1 --no-local-clone
-  local url='url'
-  local loc='location'
-  local btype='1'
-  local no_local_clone='true'
+  $ parse plugin/url location --btype=1 --no-local-clone
+  $ echo ${bundle[url]}
+  https://github.com/plugin/url.git
+  $ echo ${bundle[loc]}
+  location
+  $ echo ${bundle[btype]}
+  1
+  $ echo ${bundle[make_local_clone]}
+  false
 
 Unknown keyword argument.
 
@@ -45,68 +57,81 @@ Missed value for keyword argument.
 Provide value for keyword argument, but it's ignored.
 
   $ parse --no-local-clone=yes
-  local no_local_clone='true'
+  $ echo ${bundle[make_local_clone]}
+  false
 
 Positional argument as a keyword argument.
 
-  $ parse --url=some-url
-  local url='some-url'
+  $ parse --url=plugin/url
+  $ echo ${bundle[url]}
+  https://github.com/plugin/url.git
 
 Repeated keyword arguments.
 
-  $ parse --url=url1 --url=url2
-  local url='url1'
-  local url='url2'
+  $ parse --url=plugin/url --url=plugin/url2
+  $ echo ${bundle[url]}
+  https://github.com/plugin/url2.git
 
 Repeated, once as positional and once more as keyword.
 
-  $ parse url1 --url=url2
-  local url='url1'
-  local url='url2'
+  $ parse plugin/url --url=plugin/url2
+  $ echo ${bundle[url]}
+  https://github.com/plugin/url2.git
 
 Supports bundle name with branch/version.
 
-  $ parse url@version
-  local branch='version'
-  local url='url'
+  $ parse plugin/url@version
+  $ echo ${bundle[url]}
+  https://github.com/plugin/url.git|version
+  $ echo ${bundle[branch]}
+  version
 
 Supports branch/version flag
 
-  $ parse url --branch=version
-  local url='url'
-  local branch='version'
+  $ parse plugin/url --branch=version
+  $ echo ${bundle[url]}
+  https://github.com/plugin/url.git|version
+  $ echo ${bundle[branch]}
+  version
 
 Flag `--branch` overwrites `@`-name.
 
-  $ parse url@b1 --branch=b2
-  local branch='b1'
-  local url='url'
-  local branch='b2'
+  $ parse plugin/url@b1 --branch=b2
+  $ echo ${bundle[url]}
+  https://github.com/plugin/url.git|b2
+  $ echo ${bundle[branch]}
+  b2
 
 Private git urls.
 
   $ parse ssh://git@domain.local:1234/repository/name.git
-  local url='ssh://git@domain.local:1234/repository/name.git'
+  $ echo ${bundle[url]}
+  ssh://git@domain.local:1234/repository/name.git
 
 Private git urls with branch short format.
 
   $ parse ssh://git@domain.local:1234/repository/name.git@example-branch/name
-  local branch='example-branch/name'
-  local url='ssh://git@domain.local:1234/repository/name.git'
+  $ echo ${bundle[url]}
+  ssh://git@domain.local:1234/repository/name.git|example-branch/name
+  $ echo ${bundle[branch]}
+  example-branch/name
 
 Private git urls with branch argument format.
 
   $ parse ssh://git@domain.local:1234/repository/name.git --branch=example-branch/name
-  local url='ssh://git@domain.local:1234/repository/name.git'
-  local branch='example-branch/name'
+  $ echo ${bundle[url]}
+  ssh://git@domain.local:1234/repository/name.git|example-branch/name
+  $ echo ${bundle[branch]}
+  example-branch/name
 
 SSH github url.
 
   $ parse github.com:reem/watch.git
-  local url='github.com:reem/watch.git'
+  $ echo ${bundle[url]}
+  github.com:reem/watch.git
 
 Long SSH github url.
 
   $ parse git@github.com:zsh-users/antigen.git
-  local url='git@github.com:zsh-users/antigen.git'
-
+  $ echo ${bundle[url]}
+  git@github.com:zsh-users/antigen.git
