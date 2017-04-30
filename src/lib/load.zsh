@@ -20,7 +20,7 @@
     # Directory locations must be suffixed with slash
     location="$location/"
     # Prioritize common frameworks
-    list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]))
+    list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]) ${location}*.zsh-theme(N[1]))
     if [[ $#list == 0 ]]; then
       # Default to zsh and sh
       list=(${location}*.zsh(N) ${location}*.sh(N)) # ${location}*.zsh-theme(N)

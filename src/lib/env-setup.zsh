@@ -55,5 +55,7 @@
   unfunction -- -set-default
 
   # Initialize cache unless disabled
-  [[ ! $ANTIGEN_CACHE == false ]] && -antigen-cache-init
+  if [[ ! $ANTIGEN_CACHE == false ]] && ! -antigen-interactive-mode; then
+    -antigen-cache-init
+  fi
 }

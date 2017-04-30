@@ -448,7 +448,9 @@ antigen () {
   unfunction -- -set-default
 
   # Initialize cache unless disabled
-  [[ ! $ANTIGEN_CACHE == false ]] && -antigen-cache-init
+  if [[ ! $ANTIGEN_CACHE == false ]] && ! -antigen-interactive-mode; then
+    -antigen-cache-init
+  fi
 }
 # Load a given bundle by sourcing it.
 #
@@ -472,7 +474,7 @@ antigen () {
     # Directory locations must be suffixed with slash
     location="$location/"
     # Prioritize common frameworks
-    list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]))
+    list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]) ${location}*.zsh-theme(N[1]))
     if [[ $#list == 0 ]]; then
       # Default to zsh and sh
       list=(${location}*.zsh(N) ${location}*.sh(N)) # ${location}*.zsh-theme(N)
