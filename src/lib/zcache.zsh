@@ -117,7 +117,7 @@ _ZCACHE_CAPTURE_FUNCTIONS=(antigen-bundle -antigen-load-env -antigen-load-source
   }
   
   antigen-bundle () {
-    _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${(q)@}}")
+    _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${@}}")
   }
 
   # Defer loading.
