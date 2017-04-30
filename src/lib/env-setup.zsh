@@ -45,6 +45,9 @@
   # Default cache path.
   -set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
   -set-default ANTIGEN_RSRC $ADOTDIR/.resources
+  
+  # Default lock path.
+  -set-default ANTIGEN_LOCK $ADOTDIR/.lock
 
   # Setup antigen's own completion.
   autoload -Uz compinit
@@ -58,4 +61,10 @@
   if [[ ! $ANTIGEN_CACHE == false ]] && ! -antigen-interactive-mode; then
     -antigen-cache-init
   fi
+  
+  # Initialize lock. It doesn't make sense to activate it in interactive mode.
+  if ! -antigen-interactive-mode; then
+    -antigen-lock-init
+  fi
+
 }

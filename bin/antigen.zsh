@@ -55,8 +55,10 @@ antigen () {
 
   if (( $+functions[antigen-$cmd] )); then
       "antigen-$cmd" "$@"
+      return $?
   else
       echo "Antigen: Unknown command: $cmd" >&2
+      return 1
   fi
 }
 # Returns the bundle's git revision
@@ -438,6 +440,9 @@ antigen () {
   # Default cache path.
   -set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
   -set-default ANTIGEN_RSRC $ADOTDIR/.resources
+  
+  # Default lock path.
+  -set-default ANTIGEN_LOCK $ADOTDIR/.lock
 
   # Setup antigen's own completion.
   autoload -Uz compinit
@@ -451,6 +456,12 @@ antigen () {
   if [[ ! $ANTIGEN_CACHE == false ]] && ! -antigen-interactive-mode; then
     -antigen-cache-init
   fi
+  
+  # Initialize lock. It doesn't make sense to activate it in interactive mode.
+  if ! -antigen-interactive-mode; then
+    -antigen-lock-init
+  fi
+
 }
 # Load a given bundle by sourcing it.
 #
@@ -730,6 +741,52 @@ antigen () {
 }
 -antigen-use-prezto () {
   antigen-bundle "$ANTIGEN_PREZTO_REPO_URL"
+}
+typeset -g _ANTIGEN_LOCK_PROCESS=false
+
+-antigen-lock-init () {
+  eval "function --lock-$(functions -- antigen)"
+  antigen () {
+    local ret
+
+    # If there is a lock set up then we won't process anything.
+    if [[ -f $ANTIGEN_LOCK ]]; then
+      # Set up flag do the message is not repeated for each antigen-* command
+      [[ $_ANTIGEN_LOCK_PROCESS == false ]] && printf "Antigen: Another process in running.\n"
+      _ANTIGEN_LOCK_PROCESS=true
+      return 1
+    fi
+    touch $ANTIGEN_LOCK
+
+    # De-lock at antigen-apply. We are difining it here as commands are compiled
+    # _after_ extensions.
+    eval "function --lock-$(functions -- antigen-apply)"
+    antigen-apply () {
+      local ret
+      # Call hooked function.
+      --lock-antigen-apply
+      ret=$?
+
+      eval "function $(functions -- --lock-antigen-apply | sed s/--lock-//)"
+      unfunction -- --lock-antigen-apply
+
+      rm $ANTIGEN_LOCK &> /dev/null
+
+      return $ret
+    }
+
+    # Release this function
+    eval "function $(functions -- --lock-antigen | sed s/--lock-//)"
+
+    # Call hooked function
+    --lock-antigen "$@"
+    ret=$?
+    
+    unfunction -- --lock-antigen
+    
+    return $ret
+  }
+
 }
 typeset -ga _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
 typeset -g _ZCACHE_CAPTURE_PREFIX
@@ -1231,6 +1288,7 @@ antigen-reset () {
   [[ -f "$ANTIGEN_CACHE" ]] && rm -f "$ANTIGEN_CACHE" "$ANTIGEN_CACHE.zwc" 2> /dev/null
   [[ -f "$ANTIGEN_RSRC" ]] && rm -f "$ANTIGEN_RSRC" 2> /dev/null
   [[ -f "$ANTIGEN_COMPDUMP" ]] && rm -f "$ANTIGEN_COMPDUMP" "$ANTIGEN_COMPDUMP.zwc" 2> /dev/null
+  [[ -f "$ANTIGEN_LOCK" ]] && rm -f "$ANTIGEN_LOCK" 2> /dev/null
   echo 'Done. Please open a new shell to see the changes.'
 }
 antigen-restore () {
