@@ -1507,14 +1507,14 @@ antigen-use () {
 }
 
 antigen-version () {
+  local version="develop"
   local revision=""
   if [[ -d $_ANTIGEN_INSTALL_DIR/.git ]]; then
     revision=" ($(git --git-dir=$_ANTIGEN_INSTALL_DIR/.git rev-parse --short '@'))"
   fi
 
-  echo "Antigen develop$revision"
+  printf "Antigen %s%s\n" $version $revision
 }
-
 #compdef _antigen
 # Setup antigen's autocompletion
 _antigen () {
