@@ -79,16 +79,6 @@ EOC
   return true
 }
 
-# Initializes caching mechanism.
-#
-# Hooks `antigen-bundle` and `antigen-apply` in order to defer bundle install
-# and load. All bundles are loaded from generated cache rather than dynamically
-# as these are bundled.
-#
-# Usage
-#  -antigen-cache-init
-# Returns
-#  Nothing
 # Capture functions
 -zcache-capture () {
   local f; for f in $_ZCACHE_CAPTURE_FUNCTIONS; do
@@ -109,6 +99,16 @@ EOC
   done
 }
 
+# Initializes caching mechanism.
+#
+# Hooks `antigen-bundle` and `antigen-apply` in order to defer bundle install
+# and load. All bundles are loaded from generated cache rather than dynamically
+# as these are bundled.
+#
+# Usage
+#  -antigen-cache-init
+# Returns
+#  Nothing
 -antigen-cache-init () {
   _ZCACHE_BUNDLE_SOURCE=()
   _ZCACHE_CAPTURE_BUNDLE=()
