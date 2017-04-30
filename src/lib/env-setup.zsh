@@ -45,6 +45,9 @@
   # Default cache path.
   -set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
   -set-default ANTIGEN_RSRC $ADOTDIR/.resources
+  
+  # Default lock path.
+  -set-default ANTIGEN_LOCK $ADOTDIR/.lock
 
   # Setup antigen's own completion.
   autoload -Uz compinit

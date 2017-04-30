@@ -628,8 +628,11 @@ to disable caching mechanism.
 `ANTIGEN_COMPDUMP` &mdash; Use this configuration to define where [zsh's completion
 system](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) should store completion's dump file. Defaults to `$ADOTDIR/.zcompdump`.
 
-`ANTIGEN_BUNDLES`  &mdash; This directory is used to store bundle clones. Defaults
+`ANTIGEN_BUNDLES` &mdash; This directory is used to store bundle clones. Defaults
 to `$ADOTDIR/bundles`.
+
+`ANTIGEN_LOCK` &mdash; Use this configuration to define where Antigen should
+create `.lock` files.
 
 ### Optimizations
 
