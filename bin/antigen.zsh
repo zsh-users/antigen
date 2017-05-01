@@ -1393,13 +1393,12 @@ antigen-add-hook () {
 
 # Private function to handle multiple hooks in a central point.
 -antigen-hook-handler () {
-  local target="$1"
+  local target="$1" args hook
   shift
-  local args=${@}
+  args=${@}
 
   typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
 
-  local hook
   # A replace hook will return inmediately
   local replace_hook=0 ret
   for hook in $hooks; do
