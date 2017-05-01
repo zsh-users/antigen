@@ -2,7 +2,6 @@ typeset -Ag _ANTIGEN_HOOKS; _ANTIGEN_HOOKS=()
 typeset -Ag _ANTIGEN_HOOKS_TARGET; _ANTIGEN_HOOKS_TARGET=()
 typeset -Ag _ANTIGEN_HOOKS_TYPE; _ANTIGEN_HOOKS_TYPE=()
 typeset -g _ANTIGEN_HOOK_PREFIX="::antigen-hook::"
-
 # -antigen-add-hook antigen-apply antigen-apply-hook replace
 #   - Replaces hooked function with hook, do not call it
 # -antigen-add-hook antigen-apply antigen-apply-hook pre (pre-call)
@@ -61,16 +60,23 @@ antigen-add-hook () {
 
   local hook
   # A replace hook will return inmediately
+  local replace_hook=0 ret
   for hook in $hooks; do
-    local called=0
     if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "replace" ]]; then
-      eval $hook $args
-      called=1
-    fi
-    if [[ $called == 1 ]]; then
-      return
+      replace_hook=1
+      # Should not be needed if `antigen-remove-hook` removed unneeded hooks.
+      if (( $+functions[$hook] )); then
+        eval $hook $args
+        if [[ $? == -1 ]]; then
+          break
+        fi
+      fi
     fi
   done
+
+  if [[ $replace_hook == 1 ]]; then
+    return $ret
+  fi
 
   for hook in $hooks; do
     if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "pre" ]]; then
