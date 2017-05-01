@@ -1,9 +1,11 @@
-typeset -g _ANTIGEN_LOCK_PROCESS=false
-
+# Initialize lock lib
 -antigen-lock-init () {
-  eval "function --lock-$(functions -- antigen)"
-  antigen () {
-    local ret
+  typeset -g _ANTIGEN_LOCK_PROCESS=false
+
+  # Hook antigen command in order to check/create a lock file.
+  # This hook is only run once then releases itself.
+  antigen-lock () {
+    antigen-remove-hook antigen-lock
 
     # If there is a lock set up then we won't process anything.
     if [[ -f $ANTIGEN_LOCK ]]; then
@@ -12,35 +14,21 @@ typeset -g _ANTIGEN_LOCK_PROCESS=false
       _ANTIGEN_LOCK_PROCESS=true
       return 1
     fi
+
     touch $ANTIGEN_LOCK
 
-    # De-lock at antigen-apply. We are difining it here as commands are compiled
-    # _after_ extensions.
-    eval "function --lock-$(functions -- antigen-apply)"
-    antigen-apply () {
-      local ret
-      # Call hooked function.
-      --lock-antigen-apply
-      ret=$?
-
-      eval "function $(functions -- --lock-antigen-apply | sed s/--lock-//)"
-      unfunction -- --lock-antigen-apply
-
-      rm $ANTIGEN_LOCK &> /dev/null
-
-      return $ret
-    }
-
-    # Release this function
-    eval "function $(functions -- --lock-antigen | sed s/--lock-//)"
-
     # Call hooked function
-    --lock-antigen "$@"
-    ret=$?
-    
-    unfunction -- --lock-antigen
-    
-    return $ret
+    antigen "$@"
   }
+  antigen-add-hook antigen antigen-lock replace
 
+  # Hook antigen-apply in order to release .lock file.
+  antigen-apply-lock () {
+    # One time hook
+    antigen-remove-hook antigen-apply-lock
+    unset _ANTIGEN_LOCK_PROCESS
+    rm $ANTIGEN_LOCK &> /dev/null
+    antigen-apply "$@"
+  }
+  antigen-add-hook antigen-apply antigen-apply-lock replace
 }

@@ -7,7 +7,7 @@
 # _ANTIGEN_BUNDLE_RECORD and fpath is stored in cache.
 #
 # Usage
-#   -antigen-cache-generate
+#   -zcache-generate-cache
 #
 # Returns
 #   Nothing. Generates ANTIGEN_CACHE

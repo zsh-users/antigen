@@ -57,14 +57,10 @@
   # Remove private functions.
   unfunction -- -set-default
 
-  # Initialize cache unless disabled
-  if [[ ! $ANTIGEN_CACHE == false ]] && ! -antigen-interactive-mode; then
-    -antigen-cache-init
-  fi
-  
-  # Initialize lock. It doesn't make sense to activate it in interactive mode.
+  # Initialize extensions. unless in interactive mode.
   if ! -antigen-interactive-mode; then
-    -antigen-lock-init
+    antigen-ext defer
+    antigen-ext lock
+    antigen-ext cache
   fi
-
 }
