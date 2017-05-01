@@ -33,7 +33,7 @@
 
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd -q "$clone_dir" && eval ${ANTIGEN_GIT_ENV} git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
+    (cd -q "$clone_dir" && eval ${ANTIGEN_CLONE_ENV} git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
   }
 
   local success=false
@@ -45,7 +45,7 @@
   fi
 
   if [[ ! -d $clone_dir ]]; then
-    eval ${ANTIGEN_GIT_ENV} git clone ${=ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $ANTIGEN_LOG
+    eval ${ANTIGEN_CLONE_ENV} git clone ${=ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $ANTIGEN_LOG
     success=$?
   elif $update; then
     # Save current revision.

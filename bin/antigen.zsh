@@ -162,11 +162,12 @@ antigen () {
     case "$mode" in
         --short)
           # Only check revision for bundle with a requested branch
-	  if [[ $url == *\|* ]]; then
+          if [[ $url == *\|* ]]; then
             revision=$(-antigen-bundle-rev $url $make_local_clone)
-	  else
-	    revision="master"
-	  fi
+          else
+            revision="master"
+          fi
+
           if [[ $loc != '/' ]]; then
             bundle_name="$bundle_name ~ $loc"
           fi
@@ -353,7 +354,7 @@ antigen () {
 
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd -q "$clone_dir" && eval ${ANTIGEN_GIT_ENV} git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
+    (cd -q "$clone_dir" && eval ${ANTIGEN_CLONE_ENV} git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
   }
 
   local success=false
@@ -365,7 +366,7 @@ antigen () {
   fi
 
   if [[ ! -d $clone_dir ]]; then
-    eval ${ANTIGEN_GIT_ENV} git clone ${=ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $ANTIGEN_LOG
+    eval ${ANTIGEN_CLONE_ENV} git clone ${=ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $ANTIGEN_LOG
     success=$?
   elif $update; then
     # Save current revision.
@@ -425,7 +426,7 @@ antigen () {
 
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
   # for arguments that can be passed as `--key=value`.
-  -antigen-set-default ANTIGEN_GIT_ENV "GIT_TERMINAL_PROMPT=0"
+  -antigen-set-default ANTIGEN_CLONE_ENV "GIT_TERMINAL_PROMPT=0"
   -antigen-set-default ANTIGEN_CLONE_OPTS "--single-branch --recursive --depth=1"
   -antigen-set-default ANTIGEN_SUBMODULE_OPTS "--recursive --depth=1"
   

@@ -30,7 +30,7 @@
 
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
   # for arguments that can be passed as `--key=value`.
-  -antigen-set-default ANTIGEN_GIT_ENV "GIT_TERMINAL_PROMPT=0"
+  -antigen-set-default ANTIGEN_CLONE_ENV "GIT_TERMINAL_PROMPT=0"
   -antigen-set-default ANTIGEN_CLONE_OPTS "--single-branch --recursive --depth=1"
   -antigen-set-default ANTIGEN_SUBMODULE_OPTS "--recursive --depth=1"
   
