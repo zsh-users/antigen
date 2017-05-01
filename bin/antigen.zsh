@@ -407,21 +407,25 @@ antigen () {
 
   # Pre-startup initializations.
   -antigen-set-default ANTIGEN_DEFAULT_REPO_URL \
-      https://github.com/robbyrussell/oh-my-zsh.git
+    https://github.com/robbyrussell/oh-my-zsh.git
   -antigen-set-default ANTIGEN_PREZTO_REPO_URL \
-      https://github.com/sorin-ionescu/prezto.git
+    https://github.com/sorin-ionescu/prezto.git
 
+  # Default Antigen directory.
   -antigen-set-default ADOTDIR $HOME/.antigen
   [[ ! -d $ADOTDIR ]] && mkdir -p $ADOTDIR
 
+  # Defaults bundles directory.
   -antigen-set-default ANTIGEN_BUNDLES $ADOTDIR/bundles
+
+  # If there is no bundles directory, create it.
   if [[ ! -d $ANTIGEN_BUNDLES ]]; then
     mkdir -p $ANTIGEN_BUNDLES
+    # Check for v1 repos directory, transform it to v2 format.
     [[ -d $ADOTDIR/repos ]] && -antigen-update-repos
   fi
 
   -antigen-set-default ANTIGEN_COMPDUMP "${ADOTDIR:-$HOME}/.zcompdump"
-
   -antigen-set-default ANTIGEN_LOG /dev/null
 
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
@@ -429,9 +433,12 @@ antigen () {
   -antigen-set-default ANTIGEN_CLONE_ENV "GIT_TERMINAL_PROMPT=0"
   -antigen-set-default ANTIGEN_CLONE_OPTS "--single-branch --recursive --depth=1"
   -antigen-set-default ANTIGEN_SUBMODULE_OPTS "--recursive --depth=1"
-  
+
   # Complain when a bundle is already installed.
   -antigen-set-default _ANTIGEN_WARN_DUPLICATES true
+
+  # Compatibility with oh-my-zsh themes.
+  -antigen-set-default _ANTIGEN_THEME_COMPAT true
 
   # Setup antigen's own completion.
   if -antigen-interactive-mode; then
@@ -474,7 +481,9 @@ antigen () {
 
     # Common frameworks
     if [[ $#list == 0 ]]; then
-      list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]))
+      # dot-plugin, init and functions support (omz, prezto)
+      # Support prezto function loading. See https://github.com/zsh-users/antigen/pull/428
+      list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]) ${location}/functions(N[1]))
     fi
 
     # Default to zsh and sh
@@ -496,13 +505,7 @@ antigen () {
 -antigen-load-env () {
   typeset -A bundle; bundle=($@)
   local location=${bundle[path]}/${bundle[loc]}
-  
-  # Support prezto function loading. See https://github.com/zsh-users/antigen/pull/428
-  if [[ -d "${location}/functions" ]]; then
-    PATH="$PATH:${location:A}/functions"
-    fpath+=("${location:A}/functions")
-  fi
-  
+
   # Load to path if there is no sourceable
   if [[ -d ${location} ]]; then
     PATH="$PATH:${location:A}"
@@ -1343,14 +1346,14 @@ typeset -Ag _ANTIGEN_HOOKS; _ANTIGEN_HOOKS=()
 typeset -Ag _ANTIGEN_HOOKS_TARGET; _ANTIGEN_HOOKS_TARGET=()
 typeset -Ag _ANTIGEN_HOOKS_TYPE; _ANTIGEN_HOOKS_TYPE=()
 typeset -g _ANTIGEN_HOOK_PREFIX="::antigen-hook::"
+
 # -antigen-add-hook antigen-apply antigen-apply-hook replace
-#   - Replaces hooked function with hook, do not call it
+#   - Replaces hooked function with hook, do not call hooked function
+#   - Return -1 to stop calling further hooks
 # -antigen-add-hook antigen-apply antigen-apply-hook pre (pre-call)
 #   - By default it will call hooked function
-#   - Return -1 to stop from calling hooked function
 # -antigen-add-hook antigen-pply antigen-apply-hook post (post-call)
 #   - Calls antigen-apply and then calls hook function
-#   - Return non-zero to overwrite return status
 # Usage:
 #  -antigen-add-hook antigen-apply antigen-apply-hook ["replace"|"pre"|"post"]
 antigen-add-hook () {
@@ -1575,13 +1578,6 @@ antigen-ext () {
     elif [[ -d $record ]]; then
       _PATH+=("${record}")
       _fpath+=("${record}")
-
-      # Support prezto function loading. See https://github.com/zsh-users/antigen/pull/428
-      if [[ -d "${record}/functions" ]]; then
-        _PATH+=("${record}/functions")
-        _fpath+=("${record}/functions")
-      fi
-
     fi
   done
 
@@ -1641,9 +1637,6 @@ EOC
     typeset -g _ZCACHE_CAPTURE_PREFIX
     _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
     _ZCACHE_BUNDLE_SOURCE=(); _ZCACHE_CAPTURE_BUNDLE=()
-
-    # Compatibility with oh-my-zsh themes.
-    -antigen-set-default _ANTIGEN_THEME_COMPAT true
 
     # Cache auto config files to check for changes (.zshrc, .antigenrc etc)
     -antigen-set-default ANTIGEN_AUTO_CONFIG true

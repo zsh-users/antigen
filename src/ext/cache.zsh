@@ -23,13 +23,6 @@
     elif [[ -d $record ]]; then
       _PATH+=("${record}")
       _fpath+=("${record}")
-
-      # Support prezto function loading. See https://github.com/zsh-users/antigen/pull/428
-      if [[ -d "${record}/functions" ]]; then
-        _PATH+=("${record}/functions")
-        _fpath+=("${record}/functions")
-      fi
-
     fi
   done
 
@@ -89,9 +82,6 @@ EOC
     typeset -g _ZCACHE_CAPTURE_PREFIX
     _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
     _ZCACHE_BUNDLE_SOURCE=(); _ZCACHE_CAPTURE_BUNDLE=()
-
-    # Compatibility with oh-my-zsh themes.
-    -antigen-set-default _ANTIGEN_THEME_COMPAT true
 
     # Cache auto config files to check for changes (.zshrc, .antigenrc etc)
     -antigen-set-default ANTIGEN_AUTO_CONFIG true

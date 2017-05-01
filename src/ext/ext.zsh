@@ -2,14 +2,14 @@ typeset -Ag _ANTIGEN_HOOKS; _ANTIGEN_HOOKS=()
 typeset -Ag _ANTIGEN_HOOKS_TARGET; _ANTIGEN_HOOKS_TARGET=()
 typeset -Ag _ANTIGEN_HOOKS_TYPE; _ANTIGEN_HOOKS_TYPE=()
 typeset -g _ANTIGEN_HOOK_PREFIX="::antigen-hook::"
+
 # -antigen-add-hook antigen-apply antigen-apply-hook replace
-#   - Replaces hooked function with hook, do not call it
+#   - Replaces hooked function with hook, do not call hooked function
+#   - Return -1 to stop calling further hooks
 # -antigen-add-hook antigen-apply antigen-apply-hook pre (pre-call)
 #   - By default it will call hooked function
-#   - Return -1 to stop from calling hooked function
 # -antigen-add-hook antigen-pply antigen-apply-hook post (post-call)
 #   - Calls antigen-apply and then calls hook function
-#   - Return non-zero to overwrite return status
 # Usage:
 #  -antigen-add-hook antigen-apply antigen-apply-hook ["replace"|"pre"|"post"]
 antigen-add-hook () {
