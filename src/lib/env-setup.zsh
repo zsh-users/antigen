@@ -60,7 +60,7 @@
   # Initialize extensions. unless in interactive mode.
   if ! -antigen-interactive-mode; then
     #antigen-ext defer
-    antigen-ext cache
+    [[ $ANTIGEN_CACHE != false ]] && antigen-ext cache
     antigen-ext lock
   fi
 }
