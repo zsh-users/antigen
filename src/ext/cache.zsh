@@ -90,8 +90,6 @@ EOC
     _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
     _ZCACHE_BUNDLE_SOURCE=(); _ZCACHE_CAPTURE_BUNDLE=()
 
-    -antigen-set-default _ANTIGEN_WARN_DUPLICATES true
-
     # Compatibility with oh-my-zsh themes.
     -antigen-set-default _ANTIGEN_THEME_COMPAT true
 

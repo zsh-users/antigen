@@ -428,6 +428,9 @@ antigen () {
   -antigen-set-default ANTIGEN_GIT_ENV "GIT_TERMINAL_PROMPT=0"
   -antigen-set-default ANTIGEN_CLONE_OPTS "--single-branch --recursive --depth=1"
   -antigen-set-default ANTIGEN_SUBMODULE_OPTS "--recursive --depth=1"
+  
+  # Complain when a bundle is already installed.
+  -antigen-set-default _ANTIGEN_WARN_DUPLICATES true
 
   # Setup antigen's own completion.
   if -antigen-interactive-mode; then
@@ -1638,8 +1641,6 @@ EOC
     typeset -g _ZCACHE_CAPTURE_PREFIX
     _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
     _ZCACHE_BUNDLE_SOURCE=(); _ZCACHE_CAPTURE_BUNDLE=()
-
-    -antigen-set-default _ANTIGEN_WARN_DUPLICATES true
 
     # Compatibility with oh-my-zsh themes.
     -antigen-set-default _ANTIGEN_THEME_COMPAT true
