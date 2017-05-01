@@ -1,7 +1,11 @@
 # Initialize lock lib
 -antigen-lock-init () {
+  # Default lock path.
+  -antigen-set-default ANTIGEN_LOCK $ADOTDIR/.lock
   typeset -g _ANTIGEN_LOCK_PROCESS=false
+}
 
+-antigen-lock-execute () {
   # Hook antigen command in order to check/create a lock file.
   # This hook is only run once then releases itself.
   antigen-lock () {

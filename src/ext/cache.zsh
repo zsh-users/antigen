@@ -85,11 +85,27 @@ EOC
 # Returns
 #  Nothing
 -antigen-cache-init () {
-  typeset -ga _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE
-  typeset -g _ZCACHE_CAPTURE_PREFIX
-  _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
-  _ZCACHE_BUNDLE_SOURCE=(); _ZCACHE_CAPTURE_BUNDLE=()
+    typeset -ga _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE
+    typeset -g _ZCACHE_CAPTURE_PREFIX
+    _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
+    _ZCACHE_BUNDLE_SOURCE=(); _ZCACHE_CAPTURE_BUNDLE=()
 
+    -antigen-set-default _ANTIGEN_WARN_DUPLICATES true
+
+    # Compatibility with oh-my-zsh themes.
+    -antigen-set-default _ANTIGEN_THEME_COMPAT true
+
+    # Cache auto config files to check for changes (.zshrc, .antigenrc etc)
+    -antigen-set-default ANTIGEN_AUTO_CONFIG true
+    
+    # Default cache path.
+    -antigen-set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
+    -antigen-set-default ANTIGEN_RSRC $ADOTDIR/.resources
+    
+    return 0
+}
+
+-antigen-cache-execute () {
   # Main function. Deferred antigen-apply.
   antigen-apply-cached () {
     # Release function to apply
@@ -149,4 +165,6 @@ EOC
     _ZCACHE_BUNDLE_SOURCE+=(${list})
   }
   antigen-add-hook -antigen-load-source -antigen-load-source-cached replace
+  
+  return 0
 }

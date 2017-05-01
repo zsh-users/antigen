@@ -140,6 +140,7 @@ antigen-ext () {
   local func="-antigen-$ext-init"
   if (( $+functions[$func] )); then
     eval $func
+    eval "-antigen-$ext-execute"
   else
     printf "Antigen: No extension defined: %s\n" $func >&2
     return 1

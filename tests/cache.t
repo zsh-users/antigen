@@ -1,6 +1,6 @@
 Enable extension.
 
-  $ -antigen-cache-init
+  $ antigen ext cache
   $ ANTIGEN_CACHE=$ADOTDIR/init.zsh
 
   $ prev=$(env)
@@ -45,7 +45,7 @@ Both bundles are cached.
 
   $ ANTIGEN_CACHE=$ADOTDIR/init.zsh
   $ antigen reset > /dev/null
-  $ -antigen-cache-init
+  $ antigen ext cache
   $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen bundles
   $ antigen apply
 
