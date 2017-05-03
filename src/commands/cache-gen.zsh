@@ -7,5 +7,5 @@
 # Returns
 #   Nothing
 antigen-cache-gen () {
-  -zcache-generate-cache
+  -antigen-cache-generate
 }

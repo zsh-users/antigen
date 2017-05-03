@@ -644,9 +644,9 @@ to check for configuration changes, this is to avoid doing `antigen-reset` manua
 It's auto-determined if `ANTIGEN_AUTO_CONFIG` is enabled (default), otherwise use
 `typeset -a ANTIGEN_CHECK_FILES=(/path/to/.antigenrc /path/to/.zshrc /path/to/other)`.
 
-`ANTIGEN_CLONE_OPTS`, `ANTIGEN_SUBMODULE_OPTS` &mdash; Use to control how Antigen
-perform cloning repositories and fetching submodules from bundles. These are flags
-for `git-clone` and `git-submodule` commands, respectivelly.
+`ANTIGEN_CLONE_ENV`, `ANTIGEN_CLONE_OPTS`, `ANTIGEN_SUBMODULE_OPTS` &mdash; Use
+to control how Antigen perform cloning repositories and fetching submodules from
+bundles. These are flags for `git-clone` and `git-submodule` commands, respectivelly.
 
 ### Misc.
 

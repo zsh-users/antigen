@@ -1,8 +1,3 @@
-typeset -ga _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
-typeset -g _ZCACHE_CAPTURE_PREFIX
-_ZCACHE_CAPTURE_FUNCTIONS=(antigen-bundle -antigen-load-env -antigen-load-source antigen-apply)
-_ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
-
 # Generates cache from listed bundles.
 #
 # Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
@@ -16,7 +11,7 @@ _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
 #
 # Returns
 #   Nothing. Generates ANTIGEN_CACHE
--zcache-generate-cache () {
+-antigen-cache-generate () {
   local -aU _fpath _PATH _sources
   local record
 
@@ -28,13 +23,6 @@ _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
     elif [[ -d $record ]]; then
       _PATH+=("${record}")
       _fpath+=("${record}")
-
-      # Support prezto function loading. See https://github.com/zsh-users/antigen/pull/428
-      if [[ -d "${record}/functions" ]]; then
-        _PATH+=("${record}/functions")
-        _fpath+=("${record}/functions")
-      fi
-
     fi
   done
 
@@ -79,26 +67,6 @@ EOC
   return true
 }
 
-# Capture functions
--zcache-capture () {
-  local f; for f in $_ZCACHE_CAPTURE_FUNCTIONS; do
-    eval "function ${_ZCACHE_CAPTURE_PREFIX}$(functions -- ${f})"
-  done
-}
-
-# Release previously captured functions
--zcache-release-function () {
-  local f=$1
-  eval "function $(functions -- ${_ZCACHE_CAPTURE_PREFIX}${f} | sed s/${_ZCACHE_CAPTURE_PREFIX}//)"
-  unfunction -- ${_ZCACHE_CAPTURE_PREFIX}${f} &> /dev/null
-}
-
--zcache-release () {
-  local f; for f in $_ZCACHE_CAPTURE_FUNCTIONS; do
-    -zcache-release-function $f
-  done
-}
-
 # Initializes caching mechanism.
 #
 # Hooks `antigen-bundle` and `antigen-apply` in order to defer bundle install
@@ -110,48 +78,63 @@ EOC
 # Returns
 #  Nothing
 -antigen-cache-init () {
-  _ZCACHE_BUNDLE_SOURCE=()
-  _ZCACHE_CAPTURE_BUNDLE=()
-  
-  # Release any previously hooked functions
-  -zcache-release
-  -zcache-capture
-  antigen-apply () {
+    typeset -ga _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE
+    typeset -g _ZCACHE_CAPTURE_PREFIX
+    _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
+    _ZCACHE_BUNDLE_SOURCE=(); _ZCACHE_CAPTURE_BUNDLE=()
+
+    # Cache auto config files to check for changes (.zshrc, .antigenrc etc)
+    -antigen-set-default ANTIGEN_AUTO_CONFIG true
+    
+    # Default cache path.
+    -antigen-set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
+    -antigen-set-default ANTIGEN_RSRC $ADOTDIR/.resources
+    
+    return 0
+}
+
+-antigen-cache-execute () {
+  # Main function. Deferred antigen-apply.
+  antigen-apply-cached () {
     # Release function to apply
-    -zcache-release-function antigen-bundle
+    antigen-remove-hook antigen-bundle-cached
 
     # Auto determine check_files
-    # There always should be 2 steps from original source as the correct way is to use
-    # `antigen` wrapper not `antigen-apply` directly.
-    if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 2 ]]; then
-      ANTIGEN_CHECK_FILES+=("${${funcfiletrace[2]%:*}##* }")
+    # There always should be 5 steps from original source as the correct way is to use
+    # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
+    if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 5 ]]; then
+      ANTIGEN_CHECK_FILES+=("${${funcfiletrace[5]%:*}##* }")
     fi
  
     local bundle
     for bundle in "${_ZCACHE_CAPTURE_BUNDLE[@]}"; do
-      antigen-bundle "${=bundle[@]}"
+      antigen-bundle ${=bundle[@]} 2> /dev/null
     done
 
     # Generate and compile cache
-    -zcache-generate-cache
+    -antigen-cache-generate
     
     # Release all hooked functions
-    -zcache-release
+    antigen-remove-hook antigen-apply-cached
+    antigen-remove-hook -antigen-load-env-cached
+    antigen-remove-hook -antigen-load-source-cached
 
     [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
     
     unset _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
 
-    # Do apply compdump
     antigen-apply
   }
+  antigen-add-hook antigen-apply antigen-apply-cached replace
   
-  antigen-bundle () {
+  # Defer antigen-bundle.
+  antigen-bundle-cached () {
     _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${@}}")
   }
+  antigen-add-hook antigen-bundle antigen-bundle-cached replace
 
   # Defer loading.
-  -antigen-load-env () {
+  -antigen-load-env-cached () {
     typeset -A bundle; bundle=($@)
     local location=${bundle[path]}/${bundle[loc]}
     
@@ -163,8 +146,13 @@ EOC
 
     _ZCACHE_BUNDLE_SOURCE+=("${location}")
   }
+  antigen-add-hook -antigen-load-env -antigen-load-env-cached replace
   
-  -antigen-load-source () {
+  # Defer sourcing.
+  -antigen-load-source-cached () {
     _ZCACHE_BUNDLE_SOURCE+=(${list})
   }
+  antigen-add-hook -antigen-load-source -antigen-load-source-cached replace
+  
+  return 0
 }

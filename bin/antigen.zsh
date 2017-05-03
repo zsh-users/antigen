@@ -162,11 +162,12 @@ antigen () {
     case "$mode" in
         --short)
           # Only check revision for bundle with a requested branch
-	  if [[ $url == *\|* ]]; then
+          if [[ $url == *\|* ]]; then
             revision=$(-antigen-bundle-rev $url $make_local_clone)
-	  else
-	    revision="master"
-	  fi
+          else
+            revision="master"
+          fi
+
           if [[ $loc != '/' ]]; then
             bundle_name="$bundle_name ~ $loc"
           fi
@@ -353,7 +354,7 @@ antigen () {
 
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd -q "$clone_dir" && eval ${ANTIGEN_GIT_ENV} git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
+    (cd -q "$clone_dir" && eval ${ANTIGEN_CLONE_ENV} git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
   }
 
   local success=false
@@ -365,7 +366,7 @@ antigen () {
   fi
 
   if [[ ! -d $clone_dir ]]; then
-    eval ${ANTIGEN_GIT_ENV} git clone ${=ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $ANTIGEN_LOG
+    eval ${ANTIGEN_CLONE_ENV} git clone ${=ANTIGEN_CLONE_OPTS} --branch "$branch" -- "${url%|*}" "$clone_dir" &>> $ANTIGEN_LOG
     success=$?
   elif $update; then
     # Save current revision.
@@ -393,75 +394,63 @@ antigen () {
 
   return $success
 }
--antigen-env-setup () {
-  # Helper function: Same as `$1=$2`, but will only happen if the name
-  # specified by `$1` is not already set.
-  -set-default () {
-    local arg_name="$1"
-    local arg_value="$2"
-    eval "test -z \"\$$arg_name\" && typeset -g $arg_name='$arg_value'"
-  }
+# Helper function: Same as `$1=$2`, but will only happen if the name
+# specified by `$1` is not already set.
+-antigen-set-default () {
+  local arg_name="$1"
+  local arg_value="$2"
+  eval "test -z \"\$$arg_name\" && typeset -g $arg_name='$arg_value'"
+}
 
+-antigen-env-setup () {
   typeset -gU fpath path
 
   # Pre-startup initializations.
-  -set-default ANTIGEN_DEFAULT_REPO_URL \
-      https://github.com/robbyrussell/oh-my-zsh.git
-  -set-default ANTIGEN_PREZTO_REPO_URL \
-      https://github.com/sorin-ionescu/prezto.git
+  -antigen-set-default ANTIGEN_DEFAULT_REPO_URL \
+    https://github.com/robbyrussell/oh-my-zsh.git
+  -antigen-set-default ANTIGEN_PREZTO_REPO_URL \
+    https://github.com/sorin-ionescu/prezto.git
 
-  -set-default ADOTDIR $HOME/.antigen
+  # Default Antigen directory.
+  -antigen-set-default ADOTDIR $HOME/.antigen
   [[ ! -d $ADOTDIR ]] && mkdir -p $ADOTDIR
 
-  -set-default ANTIGEN_BUNDLES $ADOTDIR/bundles
+  # Defaults bundles directory.
+  -antigen-set-default ANTIGEN_BUNDLES $ADOTDIR/bundles
+
+  # If there is no bundles directory, create it.
   if [[ ! -d $ANTIGEN_BUNDLES ]]; then
     mkdir -p $ANTIGEN_BUNDLES
+    # Check for v1 repos directory, transform it to v2 format.
     [[ -d $ADOTDIR/repos ]] && -antigen-update-repos
   fi
 
-  -set-default ANTIGEN_COMPDUMP "${ADOTDIR:-$HOME}/.zcompdump"
-
-  -set-default ANTIGEN_LOG /dev/null
+  -antigen-set-default ANTIGEN_COMPDUMP "${ADOTDIR:-$HOME}/.zcompdump"
+  -antigen-set-default ANTIGEN_LOG /dev/null
 
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
   # for arguments that can be passed as `--key=value`.
-  -set-default ANTIGEN_GIT_ENV "GIT_TERMINAL_PROMPT=0"
-  -set-default ANTIGEN_CLONE_OPTS "--single-branch --recursive --depth=1"
-  -set-default ANTIGEN_SUBMODULE_OPTS "--recursive --depth=1"
+  -antigen-set-default ANTIGEN_CLONE_ENV "GIT_TERMINAL_PROMPT=0"
+  -antigen-set-default ANTIGEN_CLONE_OPTS "--single-branch --recursive --depth=1"
+  -antigen-set-default ANTIGEN_SUBMODULE_OPTS "--recursive --depth=1"
 
-  -set-default _ANTIGEN_WARN_DUPLICATES true
+  # Complain when a bundle is already installed.
+  -antigen-set-default _ANTIGEN_WARN_DUPLICATES true
 
   # Compatibility with oh-my-zsh themes.
-  -set-default _ANTIGEN_THEME_COMPAT true
-
-  # Cache auto config files to check for changes (.zshrc, .antigenrc etc)
-  -set-default ANTIGEN_AUTO_CONFIG true
-  
-  # Default cache path.
-  -set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
-  -set-default ANTIGEN_RSRC $ADOTDIR/.resources
-  
-  # Default lock path.
-  -set-default ANTIGEN_LOCK $ADOTDIR/.lock
+  -antigen-set-default _ANTIGEN_THEME_COMPAT true
 
   # Setup antigen's own completion.
-  autoload -Uz compinit
-  compinit -C -d "$ANTIGEN_COMPDUMP"
-  compdef _antigen antigen
-
-  # Remove private functions.
-  unfunction -- -set-default
-
-  # Initialize cache unless disabled
-  if [[ ! $ANTIGEN_CACHE == false ]] && ! -antigen-interactive-mode; then
-    -antigen-cache-init
+  if -antigen-interactive-mode; then
+    autoload -Uz compinit
+    compinit -C -d "$ANTIGEN_COMPDUMP"
+    compdef _antigen antigen
+  else
+    # Initialize extensions. unless in interactive mode.
+    #antigen-ext defer
+    [[ $ANTIGEN_CACHE != false ]] && antigen-ext cache
+    antigen-ext lock
   fi
-  
-  # Initialize lock. It doesn't make sense to activate it in interactive mode.
-  if ! -antigen-interactive-mode; then
-    -antigen-lock-init
-  fi
-
 }
 # Load a given bundle by sourcing it.
 #
@@ -492,7 +481,9 @@ antigen () {
 
     # Common frameworks
     if [[ $#list == 0 ]]; then
-      list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]))
+      # dot-plugin, init and functions support (omz, prezto)
+      # Support prezto function loading. See https://github.com/zsh-users/antigen/pull/428
+      list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]) ${location}/functions(N[1]))
     fi
 
     # Default to zsh and sh
@@ -514,13 +505,7 @@ antigen () {
 -antigen-load-env () {
   typeset -A bundle; bundle=($@)
   local location=${bundle[path]}/${bundle[loc]}
-  
-  # Support prezto function loading. See https://github.com/zsh-users/antigen/pull/428
-  if [[ -d "${location}/functions" ]]; then
-    PATH="$PATH:${location:A}/functions"
-    fpath+=("${location:A}/functions")
-  fi
-  
+
   # Load to path if there is no sourceable
   if [[ -d ${location} ]]; then
     PATH="$PATH:${location:A}"
@@ -665,26 +650,33 @@ antigen () {
       args[loc]="${args[loc]}.zsh-theme"
   fi
 
-  # Format bundle name
   local name="${args[url]%|*}"
+  local branch="${args[branch]}"
+
+  # Extract bundle name.
   if [[ "$name" =~ '.*/(.*/.*).*$' ]]; then
     name="${match[1]}"
   fi
   name="${name%.git*}"
-  if [[ -n ${args[branch]} ]]; then
-    name="$name@${args[branch]}"
-  fi
-  args[name]="$name"
 
-  # Bundle path
+  # Format bundle name with optional branch.
+  if [[ -n "${branch}" ]]; then
+    args[name]="${name}@${branch}"
+  else
+    args[name]="${name}"
+  fi
+
+  # Format bundle path.
   if [[ ${args[make_local_clone]} == true ]]; then
-    local bpath="${args[name]}"
+    local bpath="$name"
     # Suffix with branch/tag name
-    if [[ -n "${args[branch]}" ]]; then
+    if [[ -n "$branch" ]]; then
       # bpath is in the form of repo/name@version => repo/name-version
-      bpath="${bpath//\@/-}"
+      # Replace / with - in bundle branch.
+      local bbranch=${branch//\//-}
       # If branch/tag is semver-like do replace * by x.
-      bpath=${bpath//\*/x}
+      bbranch=${bbranch//\*/x}
+      bpath="${name}-${bbranch}"
     fi
 
     bpath="$ANTIGEN_BUNDLES/$bpath"
@@ -741,222 +733,6 @@ antigen () {
 }
 -antigen-use-prezto () {
   antigen-bundle "$ANTIGEN_PREZTO_REPO_URL"
-}
-typeset -g _ANTIGEN_LOCK_PROCESS=false
-
--antigen-lock-init () {
-  eval "function --lock-$(functions -- antigen)"
-  antigen () {
-    local ret
-
-    # If there is a lock set up then we won't process anything.
-    if [[ -f $ANTIGEN_LOCK ]]; then
-      # Set up flag do the message is not repeated for each antigen-* command
-      [[ $_ANTIGEN_LOCK_PROCESS == false ]] && printf "Antigen: Another process in running.\n"
-      _ANTIGEN_LOCK_PROCESS=true
-      return 1
-    fi
-    touch $ANTIGEN_LOCK
-
-    # De-lock at antigen-apply. We are difining it here as commands are compiled
-    # _after_ extensions.
-    eval "function --lock-$(functions -- antigen-apply)"
-    antigen-apply () {
-      local ret
-      # Call hooked function.
-      --lock-antigen-apply
-      ret=$?
-
-      eval "function $(functions -- --lock-antigen-apply | sed s/--lock-//)"
-      unfunction -- --lock-antigen-apply
-
-      rm $ANTIGEN_LOCK &> /dev/null
-
-      return $ret
-    }
-
-    # Release this function
-    eval "function $(functions -- --lock-antigen | sed s/--lock-//)"
-
-    # Call hooked function
-    --lock-antigen "$@"
-    ret=$?
-    
-    unfunction -- --lock-antigen
-    
-    return $ret
-  }
-
-}
-typeset -ga _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
-typeset -g _ZCACHE_CAPTURE_PREFIX
-_ZCACHE_CAPTURE_FUNCTIONS=(antigen-bundle -antigen-load-env -antigen-load-source antigen-apply)
-_ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
-
-# Generates cache from listed bundles.
-#
-# Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
-# if this is done through -antigen-load-list.
-# Result is stored in ANTIGEN_CACHE.
-#
-# _ANTIGEN_BUNDLE_RECORD and fpath is stored in cache.
-#
-# Usage
-#   -zcache-generate-cache
-#
-# Returns
-#   Nothing. Generates ANTIGEN_CACHE
--zcache-generate-cache () {
-  local -aU _fpath _PATH _sources
-  local record
-
-  for record in $_ZCACHE_BUNDLE_SOURCE; do
-    record=${record:A}
-    if [[ -f $record ]]; then
-      # Adding $'\n' as a suffix as j:\n: doesn't work inside a heredoc.
-      _sources+=("source '${record}';"$'\n')
-    elif [[ -d $record ]]; then
-      _PATH+=("${record}")
-      _fpath+=("${record}")
-
-      # Support prezto function loading. See https://github.com/zsh-users/antigen/pull/428
-      if [[ -d "${record}/functions" ]]; then
-        _PATH+=("${record}/functions")
-        _fpath+=("${record}/functions")
-      fi
-
-    fi
-  done
-
-cat > $ANTIGEN_CACHE <<EOC
-#-- START ZCACHE GENERATED FILE
-#-- GENERATED: $(date)
-#-- ANTIGEN develop
-$(functions -- _antigen)
-antigen () {
-  local MATCH MBEGIN MEND
-  [[ "\$ZSH_EVAL_CONTEXT" =~ "toplevel:*" || "\$ZSH_EVAL_CONTEXT" =~ "cmdarg:*" ]] && source "$_ANTIGEN_INSTALL_DIR/antigen.zsh" && eval antigen \$@;
-  return 0;
-}
-fpath+=(${_fpath[@]}); PATH="\$PATH:${(j/:/)_PATH}"
-_antigen_compinit () {
-  autoload -Uz compinit; compinit -C -d "$ANTIGEN_COMPDUMP"; compdef _antigen antigen
-  add-zsh-hook -D precmd _antigen_compinit
-}
-autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
-compdef () {}
-
-if [[ -n "$ZSH" ]]; then
-  ZSH="$ZSH"; ZSH_CACHE_DIR="$ZSH_CACHE_DIR"
-fi
-#--- BUNDLES BEGIN
-${(j::)_sources}
-#--- BUNDLES END
-typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=($(print ${(qq)_ANTIGEN_BUNDLE_RECORD}))
-typeset -g _ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='develop'
-
-#-- END ZCACHE GENERATED FILE
-EOC
-
-  { zcompile "$ANTIGEN_CACHE" } &!
-
-  # Compile config files, if any
-  [[ $ANTIGEN_AUTO_CONFIG == true && -n $ANTIGEN_CHECK_FILES ]] && {
-    echo "$ANTIGEN_CHECK_FILES" >! "$ANTIGEN_RSRC"
-    zcompile "$ANTIGEN_CHECK_FILES"
-  } &!
-
-  return true
-}
-
-# Capture functions
--zcache-capture () {
-  local f; for f in $_ZCACHE_CAPTURE_FUNCTIONS; do
-    eval "function ${_ZCACHE_CAPTURE_PREFIX}$(functions -- ${f})"
-  done
-}
-
-# Release previously captured functions
--zcache-release-function () {
-  local f=$1
-  eval "function $(functions -- ${_ZCACHE_CAPTURE_PREFIX}${f} | sed s/${_ZCACHE_CAPTURE_PREFIX}//)"
-  unfunction -- ${_ZCACHE_CAPTURE_PREFIX}${f} &> /dev/null
-}
-
--zcache-release () {
-  local f; for f in $_ZCACHE_CAPTURE_FUNCTIONS; do
-    -zcache-release-function $f
-  done
-}
-
-# Initializes caching mechanism.
-#
-# Hooks `antigen-bundle` and `antigen-apply` in order to defer bundle install
-# and load. All bundles are loaded from generated cache rather than dynamically
-# as these are bundled.
-#
-# Usage
-#  -antigen-cache-init
-# Returns
-#  Nothing
--antigen-cache-init () {
-  _ZCACHE_BUNDLE_SOURCE=()
-  _ZCACHE_CAPTURE_BUNDLE=()
-  
-  # Release any previously hooked functions
-  -zcache-release
-  -zcache-capture
-  antigen-apply () {
-    # Release function to apply
-    -zcache-release-function antigen-bundle
-
-    # Auto determine check_files
-    # There always should be 2 steps from original source as the correct way is to use
-    # `antigen` wrapper not `antigen-apply` directly.
-    if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 2 ]]; then
-      ANTIGEN_CHECK_FILES+=("${${funcfiletrace[2]%:*}##* }")
-    fi
- 
-    local bundle
-    for bundle in "${_ZCACHE_CAPTURE_BUNDLE[@]}"; do
-      antigen-bundle "${=bundle[@]}"
-    done
-
-    # Generate and compile cache
-    -zcache-generate-cache
-    
-    # Release all hooked functions
-    -zcache-release
-
-    [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
-    
-    unset _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
-
-    # Do apply compdump
-    antigen-apply
-  }
-  
-  antigen-bundle () {
-    _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${@}}")
-  }
-
-  # Defer loading.
-  -antigen-load-env () {
-    typeset -A bundle; bundle=($@)
-    local location=${bundle[path]}/${bundle[loc]}
-    
-    # Load to path if there is no sourceable
-    if [[ ${bundle[loc]} == "/" ]]; then
-      _ZCACHE_BUNDLE_SOURCE+=("${location}")
-      return
-    fi
-
-    _ZCACHE_BUNDLE_SOURCE+=("${location}")
-  }
-  
-  -antigen-load-source () {
-    _ZCACHE_BUNDLE_SOURCE+=(${list})
-  }
 }
 # Initialize completion
 antigen-apply () {
@@ -1061,7 +837,7 @@ antigen-bundles () {
 # Returns
 #   Nothing
 antigen-cache-gen () {
-  -zcache-generate-cache
+  -antigen-cache-generate
 }
 # Cleanup unused repositories.
 antigen-cleanup () {
@@ -1572,6 +1348,375 @@ antigen-version () {
   fi
 
   printf "Antigen %s%s\n" $version $revision
+}
+typeset -Ag _ANTIGEN_HOOKS; _ANTIGEN_HOOKS=()
+typeset -Ag _ANTIGEN_HOOKS_TARGET; _ANTIGEN_HOOKS_TARGET=()
+typeset -Ag _ANTIGEN_HOOKS_TYPE; _ANTIGEN_HOOKS_TYPE=()
+typeset -g _ANTIGEN_HOOK_PREFIX="::antigen-hook::"
+
+# -antigen-add-hook antigen-apply antigen-apply-hook replace
+#   - Replaces hooked function with hook, do not call hooked function
+#   - Return -1 to stop calling further hooks
+# -antigen-add-hook antigen-apply antigen-apply-hook pre (pre-call)
+#   - By default it will call hooked function
+# -antigen-add-hook antigen-pply antigen-apply-hook post (post-call)
+#   - Calls antigen-apply and then calls hook function
+# Usage:
+#  -antigen-add-hook antigen-apply antigen-apply-hook ["replace"|"pre"|"post"]
+antigen-add-hook () {
+  local target="$1" hook="$2" type="$3"
+  
+  if (( ! $+functions[$target] )); then
+    printf "Antigen: Function %s doesn't exist.\n" $target
+    return 1
+  fi
+
+  if (( ! $+functions[$hook] )); then
+    printf "Antigen: Function %s doesn't exist.\n" $hook
+    return 1
+  fi
+
+  if [[ "${_ANTIGEN_HOOKS[$target]}" == "" ]]; then
+    _ANTIGEN_HOOKS[$target]="${hook}"
+  else
+    _ANTIGEN_HOOKS[$target]="${_ANTIGEN_HOOKS[$target]}:${hook}"
+  fi
+
+  _ANTIGEN_HOOKS_TARGET[$hook]="$target"
+  _ANTIGEN_HOOKS_TYPE[$hook]="$type"
+  
+  # Do shadow for this function if there is none already
+  local hook_function="${_ANTIGEN_HOOK_PREFIX}$target"
+  if (( ! $+functions[$hook_function] )); then
+    # Preserve hooked function
+    eval "function ${_ANTIGEN_HOOK_PREFIX}$(functions -- $target)"
+
+    # Create hook, call hook-handler to further process hook functions
+    eval "function $target () {
+      -antigen-hook-handler $target \${@//\*/\\\*}
+      return \$?
+    }"
+  fi
+  
+  return 0
+}
+
+# Private function to handle multiple hooks in a central point.
+-antigen-hook-handler () {
+  local target="$1" args hook
+  shift
+  args=${@}
+
+  typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
+
+  # A replace hook will return inmediately
+  local replace_hook=0 ret
+  for hook in $hooks; do
+    if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "replace" ]]; then
+      replace_hook=1
+      # Should not be needed if `antigen-remove-hook` removed unneeded hooks.
+      if (( $+functions[$hook] )); then
+        eval $hook $args
+        if [[ $? == -1 ]]; then
+          break
+        fi
+      fi
+    fi
+  done
+
+  if [[ $replace_hook == 1 ]]; then
+    return $ret
+  fi
+
+  for hook in $hooks; do
+    if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "pre" ]]; then
+      eval $hook $args
+    fi
+  done
+
+  eval "${_ANTIGEN_HOOK_PREFIX}$target" $args
+  local res=$?
+
+  for hook in $hooks; do
+    if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "post" ]]; then
+      eval $hook $args
+    fi
+  done
+  
+  return $res
+}
+
+# Usage:
+#  -antigen-remove-hook antigen-apply-hook
+antigen-remove-hook () {
+  local hook="$1" target
+  local -a hooks
+  target=${_ANTIGEN_HOOKS_TARGET[$hook]}
+  hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
+
+  # Remove registered hook
+  hooks[$hooks[(I)$hook]]=()
+  _ANTIGEN_HOOKS[$target]=${(j|:|)hooks}
+  #_ANTIGEN_HOOKS_TARGET[$hook]=()
+  
+  if [[ $#hooks == 0 ]]; then
+    # Destroy base hook
+    eval "function $(functions -- ${_ANTIGEN_HOOK_PREFIX}$target | sed s/${_ANTIGEN_HOOK_PREFIX}//)"
+    unfunction -- "${_ANTIGEN_HOOK_PREFIX}$target"
+  fi
+
+  unfunction -- $hook 2> /dev/null
+}
+
+# Remove all defined hooks.
+-antigen-reset-hooks () {
+  local target
+
+  for target in ${(k)_ANTIGEN_HOOKS}; do
+    # Release all hooked functions
+    eval "function $(functions -- ${_ANTIGEN_HOOK_PREFIX}$target | sed s/${_ANTIGEN_HOOK_PREFIX}//)"
+    unfunction -- "${_ANTIGEN_HOOK_PREFIX}$target"
+  done
+  
+  _ANTIGEN_HOOKS=()
+  _ANTIGEN_HOOKS_TYPE=()
+}
+
+# Initializes an extension
+# Usage:
+#  antigen-ext ext-name
+antigen-ext () {
+  local ext=$1
+  local func="-antigen-$ext-init"
+  if (( $+functions[$func] )); then
+    eval $func
+    eval "-antigen-$ext-execute"
+  else
+    printf "Antigen: No extension defined: %s\n" $func >&2
+    return 1
+  fi
+}
+# Initialize defer lib
+-antigen-defer-init () {
+  typeset -ga _DEFERRED_BUNDLE=()
+
+  # Hooks antigen-bundle in order to defer its execution.
+  antigen-bundle-defer () {
+    _DEFERRED_BUNDLE+=("${(j: :)${@}}")
+  }
+  antigen-add-hook antigen-bundle antigen-bundle-defer replace
+  
+  # Hooks antigen-apply in order to release hooked functions
+  antigen-apply-defer () {
+    antigen-remove-hook antigen-bundle-defer
+    # Process all deferred bundles.
+    for bundle in $_DEFERRED_BUNDLE; do
+      antigen-bundle ${=bundle}
+    done
+
+    antigen-remove-hook antigen-apply-defer
+    unset _DEFERRED_BUNDLE
+    antigen-apply "$@"
+  }
+  antigen-add-hook antigen-apply antigen-apply-defer replace
+}
+# Initialize lock lib
+-antigen-lock-init () {
+  # Default lock path.
+  -antigen-set-default ANTIGEN_LOCK $ADOTDIR/.lock
+  typeset -g _ANTIGEN_LOCK_PROCESS=false
+}
+
+-antigen-lock-execute () {
+  # Hook antigen command in order to check/create a lock file.
+  # This hook is only run once then releases itself.
+  antigen-lock () {
+    antigen-remove-hook antigen-lock
+
+    # If there is a lock set up then we won't process anything.
+    if [[ -f $ANTIGEN_LOCK ]]; then
+      # Set up flag do the message is not repeated for each antigen-* command
+      [[ $_ANTIGEN_LOCK_PROCESS == false ]] && printf "Antigen: Another process in running.\n"
+      _ANTIGEN_LOCK_PROCESS=true
+      # Do not further process hooks. For this hook to properly work it
+      # should be registered first.
+      return -1
+    fi
+
+    touch $ANTIGEN_LOCK
+
+    # Call hooked function
+    antigen "$@"
+  }
+  antigen-add-hook antigen antigen-lock replace
+
+  # Hook antigen-apply in order to release .lock file.
+  antigen-apply-lock () {
+    # One time hook
+    antigen-remove-hook antigen-apply-lock
+    unset _ANTIGEN_LOCK_PROCESS
+    rm $ANTIGEN_LOCK &> /dev/null
+    antigen-apply "$@"
+  }
+  antigen-add-hook antigen-apply antigen-apply-lock replace
+}
+# Generates cache from listed bundles.
+#
+# Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
+# if this is done through -antigen-load-list.
+# Result is stored in ANTIGEN_CACHE.
+#
+# _ANTIGEN_BUNDLE_RECORD and fpath is stored in cache.
+#
+# Usage
+#   -zcache-generate-cache
+#
+# Returns
+#   Nothing. Generates ANTIGEN_CACHE
+-antigen-cache-generate () {
+  local -aU _fpath _PATH _sources
+  local record
+
+  for record in $_ZCACHE_BUNDLE_SOURCE; do
+    record=${record:A}
+    if [[ -f $record ]]; then
+      # Adding $'\n' as a suffix as j:\n: doesn't work inside a heredoc.
+      _sources+=("source '${record}';"$'\n')
+    elif [[ -d $record ]]; then
+      _PATH+=("${record}")
+      _fpath+=("${record}")
+    fi
+  done
+
+cat > $ANTIGEN_CACHE <<EOC
+#-- START ZCACHE GENERATED FILE
+#-- GENERATED: $(date)
+#-- ANTIGEN develop
+$(functions -- _antigen)
+antigen () {
+  local MATCH MBEGIN MEND
+  [[ "\$ZSH_EVAL_CONTEXT" =~ "toplevel:*" || "\$ZSH_EVAL_CONTEXT" =~ "cmdarg:*" ]] && source "$_ANTIGEN_INSTALL_DIR/antigen.zsh" && eval antigen \$@;
+  return 0;
+}
+fpath+=(${_fpath[@]}); PATH="\$PATH:${(j/:/)_PATH}"
+_antigen_compinit () {
+  autoload -Uz compinit; compinit -C -d "$ANTIGEN_COMPDUMP"; compdef _antigen antigen
+  add-zsh-hook -D precmd _antigen_compinit
+}
+autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
+compdef () {}
+
+if [[ -n "$ZSH" ]]; then
+  ZSH="$ZSH"; ZSH_CACHE_DIR="$ZSH_CACHE_DIR"
+fi
+#--- BUNDLES BEGIN
+${(j::)_sources}
+#--- BUNDLES END
+typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=($(print ${(qq)_ANTIGEN_BUNDLE_RECORD}))
+typeset -g _ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='develop'
+
+#-- END ZCACHE GENERATED FILE
+EOC
+
+  { zcompile "$ANTIGEN_CACHE" } &!
+
+  # Compile config files, if any
+  [[ $ANTIGEN_AUTO_CONFIG == true && -n $ANTIGEN_CHECK_FILES ]] && {
+    echo "$ANTIGEN_CHECK_FILES" >! "$ANTIGEN_RSRC"
+    zcompile "$ANTIGEN_CHECK_FILES"
+  } &!
+
+  return true
+}
+
+# Initializes caching mechanism.
+#
+# Hooks `antigen-bundle` and `antigen-apply` in order to defer bundle install
+# and load. All bundles are loaded from generated cache rather than dynamically
+# as these are bundled.
+#
+# Usage
+#  -antigen-cache-init
+# Returns
+#  Nothing
+-antigen-cache-init () {
+    typeset -ga _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE
+    typeset -g _ZCACHE_CAPTURE_PREFIX
+    _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
+    _ZCACHE_BUNDLE_SOURCE=(); _ZCACHE_CAPTURE_BUNDLE=()
+
+    # Cache auto config files to check for changes (.zshrc, .antigenrc etc)
+    -antigen-set-default ANTIGEN_AUTO_CONFIG true
+    
+    # Default cache path.
+    -antigen-set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
+    -antigen-set-default ANTIGEN_RSRC $ADOTDIR/.resources
+    
+    return 0
+}
+
+-antigen-cache-execute () {
+  # Main function. Deferred antigen-apply.
+  antigen-apply-cached () {
+    # Release function to apply
+    antigen-remove-hook antigen-bundle-cached
+
+    # Auto determine check_files
+    # There always should be 5 steps from original source as the correct way is to use
+    # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
+    if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 5 ]]; then
+      ANTIGEN_CHECK_FILES+=("${${funcfiletrace[5]%:*}##* }")
+    fi
+ 
+    local bundle
+    for bundle in "${_ZCACHE_CAPTURE_BUNDLE[@]}"; do
+      antigen-bundle ${=bundle[@]} 2> /dev/null
+    done
+
+    # Generate and compile cache
+    -antigen-cache-generate
+    
+    # Release all hooked functions
+    antigen-remove-hook antigen-apply-cached
+    antigen-remove-hook -antigen-load-env-cached
+    antigen-remove-hook -antigen-load-source-cached
+
+    [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
+    
+    unset _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
+
+    antigen-apply
+  }
+  antigen-add-hook antigen-apply antigen-apply-cached replace
+  
+  # Defer antigen-bundle.
+  antigen-bundle-cached () {
+    _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${@}}")
+  }
+  antigen-add-hook antigen-bundle antigen-bundle-cached replace
+
+  # Defer loading.
+  -antigen-load-env-cached () {
+    typeset -A bundle; bundle=($@)
+    local location=${bundle[path]}/${bundle[loc]}
+    
+    # Load to path if there is no sourceable
+    if [[ ${bundle[loc]} == "/" ]]; then
+      _ZCACHE_BUNDLE_SOURCE+=("${location}")
+      return
+    fi
+
+    _ZCACHE_BUNDLE_SOURCE+=("${location}")
+  }
+  antigen-add-hook -antigen-load-env -antigen-load-env-cached replace
+  
+  # Defer sourcing.
+  -antigen-load-source-cached () {
+    _ZCACHE_BUNDLE_SOURCE+=(${list})
+  }
+  antigen-add-hook -antigen-load-source -antigen-load-source-cached replace
+  
+  return 0
 }
 #compdef _antigen
 # Setup antigen's autocompletion
