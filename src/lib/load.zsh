@@ -27,7 +27,9 @@
 
     # Common frameworks
     if [[ $#list == 0 ]]; then
-      list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]))
+      # dot-plugin, init and functions support (omz, prezto)
+      # Support prezto function loading. See https://github.com/zsh-users/antigen/pull/428
+      list=(${location}*.plugin.zsh(N[1]) ${location}init.zsh(N[1]) ${location}/functions(N[1]))
     fi
 
     # Default to zsh and sh
@@ -49,13 +51,7 @@
 -antigen-load-env () {
   typeset -A bundle; bundle=($@)
   local location=${bundle[path]}/${bundle[loc]}
-  
-  # Support prezto function loading. See https://github.com/zsh-users/antigen/pull/428
-  if [[ -d "${location}/functions" ]]; then
-    PATH="$PATH:${location:A}/functions"
-    fpath+=("${location:A}/functions")
-  fi
-  
+
   # Load to path if there is no sourceable
   if [[ -d ${location} ]]; then
     PATH="$PATH:${location:A}"

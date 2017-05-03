@@ -21,11 +21,12 @@
     case "$mode" in
         --short)
           # Only check revision for bundle with a requested branch
-	  if [[ $url == *\|* ]]; then
+          if [[ $url == *\|* ]]; then
             revision=$(-antigen-bundle-rev $url $make_local_clone)
-	  else
-	    revision="master"
-	  fi
+          else
+            revision="master"
+          fi
+
           if [[ $loc != '/' ]]; then
             bundle_name="$bundle_name ~ $loc"
           fi
