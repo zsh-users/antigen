@@ -650,29 +650,33 @@ antigen () {
       args[loc]="${args[loc]}.zsh-theme"
   fi
 
-  # Format bundle name
   local name="${args[url]%|*}"
+  local branch="${args[branch]}"
+
+  # Extract bundle name.
   if [[ "$name" =~ '.*/(.*/.*).*$' ]]; then
     name="${match[1]}"
   fi
   name="${name%.git*}"
-  if [[ -n ${args[branch]} ]]; then
-    name="$name@${args[branch]}"
-  fi
-  args[name]="$name"
 
-  # Bundle path
+  # Format bundle name with optional branch.
+  if [[ -n "${branch}" ]]; then
+    args[name]="${name}@${branch}"
+  else
+    args[name]="${name}"
+  fi
+
+  # Format bundle path.
   if [[ ${args[make_local_clone]} == true ]]; then
     local bpath="$name"
     # Suffix with branch/tag name
-    if [[ -n "${args[branch]}" ]]; then
+    if [[ -n "$branch" ]]; then
       # bpath is in the form of repo/name@version => repo/name-version
-      local branch=${args[branch]}
       # Replace / with - in bundle branch.
-      branch=${branch//\//-}
+      local bbranch=${branch//\//-}
       # If branch/tag is semver-like do replace * by x.
-      branch=${branch//\*/x}
-      bpath="${name}-${branch}"
+      bbranch=${bbranch//\*/x}
+      bpath="${name}-${bbranch}"
     fi
 
     bpath="$ANTIGEN_BUNDLES/$bpath"
