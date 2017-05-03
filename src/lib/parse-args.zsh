@@ -112,20 +112,22 @@
   fi
   name="${name%.git*}"
   if [[ -n ${args[branch]} ]]; then
-    # Replace / in bundle branch with -
-    name="$name@${args[branch]//\//-}"
+    name="$name@${args[branch]}"
   fi
   args[name]="$name"
 
   # Bundle path
   if [[ ${args[make_local_clone]} == true ]]; then
-    local bpath="${args[name]}"
+    local bpath="$name"
     # Suffix with branch/tag name
     if [[ -n "${args[branch]}" ]]; then
       # bpath is in the form of repo/name@version => repo/name-version
-      bpath="${bpath//\@/-}"
+      local branch=${args[branch]}
+      # Replace / with - in bundle branch.
+      branch=${branch//\//-}
       # If branch/tag is semver-like do replace * by x.
-      bpath=${bpath//\*/x}
+      branch=${branch//\*/x}
+      bpath="${name}-${branch}"
     fi
 
     bpath="$ANTIGEN_BUNDLES/$bpath"
