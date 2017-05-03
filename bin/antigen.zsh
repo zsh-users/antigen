@@ -657,7 +657,8 @@ antigen () {
   fi
   name="${name%.git*}"
   if [[ -n ${args[branch]} ]]; then
-    name="$name@${args[branch]}"
+    # Replace / in bundle branch with -
+    name="$name@${args[branch]//\//-}"
   fi
   args[name]="$name"
 
