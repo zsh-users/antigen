@@ -54,5 +54,6 @@
     #antigen-ext defer
     [[ $ANTIGEN_CACHE != false ]] && antigen-ext cache
     antigen-ext lock
+    antigen-ext parallel
   fi
 }
