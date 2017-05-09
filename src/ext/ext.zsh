@@ -92,7 +92,7 @@ antigen-add-hook () {
       eval $hook $args
     fi
   done
-  
+
   return $res
 }
 

@@ -8,8 +8,7 @@ antigen-bundle () {
     return 1
   fi
 
-  typeset -A bundle
-  -antigen-parse-args 'bundle' "$@"
+  typeset -A bundle; -antigen-parse-args 'bundle' ${=@}
   if [[ -z ${bundle[btype]} ]]; then
     bundle[btype]=bundle
   fi

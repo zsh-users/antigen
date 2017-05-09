@@ -13,8 +13,8 @@
     for args in "${_PARALLEL_BUNDLE[@]}"; do
       typeset -A bundle; -antigen-parse-args 'bundle' ${=args}
       if [[ ! -d ${bundle[path]} ]]; then
-        echo "Installing ${bundle[name]}..."
-        -antigen-ensure-repo ${bundle[url]} > /dev/null &!
+        echo "Installing ${bundle[name]}!..."
+        -antigen-ensure-repo "${bundle[url]}" > /dev/null &!
         pids+=($!)
       fi
     done
@@ -30,7 +30,7 @@
     done
 
     for args in "${_PARALLEL_BUNDLE[@]}"; do
-      antigen-bundle $args
+      antigen-bundle ${(kv)args}
     done
   }
   
@@ -50,7 +50,7 @@
       antigen-remove-hook antigen-apply-parallel
 
       # Process all parallel bundles.
-      antigen-bundle-parallel-execute ${_PARALLEL_BUNDLE}
+      antigen-bundle-parallel-execute
 
       unset _PARALLEL_BUNDLE
       antigen-apply "$@"

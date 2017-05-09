@@ -765,8 +765,7 @@ antigen-bundle () {
     return 1
   fi
 
-  typeset -A bundle
-  -antigen-parse-args 'bundle' "$@"
+  typeset -A bundle; -antigen-parse-args 'bundle' ${=@}
   if [[ -z ${bundle[btype]} ]]; then
     bundle[btype]=bundle
   fi
@@ -1412,7 +1411,6 @@ antigen-add-hook () {
 
   for hook in $hooks; do
     if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "pre" ]]; then
-      echo "Calling hook: $hook $args" >> /tmp/antigen.log
       eval $hook $args
     fi
   done
@@ -1425,7 +1423,6 @@ antigen-add-hook () {
       replace_hook=1
       # Should not be needed if `antigen-remove-hook` removed unneeded hooks.
       if (( $+functions[$hook] )); then
-        echo "Calling hook: $hook $args" >> /tmp/antigen.log
         eval $hook $args
         if [[ $? == -1 ]]; then
           break
@@ -1436,7 +1433,6 @@ antigen-add-hook () {
   
   typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
   if [[ $replace_hook == 0 ]]; then
-    echo "Calling hook: ${_ANTIGEN_HOOK_PREFIX}$target $args" >> /tmp/antigen.log
     eval "${_ANTIGEN_HOOK_PREFIX}$target" $args
     local res=$?
   fi
@@ -1444,11 +1440,10 @@ antigen-add-hook () {
   typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
   for hook in $hooks; do
     if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "post" ]]; then
-      echo "Calling hook: $hook $args" >> /tmp/antigen.log
       eval $hook $args
     fi
   done
-  
+
   return $res
 }
 
@@ -1583,8 +1578,8 @@ antigen-ext () {
     for args in "${_PARALLEL_BUNDLE[@]}"; do
       typeset -A bundle; -antigen-parse-args 'bundle' ${=args}
       if [[ ! -d ${bundle[path]} ]]; then
-        echo "Installing ${bundle[name]}..."
-        -antigen-ensure-repo ${bundle[url]} > /dev/null &!
+        echo "Installing ${bundle[name]}!..."
+        -antigen-ensure-repo "${bundle[url]}" > /dev/null &!
         pids+=($!)
       fi
     done
@@ -1600,7 +1595,7 @@ antigen-ext () {
     done
 
     for args in "${_PARALLEL_BUNDLE[@]}"; do
-      antigen-bundle $args
+      antigen-bundle ${(kv)args}
     done
   }
   
@@ -1620,7 +1615,7 @@ antigen-ext () {
       antigen-remove-hook antigen-apply-parallel
 
       # Process all parallel bundles.
-      antigen-bundle-parallel-execute ${_PARALLEL_BUNDLE}
+      antigen-bundle-parallel-execute
 
       unset _PARALLEL_BUNDLE
       antigen-apply "$@"
