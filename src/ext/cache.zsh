@@ -108,7 +108,7 @@ EOC
  
     local bundle
     for bundle in "${_ZCACHE_CAPTURE_BUNDLE[@]}"; do
-      antigen-bundle ${=bundle[@]} 2> /dev/null
+      antigen-bundle $bundle
     done
 
     # Generate and compile cache
@@ -132,7 +132,7 @@ EOC
     _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${@}}")
   }
   antigen-add-hook antigen-bundle antigen-bundle-cached replace
-
+  
   # Defer loading.
   -antigen-load-env-cached () {
     typeset -A bundle; bundle=($@)

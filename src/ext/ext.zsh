@@ -58,6 +58,13 @@ antigen-add-hook () {
 
   typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
 
+  for hook in $hooks; do
+    if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "pre" ]]; then
+      eval $hook $args
+    fi
+  done
+
+  typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
   # A replace hook will return inmediately
   local replace_hook=0 ret
   for hook in $hooks; do
@@ -72,20 +79,14 @@ antigen-add-hook () {
       fi
     fi
   done
-
-  if [[ $replace_hook == 1 ]]; then
-    return $ret
+  
+  typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
+  if [[ $replace_hook == 0 ]]; then
+    eval "${_ANTIGEN_HOOK_PREFIX}$target" $args
+    local res=$?
   fi
 
-  for hook in $hooks; do
-    if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "pre" ]]; then
-      eval $hook $args
-    fi
-  done
-
-  eval "${_ANTIGEN_HOOK_PREFIX}$target" $args
-  local res=$?
-
+  typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
   for hook in $hooks; do
     if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "post" ]]; then
       eval $hook $args

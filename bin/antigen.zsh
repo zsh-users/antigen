@@ -447,10 +447,10 @@ antigen () {
     compdef _antigen antigen
   else
     # Initialize extensions. unless in interactive mode.
-    #antigen-ext defer
-    [[ $ANTIGEN_CACHE != false ]] && antigen-ext cache
-    antigen-ext lock
     antigen-ext parallel
+    antigen-ext defer
+    #[[ $ANTIGEN_CACHE != false ]] && antigen-ext cache
+    antigen-ext lock
   fi
 }
 # Load a given bundle by sourcing it.
@@ -1410,6 +1410,14 @@ antigen-add-hook () {
 
   typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
 
+  for hook in $hooks; do
+    if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "pre" ]]; then
+      echo "Calling hook: $hook $args" >> /tmp/antigen.log
+      eval $hook $args
+    fi
+  done
+
+  typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
   # A replace hook will return inmediately
   local replace_hook=0 ret
   for hook in $hooks; do
@@ -1417,6 +1425,7 @@ antigen-add-hook () {
       replace_hook=1
       # Should not be needed if `antigen-remove-hook` removed unneeded hooks.
       if (( $+functions[$hook] )); then
+        echo "Calling hook: $hook $args" >> /tmp/antigen.log
         eval $hook $args
         if [[ $? == -1 ]]; then
           break
@@ -1424,22 +1433,18 @@ antigen-add-hook () {
       fi
     fi
   done
-
-  if [[ $replace_hook == 1 ]]; then
-    return $ret
+  
+  typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
+  if [[ $replace_hook == 0 ]]; then
+    echo "Calling hook: ${_ANTIGEN_HOOK_PREFIX}$target $args" >> /tmp/antigen.log
+    eval "${_ANTIGEN_HOOK_PREFIX}$target" $args
+    local res=$?
   fi
 
-  for hook in $hooks; do
-    if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "pre" ]]; then
-      eval $hook $args
-    fi
-  done
-
-  eval "${_ANTIGEN_HOOK_PREFIX}$target" $args
-  local res=$?
-
+  typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
   for hook in $hooks; do
     if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "post" ]]; then
+      echo "Calling hook: $hook $args" >> /tmp/antigen.log
       eval $hook $args
     fi
   done
@@ -1497,65 +1502,12 @@ antigen-ext () {
     return 1
   fi
 }
-# Initialize parallel lib
--antigen-parallel-init () {
-  typeset -ga _PARALLEL_BUNDLE=()
-}
-
--antigen-parallel-execute() {
-  # Install bundles in parallel
-  antigen-bundle-parallel-execute () {
-    typeset -a pids; pids=()
-    local args pid
-
-    # Do ensure-repo in parallel
-    for args in "${_PARALLEL_BUNDLE[@]}"; do
-      typeset -A bundle; -antigen-parse-args 'bundle' ${=args}
-      echo "Installing ${bundle[name]}"
-      -antigen-ensure-repo ${bundle[url]} > /dev/null &!
-      pids+=($!)
-    done
-
-    # Wait for all background processes to end
-    while [[ $#pids > 0 ]]; do
-      for pid in $pids; do
-         if [[ $(ps -o pid= -p $pid) == "" ]]; then
-           pids[$pids[(I)$pid]]=()
-         fi
-      done
-      sleep .5
-    done
-    
-    # Do call antigen-bundle to load bundle
-    for args in "${_PARALLEL_BUNDLE[@]}"; do
-      antigen-bundle $args
-    done
-
-    echo "Done!"
-  }
-
-  # Hooks antigen-bundle in order to parallel its execution.
-  antigen-bundle-parallel () {
-    _PARALLEL_BUNDLE+=("${(j: :)${@}}")
-  }
-  antigen-add-hook antigen-bundle antigen-bundle-parallel replace
-  
-  # Hooks antigen-apply in order to release hooked functions
-  antigen-apply-parallel () {
-    antigen-remove-hook antigen-bundle-parallel
-    # Process all parallel bundles.
-    antigen-bundle-parallel-execute ${_PARALLEL_BUNDLE}
-
-    antigen-remove-hook antigen-apply-parallel
-    unset _PARALLEL_BUNDLE
-    antigen-apply "$@"
-  }
-  antigen-add-hook antigen-apply antigen-apply-parallel replace
-}
 # Initialize defer lib
 -antigen-defer-init () {
   typeset -ga _DEFERRED_BUNDLE=()
+}
 
+-antigen-defer-execute () {
   # Hooks antigen-bundle in order to defer its execution.
   antigen-bundle-defer () {
     _DEFERRED_BUNDLE+=("${(j: :)${@}}")
@@ -1563,18 +1515,18 @@ antigen-ext () {
   antigen-add-hook antigen-bundle antigen-bundle-defer replace
   
   # Hooks antigen-apply in order to release hooked functions
-  antigen-apply-defer () {
+  antigen-pre-apply-defer () {
     antigen-remove-hook antigen-bundle-defer
+
     # Process all deferred bundles.
     for bundle in $_DEFERRED_BUNDLE; do
       antigen-bundle ${=bundle}
     done
 
-    antigen-remove-hook antigen-apply-defer
+    antigen-remove-hook antigen-pre-apply-defer
     unset _DEFERRED_BUNDLE
-    antigen-apply "$@"
   }
-  antigen-add-hook antigen-apply antigen-apply-defer replace
+  antigen-add-hook antigen-apply antigen-pre-apply-defer pre
 }
 # Initialize lock lib
 -antigen-lock-init () {
@@ -1616,163 +1568,66 @@ antigen-ext () {
   }
   antigen-add-hook antigen-apply antigen-apply-lock replace
 }
-# Generates cache from listed bundles.
-#
-# Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
-# if this is done through -antigen-load-list.
-# Result is stored in ANTIGEN_CACHE.
-#
-# _ANTIGEN_BUNDLE_RECORD and fpath is stored in cache.
-#
-# Usage
-#   -zcache-generate-cache
-#
-# Returns
-#   Nothing. Generates ANTIGEN_CACHE
--antigen-cache-generate () {
-  local -aU _fpath _PATH _sources
-  local record
-
-  for record in $_ZCACHE_BUNDLE_SOURCE; do
-    record=${record:A}
-    if [[ -f $record ]]; then
-      # Adding $'\n' as a suffix as j:\n: doesn't work inside a heredoc.
-      _sources+=("source '${record}';"$'\n')
-    elif [[ -d $record ]]; then
-      _PATH+=("${record}")
-      _fpath+=("${record}")
-    fi
-  done
-
-cat > $ANTIGEN_CACHE <<EOC
-#-- START ZCACHE GENERATED FILE
-#-- GENERATED: $(date)
-#-- ANTIGEN develop
-$(functions -- _antigen)
-antigen () {
-  local MATCH MBEGIN MEND
-  [[ "\$ZSH_EVAL_CONTEXT" =~ "toplevel:*" || "\$ZSH_EVAL_CONTEXT" =~ "cmdarg:*" ]] && source "$_ANTIGEN_INSTALL_DIR/antigen.zsh" && eval antigen \$@;
-  return 0;
-}
-fpath+=(${_fpath[@]}); PATH="\$PATH:${(j/:/)_PATH}"
-_antigen_compinit () {
-  autoload -Uz compinit; compinit -C -d "$ANTIGEN_COMPDUMP"; compdef _antigen antigen
-  add-zsh-hook -D precmd _antigen_compinit
-}
-autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
-compdef () {}
-
-if [[ -n "$ZSH" ]]; then
-  ZSH="$ZSH"; ZSH_CACHE_DIR="$ZSH_CACHE_DIR"
-fi
-#--- BUNDLES BEGIN
-${(j::)_sources}
-#--- BUNDLES END
-typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=($(print ${(qq)_ANTIGEN_BUNDLE_RECORD}))
-typeset -g _ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='develop'
-
-#-- END ZCACHE GENERATED FILE
-EOC
-
-  { zcompile "$ANTIGEN_CACHE" } &!
-
-  # Compile config files, if any
-  [[ $ANTIGEN_AUTO_CONFIG == true && -n $ANTIGEN_CHECK_FILES ]] && {
-    echo "$ANTIGEN_CHECK_FILES" >! "$ANTIGEN_RSRC"
-    zcompile "$ANTIGEN_CHECK_FILES"
-  } &!
-
-  return true
+# Initialize parallel lib
+-antigen-parallel-init () {
+  typeset -ga _PARALLEL_BUNDLE=()
 }
 
-# Initializes caching mechanism.
-#
-# Hooks `antigen-bundle` and `antigen-apply` in order to defer bundle install
-# and load. All bundles are loaded from generated cache rather than dynamically
-# as these are bundled.
-#
-# Usage
-#  -antigen-cache-init
-# Returns
-#  Nothing
--antigen-cache-init () {
-    typeset -ga _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE
-    typeset -g _ZCACHE_CAPTURE_PREFIX
-    _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
-    _ZCACHE_BUNDLE_SOURCE=(); _ZCACHE_CAPTURE_BUNDLE=()
+-antigen-parallel-execute() {
+  # Install bundles in parallel
+  antigen-bundle-parallel-execute () {
+    typeset -a pids; pids=()
+    local args pid
 
-    # Cache auto config files to check for changes (.zshrc, .antigenrc etc)
-    -antigen-set-default ANTIGEN_AUTO_CONFIG true
-    
-    # Default cache path.
-    -antigen-set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
-    -antigen-set-default ANTIGEN_RSRC $ADOTDIR/.resources
-    
-    return 0
-}
-
--antigen-cache-execute () {
-  # Main function. Deferred antigen-apply.
-  antigen-apply-cached () {
-    # Release function to apply
-    antigen-remove-hook antigen-bundle-cached
-
-    # Auto determine check_files
-    # There always should be 5 steps from original source as the correct way is to use
-    # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
-    if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 5 ]]; then
-      ANTIGEN_CHECK_FILES+=("${${funcfiletrace[5]%:*}##* }")
-    fi
- 
-    local bundle
-    for bundle in "${_ZCACHE_CAPTURE_BUNDLE[@]}"; do
-      antigen-bundle ${=bundle[@]} 2> /dev/null
+    # Do ensure-repo in parallel
+    for args in "${_PARALLEL_BUNDLE[@]}"; do
+      typeset -A bundle; -antigen-parse-args 'bundle' ${=args}
+      if [[ ! -d ${bundle[path]} ]]; then
+        echo "Installing ${bundle[name]}..."
+        -antigen-ensure-repo ${bundle[url]} > /dev/null &!
+        pids+=($!)
+      fi
     done
 
-    # Generate and compile cache
-    -antigen-cache-generate
-    
-    # Release all hooked functions
-    antigen-remove-hook antigen-apply-cached
-    antigen-remove-hook -antigen-load-env-cached
-    antigen-remove-hook -antigen-load-source-cached
+    # Wait for all background processes to end
+    while [[ $#pids > 0 ]]; do
+      for pid in $pids; do
+         if [[ $(ps -o pid= -p $pid) == "" ]]; then
+           pids[$pids[(I)$pid]]=()
+         fi
+      done
+      sleep .5
+    done
 
-    [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
-    
-    unset _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
-
-    antigen-apply
+    for args in "${_PARALLEL_BUNDLE[@]}"; do
+      antigen-bundle $args
+    done
   }
-  antigen-add-hook antigen-apply antigen-apply-cached replace
   
-  # Defer antigen-bundle.
-  antigen-bundle-cached () {
-    _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${@}}")
-  }
-  antigen-add-hook antigen-bundle antigen-bundle-cached replace
+  # Hooks antigen-apply in order to release hooked functions
+  antigen-pre-apply-parallel () {
+    antigen-remove-hook antigen-pre-apply-parallel
 
-  # Defer loading.
-  -antigen-load-env-cached () {
-    typeset -A bundle; bundle=($@)
-    local location=${bundle[path]}/${bundle[loc]}
+    #antigen-remove-hook antigen-pre-apply-parallel
+    # Hooks antigen-bundle in order to parallel its execution.
+    antigen-bundle-parallel () {
+      _PARALLEL_BUNDLE+=("${(j: :)${@}}")
+    }
+    antigen-add-hook antigen-bundle antigen-bundle-parallel replace
     
-    # Load to path if there is no sourceable
-    if [[ ${bundle[loc]} == "/" ]]; then
-      _ZCACHE_BUNDLE_SOURCE+=("${location}")
-      return
-    fi
+    antigen-apply-parallel () {
+      antigen-remove-hook antigen-bundle-parallel
+      antigen-remove-hook antigen-apply-parallel
 
-    _ZCACHE_BUNDLE_SOURCE+=("${location}")
+      # Process all parallel bundles.
+      antigen-bundle-parallel-execute ${_PARALLEL_BUNDLE}
+
+      unset _PARALLEL_BUNDLE
+      antigen-apply "$@"
+    }
+    antigen-add-hook antigen-apply antigen-apply-parallel replace
   }
-  antigen-add-hook -antigen-load-env -antigen-load-env-cached replace
-  
-  # Defer sourcing.
-  -antigen-load-source-cached () {
-    _ZCACHE_BUNDLE_SOURCE+=(${list})
-  }
-  antigen-add-hook -antigen-load-source -antigen-load-source-cached replace
-  
-  return 0
+  antigen-add-hook antigen-apply antigen-pre-apply-parallel pre
 }
 #compdef _antigen
 # Setup antigen's autocompletion

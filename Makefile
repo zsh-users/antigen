@@ -17,7 +17,7 @@ CONTAINER_IMAGE ?= desyncr/zsh-docker-
 
 TARGET     ?= ${BIN}/antigen.zsh
 SRC        ?= ${SRC}
-EXTENSIONS ?= ${SRC}/ext/ext.zsh ${SRC}/ext/parallel.zsh ${SRC}/ext/defer.zsh ${SRC}/ext/lock.zsh ${SRC}/ext/cache.zsh
+EXTENSIONS ?= ${SRC}/ext/ext.zsh ${SRC}/ext/defer.zsh ${SRC}/ext/lock.zsh ${SRC}/ext/parallel.zsh # ${SRC}/ext/cache.zsh
 GLOB       ?= ${SRC}/boot.zsh ${SRC}/antigen.zsh $(sort $(wildcard ${PWD}/src/helpers/*.zsh)) \
         ${SRC}/lib/*.zsh $(sort $(wildcard ${PWD}/src/commands/*.zsh)) ${EXTENSIONS} \
         ${SRC}/_antigen

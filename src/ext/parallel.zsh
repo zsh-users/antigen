@@ -12,9 +12,11 @@
     # Do ensure-repo in parallel
     for args in "${_PARALLEL_BUNDLE[@]}"; do
       typeset -A bundle; -antigen-parse-args 'bundle' ${=args}
-      echo "Installing ${bundle[name]}"
-      -antigen-ensure-repo ${bundle[url]} > /dev/null &!
-      pids+=($!)
+      if [[ ! -d ${bundle[path]} ]]; then
+        echo "Installing ${bundle[name]}..."
+        -antigen-ensure-repo ${bundle[url]} > /dev/null &!
+        pids+=($!)
+      fi
     done
 
     # Wait for all background processes to end
@@ -26,30 +28,34 @@
       done
       sleep .5
     done
-    
-    # Do call antigen-bundle to load bundle
+
     for args in "${_PARALLEL_BUNDLE[@]}"; do
       antigen-bundle $args
     done
-
-    echo "Done!"
   }
-
-  # Hooks antigen-bundle in order to parallel its execution.
-  antigen-bundle-parallel () {
-    _PARALLEL_BUNDLE+=("${(j: :)${@}}")
-  }
-  antigen-add-hook antigen-bundle antigen-bundle-parallel replace
   
   # Hooks antigen-apply in order to release hooked functions
-  antigen-apply-parallel () {
-    antigen-remove-hook antigen-bundle-parallel
-    # Process all parallel bundles.
-    antigen-bundle-parallel-execute ${_PARALLEL_BUNDLE}
+  antigen-pre-apply-parallel () {
+    antigen-remove-hook antigen-pre-apply-parallel
 
-    antigen-remove-hook antigen-apply-parallel
-    unset _PARALLEL_BUNDLE
-    antigen-apply "$@"
+    #antigen-remove-hook antigen-pre-apply-parallel
+    # Hooks antigen-bundle in order to parallel its execution.
+    antigen-bundle-parallel () {
+      _PARALLEL_BUNDLE+=("${(j: :)${@}}")
+    }
+    antigen-add-hook antigen-bundle antigen-bundle-parallel replace
+    
+    antigen-apply-parallel () {
+      antigen-remove-hook antigen-bundle-parallel
+      antigen-remove-hook antigen-apply-parallel
+
+      # Process all parallel bundles.
+      antigen-bundle-parallel-execute ${_PARALLEL_BUNDLE}
+
+      unset _PARALLEL_BUNDLE
+      antigen-apply "$@"
+    }
+    antigen-add-hook antigen-apply antigen-apply-parallel replace
   }
-  antigen-add-hook antigen-apply antigen-apply-parallel replace
+  antigen-add-hook antigen-apply antigen-pre-apply-parallel pre
 }
