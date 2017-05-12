@@ -17,8 +17,45 @@ CONTAINER_IMAGE ?= desyncr/zsh-docker-
 
 TARGET     ?= ${BIN}/antigen.zsh
 SRC        ?= ${SRC}
-EXTENSIONS ?= ${SRC}/ext/ext.zsh ${SRC}/ext/defer.zsh ${SRC}/ext/lock.zsh ${SRC}/ext/parallel.zsh #${SRC}/ext/cache.zsh
-GLOB       ?= ${SRC}/boot.zsh ${SRC}/antigen.zsh $(sort $(wildcard ${PWD}/src/helpers/*.zsh)) \
+DEBUG      ?= no
+EXTENSIONS ?= 
+
+# If debug is enabled then load debug functions
+ifeq (${DEBUG}, yes)
+EXTENSIONS += ${SRC}/lib/log.zsh
+endif
+
+# Use extension system
+USE_EXT    ?= yes
+ifeq (${USE_EXT}, yes)
+EXTENSIONS += ${SRC}/ext/ext.zsh
+endif
+
+# Compile with defer extension
+EXT_DEFER  ?= yes
+ifeq (${EXT_DEFER}, yes)
+EXTENSIONS += ${SRC}/ext/defer.zsh
+endif
+
+# Compile with lock extension
+EXT_LOCK   ?= yes
+ifeq (${EXT_LOCK}, yes)
+EXTENSIONS += ${SRC}/ext/lock.zsh
+endif
+
+# Compile with parallel extension
+EXT_PARALLEL ?= yes
+ifeq (${EXT_PARALLEL}, yes)
+EXTENSIONS += ${SRC}/ext/parallel.zsh
+endif
+
+# Compile with cache extension
+EXT_CACHE   ?= yes
+ifeq (${EXT_CACHE}, yes)
+EXTENSIONS += ${SRC}/ext/cache.zsh
+endif
+
+GLOB         ?= ${SRC}/boot.zsh ${SRC}/antigen.zsh $(sort $(wildcard ${PWD}/src/helpers/*.zsh)) \
         ${SRC}/lib/*.zsh $(sort $(wildcard ${PWD}/src/commands/*.zsh)) ${EXTENSIONS} \
         ${SRC}/_antigen
 
@@ -34,6 +71,11 @@ define ised
 	mv "$(2).1" "$(2)"
 endef
 
+define isede
+	sed -E $(1) $(2) > "$(2).1"
+	mv "$(2).1" "$(2)"
+endef
+
 .PHONY: itests tests install all
 
 build:
@@ -42,6 +84,10 @@ build:
 	@for src in ${GLOB}; do echo "----> $$src"; cat "$$src" >> ${TARGET}; done
 	@echo "${VERSION}" > ${VERSION_FILE}
 	@$(call ised,"s/{{ANTIGEN_VERSION}}/$$(cat ${VERSION_FILE})/",${TARGET})
+ifeq (${DEBUG}, no)
+	@$(call isede,"s/(WARN|LOG|ERR|TRA) .*& //",${TARGET})
+	@$(call isede,"/(WARN|LOG|ERR|TRA) .*/d",${TARGET})
+endif
 	@echo Done.
 	@ls -sh ${TARGET}
 

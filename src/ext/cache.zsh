@@ -15,8 +15,10 @@
   local -aU _fpath _PATH _sources
   local record
 
+  LOG "Gonna generate cache for $_ZCACHE_BUNDLE_SOURCE"
   for record in $_ZCACHE_BUNDLE_SOURCE; do
     record=${record:A}
+    # LOG "Caching $record"
     if [[ -f $record ]]; then
       # Adding $'\n' as a suffix as j:\n: doesn't work inside a heredoc.
       _sources+=("source '${record}';"$'\n')
@@ -98,6 +100,9 @@ EOC
   antigen-apply-cached () {
     # Release function to apply
     antigen-remove-hook antigen-bundle-cached
+    # Release all hooked functions
+    antigen-remove-hook -antigen-load-env-cached
+    antigen-remove-hook -antigen-load-source-cached
 
     # Auto determine check_files
     # There always should be 5 steps from original source as the correct way is to use
@@ -107,31 +112,23 @@ EOC
     fi
  
     local bundle
-    for bundle in "${_ZCACHE_CAPTURE_BUNDLE[@]}"; do
-      antigen-bundle $bundle
+    for bundle in "$_ZCACHE_CAPTURE_BUNDLE"; do
+      antigen-bundle ${=bundle}
     done
 
     # Generate and compile cache
     -antigen-cache-generate
-    
-    # Release all hooked functions
-    antigen-remove-hook antigen-apply-cached
-    antigen-remove-hook -antigen-load-env-cached
-    antigen-remove-hook -antigen-load-source-cached
-
-    [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
+    # [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
     
     unset _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
-
-    antigen-apply
   }
-  antigen-add-hook antigen-apply antigen-apply-cached replace
+  antigen-add-hook antigen-apply antigen-apply-cached pre
   
   # Defer antigen-bundle.
   antigen-bundle-cached () {
     _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${@}}")
   }
-  antigen-add-hook antigen-bundle antigen-bundle-cached replace
+  antigen-add-hook antigen-bundle antigen-bundle-cached pre
   
   # Defer loading.
   -antigen-load-env-cached () {
@@ -146,13 +143,13 @@ EOC
 
     _ZCACHE_BUNDLE_SOURCE+=("${location}")
   }
-  antigen-add-hook -antigen-load-env -antigen-load-env-cached replace
+  antigen-add-hook -antigen-load-env -antigen-load-env-cached pre
   
   # Defer sourcing.
   -antigen-load-source-cached () {
-    _ZCACHE_BUNDLE_SOURCE+=(${list})
+    _ZCACHE_BUNDLE_SOURCE+=($@)
   }
-  antigen-add-hook -antigen-load-source -antigen-load-source-cached replace
+  antigen-add-hook -antigen-load-source -antigen-load-source-cached pre
   
   return 0
 }

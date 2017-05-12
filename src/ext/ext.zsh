@@ -57,43 +57,46 @@ antigen-add-hook () {
   args=${@}
 
   typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
-
   for hook in $hooks; do
     if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "pre" ]]; then
+      LOG $hook $args
       eval $hook $args
+      [[ $? == -1 ]] && WARN "$hook shortcircuited" && return
     fi
   done
 
   typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
   # A replace hook will return inmediately
-  local replace_hook=0 ret
+  local replace_hook=0 ret=0
   for hook in $hooks; do
     if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "replace" ]]; then
       replace_hook=1
       # Should not be needed if `antigen-remove-hook` removed unneeded hooks.
       if (( $+functions[$hook] )); then
+        LOG $hook $args
         eval $hook $args
-        if [[ $? == -1 ]]; then
-          break
-        fi
+        [[ $? == -1 ]] && WARN "$hook shortcircuited" && return
       fi
     fi
   done
   
   typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
   if [[ $replace_hook == 0 ]]; then
+    LOG "${_ANTIGEN_HOOK_PREFIX}$target" $args
     eval "${_ANTIGEN_HOOK_PREFIX}$target" $args
-    local res=$?
+    ret=$?
   fi
 
   typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
   for hook in $hooks; do
     if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "post" ]]; then
+      LOG $hook $args
       eval $hook $args
+      [[ $? == -1 ]] && WARN "$hook shortcircuited" && return
     fi
   done
 
-  return $res
+  return $ret
 }
 
 # Usage:

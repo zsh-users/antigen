@@ -51,9 +51,9 @@
     compdef _antigen antigen
   else
     # Initialize extensions. unless in interactive mode.
-    antigen-ext parallel
-    antigen-ext defer
-    #[[ $ANTIGEN_CACHE != false ]] && antigen-ext cache
-    antigen-ext lock
+    # antigen-ext lock
+    # antigen-ext parallel
+    # antigen-ext defer
+    antigen-ext cache
   fi
 }

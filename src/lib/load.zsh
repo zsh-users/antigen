@@ -41,7 +41,7 @@
   -antigen-load-env ${(kv)bundle}
 
   # If there is any sourceable try to load it
-  if ! -antigen-load-source && [[ ! -d ${location} ]]; then
+  if ! -antigen-load-source "${list[@]}" && [[ ! -d ${location} ]]; then
     return 1
   fi
 
@@ -64,6 +64,7 @@
 }
 
 -antigen-load-source () {
+  local list=($@)
   local src match mbegin mend MATCH MBEGIN MEND
 
   # Return error when we're given an empty list
