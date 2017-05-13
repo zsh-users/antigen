@@ -3,6 +3,7 @@
 # Keyword only arguments:
 #   branch - The branch of the repo to use for this bundle.
 antigen-bundle () {
+  LOG "Called antigen-bundle"
   if [[ -z "$1" ]]; then
     printf "Antigen: Must provide a bundle url or name.\n" >&2
     return 1

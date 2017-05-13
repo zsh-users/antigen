@@ -9,8 +9,7 @@
   # Hook antigen command in order to check/create a lock file.
   # This hook is only run once then releases itself.
   antigen-lock () {
-    antigen-remove-hook antigen-lock
-
+    LOG "antigen-lock called"
     # If there is a lock set up then we won't process anything.
     if [[ -f $ANTIGEN_LOCK ]]; then
       # Set up flag do the message is not repeated for each antigen-* command
@@ -21,20 +20,16 @@
       return -1
     fi
 
+    WARN "Creating antigen-lock file at $ANTIGEN_LOCK"
     touch $ANTIGEN_LOCK
-
-    # Call hooked function
-    antigen "$@"
   }
-  antigen-add-hook antigen antigen-lock replace
+  antigen-add-hook antigen antigen-lock pre once
 
   # Hook antigen-apply in order to release .lock file.
   antigen-apply-lock () {
-    # One time hook
-    antigen-remove-hook antigen-apply-lock
+    WARN "Freeing antigen-lock file at $ANTIGEN_LOCK"
     unset _ANTIGEN_LOCK_PROCESS
     rm $ANTIGEN_LOCK &> /dev/null
-    antigen-apply "$@"
   }
-  antigen-add-hook antigen-apply antigen-apply-lock replace
+  antigen-add-hook antigen-apply antigen-apply-lock post once
 }

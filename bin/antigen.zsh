@@ -447,10 +447,10 @@ antigen () {
     compdef _antigen antigen
   else
     # Initialize extensions. unless in interactive mode.
-    # antigen-ext lock
+    antigen-ext lock
     # antigen-ext parallel
-    # antigen-ext defer
-    antigen-ext cache
+    #antigen-ext defer
+    # antigen-ext cache
   fi
 }
 # Load a given bundle by sourcing it.
@@ -544,27 +544,6 @@ antigen () {
       return 1
     fi
   done
-}
-zmodload zsh/datetime
-ANTIGEN_DEBUG_LOG=${ANTIGEN_DEBUG_LOG:-${ADOTDIR:-$HOME/.antigen}/debug.log}
-LOG () {
-  local PREFIX="[LOG][${EPOCHREALTIME}]"
-  echo "${PREFIX} ${(%):-%x:%I}\n${PREFIX} $@\n" >> $ANTIGEN_DEBUG_LOG
-}
-
-ERR () {
-  local PREFIX="[ERR][${EPOCHREALTIME}]"
-  echo "${PREFIX} ${(%):-%x:%I}\n${PREFIX} $@\n" >> $ANTIGEN_DEBUG_LOG
-}
-
-WARN () {
-  local PREFIX="[WRN][${EPOCHREALTIME}]"
-  echo "${PREFIX} ${(%):-%x:%I}\n${PREFIX} $@\n" >> $ANTIGEN_DEBUG_LOG
-}
-
-TRACE () {
-  local PREFIX="[TRA][${EPOCHREALTIME}]"
-  echo "${PREFIX} ${(%):-%x:%I}\n${PREFIX} $@\n${PREFIX} ${(j:\n:)funcstack}\n" >> $ANTIGEN_DEBUG_LOG
 }
 # Usage:
 #   -antigen-parse-args output_assoc_arr <args...>
@@ -759,6 +738,7 @@ TRACE () {
 }
 # Initialize completion
 antigen-apply () {
+  LOG "Called apply"
   \rm -f "$ANTIGEN_COMPDUMP"
 
   # Load the compinit module. This will readefine the `compdef` function to
@@ -782,6 +762,7 @@ antigen-apply () {
 # Keyword only arguments:
 #   branch - The branch of the repo to use for this bundle.
 antigen-bundle () {
+  LOG "Called antigen-bundle"
   if [[ -z "$1" ]]; then
     printf "Antigen: Must provide a bundle url or name.\n" >&2
     return 1
@@ -1375,26 +1356,25 @@ zmodload zsh/datetime
 ANTIGEN_DEBUG_LOG=${ANTIGEN_DEBUG_LOG:-${ADOTDIR:-$HOME/.antigen}/debug.log}
 LOG () {
   local PREFIX="[LOG][${EPOCHREALTIME}]"
-  echo "${PREFIX} ${(%):-%x:%I}\n${PREFIX} $@\n" >> $ANTIGEN_DEBUG_LOG
+  echo "${PREFIX} ${funcfiletrace[1]}\n${PREFIX} $@\n" >> $ANTIGEN_DEBUG_LOG
 }
 
 ERR () {
   local PREFIX="[ERR][${EPOCHREALTIME}]"
-  echo "${PREFIX} ${(%):-%x:%I}\n${PREFIX} $@\n" >> $ANTIGEN_DEBUG_LOG
+  echo "${PREFIX} ${funcfiletrace[1]}\n${PREFIX} $@\n" >> $ANTIGEN_DEBUG_LOG
 }
 
 WARN () {
   local PREFIX="[WRN][${EPOCHREALTIME}]"
-  echo "${PREFIX} ${(%):-%x:%I}\n${PREFIX} $@\n" >> $ANTIGEN_DEBUG_LOG
+  echo "${PREFIX} ${funcfiletrace[1]}\n${PREFIX} $@\n" >> $ANTIGEN_DEBUG_LOG
 }
 
 TRACE () {
   local PREFIX="[TRA][${EPOCHREALTIME}]"
-  echo "${PREFIX} ${(%):-%x:%I}\n${PREFIX} $@\n${PREFIX} ${(j:\n:)funcstack}\n" >> $ANTIGEN_DEBUG_LOG
+  echo "${PREFIX} ${funcfiletrace[1]}\n${PREFIX} $@\n${PREFIX} ${(j:\n:)funcstack}\n" >> $ANTIGEN_DEBUG_LOG
 }
 typeset -Ag _ANTIGEN_HOOKS; _ANTIGEN_HOOKS=()
-typeset -Ag _ANTIGEN_HOOKS_TARGET; _ANTIGEN_HOOKS_TARGET=()
-typeset -Ag _ANTIGEN_HOOKS_TYPE; _ANTIGEN_HOOKS_TYPE=()
+typeset -Ag _ANTIGEN_HOOKS_META; _ANTIGEN_HOOKS_META=()
 typeset -g _ANTIGEN_HOOK_PREFIX="::antigen-hook::"
 
 # -antigen-add-hook antigen-apply antigen-apply-hook replace
@@ -1405,9 +1385,9 @@ typeset -g _ANTIGEN_HOOK_PREFIX="::antigen-hook::"
 # -antigen-add-hook antigen-pply antigen-apply-hook post (post-call)
 #   - Calls antigen-apply and then calls hook function
 # Usage:
-#  -antigen-add-hook antigen-apply antigen-apply-hook ["replace"|"pre"|"post"]
+#  -antigen-add-hook antigen-apply antigen-apply-hook ["replace"|"pre"|"post"] ["once"|"repeat"]
 antigen-add-hook () {
-  local target="$1" hook="$2" type="$3"
+  local target="$1" hook="$2" type="$3" mode="${4:-repeat}"
   
   if (( ! $+functions[$target] )); then
     printf "Antigen: Function %s doesn't exist.\n" $target
@@ -1425,8 +1405,7 @@ antigen-add-hook () {
     _ANTIGEN_HOOKS[$target]="${_ANTIGEN_HOOKS[$target]}:${hook}"
   fi
 
-  _ANTIGEN_HOOKS_TARGET[$hook]="$target"
-  _ANTIGEN_HOOKS_TYPE[$hook]="$type"
+  _ANTIGEN_HOOKS_META[$hook]="target $target type $type mode $mode called 0"
   
   # Do shadow for this function if there is none already
   local hook_function="${_ANTIGEN_HOOK_PREFIX}$target"
@@ -1449,46 +1428,73 @@ antigen-add-hook () {
   local target="$1" args hook
   shift
   args=${@}
+  
+  WARN "Hooked ${target}"
 
+  typeset -a pre_hooks replace_hooks post_hooks;
   typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
+  
+  typeset -A meta;
   for hook in $hooks; do
-    if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "pre" ]]; then
-      LOG $hook $args
-      eval $hook $args
-      [[ $? == -1 ]] && WARN "$hook shortcircuited" && return
+    meta=(${(s: :)_ANTIGEN_HOOKS_META[$hook]})
+    if [[ ${meta[mode]} == "once" && ${meta[called]} == 1 ]]; then
+      WARN "Ignoring hook due to mode ${meta[mode]}: $hook"
+      continue
     fi
+
+    let called=${meta[called]}+1
+    meta[called]=$called
+    _ANTIGEN_HOOKS_META[$hook]="${(kv)meta}"
+    WARN "Updated meta: "${(kv)meta}
+
+    case "${meta[type]}" in
+      "pre")
+      pre_hooks+=($hook)
+      ;;
+      "replace")
+      replace_hooks+=($hook)
+      ;;
+      "post")
+      post_hooks+=($hook)
+      ;;
+    esac
   done
 
-  typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
+  WARN "Processing hooks: ${hooks}"
+
+  for hook in $pre_hooks; do
+    WARN "Pre hook:" $hook $args
+    eval $hook $args
+    [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
+  done
+
   # A replace hook will return inmediately
   local replace_hook=0 ret=0
-  for hook in $hooks; do
-    if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "replace" ]]; then
-      replace_hook=1
-      # Should not be needed if `antigen-remove-hook` removed unneeded hooks.
-      if (( $+functions[$hook] )); then
-        LOG $hook $args
-        eval $hook $args
-        [[ $? == -1 ]] && WARN "$hook shortcircuited" && return
-      fi
+  for hook in $replace_hooks; do
+    replace_hook=1
+    # Should not be needed if `antigen-remove-hook` removed unneeded hooks.
+    if (( $+functions[$hook] )); then
+      WARN "Replace hook:" $hook $args
+      eval $hook $args
+      [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
     fi
   done
   
-  typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
   if [[ $replace_hook == 0 ]]; then
-    LOG "${_ANTIGEN_HOOK_PREFIX}$target" $args
+    WARN "${_ANTIGEN_HOOK_PREFIX}$target" $args
     eval "${_ANTIGEN_HOOK_PREFIX}$target" $args
     ret=$?
+  else
+    WARN "Replaced hooked function."
   fi
 
-  typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
-  for hook in $hooks; do
-    if [[ ${_ANTIGEN_HOOKS_TYPE[$hook]} == "post" ]]; then
-      LOG $hook $args
-      eval $hook $args
-      [[ $? == -1 ]] && WARN "$hook shortcircuited" && return
-    fi
+  for hook in $post_hooks; do
+    WARN "Post hook:" $hook $args
+    eval $hook $args
+    [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
   done
+  
+  LOG "Return from hook ${target} with ${ret}"
 
   return $ret
 }
@@ -1496,20 +1502,23 @@ antigen-add-hook () {
 # Usage:
 #  -antigen-remove-hook antigen-apply-hook
 antigen-remove-hook () {
-  local hook="$1" target
-  local -a hooks
-  target=${_ANTIGEN_HOOKS_TARGET[$hook]}
-  hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
+  local hook="$1"
+  typeset -A meta; meta=(${(s: :)_ANTIGEN_HOOKS_META[$hook]})
+  local target="${meta[target]}"
+  local -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
 
   # Remove registered hook
-  hooks[$hooks[(I)$hook]]=()
-  _ANTIGEN_HOOKS[$target]=${(j|:|)hooks}
-  #_ANTIGEN_HOOKS_TARGET[$hook]=()
+  if [[ $#hooks > 0 ]]; then
+    hooks[$hooks[(I)$hook]]=()
+  fi
+  _ANTIGEN_HOOKS[${target}]="${(j|:|)hooks}"
   
   if [[ $#hooks == 0 ]]; then
     # Destroy base hook
     eval "function $(functions -- ${_ANTIGEN_HOOK_PREFIX}$target | sed s/${_ANTIGEN_HOOK_PREFIX}//)"
-    unfunction -- "${_ANTIGEN_HOOK_PREFIX}$target"
+    if (( $+functions[${_ANTIGEN_HOOK_PREFIX}$target] )); then
+      unfunction -- "${_ANTIGEN_HOOK_PREFIX}$target"
+    fi
   fi
 
   unfunction -- $hook 2> /dev/null
@@ -1552,6 +1561,8 @@ antigen-ext () {
   # Hooks antigen-bundle in order to defer its execution.
   antigen-bundle-defer () {
     _DEFERRED_BUNDLE+=("${(j: :)${@}}")
+    
+    return -1 # Stop right there
   }
   antigen-add-hook antigen-bundle antigen-bundle-defer replace
   
@@ -1561,13 +1572,13 @@ antigen-ext () {
 
     # Process all deferred bundles.
     for bundle in $_DEFERRED_BUNDLE; do
+      LOG "Processing deferred bundle: ${bundle}"
       antigen-bundle ${=bundle}
     done
 
-    antigen-remove-hook antigen-pre-apply-defer
     unset _DEFERRED_BUNDLE
   }
-  antigen-add-hook antigen-apply antigen-pre-apply-defer pre
+  antigen-add-hook antigen-apply antigen-pre-apply-defer pre once
 }
 # Initialize lock lib
 -antigen-lock-init () {
@@ -1580,8 +1591,7 @@ antigen-ext () {
   # Hook antigen command in order to check/create a lock file.
   # This hook is only run once then releases itself.
   antigen-lock () {
-    antigen-remove-hook antigen-lock
-
+    LOG "antigen-lock called"
     # If there is a lock set up then we won't process anything.
     if [[ -f $ANTIGEN_LOCK ]]; then
       # Set up flag do the message is not repeated for each antigen-* command
@@ -1592,22 +1602,18 @@ antigen-ext () {
       return -1
     fi
 
+    WARN "Creating antigen-lock file at $ANTIGEN_LOCK"
     touch $ANTIGEN_LOCK
-
-    # Call hooked function
-    antigen "$@"
   }
-  antigen-add-hook antigen antigen-lock replace
+  antigen-add-hook antigen antigen-lock pre once
 
   # Hook antigen-apply in order to release .lock file.
   antigen-apply-lock () {
-    # One time hook
-    antigen-remove-hook antigen-apply-lock
+    WARN "Freeing antigen-lock file at $ANTIGEN_LOCK"
     unset _ANTIGEN_LOCK_PROCESS
     rm $ANTIGEN_LOCK &> /dev/null
-    antigen-apply "$@"
   }
-  antigen-add-hook antigen-apply antigen-apply-lock replace
+  antigen-add-hook antigen-apply antigen-apply-lock post once
 }
 # Initialize parallel lib
 -antigen-parallel-init () {

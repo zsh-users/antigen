@@ -7,6 +7,8 @@
   # Hooks antigen-bundle in order to defer its execution.
   antigen-bundle-defer () {
     _DEFERRED_BUNDLE+=("${(j: :)${@}}")
+    
+    return -1 # Stop right there
   }
   antigen-add-hook antigen-bundle antigen-bundle-defer replace
   
@@ -16,11 +18,11 @@
 
     # Process all deferred bundles.
     for bundle in $_DEFERRED_BUNDLE; do
+      LOG "Processing deferred bundle: ${bundle}"
       antigen-bundle ${=bundle}
     done
 
-    antigen-remove-hook antigen-pre-apply-defer
     unset _DEFERRED_BUNDLE
   }
-  antigen-add-hook antigen-apply antigen-pre-apply-defer pre
+  antigen-add-hook antigen-apply antigen-pre-apply-defer pre once
 }

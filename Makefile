@@ -17,12 +17,12 @@ CONTAINER_IMAGE ?= desyncr/zsh-docker-
 
 TARGET     ?= ${BIN}/antigen.zsh
 SRC        ?= ${SRC}
-DEBUG      ?= no
+DEBUG      ?= yes
 EXTENSIONS ?= 
 
 # If debug is enabled then load debug functions
 ifeq (${DEBUG}, yes)
-EXTENSIONS += ${SRC}/lib/log.zsh
+EXTENSIONS += ${SRC}/ext/log.zsh
 endif
 
 # Use extension system
