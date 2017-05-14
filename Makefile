@@ -33,48 +33,39 @@ DEBUG      ?= yes
 EXTENSIONS ?= 
 GLOB       ?= 
 
-# If debug is enabled then load debug functions
-ifeq (${DEBUG}, yes)
-EXTENSIONS += ${SRC}/ext/log.zsh
-endif
-
-# Use extension system
 WITH_EXTENSIONS ?= yes
+WITH_DEFER      ?= yes
+WITH_LOCK       ?= yes
+WITH_PARALLEL   ?= yes
+WITH_CACHE      ?= yes
+WITH_COMPLETION ?= yes
+
 ifeq (${WITH_EXTENSIONS}, yes)
 EXTENSIONS += ${SRC}/ext/ext.zsh
 endif
-
-# Compile with defer extension
-WITH_DEFER  ?= yes
 ifeq (${WITH_DEFER}, yes)
 EXTENSIONS += ${SRC}/ext/defer.zsh
 endif
-
-# Compile with lock extension
-WITH_LOCK   ?= yes
 ifeq (${WITH_LOCK}, yes)
 EXTENSIONS += ${SRC}/ext/lock.zsh
 endif
-
-# Compile with parallel extension
-WITH_PARALLEL ?= yes
 ifeq (${WITH_PARALLEL}, yes)
 EXTENSIONS += ${SRC}/ext/parallel.zsh
 endif
-
-# Compile with cache extension
-WITH_CACHE   ?= yes
 ifeq (${WITH_CACHE}, yes)
 GLOB       += ${SRC}/boot.zsh
 EXTENSIONS += ${SRC}/ext/cache.zsh
 endif
 
-GLOB         += ${SRC}/antigen.zsh $(sort $(wildcard ${PWD}/src/helpers/*.zsh)) \
+GLOB  += ${SRC}/antigen.zsh $(sort $(wildcard ${PWD}/src/helpers/*.zsh)) \
         ${SRC}/lib/*.zsh $(sort $(wildcard ${PWD}/src/commands/*.zsh)) ${EXTENSIONS}
 
-WITH_COMPLETION ?= yes
 ifeq (${WITH_COMPLETION}, yes)
-GLOB         += ${SRC}/_antigen
+GLOB  += ${SRC}/_antigen
+endif
+# If debug is enabled then load debug functions
+ifeq (${DEBUG}, yes)
+GLOB  += ${SRC}/lib/log.zsh
 endif
 
 VERSION      ?= develop
@@ -100,6 +91,7 @@ build:
 	@echo Building Antigen...
 	@printf "${BANNER}" > ${BIN}/antigen.zsh
 	@for src in ${GLOB}; do echo "----> $$src"; cat "$$src" >> ${TARGET}; done
+	@echo "-antigen-env-setup" >> ${TARGET}
 	@echo "${VERSION}" > ${VERSION_FILE}
 	@$(call ised,"s/{{ANTIGEN_VERSION}}/$$(cat ${VERSION_FILE})/",${TARGET})
 ifeq (${DEBUG}, no)
