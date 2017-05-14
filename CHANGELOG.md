@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/) [v2.0.0](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2017-05-14
+
+### Fixed
+- [#525] Use `GIT_TERMINAL_PROMPT=0` to avoid password prompt on clone
+- [#511] Clean up globally defined variables
+
+### Added
+- [#527] Internal extension system
+- [#526] Use mutex to prevent concurrent installations
+- [#501] Autodetect config files
+
+### Changed
+- [#513] Defer bundle loading to `antigen-apply` command
+- [#512] Show warning message when bundle is already 
+- [#520] Remove runtime hack to load themes
+
+Thanks everyone who reported issues and provided feedback.
+
 ## [2.0.2] - 2017-04-22
 
 ### Changed
@@ -447,6 +465,7 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 - Added CHANGELOG.md
 - Following [Semantic Versioning](http://semver.org/)
 
+[2.1.0]: https://github.com/zsh-users/antigen/compare/v2.0.2...v2.1.0
 [2.0.2]: https://github.com/zsh-users/antigen/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/zsh-users/antigen/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/zsh-users/antigen/compare/v1.4.1...v2.0.0
@@ -472,4 +491,3 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 [1.0.3]: https://github.com/zsh-users/antigen/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/zsh-users/antigen/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/zsh-users/antigen/compare/v1...v1.0.1
-
