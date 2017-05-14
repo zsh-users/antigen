@@ -6,4 +6,8 @@ antigen-version () {
   fi
 
   printf "Antigen %s%s\n" $version $revision
+  if (( $+functions[antigen-ext] )); then
+    typeset -a extensions; extensions=($(antigen-ext-list))
+    printf "Extensions loaded: %s\n" ${(j:, :)extensions}
+  fi
 }

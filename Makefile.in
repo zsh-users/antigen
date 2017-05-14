@@ -19,6 +19,7 @@ TARGET     ?= ${BIN}/antigen.zsh
 SRC        ?= ${SRC}
 DEBUG      ?= yes
 EXTENSIONS ?= 
+GLOB       ?= 
 
 # If debug is enabled then load debug functions
 ifeq (${DEBUG}, yes)
@@ -52,12 +53,17 @@ endif
 # Compile with cache extension
 WITH_CACHE   ?= yes
 ifeq (${WITH_CACHE}, yes)
+GLOB       += ${SRC}/boot.zsh
 EXTENSIONS += ${SRC}/ext/cache.zsh
 endif
 
-GLOB         ?= ${SRC}/boot.zsh ${SRC}/antigen.zsh $(sort $(wildcard ${PWD}/src/helpers/*.zsh)) \
-        ${SRC}/lib/*.zsh $(sort $(wildcard ${PWD}/src/commands/*.zsh)) ${EXTENSIONS} \
-        ${SRC}/_antigen
+GLOB         += ${SRC}/antigen.zsh $(sort $(wildcard ${PWD}/src/helpers/*.zsh)) \
+        ${SRC}/lib/*.zsh $(sort $(wildcard ${PWD}/src/commands/*.zsh)) ${EXTENSIONS}
+
+WITH_COMPLETION ?= yes
+ifeq (${WITH_COMPLETION}, yes)
+GLOB         += ${SRC}/_antigen
+endif
 
 VERSION      ?= develop
 VERSION_FILE  = ${PROJECT}/VERSION

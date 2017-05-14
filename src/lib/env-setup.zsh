@@ -50,10 +50,6 @@
     compinit -C -d "$ANTIGEN_COMPDUMP"
     compdef _antigen antigen
   else
-    # Initialize extensions. unless in interactive mode.
-    (( $+functions[-antigen-lock-init] )) && antigen-ext lock
-    (( $+functions[-antigen-parallel-init] )) && antigen-ext parallel
-    (( $+functions[-antigen-defer-init] )) && antigen-ext defer
-    (( $+functions[-antigen-cache-init] )) && antigen-ext cache
+    (( $+functions[antigen-ext-init] )) && antigen-ext-init
   fi
 }

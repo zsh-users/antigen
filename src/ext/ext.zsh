@@ -1,6 +1,7 @@
 typeset -Ag _ANTIGEN_HOOKS; _ANTIGEN_HOOKS=()
 typeset -Ag _ANTIGEN_HOOKS_META; _ANTIGEN_HOOKS_META=()
-typeset -g _ANTIGEN_HOOK_PREFIX="::antigen-hook::"
+typeset -g _ANTIGEN_HOOK_PREFIX="-antigen-hook-"
+typeset -g _ANTIGEN_EXTENSIONS; _ANTIGEN_EXTENSIONS=()
 
 # -antigen-add-hook antigen-apply antigen-apply-hook replace
 #   - Replaces hooked function with hook, do not call hooked function
@@ -50,7 +51,7 @@ antigen-add-hook () {
 
 # Private function to handle multiple hooks in a central point.
 -antigen-hook-handler () {
-  local target="$1" args hook
+  local target="$1" args hook called
   shift
   args=${@}
   
@@ -160,7 +161,6 @@ antigen-remove-hook () {
   done
   
   _ANTIGEN_HOOKS=()
-  _ANTIGEN_HOOKS_TYPE=()
 }
 
 # Initializes an extension
@@ -172,8 +172,28 @@ antigen-ext () {
   if (( $+functions[$func] )); then
     eval $func
     eval "-antigen-$ext-execute"
+    _ANTIGEN_EXTENSIONS+=($ext)
   else
     printf "Antigen: No extension defined: %s\n" $func >&2
     return 1
   fi
+}
+
+# List installed extensions
+# Usage:
+#   antigen ext-list
+antigen-ext-list () {
+  echo $_ANTIGEN_EXTENSIONS
+}
+
+# Initializes built-in extensions
+# Usage:
+#   antigen-ext-init
+antigen-ext-init () {
+  # Initialize extensions. unless in interactive mode.
+  local ext
+  for ext in lock defer parallel cache; do
+    # Check if extension is loaded before intializing it
+    (( $+functions[-antigen-$ext-init] )) && antigen-ext $ext
+  done
 }
