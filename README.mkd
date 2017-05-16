@@ -535,7 +535,7 @@ before experimenting with themes. If you have `antigen use oh-my-zsh` in your
         antigen theme pure
     ;;
     esac
-    
+
 In this scenario you have a couple of options:
 
 * You may disable caching with `ANTIGEN_CACHE=false` (`v2.1.0` and above). This will negatively affect start up time.
@@ -792,6 +792,8 @@ These are some external articles wrote by Antigen users.
 - [What Can Antigen Do For You?](http://blog.andrewlang.net/post/150662693408/what-can-antigen-do-for-you)
 
 - [A Modern Terminal Workflow](http://wrotenwrites.com/a_modern_terminal_workflow_3/)
+
+- [Scrap your /bin/bash shell and use /bin/zsh in Linux or MacOS](https://fazlearefin.blogspot.com.au/2017/03/scrap-your-binbash-shell-and-use-binzsh.html)
 
 
 ### Plugins and Alternatives
