@@ -182,14 +182,7 @@ Or using your [system package manager](https://software.opensuse.org/download.ht
 
 Remember that your package manager may install an older version of Antigen.
 
-
-## Commands
-
-See [here](https://github.com/zsh-users/antigen/wiki/Commands) for an extensive documentation on all available commands.
-
-## Configuration
-
-See [here](https://github.com/zsh-users/antigen/wiki/Configuration) for an extensive document on all available configuration options.
+You may head towards the [Commands](https://github.com/zsh-users/antigen/wiki/Commands) and [Configuration](https://github.com/zsh-users/antigen/wiki/Configuration) wiki pages to further understand Antigen's functionallity and customization.
 
 ## Meta
 
