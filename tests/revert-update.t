@@ -23,7 +23,7 @@ Save the new HEAD of the plugin.
 
 Define a convenience function to get the current version.
 
-  $ current-version () {(cd dot-antigen/repos/* && git rev-parse HEAD)}
+  $ current-version () {(cd $ANTIGEN_BUNDLES/*/* && git rev-parse HEAD)}
 
 Confirm we currently have the old version.
 
@@ -32,7 +32,7 @@ Confirm we currently have the old version.
 Run antigen's update.
 
   $ antigen-update
-  Updating */test-plugin... Done. Took *s. (glob)
+  Updating */test-plugin@master... Done. Took *s. (glob)
 
 Confirm we have the new version.
 

@@ -1,17 +1,22 @@
+# Usage:
+#  -antigen-get-clone-dir "https://github.com/zsh-users/zsh-syntax-highlighting.git[|feature/branch]"
+# Returns:
+#  $ANTIGEN_BUNDLES/zsh-users/zsh-syntax-highlighting[-feature-branch]
 -antigen-get-clone-dir () {
-  # Takes a repo url and gives out the path that this url needs to be cloned
-  # to. Doesn't actually clone anything.
-  echo -n $ADOTDIR/repos/
+  local bundle="$1"
+  local url="${bundle%|*}"
+  local branch
+  [[ "$bundle" =~ "\|" ]] && branch="${bundle#*|}"
 
-  if [[ "$1" == "https://github.com/sorin-ionescu/prezto.git" ]]; then
-    # Prezto's directory *has* to be `.zprezto`.
-    echo .zprezto
-  else
-    local url="${1}"
-    url=${url//\//-SLASH-}
-    url=${url//\:/-COLON-}
-    path=${url//\|/-PIPE-}
-    echo "$path"
-  fi
+  # Takes a repo url and mangles it, giving the path that this url will be
+  # cloned to. Doesn't actually clone anything.
+  local clone_dir="$ANTIGEN_BUNDLES"
+
+  url=$(-antigen-bundle-short-name $url)
+
+  # Suffix with branch/tag name
+  [[ -n "$branch" ]] && url="$url-${branch//\//-}"
+  url=${url//\*/x}
+
+  echo "$clone_dir/$url"
 }
-

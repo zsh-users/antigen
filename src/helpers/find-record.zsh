@@ -7,14 +7,11 @@
 #   String if record is found
 -antigen-find-record () {
   local bundle=$1
-  # Using typeset in order to support zsh <= 5.0.0
-  typeset -a records
+  
+  if [[ $# -eq 0 ]]; then
+    return 1
+  fi
 
-  local _IFS="$IFS"
-  IFS=$'\n'
-  records=(${(f)_ANTIGEN_BUNDLE_RECORD})
-  IFS="$_IFS"
-
-  echo "${records[(r)*$bundle*]}"
+  local record=${bundle/\|/\\\|}
+  echo "${_ANTIGEN_BUNDLE_RECORD[(r)*$record*]}"
 }
-

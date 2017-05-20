@@ -1,9 +1,9 @@
 Set environment variables for this test case
 
-  $ export TEST_DIR=$PWD
-  $ export TEST_HOST=$TEST_DIR/host
-  $ export TEST_NORMAL=$TEST_DIR/client
-  $ export TEST_SUBMODULE=$TEST_DIR/submodule
+  $ TEST_DIR=$PWD
+  $ TEST_HOST=$TEST_DIR/host
+  $ TEST_NORMAL=$TEST_DIR/client
+  $ TEST_SUBMODULE=$TEST_DIR/submodule
 
 Create fake host repository
 
@@ -11,6 +11,8 @@ Create fake host repository
   $ cd $TEST_HOST
   $ git init
   Initialized empty Git repository in * (glob)
+  $ git config user.name 'test'
+  $ git config user.email 'test@test.test'
   $ echo 1 > ver
   $ git add ver
   $ git commit -m "1"
@@ -28,6 +30,8 @@ Create a submodule repository cloning from host
   $ cd $TEST_SUBMODULE
   $ git init
   Initialized empty Git repository in * (glob)
+  $ git config user.name 'test'
+  $ git config user.email 'test@test.test'
   $ git submodule add $TEST_HOST antigen &> /dev/null
   $ git commit -m "1"
   [master (root-commit) ???????] 1 (glob)

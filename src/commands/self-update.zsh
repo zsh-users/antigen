@@ -15,7 +15,7 @@ antigen-selfupdate () {
    fi
    git pull
 
-   # Should be transparently hooked by zcache
-   $_ANTIGEN_CACHE_ENABLED && antigen-cache-reset &>> /dev/null
+   # TODO Should be transparently hooked by zcache
+   antigen-reset &>> /dev/null
   )
 }

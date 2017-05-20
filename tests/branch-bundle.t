@@ -17,7 +17,7 @@ Go back to master.
 
 Load plugin from b1.
 
-  $ antigen-bundle $PLUGIN_DIR --branch=b1 &> /dev/null
+  $ antigen bundle $PLUGIN_DIR --branch=b1 &> /dev/null
   $ hehe
   hehe from b1
 

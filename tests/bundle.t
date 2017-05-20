@@ -25,15 +25,15 @@ Try to load an unexisting plugin from a cloned bundle.
 Try to install an unexisting bundle.
 
   $ antigen-bundle https://127.0.0.1/bundle/unexisting.git
-  Installing bundle/unexisting... Error! See * (glob)
+  Installing bundle/unexisting@master... Error! Activate logging and try again.
   [1]
   $ echo $fpath | grep -co test-plugin
   1
 
-Confirm there is still only one repository.
+Confirm bundle/unexisting does not exists.
 
-  $ ls $ADOTDIR/repos | wc -l
-  1
+  $ ls $ANTIGEN_BUNDLES/bundle/ | wc -l
+  0
 
 Load a prezto style module. Should only source the `init.zsh` present in the
 module.
@@ -56,11 +56,11 @@ Fpath should be updated correctly.
 Load plugin multiple times, doesn't cluters _ANTIGEN_BUNDLE_RECORD
 
   $ antigen-bundle $PLUGIN_DIR
-  $ echo $_ANTIGEN_BUNDLE_RECORD | wc -l
-  3
+  $ echo ${(j:\n:)_ANTIGEN_BUNDLE_RECORD} | wc -l
+  2
   $ antigen-bundle $PLUGIN_DIR
-  $ echo $_ANTIGEN_BUNDLE_RECORD | wc -l
-  3
+  $ echo ${(j:\n:)_ANTIGEN_BUNDLE_RECORD} | wc -l
+  2
 
 Bundle short names.
 
@@ -72,6 +72,18 @@ Branch name is not display with short names.
   $ -antigen-bundle-short-name "https://github.com/example/bundle.git|branch"
   example/bundle
 
+  $ -antigen-bundle-short-name "https://github.com/example/bundle.git|feature/branch/git"
+  example/bundle
+
+  $ -antigen-bundle-short-name "https://github.com/example/bundle.git" "feature/branch/git"
+  example/bundle@feature/branch/git
+
+  $ -antigen-bundle-short-name "example/bundle.git" "feature/branch.git"
+  example/bundle@feature/branch.git
+
+  $ -antigen-bundle-short-name "example/bundle" "feature/branch.git"
+  example/bundle@feature/branch.git
+
 Handle shorter syntax.
 
   $ -antigen-bundle-short-name "github.com/example/bundle"
@@ -81,3 +93,12 @@ Handle local bundles (--no-local-clone).
 
   $ -antigen-bundle-short-name "/home/user/local-bundle"
   user/local-bundle
+
+Load a binary bundle.
+
+  $ antigen-bundle $PLUGIN_DIR3 &> /dev/null
+  $ hr-plugin
+  ######
+
+  $ echo $PATH | grep test-plugin3
+  *plugin3* (glob)

@@ -11,9 +11,7 @@ antigen-theme () {
   local record
   local result=0
 
-  if [[ $_ANTIGEN_RESET_THEME_HOOKS == true ]]; then
-      -antigen-theme-reset-hooks
-  fi
+  -antigen-theme-reset-hooks
 
   record=$(-antigen-find-record "theme")
 
@@ -38,8 +36,7 @@ antigen-theme () {
     if [[ "$record" =~ "$@" ]]; then
       return $result
     else
-      # Remove entire line plus $\n character
-      _ANTIGEN_BUNDLE_RECORD="${_ANTIGEN_BUNDLE_RECORD//$'\n'$record/}"
+      _ANTIGEN_BUNDLE_RECORD[$_ANTIGEN_BUNDLE_RECORD[(I)$record]]=()
     fi
   fi
 
@@ -56,14 +53,10 @@ antigen-theme () {
   RPROMPT=""
 
   for hook in chpwd precmd preexec periodic; do
-    # add-zsh-hook's -D option was introduced first in 4.3.6-dev and
-    # 4.3.7 first stable, 4.3.5 and below may experiment minor issues
-    # while switching themes interactively.
-    if is-at-least 4.3.7; then
-      add-zsh-hook -D "${hook}" "prompt_*"
-      add-zsh-hook -D "${hook}" "*_${hook}" # common in omz themes 
-    fi
-    add-zsh-hook -d "${hook}" "vcs_info"  # common in omz themes
+    add-zsh-hook -D "${hook}" "prompt_*"
+    # common in omz themes
+    add-zsh-hook -D "${hook}" "*_${hook}"
+    add-zsh-hook -d "${hook}" "vcs_info"
   done
 }
 

@@ -30,8 +30,17 @@ testing them is given they most certainly use the network.
 
 Use oh-my-zsh library.
 
+  $ prev=$(env)
   $ antigen-use oh-my-zsh
   Using oh-my-zsh.
+
+Should not leak Antigen or OMZ environment variables.
+
+  $ diff <(env) <(echo $prev) | sed -e 's/\=.*//' | grep -i antigen | wc -l
+  0
+
+  $ diff <(env) <(echo $prev) | sed -e 's/\=.*//' | grep -i zsh | wc -l
+  0
 
 Use prezto library.
 

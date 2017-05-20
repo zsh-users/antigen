@@ -25,10 +25,11 @@ Reset the antigen's bundle record and run cleanup.
 
 Restore from the snapshot.
 
-  $ ls dot-antigen/repos | wc -l
+  $ ls $ANTIGEN_BUNDLES/cram-testdir-* | wc -l
   0
   $ antigen-restore snapshot-file
   Restoring from snapshot-file... done.
   Please open a new shell to get the restored changes.
-  $ ls dot-antigen/repos | wc -l
+
+  $ ls $ANTIGEN_BUNDLES/* | wc -l
   2

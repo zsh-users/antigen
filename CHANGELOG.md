@@ -1,11 +1,107 @@
 # CHANGELOG
+
 All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/).
+This project adheres to [Semantic Versioning](http://semver.org/) [v2.0.0](http://semver.org/spec/v2.0.0.html).
+
+## [2.0.2] - 2017-04-22
+
+### Changed
+- [#521, #515] Update TravisCI Badges' labels
+- [#509] Use "Roadmap" for Trello where possible
+
+### Added
+- [#514] FAQ for dynamic `antigen-theme` usage
+
+### Fixed
+- [#510] Remove possibly destructive command on broken tests
+- [#508, #507] Fix status code non-zero when last command is `antigen` wrapper
+
+Thanks everyone who reported issues and provided feedback.
+
+## [2.0.1] - 2017-04-15
+
+### Changed
+- [#489] Update `CHANGELOG` link to semver documentation
+- [#497, #498] Improve `antigen-list` command performance
+
+### Fixed
+- [#487] Fix documentation regarding `ANTIGEN_CHECK_FILES`
+- [#486, #485] Missing env vars for Oh-My-Zsh 
+- [#492, #490] Fix parsing git/ssh URLS
+- [#495, #494] Fix `antigen-theme` command changing CWD
+- [#493, #491] Fix `no-local-clone` flag being ignored
+
+Thanks everyone who reported issues and provided feedback.
+
+## [2.0.0] - 2017-04-08
+
+There are functions and configurations being either removed or renamed, please
+review this document before updating your Antigen installation.
+
+Removed functions:
+
+  - `-antigen-lib`        - Deprecated since v1
+  - `-antigen-prezto-lib` - Deprecated since v1
+
+Deprecated configuration:
+
+  - `_ANTIGEN_FORCE_RESET_COMPDUMP`
+  - `_ANTIGEN_RESET_THEME_HOOKS`
+  - `_ANTIGEN_AUTODETECT_CONFIG_CHANGES`
+  - `_ANTIGEN_CACHE_ENABLED`
+  - `_ANTIGEN_COMP_ENABLED`
+
+Renamed configuration:
+
+  - `_ANTIGEN_LOG_PATH`     ~> `ANTIGEN_LOG`
+  - `_ANTIGEN_CACHE_PATH`   ~> `ANTIGEN_CACHE`
+  - `_ANTIGEN_COMPDUMPFILE` ~> `ANTIGEN_COMPDUMP`
+
+Added configurations:
+
+  - `ANTIGEN_CHECK_FILES`     - Use to configure which files to check for changes
+  - `ANTIGEN_SUBMODULE_OPTS`  - Use to pass arguments to `git submodule` command
+  - `ANTIGEN_CLONE_OPTS`      - Use to pass arguments to `git clone` command
+  - `ANTIGEN_BUNDLES`         - Use to configure bundle path location
+  - `ANTIGEN_PREZTO_REPO_URL` - Use to configure Prezto default url
+
+### Removed
+- [#197, #298] Removed `-antigen-lib`, `-antigen-prezto-lib`
+
+### Added
+- [#309] Use `git` shallow cloning to speed up bundle install
+- [#299, #261] Handles `$PATH`
+- [#415] Added link to multiple OS install methods
+- [#423, #262] Support semver-like bundling
+- [#461] Use Docker container for tests and stats generation
+- [#462, #466] Add extended help text for `antigen-help` command
+- [#467, #465] Show version hash on `antgen-version` command
+- [#469] Function to migrate old bundle paths to new format
+- [#464] Update wiki pages for new version
+
+### Changed
+- [#326, #259] Support updating a single bundle
+- [#352] Support `antigen-update` tab completion
+- [#351, #379] Update `Makefile` release tasks
+- [#411, #371, #445] `antigen-list` show version information (tag, branch, git hash)
+- [#420] Support reference cache (vs bundle cache)
+- [#450] Refactor `_ANTIGEN_BUNDLE_RECORD`
+- [#454] Simplify change detection
+- [#457, #460] Change bundle path generation function
+
+### Fixed
+- [#353] `antigen-update` properly handles `--no-local-clone`
+- [#419] Don't require confirmation when cleaning up
+- [#439, #442, #438] Fix `antigen-selfupdate` failing with sym-links
+- [#441, #440] `antigen-init` command checks input
+- [#453, #452] Respect `_ANTIGEN_COMPDUMP` configuration
+
+Thanks everyone who reported issues and provided feedback.
 
 ## [1.4.1] - 2017-02-26
 
 ### Changed
-- [#402, #409] `antige-use` command handle library url
+- [#402, #409] `antigen-use` command handle library url
 - [#404, #408] Update README.md with new antigen-related articles
 
 ### Fixed
@@ -321,6 +417,7 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 - [#162] Fix issue with antigen update after revert
 
 ## [1.0.4] - 2016-08-27
+
 ### Added
 - [#188] Add CONTRIBUTING.md to documentation
 - [#183] Update README.md to use rawgit in examples
@@ -334,15 +431,45 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 - [#169] Load Antigen's own completions at load time
 
 ## [1.0.3] - 2016-08-20
+
 ### Changed
 - [#172] Fix TravisCI configuration 
 
 ## [1.0.2] - 2016-08-11
+
 ### Changed
 - [#168] Update README.md example code thanks to @chadmoore
 
 ## [1.0.1] - 2016-07-21
+
 ### Added
 - [#141] Performance improvements thanks to @outcoldman
 - Added CHANGELOG.md
 - Following [Semantic Versioning](http://semver.org/)
+
+[2.0.2]: https://github.com/zsh-users/antigen/compare/v2.0.1...v2.0.2
+[2.0.1]: https://github.com/zsh-users/antigen/compare/v2.0.0...v2.0.1
+[2.0.0]: https://github.com/zsh-users/antigen/compare/v1.4.1...v2.0.0
+[1.4.1]: https://github.com/zsh-users/antigen/compare/v1.4.0...v1.4.1
+[1.4.0]: https://github.com/zsh-users/antigen/compare/v1.3.5...v1.4.0
+[1.3.5]: https://github.com/zsh-users/antigen/compare/v1.3.4...v1.3.5
+[1.3.4]: https://github.com/zsh-users/antigen/compare/v1.3.3...v1.3.4
+[1.3.3]: https://github.com/zsh-users/antigen/compare/v1.3.2...v1.3.3
+[1.3.2]: https://github.com/zsh-users/antigen/compare/v1.3.1...v1.3.2
+[1.3.1]: https://github.com/zsh-users/antigen/compare/v1.3.0...v1.3.1
+[1.3.0]: https://github.com/zsh-users/antigen/compare/v1.2.4...v1.3.0
+[1.2.4]: https://github.com/zsh-users/antigen/compare/v1.2.3...v1.2.4
+[1.2.3]: https://github.com/zsh-users/antigen/compare/v1.2.2...v1.2.3
+[1.2.2]: https://github.com/zsh-users/antigen/compare/v1.2.1...v1.2.2
+[1.2.1]: https://github.com/zsh-users/antigen/compare/v1.2.0...v1.2.1
+[1.2.0]: https://github.com/zsh-users/antigen/compare/v1.1.4...v1.2.0
+[1.1.4]: https://github.com/zsh-users/antigen/compare/v1.1.3...v1.1.4
+[1.1.3]: https://github.com/zsh-users/antigen/compare/v1.1.2...v1.1.3
+[1.1.2]: https://github.com/zsh-users/antigen/compare/v1.1.1...v1.1.2
+[1.1.1]: https://github.com/zsh-users/antigen/compare/v1.1.0...v1.1.1
+[1.1.0]: https://github.com/zsh-users/antigen/compare/v1.0.4...v1.1.0
+[1.0.4]: https://github.com/zsh-users/antigen/compare/v1.0.3...v1.0.4
+[1.0.3]: https://github.com/zsh-users/antigen/compare/v1.0.2...v1.0.3
+[1.0.2]: https://github.com/zsh-users/antigen/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/zsh-users/antigen/compare/v1...v1.0.1
+

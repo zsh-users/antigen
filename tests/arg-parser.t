@@ -63,3 +63,50 @@ Repeated, once as positional and once more as keyword.
   $ parse url1 --url=url2
   local url='url1'
   local url='url2'
+
+Supports bundle name with branch/version.
+
+  $ parse url@version
+  local branch='version'
+  local url='url'
+
+Supports branch/version flag
+
+  $ parse url --branch=version
+  local url='url'
+  local branch='version'
+
+Flag `--branch` overwrites `@`-name.
+
+  $ parse url@b1 --branch=b2
+  local branch='b1'
+  local url='url'
+  local branch='b2'
+
+Private git urls.
+
+  $ parse ssh://git@domain.local:1234/repository/name.git
+  local url='ssh://git@domain.local:1234/repository/name.git'
+
+Private git urls with branch short format.
+
+  $ parse ssh://git@domain.local:1234/repository/name.git@example-branch/name
+  local branch='example-branch/name'
+  local url='ssh://git@domain.local:1234/repository/name.git'
+
+Private git urls with branch argument format.
+
+  $ parse ssh://git@domain.local:1234/repository/name.git --branch=example-branch/name
+  local url='ssh://git@domain.local:1234/repository/name.git'
+  local branch='example-branch/name'
+
+SSH github url.
+
+  $ parse github.com:reem/watch.git
+  local url='github.com:reem/watch.git'
+
+Long SSH github url.
+
+  $ parse git@github.com:zsh-users/antigen.git
+  local url='git@github.com:zsh-users/antigen.git'
+

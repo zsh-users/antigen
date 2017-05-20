@@ -1,3 +1,4 @@
+antigen use oh-my-zsh
 antigen bundles <<EOBUNDLES
   git
   command-not-found
@@ -15,17 +16,18 @@ antigen bundles <<EOBUNDLES
   peterhurford/git-it-on.zsh
   caarlos0/jvm.git
   caarlos0/zsh-open-pr
-  junegunn/fzf
-  mafredri/zsh-async
+  junegunn/fzf@0.16.*
+  mafredri/zsh-async@v1.5.* # use version v1.5.x
   mollifier/cd-gitroot
-  oz/safe-paste # comment appended to the line
+  oz/safe-paste # a comment
   caarlos0/ports
-  supercrabtree/k
+  supercrabtree/k@0.*
   Tarrasch/zsh-bd
   Tarrasch/zsh-colors
   heroku
   unixorn/git-extra-commands
   rimraf/k
+  # a bunch of bundles from default library
   gitfast
   jsontools
   github
@@ -35,6 +37,8 @@ antigen bundles <<EOBUNDLES
   chrissicool/zsh-256color
   pass
   sprunge
+  git@github.com:desyncr/gitr.git --branch=develop
+  git://repo.or.cz/safe-rm.git
 EOBUNDLES
 
 antigen apply

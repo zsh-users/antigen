@@ -4,6 +4,7 @@ Purge command removes a bundle from filesystem.
   *test-plugin* (glob)
 
   $ antigen-purge test-plugin --force
+  Removing '*test-plugin'. (glob)
   Done. Please open a new shell to see the changes.
 
 Purge command without arguments returns an error message.
