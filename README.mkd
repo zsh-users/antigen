@@ -140,6 +140,20 @@ syntax for the `antigen bundle` command is discussed further down on this page.
 
 You can find more examples in the wiki: [Antigen in the wild][wild].
 
+## Installation
+
+Install Antigen from our main repository for the latest stable version available:
+
+    curl -L git.io/antigen > antigen.zsh
+
+Or using your [system package manager](https://software.opensuse.org/download.html?project=shells%3Azsh-users%3Aantigen&package=antigen).
+
+Remember that your package manager may install an older version of Antigen.
+
+You may head towards the [Commands](https://github.com/zsh-users/antigen/wiki/Commands) and [Configuration](https://github.com/zsh-users/antigen/wiki/Configuration) wiki pages to further understand Antigen's functionallity and customization.
+
+## Meta
+
 ## Motivation
 
 If you use zsh and [oh-my-zsh][], you know that having many different plugins
@@ -171,20 +185,6 @@ Antigen also lets you switch the prompt theme with one command, just like that
 
 and your prompt is changed, just for this session of course (unless you put this
 line in your `.zshrc`).
-
-## Installation
-
-Install Antigen from our main repository for the latest stable version available:
-
-    curl -L git.io/antigen > antigen.zsh
-
-Or using your [system package manager](https://software.opensuse.org/download.html?project=shells%3Azsh-users%3Aantigen&package=antigen).
-
-Remember that your package manager may install an older version of Antigen.
-
-You may head towards the [Commands](https://github.com/zsh-users/antigen/wiki/Commands) and [Configuration](https://github.com/zsh-users/antigen/wiki/Configuration) wiki pages to further understand Antigen's functionallity and customization.
-
-## Meta
 
 ### Helping out
 
