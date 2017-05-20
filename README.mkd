@@ -200,42 +200,7 @@ Any comments/suggestions/feedback welcome. Please say hello to us on
 
 ### Articles
 
-These are some external articles wrote by Antigen users.
-
-- [Oh-my-zsh is the Disease and Antigen is the Vaccine](http://joshldavis.com/2014/07/26/oh-my-zsh-is-a-disease-antigen-is-the-vaccine/)
-
-- [Awesome cmd line with antigen (zsh plugin manager)](https://medium.com/cocoaacademymag/awesome-cmd-line-with-antigen-zsh-plugin-manager-d497574f7b5)
-
-- [Just discovered.. zsh!](https://arteymix.github.io/2015/01/20/just-discovered-zsh.html)
-
-- [My switch to Zsh with Antigen](http://blog.namangoel.com/zsh-with-antigen)
-
-- [Antigen - vundle-like менеджер плагинов для zsh](https://neoascetic.me/antigen-zsh-plugin-manager/)
-
-- [Personalizando zsh: antigen](http://antonio-mario.com/personalizando-zsh-antigen/)
-
-- [Antigenを使おう](http://www.slideshare.net/mollifier/antigen-47698803)
-
-- [zshのプラグインマネージャーantigenでoh-my-zshの良いとこ取りをする](http://blog.glidenote.com/blog/2012/10/25/antigen/)
-
-- [NPM, antigen and ZSH pure prompt](http://stephen.yearl.us/npm-and-zsh-pure-prompt/)
-
-- [zsh with Antigen](http://mgdm.net/weblog/zsh-antigen/)
-
-- [Zsh Shell with Antigen + Oh-My-Zsh + Power Level 9k theme](https://www.youtube.com/watch?v=TIkJ5fDz2-g)
-
-- [Getting Started with ZSH](https://blogs.umass.edu/Techbytes/2014/12/01/getting-started-with-zsh/)
-
-- [My Interesting Zsh Prompt ](https://urbanoalvarez.es/blog/my-interesting-zsh-prompt)
-
-- [antigen - دانیال نیک نام](https://blog.niknam.org/1395/09/23/antigen/)
-
-- [What Can Antigen Do For You?](http://blog.andrewlang.net/post/150662693408/what-can-antigen-do-for-you)
-
-- [A Modern Terminal Workflow](http://wrotenwrites.com/a_modern_terminal_workflow_3/)
-
-- [Scrap your /bin/bash shell and use /bin/zsh in Linux or MacOS](https://fazlearefin.blogspot.com.au/2017/03/scrap-your-binbash-shell-and-use-binzsh.html)
-
+These are some external articles wrote by Antigen users. Take a look at them [in the wiki](https://github.com/zsh-users/antigen/wiki#external-articles).
 
 ### Plugins and Alternatives
 
