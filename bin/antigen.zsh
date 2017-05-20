@@ -1555,7 +1555,7 @@ antigen-ext () {
     # One time hook
     antigen-remove-hook antigen-apply-lock
     unset _ANTIGEN_LOCK_PROCESS
-    rm $ANTIGEN_LOCK &> /dev/null
+    rm -f $ANTIGEN_LOCK &> /dev/null
     antigen-apply "$@"
   }
   antigen-add-hook antigen-apply antigen-apply-lock replace
