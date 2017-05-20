@@ -9,7 +9,7 @@
   <a href="https://github.com/zsh-users/antigen/releases/latest"><img src="https://img.shields.io/github/release/zsh-users/antigen.svg?label=latest" alt="Latest"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=develop" alt="Build Status"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/next.svg?label=next" alt="Build Status"></a>
 </p>
 <p align="center">
-  <a href="#installation">Installation</a> | <a href="#configuration">Configuration</a> | <a href="https://github.com/zsh-users/antigen/wiki">Documentation</a> | <a href="https://github.com/zsh-users/antigen/issues">Bug tracker</a> | <a href="https://trello.com/b/P0xrGgfT/antigen">Roadmap</a> | <a href="https://gitter.im/antigen-zsh/develop">Chat</a> | <a href="http://mit.sharats.me/">License</a>
+  <a href="#installation">Installation</a> | <a href="https://github.com/zsh-users/antigen/wiki">Documentation</a> | <a href="https://github.com/zsh-users/antigen/issues">Bug tracker</a> | <a href="https://trello.com/b/P0xrGgfT/antigen">Roadmap</a> | <a href="https://gitter.im/antigen-zsh/develop">Chat</a> | <a href="http://mit.sharats.me/">License</a>
 </p>
 
 Antigen is a small set of functions that help you easily manage your shell (zsh)
@@ -154,7 +154,7 @@ You may head towards the [Commands](https://github.com/zsh-users/antigen/wiki/Co
 
 ## Meta
 
-## Motivation
+### Motivation
 
 If you use zsh and [oh-my-zsh][], you know that having many different plugins
 that are developed by many different authors in a single (sub)repo is not very
@@ -192,7 +192,7 @@ We welcome new contributors! We have a number of issues marked as ["Help wanted"
 
 Please be sure to check our [Contributing guidelines](https://github.com/zsh-users/antigen/wiki/Contributing) to understand our workflow, and our [Coding conventions](https://github.com/zsh-users/antigen/wiki/Styleguide).
 
-### Feedback please
+### Feedback
 
 Any comments/suggestions/feedback welcome. Please say hello to us on
 [gitter](https://gitter.im/antigen-zsh/develop). Or open an issue to discuss something
