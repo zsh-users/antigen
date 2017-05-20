@@ -64,7 +64,7 @@ Open your zsh with this zshrc and you should see all the bundles you defined
 here, getting installed. Once its done, you are ready to roll. The complete
 syntax for the `antigen bundle` command is discussed further down on this page.
 
-You can find more examples in the wiki: [Antigen in the wild][wild]. You may
+[In the wild][wild] wiki section has more configuration examples. You may
 as well take a look at the [show off](https://github.com/zsh-users/antigen/wiki/Show-off) wiki page
 for interactive mode usage.
 
