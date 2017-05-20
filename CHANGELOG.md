@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/) [v2.0.0](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2017-05-20
+
+### Changed
+- [#537] Clean up README.mkd
+- [#534] Add new article on zsh and antigen
+
+### Fixed
+- [#540] Don't require confirmation when removing lock
+- [#535, #536] Avoid duplicate paths
+
 ## [2.1.0] - 2017-05-14
 
 ### Fixed
@@ -465,6 +475,7 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 - Added CHANGELOG.md
 - Following [Semantic Versioning](http://semver.org/)
 
+[2.1.1]: https://github.com/zsh-users/antigen/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/zsh-users/antigen/compare/v2.0.2...v2.1.0
 [2.0.2]: https://github.com/zsh-users/antigen/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/zsh-users/antigen/compare/v2.0.0...v2.0.1
