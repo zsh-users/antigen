@@ -406,10 +406,11 @@ antigen () {
   typeset -gU fpath path
 
   # Pre-startup initializations.
-  -antigen-set-default ANTIGEN_DEFAULT_REPO_URL \
+  -antigen-set-default ANTIGEN_OMZ_REPO_URL \
     https://github.com/robbyrussell/oh-my-zsh.git
   -antigen-set-default ANTIGEN_PREZTO_REPO_URL \
     https://github.com/sorin-ionescu/prezto.git
+  -antigen-set-default ANTIGEN_DEFAULT_REPO_URL $ANTIGEN_OMZ_REPO_URL
 
   # Default Antigen directory.
   -antigen-set-default ADOTDIR $HOME/.antigen
@@ -613,7 +614,17 @@ antigen () {
   
   # Check if url is just the plugin name. Super short syntax.
   if [[ "${args[url]}" != */* ]]; then
-    args[loc]="plugins/${args[url]}"
+    case "$ANTIGEN_DEFAULT_REPO_URL" in
+      "$ANTIGEN_OMZ_REPO_URL")
+        args[loc]="plugins/${args[url]}"
+      ;;
+      "$ANTIGEN_PREZTO_REPO_URL")
+        args[loc]="modules/${args[url]}"
+      ;;
+      *)
+        args[loc]="${args[url]}"
+      ;;
+    esac
     args[url]="$ANTIGEN_DEFAULT_REPO_URL"
   fi
 
@@ -723,6 +734,8 @@ antigen () {
   done
 }
 -antigen-use-oh-my-zsh () {
+  typeset -g ZSH ZSH_CACHE_DIR
+  ANTIGEN_DEFAULT_REPO_URL=$ANTIGEN_OMZ_REPO_URL
   if [[ -z "$ZSH" ]]; then
     ZSH="$(-antigen-get-clone-dir "$ANTIGEN_DEFAULT_REPO_URL")"
   fi
@@ -732,6 +745,7 @@ antigen () {
   antigen-bundle --loc=lib
 }
 -antigen-use-prezto () {
+  ANTIGEN_DEFAULT_REPO_URL=$ANTIGEN_PREZTO_REPO_URL
   antigen-bundle "$ANTIGEN_PREZTO_REPO_URL"
 }
 # Initialize completion
@@ -1339,9 +1353,8 @@ antigen-use () {
     return 1
   fi
 }
-
 antigen-version () {
-  local version="v2.1.1"
+  local version="develop"
   local revision=""
   if [[ -d $_ANTIGEN_INSTALL_DIR/.git ]]; then
     revision=" ($(git --git-dir=$_ANTIGEN_INSTALL_DIR/.git rev-parse --short '@'))"
@@ -1591,7 +1604,7 @@ antigen-ext () {
 cat > $ANTIGEN_CACHE <<EOC
 #-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
-#-- ANTIGEN v2.1.1
+#-- ANTIGEN develop
 $(functions -- _antigen)
 antigen () {
   local MATCH MBEGIN MEND
@@ -1614,7 +1627,7 @@ fi
 ${(j::)_sources}
 #--- BUNDLES END
 typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=($(print ${(qq)_ANTIGEN_BUNDLE_RECORD}))
-typeset -g _ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='v2.1.1'
+typeset -g _ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='develop'
 
 #-- END ZCACHE GENERATED FILE
 EOC
