@@ -68,7 +68,17 @@
   
   # Check if url is just the plugin name. Super short syntax.
   if [[ "${args[url]}" != */* ]]; then
-    args[loc]="plugins/${args[url]}"
+    case "$ANTIGEN_DEFAULT_REPO_URL" in
+      "$ANTIGEN_OMZ_REPO_URL")
+        args[loc]="plugins/${args[url]}"
+      ;;
+      "$ANTIGEN_PREZTO_REPO_URL")
+        args[loc]="modules/${args[url]}"
+      ;;
+      *)
+        args[loc]="${args[url]}"
+      ;;
+    esac
     args[url]="$ANTIGEN_DEFAULT_REPO_URL"
   fi
 

@@ -46,3 +46,43 @@ Use prezto library.
 
   $ antigen-use prezto
   Using prezto.
+
+Test load from oh-my-zsh:
+
+  $ unset ANTIGEN_DEFAULT_REPO_URL
+  $ source $ANTIGEN/antigen.zsh
+
+  $ -antigen-bundle-install () {}
+  $ -antigen-load () {}
+  $ antigen use oh-my-zsh
+  $ antigen bundle wd
+  $ antigen bundle other/plugin
+  $ antigen apply
+  $ antigen list --long
+  https://github.com/robbyrussell/oh-my-zsh.git lib plugin true
+  https://github.com/robbyrussell/oh-my-zsh.git plugins/wd plugin true
+  https://github.com/other/plugin.git / plugin true
+
+Test load from prezto:
+
+  $ _ANTIGEN_BUNDLE_RECORD=()
+  $ antigen use prezto
+  $ antigen bundle editor
+  $ antigen bundle other/plugin
+  $ antigen apply
+  $ antigen list --long
+  https://github.com/sorin-ionescu/prezto.git / plugin true
+  https://github.com/sorin-ionescu/prezto.git modules/editor plugin true
+  https://github.com/other/plugin.git / plugin true
+
+Test load from custom library:
+
+  $ _ANTIGEN_BUNDLE_RECORD=()
+  $ antigen use https://github.com/custom/library.git
+  $ antigen bundle editor
+  $ antigen bundle other/plugin
+  $ antigen apply
+  $ antigen list --long
+  https://github.com/custom/library.git / plugin true
+  https://github.com/custom/library.git editor plugin true
+  https://github.com/other/plugin.git / plugin true

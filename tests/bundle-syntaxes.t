@@ -20,7 +20,7 @@ Short and sweet.
 
   $ b lol
   url:    https://github.com/gh-user/repo.git
-  dir:    plugins/lol
+  dir:    lol
   clone?: true
 
 Short repo url.
