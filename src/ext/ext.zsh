@@ -54,8 +54,6 @@ antigen-add-hook () {
   local target="$1" args hook called
   shift
   args=${@}
-  
-  WARN "Hooked ${target}"
 
   typeset -a pre_hooks replace_hooks post_hooks;
   typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
@@ -171,8 +169,13 @@ antigen-ext () {
   local func="-antigen-$ext-init"
   if (( $+functions[$func] )); then
     eval $func
-    eval "-antigen-$ext-execute"
-    _ANTIGEN_EXTENSIONS+=($ext)
+    if (( $? )); then 
+      -antigen-$ext-execute && _ANTIGEN_EXTENSIONS+=($ext)
+    else
+      WARN "IGNORING EXTENSION $func" EXT
+      return 1
+    fi
+    
   else
     printf "Antigen: No extension defined: %s\n" $func >&2
     return 1
@@ -192,7 +195,7 @@ antigen-ext-list () {
 antigen-ext-init () {
   # Initialize extensions. unless in interactive mode.
   local ext
-  for ext in lock defer parallel cache; do
+  for ext in lock parallel defer cache; do
     # Check if extension is loaded before intializing it
     (( $+functions[-antigen-$ext-init] )) && antigen-ext $ext
   done

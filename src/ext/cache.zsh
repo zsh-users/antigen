@@ -1,3 +1,6 @@
+typeset -ga _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE
+typeset -g _ZCACHE_CAPTURE_PREFIX
+
 # Generates cache from listed bundles.
 #
 # Iterates over _ANTIGEN_BUNDLE_RECORD and join all needed sources into one,
@@ -80,29 +83,30 @@ EOC
 # Returns
 #  Nothing
 -antigen-cache-init () {
-    typeset -ga _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE
-    typeset -g _ZCACHE_CAPTURE_PREFIX
-    _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
-    _ZCACHE_BUNDLE_SOURCE=(); _ZCACHE_CAPTURE_BUNDLE=()
+  if -antigen-interactive-mode; then
+    return 1
+  fi
 
-    # Cache auto config files to check for changes (.zshrc, .antigenrc etc)
-    -antigen-set-default ANTIGEN_AUTO_CONFIG true
-    
-    # Default cache path.
-    -antigen-set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
-    -antigen-set-default ANTIGEN_RSRC $ADOTDIR/.resources
-    
-    return 0
+  _ZCACHE_CAPTURE_PREFIX=${_ZCACHE_CAPTURE_PREFIX:-"--zcache-"}
+  _ZCACHE_BUNDLE_SOURCE=(); _ZCACHE_CAPTURE_BUNDLE=()
+
+  # Cache auto config files to check for changes (.zshrc, .antigenrc etc)
+  -antigen-set-default ANTIGEN_AUTO_CONFIG true
+  
+  # Default cache path.
+  -antigen-set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
+  -antigen-set-default ANTIGEN_RSRC $ADOTDIR/.resources
+  
+  return 0
 }
 
 -antigen-cache-execute () {
   # Main function. Deferred antigen-apply.
   antigen-apply-cached () {
-    # Release function to apply
-    antigen-remove-hook antigen-bundle-cached
     # Release all hooked functions
     antigen-remove-hook -antigen-load-env-cached
     antigen-remove-hook -antigen-load-source-cached
+    antigen-remove-hook antigen-bundle-cached
 
     # Auto determine check_files
     # There always should be 5 steps from original source as the correct way is to use
@@ -110,19 +114,15 @@ EOC
     if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 5 ]]; then
       ANTIGEN_CHECK_FILES+=("${${funcfiletrace[5]%:*}##* }")
     fi
- 
-    local bundle
-    for bundle in "$_ZCACHE_CAPTURE_BUNDLE"; do
-      antigen-bundle ${=bundle}
-    done
 
     # Generate and compile cache
     -antigen-cache-generate
-    # [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
+    [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
     
     unset _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
   }
-  antigen-add-hook antigen-apply antigen-apply-cached pre
+  
+  antigen-add-hook antigen-apply antigen-apply-cached post once
   
   # Defer antigen-bundle.
   antigen-bundle-cached () {
@@ -143,13 +143,13 @@ EOC
 
     _ZCACHE_BUNDLE_SOURCE+=("${location}")
   }
-  antigen-add-hook -antigen-load-env -antigen-load-env-cached pre
+  antigen-add-hook -antigen-load-env -antigen-load-env-cached replace
   
   # Defer sourcing.
   -antigen-load-source-cached () {
     _ZCACHE_BUNDLE_SOURCE+=($@)
   }
-  antigen-add-hook -antigen-load-source -antigen-load-source-cached pre
+  antigen-add-hook -antigen-load-source -antigen-load-source-cached replace
   
   return 0
 }

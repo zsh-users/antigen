@@ -3,7 +3,7 @@
 # Keyword only arguments:
 #   branch - The branch of the repo to use for this bundle.
 antigen-bundle () {
-  LOG "Called antigen-bundle"
+  TRACE "Called antigen-bundle with $@" BUNDLE
   if [[ -z "$1" ]]; then
     printf "Antigen: Must provide a bundle url or name.\n" >&2
     return 1
@@ -29,6 +29,7 @@ antigen-bundle () {
 
   # Load the plugin.
   if ! -antigen-load ${(kv)bundle}; then
+    TRACE "-antigen-load failed to load ${bundle[name]}" BUNDLE
     printf "Antigen: Failed to load %s.\n" ${bundle[btype]} >&2
     return 1
   fi
@@ -55,6 +56,7 @@ antigen-bundle () {
 
   if ! -antigen-ensure-repo "${bundle[url]}"; then
     # Return immediately if there is an error cloning
+    TRACE "-antigen-bundle-instal failed to clone ${bundle[url]}" BUNDLE
     printf "Error! Activate logging and try again.\n" >&2
     return 1
   fi

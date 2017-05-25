@@ -1,8 +1,3 @@
-# Antigen: A simple plugin manager for zsh
-# Authors: Shrikant Sharat Kandula
-#          and Contributors <https://github.com/zsh-users/antigen/contributors>
-# Homepage: http://antigen.sharats.me
-# License: MIT License <mitl.sharats.me>
 zmodload zsh/parameter
 
 if [[ $ANTIGEN_CACHE != false ]]; then

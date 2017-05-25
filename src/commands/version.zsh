@@ -8,6 +8,10 @@ antigen-version () {
   printf "Antigen %s%s\n" $version $revision
   if (( $+functions[antigen-ext] )); then
     typeset -a extensions; extensions=($(antigen-ext-list))
-    printf "Extensions loaded: %s\n" ${(j:, :)extensions}
+    if [[ $#extensions > 0 ]]; then
+      printf "Extensions loaded: %s\n" ${(j:, :)extensions}
+    else
+      printf "No extensions loaded.\n"
+    fi
   fi
 }
