@@ -169,9 +169,11 @@ antigen-remove-hook () {
 antigen-ext () {
   local ext=$1
   local func="-antigen-$ext-init"
-  if (( $+functions[$func] && ! $_ANTIGEN_EXTENSIONS[(I)$ext] )); then
+  if (( $+functions[$func] && $_ANTIGEN_EXTENSIONS[(I)$ext] == 0 )); then
     eval $func
-    if (( $? )); then 
+    local ret=$?
+    WARN "$func return code was $ret"
+    if (( $ret == 0 )); then 
       -antigen-$ext-execute && _ANTIGEN_EXTENSIONS+=($ext)
     else
       WARN "IGNORING EXTENSION $func" EXT

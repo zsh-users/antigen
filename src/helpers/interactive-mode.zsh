@@ -7,5 +7,5 @@
 #   Either true or false depending if we are running in interactive mode
 -antigen-interactive-mode () {
   WARN "-antigen-interactive-mode: $ZSH_EVAL_CONTEXT"
-  [[ "$ZSH_EVAL_CONTEXT" == toplevel* || "$ZSH_EVAL_CONTEXT" == cmdarg* ]];
+  [[ $_ANTIGEN_INTERACTIVE == true || "$ZSH_EVAL_CONTEXT" == toplevel* || "$ZSH_EVAL_CONTEXT" == cmdarg* ]];
 }

@@ -103,11 +103,6 @@ EOC
 -antigen-cache-execute () {
   # Main function. Deferred antigen-apply.
   antigen-apply-cached () {
-    # Release all hooked functions
-    antigen-remove-hook -antigen-load-env-cached
-    antigen-remove-hook -antigen-load-source-cached
-    antigen-remove-hook antigen-bundle-cached
-
     # Auto determine check_files
     # There always should be 5 steps from original source as the correct way is to use
     # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
@@ -120,6 +115,11 @@ EOC
     [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
     
     unset _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
+
+    # Release all hooked functions
+    antigen-remove-hook -antigen-load-env-cached
+    antigen-remove-hook -antigen-load-source-cached
+    antigen-remove-hook antigen-bundle-cached
   }
   
   antigen-add-hook antigen-apply antigen-apply-cached post once

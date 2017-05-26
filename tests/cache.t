@@ -1,5 +1,6 @@
 Enable extension.
 
+  $ export _ANTIGEN_INTERACTIVE=false
   $ antigen ext cache
   $ antigen ext-list
   cache
@@ -47,6 +48,7 @@ Both bundles are cached.
 
   $ ANTIGEN_CACHE=$ADOTDIR/init.zsh
   $ -antigen-reset-hooks
+  $ export _ANTIGEN_INTERACTIVE=false
   $ antigen ext cache
   $ antigen reset > /dev/null
   $ antigen ext-list

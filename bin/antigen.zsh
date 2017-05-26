@@ -244,7 +244,7 @@ antigen () {
 #   Either true or false depending if we are running in interactive mode
 -antigen-interactive-mode () {
   WARN "-antigen-interactive-mode: $ZSH_EVAL_CONTEXT"
-  [[ "$ZSH_EVAL_CONTEXT" == toplevel* || "$ZSH_EVAL_CONTEXT" == cmdarg* ]];
+  [[ $_ANTIGEN_INTERACTIVE == true || "$ZSH_EVAL_CONTEXT" == toplevel* || "$ZSH_EVAL_CONTEXT" == cmdarg* ]];
 }
 # Parses and retrieves a remote branch given a branch name.
 #
@@ -1540,9 +1540,11 @@ antigen-remove-hook () {
 antigen-ext () {
   local ext=$1
   local func="-antigen-$ext-init"
-  if (( $+functions[$func] && ! $_ANTIGEN_EXTENSIONS[(I)$ext] )); then
+  if (( $+functions[$func] && $_ANTIGEN_EXTENSIONS[(I)$ext] == 0 )); then
     eval $func
-    if (( $? )); then 
+    local ret=$?
+    WARN "$func return code was $ret"
+    if (( $ret == 0 )); then 
       -antigen-$ext-execute && _ANTIGEN_EXTENSIONS+=($ext)
     else
       WARN "IGNORING EXTENSION $func" EXT
@@ -1819,11 +1821,6 @@ EOC
 -antigen-cache-execute () {
   # Main function. Deferred antigen-apply.
   antigen-apply-cached () {
-    # Release all hooked functions
-    antigen-remove-hook -antigen-load-env-cached
-    antigen-remove-hook -antigen-load-source-cached
-    antigen-remove-hook antigen-bundle-cached
-
     # Auto determine check_files
     # There always should be 5 steps from original source as the correct way is to use
     # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
@@ -1836,6 +1833,11 @@ EOC
     [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
     
     unset _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
+
+    # Release all hooked functions
+    antigen-remove-hook -antigen-load-env-cached
+    antigen-remove-hook -antigen-load-source-cached
+    antigen-remove-hook antigen-bundle-cached
   }
   
   antigen-add-hook antigen-apply antigen-apply-cached post once
