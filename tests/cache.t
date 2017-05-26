@@ -46,8 +46,9 @@ Should not leak Antigen or OMZ environment variables.
 Both bundles are cached.
 
   $ ANTIGEN_CACHE=$ADOTDIR/init.zsh
-  $ antigen reset > /dev/null
+  $ -antigen-reset-hooks
   $ antigen ext cache
+  $ antigen reset > /dev/null
   $ antigen ext-list
   cache
   $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen bundles
@@ -67,7 +68,7 @@ List command should work as expected.
 Cache version matches antigen version.
 
   $ source $ANTIGEN_CACHE
-  $ ANTIGEN_VERSION=$(antigen version | sed 's/Antigen //' | sed 's/ (.*//')
+  $ ANTIGEN_VERSION=$(antigen version | head -1 | sed 's/Antigen //' | sed 's/ (.*//')
   $ [[ "$ANTIGEN_CACHE_VERSION" == "$ANTIGEN_VERSION" ]] && echo 0 || echo 1
   0
 

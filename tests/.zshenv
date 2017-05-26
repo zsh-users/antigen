@@ -11,6 +11,7 @@ export ANTIGEN_AUTO_CONFIG=false
 export ANTIGEN_CACHE=false
 export ANTIGEN_RSRC=$ADOTDIR/.resources
 export _ANTIGEN_WARN_DUPLICATES=false
+#export ANTIGEN_DEBUG_LOG=/dev/stdout
 
 export TESTDIR=$(mktemp -d "/tmp/cram-testdir-XXXXX" || /tmp/cram-testdir)
 test -f "$TESTDIR/.zcompdump" && rm "$TESTDIR/.zcompdump"

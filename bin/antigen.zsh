@@ -1526,10 +1526,12 @@ antigen-remove-hook () {
   for target in ${(k)_ANTIGEN_HOOKS}; do
     # Release all hooked functions
     eval "function $(functions -- ${_ANTIGEN_HOOK_PREFIX}$target | sed s/${_ANTIGEN_HOOK_PREFIX}//)"
-    unfunction -- "${_ANTIGEN_HOOK_PREFIX}$target"
+    unfunction -- "${_ANTIGEN_HOOK_PREFIX}$target" 2> /dev/null
   done
   
   _ANTIGEN_HOOKS=()
+  _ANTIGEN_HOOKS_META=()
+  _ANTIGEN_EXTENSIONS=()
 }
 
 # Initializes an extension
@@ -1538,7 +1540,7 @@ antigen-remove-hook () {
 antigen-ext () {
   local ext=$1
   local func="-antigen-$ext-init"
-  if (( $+functions[$func] )); then
+  if (( $+functions[$func] && ! $_ANTIGEN_EXTENSIONS[(I)$ext] )); then
     eval $func
     if (( $? )); then 
       -antigen-$ext-execute && _ANTIGEN_EXTENSIONS+=($ext)
@@ -1548,7 +1550,7 @@ antigen-ext () {
     fi
     
   else
-    printf "Antigen: No extension defined: %s\n" $func >&2
+    printf "Antigen: No extension defined or already loaded: %s\n" $func >&2
     return 1
   fi
 }
