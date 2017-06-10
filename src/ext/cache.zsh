@@ -103,6 +103,7 @@ EOC
 -antigen-cache-execute () {
   # Main function. Deferred antigen-apply.
   antigen-apply-cached () {
+    TRACE "APPLYING CACHE" EXT
     # Auto determine check_files
     # There always should be 5 steps from original source as the correct way is to use
     # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
@@ -132,8 +133,9 @@ EOC
   
   # Defer loading.
   -antigen-load-env-cached () {
+    local bundle
     typeset -A bundle; bundle=($@)
-    local location=${bundle[path]}/${bundle[loc]}
+    local location=${bundle[dir]}/${bundle[loc]}
     
     # Load to path if there is no sourceable
     if [[ ${bundle[loc]} == "/" ]]; then

@@ -9,7 +9,7 @@ antigen-bundle () {
     return 1
   fi
 
-  typeset -A bundle; -antigen-parse-args 'bundle' ${=@}
+  builtin typeset -A bundle; -antigen-parse-args 'bundle' ${=@}
   if [[ -z ${bundle[btype]} ]]; then
     bundle[btype]=bundle
   fi
@@ -21,7 +21,7 @@ antigen-bundle () {
   fi
  
   # Clone bundle if we haven't done do already.
-  if [[ ! -d "${bundle[path]}" ]]; then
+  if [[ ! -d "${bundle[dir]}" ]]; then
     if ! -antigen-bundle-install ${(kv)bundle}; then
       return 1
     fi
@@ -48,7 +48,7 @@ antigen-bundle () {
 
   # Ensure a clone exists for this repo, if needed.
   # Get the clone's directory as per the given repo url and branch.
-  local bpath="${bundle[path]}"
+  local bpath="${bundle[dir]}"
   # Clone if it doesn't already exist.
   local start=$(date +'%s')
 

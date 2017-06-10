@@ -52,6 +52,7 @@ antigen-add-hook () {
 # Private function to handle multiple hooks in a central point.
 -antigen-hook-handler () {
   local target="$1" args hook called
+  local hooks meta
   shift
   args=${@}
 

@@ -468,13 +468,14 @@ antigen () {
 # Returns
 #   Integer. 0 if success 1 if an error ocurred.
 -antigen-load () {
+  local bundle list
   typeset -A bundle; bundle=($@)
 
   typeset -Ua list; list=()
-  local location=${bundle[path]}/${bundle[loc]}
+  local location="${bundle[dir]}/${bundle[loc]}"
 
   # Prioritize location when given.
-  if [[ -f ${location} ]]; then
+  if [[ -f "${location}" ]]; then
     list=(${location})
   else
     # Directory locations must be suffixed with slash
@@ -510,7 +511,7 @@ antigen () {
 
 -antigen-load-env () {
   typeset -A bundle; bundle=($@)
-  local location=${bundle[path]}/${bundle[loc]}
+  local location=${bundle[dir]}/${bundle[loc]}
 
   # Load to path if there is no sourceable
   if [[ -d ${location} ]]; then
@@ -524,7 +525,8 @@ antigen () {
 }
 
 -antigen-load-source () {
-  local list=($@)
+  typeset -a list
+  list=($@)
   local src match mbegin mend MATCH MBEGIN MEND
 
   # Return error when we're given an empty list
@@ -581,8 +583,10 @@ TRACE () {
   shift
 
   # Bundle spec arguments' default values.
-  typeset -A args
+  #setopt XTRACE VERBOSE
+  builtin typeset -A args
   args[url]="$ANTIGEN_DEFAULT_REPO_URL"
+  #unsetopt XTRACE VERBOSE
   args[loc]=/
   args[make_local_clone]=true
   args[btype]=plugin
@@ -708,10 +712,10 @@ TRACE () {
     fi
 
     bpath="$ANTIGEN_BUNDLES/$bpath"
-    args[path]="${(qq)bpath}"
+    args[dir]="${(qq)bpath}"
   else
     # if it's local then path is just the "url" argument, loc remains the same
-    args[path]=${args[url]}
+    args[dir]=${args[url]}
   fi
   
   # Escape url and branch (may contain semver-like and pipe characters)
@@ -794,7 +798,7 @@ antigen-bundle () {
     return 1
   fi
 
-  typeset -A bundle; -antigen-parse-args 'bundle' ${=@}
+  builtin typeset -A bundle; -antigen-parse-args 'bundle' ${=@}
   if [[ -z ${bundle[btype]} ]]; then
     bundle[btype]=bundle
   fi
@@ -806,7 +810,7 @@ antigen-bundle () {
   fi
  
   # Clone bundle if we haven't done do already.
-  if [[ ! -d "${bundle[path]}" ]]; then
+  if [[ ! -d "${bundle[dir]}" ]]; then
     if ! -antigen-bundle-install ${(kv)bundle}; then
       return 1
     fi
@@ -833,7 +837,7 @@ antigen-bundle () {
 
   # Ensure a clone exists for this repo, if needed.
   # Get the clone's directory as per the given repo url and branch.
-  local bpath="${bundle[path]}"
+  local bpath="${bundle[dir]}"
   # Clone if it doesn't already exist.
   local start=$(date +'%s')
 
@@ -1362,7 +1366,7 @@ antigen-use () {
 
 antigen-version () {
   local version="develop"
-  local revision=""
+  local extensions revision=""
   if [[ -d $_ANTIGEN_INSTALL_DIR/.git ]]; then
     revision=" ($(git --git-dir=$_ANTIGEN_INSTALL_DIR/.git rev-parse --short '@'))"
   fi
@@ -1431,6 +1435,7 @@ antigen-add-hook () {
 # Private function to handle multiple hooks in a central point.
 -antigen-hook-handler () {
   local target="$1" args hook called
+  local hooks meta
   shift
   args=${@}
 
@@ -1672,8 +1677,9 @@ antigen-ext-init () {
     # Do ensure-repo in parallel
     WARN "${_PARALLEL_BUNDLE}" PARALLEL
     for args in ${_PARALLEL_BUNDLE}; do
+      local bundle
       typeset -A bundle; -antigen-parse-args 'bundle' ${=args}
-      if [[ ! -d ${bundle[path]} ]]; then
+      if [[ ! -d ${bundle[dir]} ]]; then
         WARN "Install in parallel ${bundle[name]}." PARALLEL
         echo "Installing ${bundle[name]}!..."
         -antigen-ensure-repo "${bundle[url]}" > /dev/null &!
@@ -1693,6 +1699,7 @@ antigen-ext-init () {
       sleep .5
     done
     
+    local bundle
     for bundle in ${_PARALLEL_BUNDLE[@]}; do
       antigen-bundle $bundle
     done
@@ -1830,6 +1837,7 @@ EOC
 -antigen-cache-execute () {
   # Main function. Deferred antigen-apply.
   antigen-apply-cached () {
+    TRACE "APPLYING CACHE" EXT
     # Auto determine check_files
     # There always should be 5 steps from original source as the correct way is to use
     # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
@@ -1859,8 +1867,9 @@ EOC
   
   # Defer loading.
   -antigen-load-env-cached () {
+    local bundle
     typeset -A bundle; bundle=($@)
-    local location=${bundle[path]}/${bundle[loc]}
+    local location=${bundle[dir]}/${bundle[loc]}
     
     # Load to path if there is no sourceable
     if [[ ${bundle[loc]} == "/" ]]; then
