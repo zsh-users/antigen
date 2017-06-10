@@ -19,7 +19,6 @@
     # Do ensure-repo in parallel
     WARN "${_PARALLEL_BUNDLE}" PARALLEL
     for args in ${_PARALLEL_BUNDLE}; do
-      local bundle
       typeset -A bundle; -antigen-parse-args 'bundle' ${=args}
       if [[ ! -d ${bundle[dir]} ]]; then
         WARN "Install in parallel ${bundle[name]}." PARALLEL
@@ -40,11 +39,12 @@
       done
       sleep .5
     done
-    
-    local bundle
+
+    builtin local bundle &> /dev/null
     for bundle in ${_PARALLEL_BUNDLE[@]}; do
       antigen-bundle $bundle
     done
+    
 
     WARN "Parallel install done" PARALLEL
   }

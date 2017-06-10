@@ -103,7 +103,7 @@ EOC
 -antigen-cache-execute () {
   # Main function. Deferred antigen-apply.
   antigen-apply-cached () {
-    TRACE "APPLYING CACHE" EXT
+    # TRACE "APPLYING CACHE" EXT
     # Auto determine check_files
     # There always should be 5 steps from original source as the correct way is to use
     # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.

@@ -41,7 +41,7 @@ antigen-add-hook () {
 
     # Create hook, call hook-handler to further process hook functions
     eval "function $target () {
-      -antigen-hook-handler $target \${@//\*/\\\*}
+      noglob -antigen-hook-handler $target \$@
       return \$?
     }"
   fi
@@ -54,7 +54,7 @@ antigen-add-hook () {
   local target="$1" args hook called
   local hooks meta
   shift
-  args=${@}
+  typeset -a args; args=(${@})
 
   typeset -a pre_hooks replace_hooks post_hooks;
   typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
@@ -89,7 +89,7 @@ antigen-add-hook () {
 
   for hook in $pre_hooks; do
     WARN "Pre hook:" $hook $args
-    eval $hook $args
+    noglob $hook $args
     [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
   done
 
@@ -100,14 +100,14 @@ antigen-add-hook () {
     # Should not be needed if `antigen-remove-hook` removed unneeded hooks.
     if (( $+functions[$hook] )); then
       WARN "Replace hook:" $hook $args
-      eval $hook $args
+      noglob $hook $args
       [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
     fi
   done
   
   if [[ $replace_hook == 0 ]]; then
-    WARN "${_ANTIGEN_HOOK_PREFIX}$target" $args
-    eval "${_ANTIGEN_HOOK_PREFIX}$target" $args
+    WARN "${_ANTIGEN_HOOK_PREFIX}$target $args"
+    noglob ${_ANTIGEN_HOOK_PREFIX}$target $args
     ret=$?
   else
     WARN "Replaced hooked function."
@@ -115,7 +115,7 @@ antigen-add-hook () {
 
   for hook in $post_hooks; do
     WARN "Post hook:" $hook $args
-    eval $hook $args
+    noglob $hook $args
     [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
   done
   

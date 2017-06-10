@@ -1,7 +1,7 @@
 # Usage:
 #   -antigen-parse-args output_assoc_arr <args...>
 -antigen-parse-args () {
-  local argkey key value index=0
+  local argkey key value index=0 args
   local match mbegin mend MATCH MBEGIN MEND
 
   local var=$1

@@ -576,7 +576,7 @@ TRACE () {
 # Usage:
 #   -antigen-parse-args output_assoc_arr <args...>
 -antigen-parse-args () {
-  local argkey key value index=0
+  local argkey key value index=0 args
   local match mbegin mend MATCH MBEGIN MEND
 
   local var=$1
@@ -1424,7 +1424,7 @@ antigen-add-hook () {
 
     # Create hook, call hook-handler to further process hook functions
     eval "function $target () {
-      -antigen-hook-handler $target \${@//\*/\\\*}
+      noglob -antigen-hook-handler $target \$@
       return \$?
     }"
   fi
@@ -1437,7 +1437,7 @@ antigen-add-hook () {
   local target="$1" args hook called
   local hooks meta
   shift
-  args=${@}
+  typeset -a args; args=(${@})
 
   typeset -a pre_hooks replace_hooks post_hooks;
   typeset -a hooks; hooks=(${(s|:|)_ANTIGEN_HOOKS[$target]})
@@ -1472,7 +1472,7 @@ antigen-add-hook () {
 
   for hook in $pre_hooks; do
     WARN "Pre hook:" $hook $args
-    eval $hook $args
+    noglob $hook $args
     [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
   done
 
@@ -1483,14 +1483,14 @@ antigen-add-hook () {
     # Should not be needed if `antigen-remove-hook` removed unneeded hooks.
     if (( $+functions[$hook] )); then
       WARN "Replace hook:" $hook $args
-      eval $hook $args
+      noglob $hook $args
       [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
     fi
   done
   
   if [[ $replace_hook == 0 ]]; then
-    WARN "${_ANTIGEN_HOOK_PREFIX}$target" $args
-    eval "${_ANTIGEN_HOOK_PREFIX}$target" $args
+    WARN "${_ANTIGEN_HOOK_PREFIX}$target $args"
+    noglob ${_ANTIGEN_HOOK_PREFIX}$target $args
     ret=$?
   else
     WARN "Replaced hooked function."
@@ -1498,7 +1498,7 @@ antigen-add-hook () {
 
   for hook in $post_hooks; do
     WARN "Post hook:" $hook $args
-    eval $hook $args
+    noglob $hook $args
     [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
   done
   
@@ -1677,7 +1677,6 @@ antigen-ext-init () {
     # Do ensure-repo in parallel
     WARN "${_PARALLEL_BUNDLE}" PARALLEL
     for args in ${_PARALLEL_BUNDLE}; do
-      local bundle
       typeset -A bundle; -antigen-parse-args 'bundle' ${=args}
       if [[ ! -d ${bundle[dir]} ]]; then
         WARN "Install in parallel ${bundle[name]}." PARALLEL
@@ -1698,11 +1697,12 @@ antigen-ext-init () {
       done
       sleep .5
     done
-    
-    local bundle
+
+    builtin local bundle &> /dev/null
     for bundle in ${_PARALLEL_BUNDLE[@]}; do
       antigen-bundle $bundle
     done
+    
 
     WARN "Parallel install done" PARALLEL
   }
@@ -1837,7 +1837,7 @@ EOC
 -antigen-cache-execute () {
   # Main function. Deferred antigen-apply.
   antigen-apply-cached () {
-    TRACE "APPLYING CACHE" EXT
+    # TRACE "APPLYING CACHE" EXT
     # Auto determine check_files
     # There always should be 5 steps from original source as the correct way is to use
     # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
