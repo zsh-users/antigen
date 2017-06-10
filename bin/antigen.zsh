@@ -243,8 +243,13 @@ antigen () {
 # Returns
 #   Either true or false depending if we are running in interactive mode
 -antigen-interactive-mode () {
-  WARN "-antigen-interactive-mode: $ZSH_EVAL_CONTEXT"
-  [[ $_ANTIGEN_INTERACTIVE == true || "$ZSH_EVAL_CONTEXT" == toplevel* || "$ZSH_EVAL_CONTEXT" == cmdarg* ]];
+  WARN "-antigen-interactive-mode: $ZSH_EVAL_CONTEXT \$_ANTIGEN_INTERACTIVE = $_ANTIGEN_INTERACTIVE"
+  if [[ $_ANTIGEN_INTERACTIVE != "" ]]; then
+    [[ $_ANTIGEN_INTERACTIVE == true ]];
+    return
+  fi
+
+  [[ "$ZSH_EVAL_CONTEXT" == toplevel* || "$ZSH_EVAL_CONTEXT" == cmdarg* ]];
 }
 # Parses and retrieves a remote branch given a branch name.
 #
@@ -440,6 +445,9 @@ antigen () {
 
   # Compatibility with oh-my-zsh themes.
   -antigen-set-default _ANTIGEN_THEME_COMPAT true
+  
+  # Add default built-in extensions to load at start up
+  -antigen-set-default _ANTIGEN_BUILTIN_EXTENSIONS 'lock parallel defer cache'
 
   # Setup antigen's own completion.
   if -antigen-interactive-mode; then
@@ -1545,6 +1553,7 @@ antigen-ext () {
     local ret=$?
     WARN "$func return code was $ret"
     if (( $ret == 0 )); then 
+      LOG "LOADED EXTENSION $ext" EXT
       -antigen-$ext-execute && _ANTIGEN_EXTENSIONS+=($ext)
     else
       WARN "IGNORING EXTENSION $func" EXT
@@ -1570,7 +1579,7 @@ antigen-ext-list () {
 antigen-ext-init () {
   # Initialize extensions. unless in interactive mode.
   local ext
-  for ext in lock parallel defer cache; do
+  for ext in ${(s/ /)_ANTIGEN_BUILTIN_EXTENSIONS}; do
     # Check if extension is loaded before intializing it
     (( $+functions[-antigen-$ext-init] )) && antigen-ext $ext
   done

@@ -49,10 +49,9 @@ Both bundles are cached.
   $ ANTIGEN_CACHE=$ADOTDIR/init.zsh
   $ -antigen-reset-hooks
   $ export _ANTIGEN_INTERACTIVE=false
-  $ antigen ext cache
   $ antigen reset > /dev/null
   $ antigen ext-list
-  cache
+  lock parallel defer cache
   $ echo "$PLUGIN_DIR\n$PLUGIN_DIR2" | antigen bundles
   $ antigen apply
 

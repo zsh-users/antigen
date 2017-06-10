@@ -174,6 +174,7 @@ antigen-ext () {
     local ret=$?
     WARN "$func return code was $ret"
     if (( $ret == 0 )); then 
+      LOG "LOADED EXTENSION $ext" EXT
       -antigen-$ext-execute && _ANTIGEN_EXTENSIONS+=($ext)
     else
       WARN "IGNORING EXTENSION $func" EXT
@@ -199,7 +200,7 @@ antigen-ext-list () {
 antigen-ext-init () {
   # Initialize extensions. unless in interactive mode.
   local ext
-  for ext in lock parallel defer cache; do
+  for ext in ${(s/ /)_ANTIGEN_BUILTIN_EXTENSIONS}; do
     # Check if extension is loaded before intializing it
     (( $+functions[-antigen-$ext-init] )) && antigen-ext $ext
   done
