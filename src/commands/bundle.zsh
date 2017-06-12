@@ -3,13 +3,13 @@
 # Keyword only arguments:
 #   branch - The branch of the repo to use for this bundle.
 antigen-bundle () {
+  TRACE "Called antigen-bundle with $@" BUNDLE
   if [[ -z "$1" ]]; then
     printf "Antigen: Must provide a bundle url or name.\n" >&2
     return 1
   fi
 
-  typeset -A bundle
-  -antigen-parse-args 'bundle' "$@"
+  builtin typeset -A bundle; -antigen-parse-args 'bundle' ${=@}
   if [[ -z ${bundle[btype]} ]]; then
     bundle[btype]=bundle
   fi
@@ -21,7 +21,7 @@ antigen-bundle () {
   fi
  
   # Clone bundle if we haven't done do already.
-  if [[ ! -d "${bundle[path]}" ]]; then
+  if [[ ! -d "${bundle[dir]}" ]]; then
     if ! -antigen-bundle-install ${(kv)bundle}; then
       return 1
     fi
@@ -29,6 +29,7 @@ antigen-bundle () {
 
   # Load the plugin.
   if ! -antigen-load ${(kv)bundle}; then
+    TRACE "-antigen-load failed to load ${bundle[name]}" BUNDLE
     printf "Antigen: Failed to load %s.\n" ${bundle[btype]} >&2
     return 1
   fi
@@ -47,7 +48,7 @@ antigen-bundle () {
 
   # Ensure a clone exists for this repo, if needed.
   # Get the clone's directory as per the given repo url and branch.
-  local bpath="${bundle[path]}"
+  local bpath="${bundle[dir]}"
   # Clone if it doesn't already exist.
   local start=$(date +'%s')
 
@@ -55,6 +56,7 @@ antigen-bundle () {
 
   if ! -antigen-ensure-repo "${bundle[url]}"; then
     # Return immediately if there is an error cloning
+    TRACE "-antigen-bundle-instal failed to clone ${bundle[url]}" BUNDLE
     printf "Error! Activate logging and try again.\n" >&2
     return 1
   fi

@@ -8,13 +8,14 @@
 # Returns
 #   Integer. 0 if success 1 if an error ocurred.
 -antigen-load () {
+  local bundle list
   typeset -A bundle; bundle=($@)
 
   typeset -Ua list; list=()
-  local location=${bundle[path]}/${bundle[loc]}
+  local location="${bundle[dir]}/${bundle[loc]}"
 
   # Prioritize location when given.
-  if [[ -f ${location} ]]; then
+  if [[ -f "${location}" ]]; then
     list=(${location})
   else
     # Directory locations must be suffixed with slash
@@ -41,7 +42,7 @@
   -antigen-load-env ${(kv)bundle}
 
   # If there is any sourceable try to load it
-  if ! -antigen-load-source && [[ ! -d ${location} ]]; then
+  if ! -antigen-load-source "${list[@]}" && [[ ! -d ${location} ]]; then
     return 1
   fi
 
@@ -50,7 +51,7 @@
 
 -antigen-load-env () {
   typeset -A bundle; bundle=($@)
-  local location=${bundle[path]}/${bundle[loc]}
+  local location=${bundle[dir]}/${bundle[loc]}
 
   # Load to path if there is no sourceable
   if [[ -d ${location} ]]; then
@@ -64,6 +65,8 @@
 }
 
 -antigen-load-source () {
+  typeset -a list
+  list=($@)
   local src match mbegin mend MATCH MBEGIN MEND
 
   # Return error when we're given an empty list

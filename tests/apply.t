@@ -5,7 +5,7 @@ Can use antigen-apply and antigen apply interchangably.
 
   $ antigen bundle $PLUGIN_DIR &> /dev/null
   $ antigen theme $PLUGIN_DIR silly
-  $ antigen apply
+  $ antigen apply &> /dev/null
 
   $ hehe
   hehe

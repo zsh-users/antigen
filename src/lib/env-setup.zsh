@@ -44,6 +44,9 @@
 
   # Compatibility with oh-my-zsh themes.
   -antigen-set-default _ANTIGEN_THEME_COMPAT true
+  
+  # Add default built-in extensions to load at start up
+  -antigen-set-default _ANTIGEN_BUILTIN_EXTENSIONS 'lock parallel defer cache'
 
   # Setup antigen's own completion.
   if -antigen-interactive-mode; then
@@ -51,9 +54,6 @@
     compinit -C -d "$ANTIGEN_COMPDUMP"
     compdef _antigen antigen
   else
-    # Initialize extensions. unless in interactive mode.
-    #antigen-ext defer
-    [[ $ANTIGEN_CACHE != false ]] && antigen-ext cache
-    antigen-ext lock
+    (( $+functions[antigen-ext-init] )) && antigen-ext-init
   fi
 }

@@ -75,5 +75,3 @@ _antigen () {
     ;;
   esac
 }
-
--antigen-env-setup
