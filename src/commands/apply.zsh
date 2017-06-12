@@ -1,5 +1,6 @@
 # Initialize completion
 antigen-apply () {
+  LOG "Called antigen-apply"
   \rm -f "$ANTIGEN_COMPDUMP"
 
   # Load the compinit module. This will readefine the `compdef` function to

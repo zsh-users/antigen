@@ -1,15 +1,17 @@
 # Usage:
 #   -antigen-parse-args output_assoc_arr <args...>
 -antigen-parse-args () {
-  local argkey key value index=0
+  local argkey key value index=0 args
   local match mbegin mend MATCH MBEGIN MEND
 
   local var=$1
   shift
 
   # Bundle spec arguments' default values.
-  typeset -A args
+  #setopt XTRACE VERBOSE
+  builtin typeset -A args
   args[url]="$ANTIGEN_DEFAULT_REPO_URL"
+  #unsetopt XTRACE VERBOSE
   args[loc]=/
   args[make_local_clone]=true
   args[btype]=plugin
@@ -145,10 +147,10 @@
     fi
 
     bpath="$ANTIGEN_BUNDLES/$bpath"
-    args[path]="${(qq)bpath}"
+    args[dir]="${(qq)bpath}"
   else
     # if it's local then path is just the "url" argument, loc remains the same
-    args[path]=${args[url]}
+    args[dir]=${args[url]}
   fi
   
   # Escape url and branch (may contain semver-like and pipe characters)
