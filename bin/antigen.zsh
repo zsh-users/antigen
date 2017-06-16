@@ -1689,16 +1689,25 @@ antigen-ext-init () {
     WARN "Gonna install in parallel ${#_PARALLEL_BUNDLE} bundles." PARALLEL
     # Do ensure-repo in parallel
     WARN "${_PARALLEL_BUNDLE}" PARALLEL
+    typeset -Ua repositories # Used to keep track of cloned repositories to avoid
+                             # trying to clone it multiple times.
     for args in ${_PARALLEL_BUNDLE}; do
       typeset -A bundle; -antigen-parse-args 'bundle' ${=args}
-      if [[ ! -d ${bundle[dir]} ]]; then
+
+      if [[ ! -d ${bundle[dir]} && $repositories[(I)${bundle[url]}] == 0 ]]; then
         WARN "Install in parallel ${bundle[name]}." PARALLEL
         echo "Installing ${bundle[name]}!..."
+        # TODO what happens if we request multiple bundles on different branches
+        # on the same repository/library:
+        #     antigen bundle example/bundle1@develop
+        #     antigen bundle example/bundle2 (default master)
         -antigen-ensure-repo "${bundle[url]}" > /dev/null &!
         pids+=($!)
       else
         WARN "Bundle ${bundle[name]} already cloned locally." PARALLEL
       fi
+      
+      repositories+=(${bundle[url]})
     done
 
     # Wait for all background processes to end
