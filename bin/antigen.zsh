@@ -1791,8 +1791,6 @@ antigen () {
 typeset -gaU fpath path
 fpath+=(${_fpath[@]}) path+=(${_PATH[@]})
 _antigen_compinit () {
-  source "$_ANTIGEN_INSTALL_DIR/antigen.zsh"
-  TRACE "Gonna load compdump file @ _antigen_compinit" COMPDUMP
   autoload -Uz compinit; compinit -d "$ANTIGEN_COMPDUMP"; compdef _antigen antigen
   add-zsh-hook -D precmd _antigen_compinit
 }
