@@ -40,9 +40,11 @@
     # Wait for all background processes to end
     while [[ $#pids > 0 ]]; do
       for pid in $pids; do
-         if [[ $(ps -o pid= -p $pid) == "" ]]; then
-           pids[$pids[(I)$pid]]=()
-         fi
+        # `ps` may diplay an error message such "Signal 18 (CONT) caught by ps
+        # (procps-ng version 3.3.9).", see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=732410
+        if [[ $(ps -o pid= -p $pid >/dev/null 2>&1) == "" ]]; then
+          pids[$pids[(I)$pid]]=()
+        fi
       done
       sleep .5
     done
