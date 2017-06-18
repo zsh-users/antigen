@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/) [v2.0.0](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2017-06-18
+
+We're deploying an extension system to further extend Antigen's functionality.
+Core functionality such as parallel install and cache are built upon this system,
+see `src/ext`.
+
+Extensions must adhere to a basic interface:
+
+    - `-antigen-{extension-name}-init`
+    - `-antigen-{extension-name}-execute`
+
+Both these functiona must return 0 or 1 to abort initialization. Example:
+
+    antigen ext custom
+    # -antigen-custom-init
+    # -antigne-custom-execute
+
+Internally an extension must use Antigen's hook system to retrieve arguments and run custom
+functionality:
+
+    - `antigen-add-hook`: antigen-add-hook [antigen-function] [hook-function] ["replace"|"pre"|"post"] ["once"|"repeat"]
+    - `antigen-remove-hook`: antigen-remove-hook [hook-function]
+
+### Added
+- [#529, #506] Parallel bundle install
+- [#542] Reset default library url with antigen-use
+
+### Changed
+- [#547, #552] `antigen-theme` command won't switch between themes
+
+### Fixed
+- [#550, #548] Fix parallel extension running multiple clone instances
+- [#549, #463] Fix compdump missing completions
+- [#553] Catch spurious error message by `ps`
+
 ## [2.1.1] - 2017-05-20
 
 ### Changed
@@ -475,6 +510,7 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 - Added CHANGELOG.md
 - Following [Semantic Versioning](http://semver.org/)
 
+[2.2.0]: https://github.com/zsh-users/antigen/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/zsh-users/antigen/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/zsh-users/antigen/compare/v2.0.2...v2.1.0
 [2.0.2]: https://github.com/zsh-users/antigen/compare/v2.0.1...v2.0.2
