@@ -452,8 +452,9 @@ antigen () {
 
   # Setup antigen's own completion.
   if -antigen-interactive-mode; then
+    TRACE "Gonna create compdump file @ env-setup" COMPDUMP
     autoload -Uz compinit
-    compinit -C -d "$ANTIGEN_COMPDUMP"
+    compinit -d "$ANTIGEN_COMPDUMP"
     compdef _antigen antigen
   else
     (( $+functions[antigen-ext-init] )) && antigen-ext-init
@@ -783,21 +784,20 @@ TRACE () {
 # Initialize completion
 antigen-apply () {
   LOG "Called antigen-apply"
-  \rm -f "$ANTIGEN_COMPDUMP"
 
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
+  TRACE "Gonna create compdump file @ apply" COMPDUMP
   autoload -Uz compinit
-  compinit -C -d "$ANTIGEN_COMPDUMP"
-  if [[ ! -f "$ANTIGEN_COMPDUMP.zwc" || "$ANTIGEN_COMPDUMP" -nt "$ANTIGEN_COMPDUMP.zwc" ]]; then
-    # Apply all `compinit`s that have been deferred.
-    local cdef
-    for cdef in "${__deferred_compdefs[@]}"; do
-      compdef "$cdef"
-    done
+  compinit -d "$ANTIGEN_COMPDUMP"
 
-    { zcompile "$ANTIGEN_COMPDUMP" } &!
-  fi
+  # Apply all `compinit`s that have been deferred.
+  local cdef
+  for cdef in "${__deferred_compdefs[@]}"; do
+    compdef "$cdef"
+  done
+
+  { zcompile "$ANTIGEN_COMPDUMP" } &!
 
   unset __deferred_compdefs
 }
@@ -1692,16 +1692,23 @@ antigen-ext-init () {
     WARN "Gonna install in parallel ${#_PARALLEL_BUNDLE} bundles." PARALLEL
     # Do ensure-repo in parallel
     WARN "${_PARALLEL_BUNDLE}" PARALLEL
+    typeset -Ua repositories # Used to keep track of cloned repositories to avoid
+                             # trying to clone it multiple times.
     for args in ${_PARALLEL_BUNDLE}; do
       typeset -A bundle; -antigen-parse-args 'bundle' ${=args}
-      if [[ ! -d ${bundle[dir]} ]]; then
+
+      if [[ ! -d ${bundle[dir]} && $repositories[(I)${bundle[url]}] == 0 ]]; then
         WARN "Install in parallel ${bundle[name]}." PARALLEL
         echo "Installing ${bundle[name]}!..."
+        # $bundle[url]'s format is "url|branch" as to create "$ANTIGEN_BUNDLES/bundle/name-branch",
+        # this way you may require multiple branches from the same repository.
         -antigen-ensure-repo "${bundle[url]}" > /dev/null &!
         pids+=($!)
       else
         WARN "Bundle ${bundle[name]} already cloned locally." PARALLEL
       fi
+      
+      repositories+=(${bundle[url]})
     done
 
     # Wait for all background processes to end
@@ -1794,7 +1801,7 @@ antigen () {
 typeset -gaU fpath path
 fpath+=(${_fpath[@]}) path+=(${_PATH[@]})
 _antigen_compinit () {
-  autoload -Uz compinit; compinit -C -d "$ANTIGEN_COMPDUMP"; compdef _antigen antigen
+  autoload -Uz compinit; compinit -d "$ANTIGEN_COMPDUMP"; compdef _antigen antigen
   add-zsh-hook -D precmd _antigen_compinit
 }
 autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
