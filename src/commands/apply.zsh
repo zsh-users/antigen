@@ -1,21 +1,20 @@
 # Initialize completion
 antigen-apply () {
   LOG "Called antigen-apply"
-  \rm -f "$ANTIGEN_COMPDUMP"
 
   # Load the compinit module. This will readefine the `compdef` function to
   # the one that actually initializes completions.
+  TRACE "Gonna create compdump file @ apply" COMPDUMP
   autoload -Uz compinit
-  compinit -C -d "$ANTIGEN_COMPDUMP"
-  if [[ ! -f "$ANTIGEN_COMPDUMP.zwc" || "$ANTIGEN_COMPDUMP" -nt "$ANTIGEN_COMPDUMP.zwc" ]]; then
-    # Apply all `compinit`s that have been deferred.
-    local cdef
-    for cdef in "${__deferred_compdefs[@]}"; do
-      compdef "$cdef"
-    done
+  compinit -d "$ANTIGEN_COMPDUMP"
 
-    { zcompile "$ANTIGEN_COMPDUMP" } &!
-  fi
+  # Apply all `compinit`s that have been deferred.
+  local cdef
+  for cdef in "${__deferred_compdefs[@]}"; do
+    compdef "$cdef"
+  done
+
+  { zcompile "$ANTIGEN_COMPDUMP" } &!
 
   unset __deferred_compdefs
 }
