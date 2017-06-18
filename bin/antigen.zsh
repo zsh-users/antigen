@@ -1697,10 +1697,8 @@ antigen-ext-init () {
       if [[ ! -d ${bundle[dir]} && $repositories[(I)${bundle[url]}] == 0 ]]; then
         WARN "Install in parallel ${bundle[name]}." PARALLEL
         echo "Installing ${bundle[name]}!..."
-        # TODO what happens if we request multiple bundles on different branches
-        # on the same repository/library:
-        #     antigen bundle example/bundle1@develop
-        #     antigen bundle example/bundle2 (default master)
+        # $bundle[url]'s format is "url|branch" as to create "$ANTIGEN_BUNDLES/bundle/name-branch",
+        # this way you may require multiple branches from the same repository.
         -antigen-ensure-repo "${bundle[url]}" > /dev/null &!
         pids+=($!)
       else
