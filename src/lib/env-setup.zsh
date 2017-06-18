@@ -50,8 +50,9 @@
 
   # Setup antigen's own completion.
   if -antigen-interactive-mode; then
+    TRACE "Gonna create compdump file @ env-setup" COMPDUMP
     autoload -Uz compinit
-    compinit -C -d "$ANTIGEN_COMPDUMP"
+    compinit -d "$ANTIGEN_COMPDUMP"
     compdef _antigen antigen
   else
     (( $+functions[antigen-ext-init] )) && antigen-ext-init
