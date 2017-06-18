@@ -68,3 +68,8 @@ Do not change current directory.
   $ pwd
   /tmp
 
+Do not provide a default theme name value.
+
+  $ antigen-theme
+  Antigen: Must provide a theme url or name.
+  [1]

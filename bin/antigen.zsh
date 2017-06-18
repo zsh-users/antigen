@@ -1224,17 +1224,20 @@ antigen-snapshot () {
 # Returns
 #   0 if everything was succesfully
 antigen-theme () {
-  local record result=0
+  local name=$1 result=0 record
   local match mbegin mend MATCH MBEGIN MEND
+
+  if [[ -z "$1" ]]; then
+    printf "Antigen: Must provide a theme url or name.\n" >&2
+    return 1
+  fi
 
   -antigen-theme-reset-hooks
 
   record=$(-antigen-find-record "theme")
-
   if [[ "$1" != */* && "$1" != --* ]]; then
     # The first argument is just a name of the plugin, to be picked up from
     # the default repo.
-    local name="${1:-robbyrussell}"
     antigen-bundle --loc=themes/$name --btype=theme
 
   else
