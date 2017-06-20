@@ -5,10 +5,10 @@
 WITH_LOCK=yes
 WITH_DEFER=yes
 WITH_CACHE=yes
+WITH_DEBUG=yes
 WITH_PARALLEL=yes
 WITH_EXTENSIONS=yes
 WITH_COMPLETION=yes
-DEBUG=yes
 ######################################################################
 SHELL     ?= sh
 PREFIX    ?= /usr/local
@@ -29,10 +29,10 @@ CONTAINER_IMAGE ?= desyncr/zsh-docker-
 
 TARGET     ?= ${BIN}/antigen.zsh
 SRC        ?= ${SRC}
-DEBUG      ?= yes
 EXTENSIONS ?= 
 GLOB       ?= 
 
+WITH_DEBUG      ?= yes
 WITH_EXTENSIONS ?= yes
 WITH_DEFER      ?= yes
 WITH_LOCK       ?= yes
@@ -66,7 +66,7 @@ ifeq (${WITH_COMPLETION}, yes)
 GLOB  += ${SRC}/_antigen
 endif
 # If debug is enabled then load debug functions
-ifeq (${DEBUG}, yes)
+ifeq (${WITH_DEBUG}, yes)
 GLOB  += ${SRC}/lib/log.zsh
 endif
 
@@ -103,7 +103,7 @@ build:
 	@echo "-antigen-env-setup" >> ${TARGET}
 	@echo "${VERSION}" > ${VERSION_FILE}
 	@$(call ised,"s/{{ANTIGEN_VERSION}}/$$(cat ${VERSION_FILE})/",${TARGET})
-ifeq (${DEBUG}, no)
+ifeq (${WITH_DEBUG}, no)
 	@$(call isede,"s/ (WARN|LOG|ERR|TRACE) .*&//",${TARGET})
 	@$(call isede,"/ (WARN|LOG|ERR|TRACE) .*/d",${TARGET})
 endif
