@@ -42,7 +42,7 @@
       for pid in $pids; do
         # `ps` may diplay an error message such "Signal 18 (CONT) caught by ps
         # (procps-ng version 3.3.9).", see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=732410
-        if [[ $(ps -o pid= -p $pid >/dev/null 2>&1) == "" ]]; then
+        if [[ $(ps -o pid= -p $pid 2>/dev/null) == "" ]]; then
           pids[$pids[(I)$pid]]=()
         fi
       done
