@@ -4,7 +4,7 @@ target=Makefile
 arguments="$@"
 typeset -A opts;
 opts=(
-debug           yes
+with-debug      yes
 with-extensions yes
 with-lock 	    yes
 with-parallel	  yes
@@ -12,6 +12,39 @@ with-cache 	    yes
 with-defer 	    yes
 with-completion yes
 )
+
+if [[ $1 == "--help" || $1 == "-h" ]]; then
+cat >&1 <<EOH
+Usage:
+    ./configure --with-option[=[yes|no]] --[enable|disable]-option
+
+Available options:
+
+    - debug      - Enable/disable debug library
+    - extensions - Enable/disable lock, parallel, cache and defer options
+    - lock       - Enable/disable lock
+    - parallel   - Enable/disable parallel
+    - cache      - Enable/disable cache
+    - defer      - Enable/disable defer
+    - completion - Enable/disable completion
+
+All options are enabled by default.
+
+Example:
+
+    # Disable lock, parallel, cache and defer
+    ./configure --disable-extensions
+
+    # Disable completion
+    ./configure --disable-completion
+    
+    # Enable debug
+    ./configure --with-debug
+
+EOH
+  exit 0 
+fi
+
 
 while [[ $# -gt 0 ]]; do
 	argkey="${1%\=*}"
