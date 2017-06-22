@@ -69,7 +69,7 @@ here, getting installed. Once it's done, you are ready to roll. The complete
 syntax for the `antigen bundle` command is discussed in the [Commands][] page.
 
 Furthermore, [In the wild][wild] wiki section has more configuration examples. You may
-as well take a look at the [show off][] wiki page
+as well take a look at the [Show off][] wiki page
 for interactive mode usage.
 
 ## Meta
@@ -112,18 +112,18 @@ We are always looking for new contributors! We have a number of issues marked
 as ["Help wanted"][Help wanted] that are good places to jump in and get started. Take a look at
 our [Roadmap][] to see future projects and discuss ideas.
 
-Please be sure to check our [Contributing guidelines][] to understand our workflow,
+Please be sure to check out our [Contributing guidelines][] to understand our workflow,
 and our [Coding conventions][].
 
 ### Feedback
 
-Any comments/suggestions/feedback welcome. Please say hello to us on [Gitter][]. Or
+Any comments/suggestions/feedback is truly welcome. Please say hello to us on [Gitter][]. Or
 open an issue to discuss something (anything!) about the project ;).
 
 ### Articles
 
 There are many articles written by Antigen users out there. Be sure to check them out
-[in the wiki][].
+in the [Articles][Articles] page.
 
 ### Plugins and Alternatives
 
@@ -141,10 +141,10 @@ you may find useful.
 [Commands]: https://github.com/zsh-users/antigen/wiki/Commands
 [Installation]: https://github.com/zsh-users/antigen/wiki/Installation
 [Configuration]: https://github.com/zsh-users/antigen/wiki/Configuration
-[show off]: https://github.com/zsh-users/antigen/wiki/Show-off
+[Show off]: https://github.com/zsh-users/antigen/wiki/Show-off
 [Help wanted]: https://github.com/zsh-users/antigen/issues?q=is%3Aissue+is%3Aopen+label%3A%22Help+wanted%22
 [Roadmap]: https://trello.com/b/P0xrGgfT/antigen
 [Contributing guidelines]: https://github.com/zsh-users/antigen/wiki/Contributing
 [Coding conventions]: https://github.com/zsh-users/antigen/wiki/Styleguide
 [Gitter]: https://gitter.im/antigen-zsh/develop
-[in the wiki]: https://github.com/zsh-users/antigen/wiki#external-articles
+[Articles]: https://github.com/zsh-users/antigen/wiki/Articles 
