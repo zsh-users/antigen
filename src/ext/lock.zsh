@@ -3,6 +3,16 @@
   # Default lock path.
   -antigen-set-default ANTIGEN_LOCK $ADOTDIR/.lock
   typeset -g _ANTIGEN_LOCK_PROCESS=false
+  
+  # Use env variable to determine if we should load this extension
+  -antigen-set-default ANTIGEN_MUTEX true
+  # Set ANTIGEN_MUTEX to false to avoid loading this extension
+  if [[ $ANTIGEN_MUTEX == true ]]; then
+    return 0;
+  fi
+  
+  # Do not use mutex
+  return 1;
 }
 
 -antigen-lock-execute () {
