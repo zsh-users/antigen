@@ -1468,7 +1468,7 @@ antigen-add-hook () {
   for hook in $pre_hooks; do
     WARN "Pre hook:" $hook $args
     noglob $hook $args
-    [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
+    [[ $? == -1 ]] && WARN "$hook shortcircuited" && return $ret
   done
 
   # A replace hook will return inmediately
@@ -1479,7 +1479,7 @@ antigen-add-hook () {
     if (( $+functions[$hook] )); then
       WARN "Replace hook:" $hook $args
       noglob $hook $args
-      [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
+      [[ $? == -1 ]] && WARN "$hook shortcircuited" && return $ret
     fi
   done
   
@@ -1494,7 +1494,7 @@ antigen-add-hook () {
   for hook in $post_hooks; do
     WARN "Post hook:" $hook $args
     noglob $hook $args
-    [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
+    [[ $? == -1 ]] && WARN "$hook shortcircuited" && return $ret
   done
   
   LOG "Return from hook ${target} with ${ret}"
@@ -1621,6 +1621,16 @@ antigen-ext-init () {
   # Default lock path.
   -antigen-set-default ANTIGEN_LOCK $ADOTDIR/.lock
   typeset -g _ANTIGEN_LOCK_PROCESS=false
+  
+  # Use env variable to determine if we should load this extension
+  -antigen-set-default ANTIGEN_MUTEX true
+  # Set ANTIGEN_MUTEX to false to avoid loading this extension
+  if [[ $ANTIGEN_MUTEX == true ]]; then
+    return 0;
+  fi
+  
+  # Do not use mutex
+  return 1;
 }
 
 -antigen-lock-execute () {

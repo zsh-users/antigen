@@ -90,7 +90,7 @@ antigen-add-hook () {
   for hook in $pre_hooks; do
     WARN "Pre hook:" $hook $args
     noglob $hook $args
-    [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
+    [[ $? == -1 ]] && WARN "$hook shortcircuited" && return $ret
   done
 
   # A replace hook will return inmediately
@@ -101,7 +101,7 @@ antigen-add-hook () {
     if (( $+functions[$hook] )); then
       WARN "Replace hook:" $hook $args
       noglob $hook $args
-      [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
+      [[ $? == -1 ]] && WARN "$hook shortcircuited" && return $ret
     fi
   done
   
@@ -116,7 +116,7 @@ antigen-add-hook () {
   for hook in $post_hooks; do
     WARN "Post hook:" $hook $args
     noglob $hook $args
-    [[ $? == -1 ]] && WARN "$hook shortcircuited" && break
+    [[ $? == -1 ]] && WARN "$hook shortcircuited" && return $ret
   done
   
   LOG "Return from hook ${target} with ${ret}"
