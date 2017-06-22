@@ -16,30 +16,34 @@ Antigen is a small set of functions that help you easily manage your shell (zsh)
 plugins, called bundles. The concept is pretty much the same as bundles in a
 typical vim+pathogen setup. Antigen is to zsh, what [Vundle][] is to vim.
 
+
 [![https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce](https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce.png)](https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce)
+
 
 Antigen has reached a certain level of stability and has been used in the wild
 for around a couple of years. If you face any problems, please open an issue.
 
 Antigen works with zsh versions `>= 4.3.11`.
 
-Note: Please read the commit comments of the changesets when you pull a new
-version of Antigen.
+## Installation
+
+Install Antigen from our main repository with the latest stable version available:
+
+    curl -L git.io/antigen > antigen.zsh
+    # or use git.io/antigen-nightly for the latest version
+
+There are several installation methods using your System Package manager, just look
+at the [Installation][] wiki page.
+
+Now you may head towards the [Commands][] and [Configuration][] wiki pages to further
+understand Antigen's functionallity and customization.
 
 ## Usage
 
-There are several installation methods available in the [Installation](#installation)
-section. Let's try the `git` method.
-
-First, clone this repo, probably as a submodule if you have your dotfiles in a
-git repo,
-
-    git clone https://github.com/zsh-users/antigen.git
-
 The usage should be very familiar to you if you use Vundle. A typical `.zshrc`
-might look like this
+might look like this:
 
-    source /path-to-antigen-clone/antigen.zsh
+    source /path-to-antigen/antigen.zsh
 
     # Load the oh-my-zsh's library.
     antigen use oh-my-zsh
@@ -60,25 +64,13 @@ might look like this
     # Tell Antigen that you're done.
     antigen apply
 
-Open your zsh with this zshrc and you should see all the bundles you defined
-here, getting installed. Once its done, you are ready to roll. The complete
-syntax for the `antigen bundle` command is discussed further down on this page.
+Open your zsh with this `.zshrc` and you should see all the bundles you defined
+here, getting installed. Once it's done, you are ready to roll. The complete
+syntax for the `antigen bundle` command is discussed in the [Commands][] page.
 
-[In the wild][wild] wiki section has more configuration examples. You may
-as well take a look at the [show off](https://github.com/zsh-users/antigen/wiki/Show-off) wiki page
+Furthermore, [In the wild][wild] wiki section has more configuration examples. You may
+as well take a look at the [show off][] wiki page
 for interactive mode usage.
-
-## Installation
-
-Install Antigen from our main repository for the latest stable version available:
-
-    curl -L git.io/antigen > antigen.zsh
-
-Or using your [system package manager](https://software.opensuse.org/download.html?project=shells%3Azsh-users%3Aantigen&package=antigen).
-
-Remember that your package manager may install an older version of Antigen.
-
-You may head towards the [Commands](https://github.com/zsh-users/antigen/wiki/Commands) and [Configuration](https://github.com/zsh-users/antigen/wiki/Configuration) wiki pages to further understand Antigen's functionallity and customization.
 
 ## Meta
 
@@ -116,19 +108,22 @@ line in your `.zshrc`).
 
 ### Helping out
 
-We welcome new contributors! We have a number of issues marked as ["Help wanted"](https://github.com/zsh-users/antigen/issues?q=is%3Aissue+is%3Aopen+label%3A%22Help+wanted%22) that are good places to jump in and get started. Take a look at our [Roadmap](https://trello.com/b/P0xrGgfT/antigen) to see future projects and discuss ideas.
+We are always looking for new contributors! We have a number of issues marked
+as ["Help wanted"][Help wanted] that are good places to jump in and get started. Take a look at
+our [Roadmap][] to see future projects and discuss ideas.
 
-Please be sure to check our [Contributing guidelines](https://github.com/zsh-users/antigen/wiki/Contributing) to understand our workflow, and our [Coding conventions](https://github.com/zsh-users/antigen/wiki/Styleguide).
+Please be sure to check our [Contributing guidelines][] to understand our workflow,
+and our [Coding conventions][].
 
 ### Feedback
 
-Any comments/suggestions/feedback welcome. Please say hello to us on
-[gitter](https://gitter.im/antigen-zsh/develop). Or open an issue to discuss something
-(anything!) about the project ;).
+Any comments/suggestions/feedback welcome. Please say hello to us on [Gitter][]. Or
+open an issue to discuss something (anything!) about the project ;).
 
 ### Articles
 
-These are some external articles wrote by Antigen users. Take a look at them [in the wiki](https://github.com/zsh-users/antigen/wiki#external-articles).
+There are many articles written by Antigen users out there. Be sure to check them out
+[in the wiki][].
 
 ### Plugins and Alternatives
 
@@ -136,20 +131,20 @@ The [awesome-zsh-plugins][] list is a directory of plugins, themes and alternati
 you may find useful.
 
 [Vundle]: https://github.com/gmarik/vundle
-[page on themes]: https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 [awesome-zsh-plugins]: https://github.com/unixorn/awesome-zsh-plugins
 [wild]: https://github.com/zsh-users/antigen/wiki/In-the-wild
-[syntax highlighting plugin]: https://github.com/zsh-users/zsh-syntax-highlighting
-[autoenv]: https://github.com/kennethreitz/autoenv
-[z-autoenv]: https://github.com/Tarrasch/zsh-autoenv
 [oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh
-[cram]: https://bitheap.org/cram/
 [issue]: https://github.com/zsh-users/antigen/issues
 [license]: http://mit.sharats.me
 [contributing]: https://github.com/zsh-users/antigen/wiki/Contributing
-[twitter]: http://twitter.com/sharat87
-[antigen-hs]: https://github.com/Tarrasch/antigen-hs
-[zgen]: https://github.com/tarjoilija/zgen
-[docker]: https://www.docker.com/
-[dockerhub]: https://hub.docker.com/
 [wiki]: https://github.com/zsh-users/antigen/wiki
+[Commands]: https://github.com/zsh-users/antigen/wiki/Commands
+[Installation]: https://github.com/zsh-users/antigen/wiki/Installation
+[Configuration]: https://github.com/zsh-users/antigen/wiki/Configuration
+[show off]: https://github.com/zsh-users/antigen/wiki/Show-off
+[Help wanted]: https://github.com/zsh-users/antigen/issues?q=is%3Aissue+is%3Aopen+label%3A%22Help+wanted%22
+[Roadmap]: https://trello.com/b/P0xrGgfT/antigen
+[Contributing guidelines]: https://github.com/zsh-users/antigen/wiki/Contributing
+[Coding conventions]: https://github.com/zsh-users/antigen/wiki/Styleguide
+[Gitter]: https://gitter.im/antigen-zsh/develop
+[in the wiki]: https://github.com/zsh-users/antigen/wiki#external-articles
