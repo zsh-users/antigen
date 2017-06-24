@@ -10,22 +10,20 @@ Usage: antigen <command> [args]
 
 Commands:
   apply        Must be called in the zshrc after all calls to 'antigen bundle'.
-  bundle       Install and load the given bundle.
-  bundles      Bulk define bundles with HEREDOC syntax.
+  bundle       Install and load a plugin.
   cache-gen    Generate Antigen's cache with currently loaded bundles.
-  cleanup      Purge clones of bundles currently not loaded.
-  env          Display Antigen environment variables.
+  cleanup      Remove clones of repos not used by any loaded plugins.
   init         Use caching to quickly load bundles.
-  list         List currently loaded bundles.
+  list         List currently loaded plugins.
   purge        Remove a bundle from the filesystem.
-  reset        Clean generated cache and completions.
-  restore      Restore bundle state from a snapshot file.
-  revert       Revert bundles to their state prior to the last time 'antigen
+  reset        Clean the generated cache.
+  restore      Restore plugin state from a snapshot file.
+  revert       Revert plugins to their state prior to the last time 'antigen
                update' was run.
-  selfupdate   Update Antigen itself.
-  snapshot     Create a snapshot of all active bundle repos and save it to a
+  selfupdate   Update antigen.
+  snapshot     Create a snapshot of all active plugin repos and save it to a
                snapshot file.
-  update       Update bundles.
+  update       Update plugins.
   use          Load a supported zsh pre-packaged framework.
 
 For further details and complete documentation, visit the project's page at

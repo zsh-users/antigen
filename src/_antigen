@@ -4,22 +4,21 @@ _antigen () {
   local -a _1st_arguments
   _1st_arguments=(
     'apply:Load all bundle completions'
-    'bundle:Install and load the given bundle'
-    'bundles:Bulk define bundles with HEREDOC syntax'
-    "cache-gen:Generate Antigen's cache with currently loaded bundles"
-    'cleanup:Purge clones of bundles currently not loaded'
-    'env:Display Antigen environment variables'
-    'init:Use caching to quickly load bundles'
-    'list:List currently loaded bundles'
-    'purge:Remove a bundle from the filesystem'
-    'reset:Clean generated cache and completions'
-    'restore:Restore bundle state from a snapshot file'
-    "revert:Revert bundles to their state prior to the last time 'antigen update' was run"
-    'selfupdate:Update Antigen itself'
-    'snapshot:Create a snapshot of all active bundle repos'
+    'bundle:Install and load the given plugin'
+    'bundles:Bulk define bundles'
+    'cleanup:Clean up the clones of repos which are not used by any bundles currently loaded'
+    'cache-gen:Generate cache'
+    'init:Load Antigen configuration from file'
+    'list:List out the currently loaded bundles'
+    'purge:Remove a cloned bundle from filesystem'
+    'reset:Clears cache'
+    'restore:Restore the bundles state as specified in the snapshot'
+    'revert:Revert the state of all bundles to how they were before the last antigen update'
+    'selfupdate:Update antigen itself'
+    'snapshot:Create a snapshot of all the active clones'
     'theme:Switch the prompt theme'
-    'update:Update bundles'
-    'use:Load a supported zsh pre-packaged framework'
+    'update:Update all bundles'
+    'use:Load any (supported) zsh pre-packaged framework'
   );
 
   _1st_arguments+=(
