@@ -3,7 +3,7 @@
 -antigen-set-default () {
   local arg_name="$1"
   local arg_value="$2"
-  eval "test -z \"\$$arg_name\" && typeset -g $arg_name; $arg_name='$arg_value'"
+  eval "test -z \"\$$arg_name\" && typeset -g $arg_name='$arg_value'"
 }
 
 -antigen-env-setup () {
