@@ -86,10 +86,16 @@ function stats/exec() {
     echo Bundles present in ADOTDIR.
   fi
   $zsh -ic 'exit'
+  if [[ $? != 0 ]]; then
+    exit 1
+  fi
   echo
 
   echo Installed bundles:
   $zsh -ic 'antigen list'
+  if [[ $? != 0 ]]; then
+    exit 1
+  fi
   echo
 
   echo Performance testing...
