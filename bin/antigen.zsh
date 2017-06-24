@@ -229,7 +229,7 @@ antigen () {
 
   if [[ -n "$bundle" ]]; then
     local dir=$(-antigen-get-clone-dir $ANTIGEN_DEFAULT_REPO_URL)
-    echo $(ls $dir/themes | sed 's/.zsh-theme//')
+    echo $(ls $dir/themes/ | grep '.zsh-theme$' | sed 's/.zsh-theme//')
   fi
 
   return 0
