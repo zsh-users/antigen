@@ -275,6 +275,21 @@ antigen () {
 
   echo $branch
 }
+# Helper function: Same as `$1=$2`, but will only happen if the name
+# specified by `$1` is not already set.
+# 
+# Usage
+#   -antigen-set-env VAR_NAME VAR_VALUE
+#
+# Returns
+#   Nothing.
+typeset -ga _ANTIGEN_ENV; _ANTIGEN_ENV=()
+-antigen-set-default () {
+  local arg_name="$1"
+  local arg_value="$2"
+  _ANTIGEN_ENV+=($arg_name)
+  eval "test -z \"\$$arg_name\" && typeset -g $arg_name='$arg_value'"
+}
 -antigen-update-repos () {
   local repo bundle url target
   local log=/tmp/antigen-v2-migrate.log
@@ -400,14 +415,13 @@ antigen () {
 
   return $success
 }
-# Helper function: Same as `$1=$2`, but will only happen if the name
-# specified by `$1` is not already set.
--antigen-set-default () {
-  local arg_name="$1"
-  local arg_value="$2"
-  eval "test -z \"\$$arg_name\" && typeset -g $arg_name='$arg_value'"
-}
-
+# Set up default environment variables for Antigen
+# 
+# Usage
+#   -antigen-env-setup
+#
+# Returns
+#   Nothing.
 -antigen-env-setup () {
   typeset -gU fpath path
 
@@ -905,6 +919,20 @@ antigen-cleanup () {
     echo "Nothing deleted."
   fi
 }
+# Shows environment variables set up for Antigen
+# 
+# Usage
+#   antigen env
+#
+# Returns
+#   List of environment variables defined by -antigen-set-default with respective values.
+antigen-env () {
+  local key value
+  for key in ${_ANTIGEN_ENV}; do
+    value=$(eval echo \$$key)
+    echo "$key=$value"
+  done
+}
 antigen-help () {
   antigen-version
 
@@ -917,20 +945,22 @@ Usage: antigen <command> [args]
 
 Commands:
   apply        Must be called in the zshrc after all calls to 'antigen bundle'.
-  bundle       Install and load a plugin.
+  bundle       Install and load the given bundle.
+  bundles      Bulk define bundles with HEREDOC syntax.
   cache-gen    Generate Antigen's cache with currently loaded bundles.
-  cleanup      Remove clones of repos not used by any loaded plugins.
+  cleanup      Purge clones of bundles currently not loaded.
+  env          Display Antigen environment variables.
   init         Use caching to quickly load bundles.
-  list         List currently loaded plugins.
+  list         List currently loaded bundles.
   purge        Remove a bundle from the filesystem.
-  reset        Clean the generated cache.
-  restore      Restore plugin state from a snapshot file.
-  revert       Revert plugins to their state prior to the last time 'antigen
+  reset        Clean generated cache and completions.
+  restore      Restore bundle state from a snapshot file.
+  revert       Revert bundles to their state prior to the last time 'antigen
                update' was run.
-  selfupdate   Update antigen.
-  snapshot     Create a snapshot of all active plugin repos and save it to a
+  selfupdate   Update Antigen itself.
+  snapshot     Create a snapshot of all active bundle repos and save it to a
                snapshot file.
-  update       Update plugins.
+  update       Update bundles.
   use          Load a supported zsh pre-packaged framework.
 
 For further details and complete documentation, visit the project's page at
@@ -1923,21 +1953,22 @@ _antigen () {
   local -a _1st_arguments
   _1st_arguments=(
     'apply:Load all bundle completions'
-    'bundle:Install and load the given plugin'
-    'bundles:Bulk define bundles'
-    'cleanup:Clean up the clones of repos which are not used by any bundles currently loaded'
-    'cache-gen:Generate cache'
-    'init:Load Antigen configuration from file'
-    'list:List out the currently loaded bundles'
-    'purge:Remove a cloned bundle from filesystem'
-    'reset:Clears cache'
-    'restore:Restore the bundles state as specified in the snapshot'
-    'revert:Revert the state of all bundles to how they were before the last antigen update'
-    'selfupdate:Update antigen itself'
-    'snapshot:Create a snapshot of all the active clones'
+    'bundle:Install and load the given bundle'
+    'bundles:Bulk define bundles with HEREDOC syntax'
+    "cache-gen:Generate Antigen's cache with currently loaded bundles"
+    'cleanup:Purge clones of bundles currently not loaded'
+    'env:Display Antigen environment variables'
+    'init:Use caching to quickly load bundles'
+    'list:List currently loaded bundles'
+    'purge:Remove a bundle from the filesystem'
+    'reset:Clean generated cache and completions'
+    'restore:Restore bundle state from a snapshot file'
+    "revert:Revert bundles to their state prior to the last time 'antigen update' was run"
+    'selfupdate:Update Antigen itself'
+    'snapshot:Create a snapshot of all active bundle repos'
     'theme:Switch the prompt theme'
-    'update:Update all bundles'
-    'use:Load any (supported) zsh pre-packaged framework'
+    'update:Update bundles'
+    'use:Load a supported zsh pre-packaged framework'
   );
 
   _1st_arguments+=(
