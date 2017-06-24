@@ -1360,7 +1360,7 @@ antigen-use () {
   fi
 }
 antigen-version () {
-  local version="develop"
+  local version="v2.2.1"
   local extensions revision=""
   if [[ -d $_ANTIGEN_INSTALL_DIR/.git ]]; then
     revision=" ($(git --git-dir=$_ANTIGEN_INSTALL_DIR/.git rev-parse --short '@'))"
@@ -1782,7 +1782,7 @@ typeset -g _ZCACHE_CAPTURE_PREFIX
 cat > $ANTIGEN_CACHE <<EOC
 #-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
-#-- ANTIGEN develop
+#-- ANTIGEN v2.2.1
 $(functions -- _antigen)
 antigen () {
   local MATCH MBEGIN MEND
@@ -1806,7 +1806,7 @@ ${(j::)_sources}
 #--- BUNDLES END
 typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=($(print ${(qq)_ANTIGEN_BUNDLE_RECORD}))
 typeset -g _ANTIGEN_CACHE_LOADED; _ANTIGEN_CACHE_LOADED=true
-typeset -g ANTIGEN_CACHE_VERSION; ANTIGEN_CACHE_VERSION='develop'
+typeset -g ANTIGEN_CACHE_VERSION; ANTIGEN_CACHE_VERSION='v2.2.1'
 
 #-- END ZCACHE GENERATED FILE
 EOC

@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/) [v2.0.0](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2017-06-24
+
+We're adding a new environment variable:
+
+  - `ANTIGEN_MUTEX` - Use to configure whether to check for mutex or ignore it.
+
+This configuration effectively controls if the `lock` should work. Alternatively you
+may configure which extension you want to load:
+
+    _ANTIGEN_BUILTIN_EXTENSIONS='lock parallel defer cache'
+
+Just remove `lock` from the `_ANTIGEN_BUILTIN_EXTENSIONS` environment variable. Take
+into account that this may change in the future.
+
+## Added
+- [#561, #563] Add flag to disable mutex check
+
+## Changed
+- [#559, #562] Update wiki with all installation options (Debian package, OpenSUSE, Homebrew, etc)
+- [#564] Improve README.md installation section and content
+
+## Fixed
+- [#569, #565] Avoid compiled theme artifact showing up on completion
+- [#558] Fix Makefile's glob used to build logging library if required
+- [#555, #557, #556] Fix issue with `ps` command's output being discarded (breaking parallel extension)
+- [#571, #568] Fix issues with `typeset` on zsh 5.0.x and below
+
+Thanks everyone who reported issues and provided feedback.
+
 ## [2.2.0] - 2017-06-18
 
 We're deploying an extension system to further extend Antigen's functionality.
@@ -14,7 +43,7 @@ Extensions must adhere to a basic interface:
     - `-antigen-{extension-name}-init`
     - `-antigen-{extension-name}-execute`
 
-Both these functiona must return 0 or 1 to abort initialization. Example:
+Both these functions must return 0 or 1 to abort initialization. Example:
 
     antigen ext custom
     # -antigen-custom-init
@@ -38,6 +67,8 @@ functionality:
 - [#549, #463] Fix compdump missing completions
 - [#553] Catch spurious error message by `ps`
 
+Thanks everyone who reported issues and provided feedback.
+
 ## [2.1.1] - 2017-05-20
 
 ### Changed
@@ -47,6 +78,8 @@ functionality:
 ### Fixed
 - [#540] Don't require confirmation when removing lock
 - [#535, #536] Avoid duplicate paths
+
+Thanks everyone who reported issues and provided feedback.
 
 ## [2.1.0] - 2017-05-14
 
@@ -510,6 +543,7 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 - Added CHANGELOG.md
 - Following [Semantic Versioning](http://semver.org/)
 
+[2.2.1]: https://github.com/zsh-users/antigen/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/zsh-users/antigen/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/zsh-users/antigen/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/zsh-users/antigen/compare/v2.0.2...v2.1.0
