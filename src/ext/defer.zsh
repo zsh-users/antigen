@@ -1,6 +1,6 @@
 # Initialize defer lib
 -antigen-defer-init () {
-  typeset -ga _DEFERRED_BUNDLE=()
+  typeset -ga _DEFERRED_BUNDLE; _DEFERRED_BUNDLE=()
   if -antigen-interactive-mode; then
     return 1
   fi

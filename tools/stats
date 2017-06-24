@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 # vim: sw=2 ts=2 et
 #set -x
-typeset -g ITERATIONS=20
+typeset -g ITERATIONS; ITERATIONS=20
 
 function stats/usage () {
   echo "Usage: $0 --zsh /path/to/zsh --antigen /path/to/antigen"
@@ -86,10 +86,16 @@ function stats/exec() {
     echo Bundles present in ADOTDIR.
   fi
   $zsh -ic 'exit'
+  if [[ $? != 0 ]]; then
+    exit 1
+  fi
   echo
 
   echo Installed bundles:
   $zsh -ic 'antigen list'
+  if [[ $? != 0 ]]; then
+    exit 1
+  fi
   echo
 
   echo Performance testing...
@@ -118,4 +124,3 @@ function stats/parse() {
 }
 
 stats/main $@
-

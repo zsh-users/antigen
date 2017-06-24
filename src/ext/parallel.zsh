@@ -1,7 +1,7 @@
 # Initialize parallel lib
 -antigen-parallel-init () {
   WARN "Init parallel extension" PARALLEL
-  typeset -ga _PARALLEL_BUNDLE=()
+  typeset -ga _PARALLEL_BUNDLE; _PARALLEL_BUNDLE=()
   if -antigen-interactive-mode; then
     return 1
   fi

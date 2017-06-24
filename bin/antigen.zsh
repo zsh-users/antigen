@@ -1586,7 +1586,7 @@ antigen-ext-init () {
 }
 # Initialize defer lib
 -antigen-defer-init () {
-  typeset -ga _DEFERRED_BUNDLE=()
+  typeset -ga _DEFERRED_BUNDLE; _DEFERRED_BUNDLE=()
   if -antigen-interactive-mode; then
     return 1
   fi
@@ -1664,7 +1664,7 @@ antigen-ext-init () {
 # Initialize parallel lib
 -antigen-parallel-init () {
   WARN "Init parallel extension" PARALLEL
-  typeset -ga _PARALLEL_BUNDLE=()
+  typeset -ga _PARALLEL_BUNDLE; _PARALLEL_BUNDLE=()
   if -antigen-interactive-mode; then
     return 1
   fi
@@ -1805,7 +1805,8 @@ fi
 ${(j::)_sources}
 #--- BUNDLES END
 typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=($(print ${(qq)_ANTIGEN_BUNDLE_RECORD}))
-typeset -g _ANTIGEN_CACHE_LOADED=true ANTIGEN_CACHE_VERSION='develop'
+typeset -g _ANTIGEN_CACHE_LOADED; _ANTIGEN_CACHE_LOADED=true
+typeset -g ANTIGEN_CACHE_VERSION; ANTIGEN_CACHE_VERSION='develop'
 
 #-- END ZCACHE GENERATED FILE
 EOC

@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 # vim: ts=2 sw=2 et
-typeset -g ZSH_REMOTE_URL=https://github.com/zsh-users/zsh.git
-typeset -g ZSH_SOURCE_LOCATION=/usr/local/share/zsh
-typeset -g ZSH_BIN_LOCATION=/usr/local/bin/zsh
+typeset -g ZSH_REMOTE_URL; ZSH_REMOTE_URL=https://github.com/zsh-users/zsh.git
+typeset -g ZSH_SOURCE_LOCATION; ZSH_SOURCE_LOCATION=/usr/local/share/zsh
+typeset -g ZSH_BIN_LOCATION; ZSH_BIN_LOCATION=/usr/local/bin/zsh
 
 # Build and install zsh version from source
 function builder/usage () {
