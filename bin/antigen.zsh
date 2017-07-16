@@ -1360,7 +1360,7 @@ antigen-use () {
   fi
 }
 antigen-version () {
-  local version="v2.2.1"
+  local version="develop"
   local extensions revision=""
   if [[ -d $_ANTIGEN_INSTALL_DIR/.git ]]; then
     revision=" ($(git --git-dir=$_ANTIGEN_INSTALL_DIR/.git rev-parse --short '@'))"
@@ -1782,15 +1782,17 @@ typeset -g _ZCACHE_CAPTURE_PREFIX
 cat > $ANTIGEN_CACHE <<EOC
 #-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
-#-- ANTIGEN v2.2.1
+#-- ANTIGEN develop
 $(functions -- _antigen)
 antigen () {
   local MATCH MBEGIN MEND
   [[ "\$ZSH_EVAL_CONTEXT" =~ "toplevel:*" || "\$ZSH_EVAL_CONTEXT" =~ "cmdarg:*" ]] && source "$_ANTIGEN_INSTALL_DIR/antigen.zsh" && eval antigen \$@;
   return 0;
 }
+$(export -p _PATH _fpath)
 typeset -gaU fpath path
-fpath+=(${_fpath[@]}) path+=(${_PATH[@]})
+fpath+=(\$_fpath) path+=(\$_PATH)
+unset _fpath _PATH
 _antigen_compinit () {
   autoload -Uz compinit; compinit -d "$ANTIGEN_COMPDUMP"; compdef _antigen antigen
   add-zsh-hook -D precmd _antigen_compinit
@@ -1806,7 +1808,7 @@ ${(j::)_sources}
 #--- BUNDLES END
 typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=($(print ${(qq)_ANTIGEN_BUNDLE_RECORD}))
 typeset -g _ANTIGEN_CACHE_LOADED; _ANTIGEN_CACHE_LOADED=true
-typeset -g ANTIGEN_CACHE_VERSION; ANTIGEN_CACHE_VERSION='v2.2.1'
+typeset -g ANTIGEN_CACHE_VERSION; ANTIGEN_CACHE_VERSION='develop'
 
 #-- END ZCACHE GENERATED FILE
 EOC
