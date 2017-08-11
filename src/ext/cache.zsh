@@ -67,8 +67,8 @@ EOC
 
   # Compile config files, if any
   [[ $ANTIGEN_AUTO_CONFIG == true && -n $ANTIGEN_CHECK_FILES ]] && {
-    echo "$ANTIGEN_CHECK_FILES" >! "$ANTIGEN_RSRC"
-    zcompile "$ANTIGEN_CHECK_FILES"
+    echo $ANTIGEN_CHECK_FILES >! "$ANTIGEN_RSRC"
+    zcompile $ANTIGEN_CHECK_FILES
   } &!
 
   return true
