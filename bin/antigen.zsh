@@ -10,7 +10,13 @@ zmodload zsh/parameter
 
 if [[ $ANTIGEN_CACHE != false ]]; then
   ANTIGEN_CACHE="${ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
-  ANTIGEN_RSRC="${ADOTDIR:-$HOME/.antigen}/.resources"
+
+  # if zsh >= 5.3, we can test to see if ANTIGENT_RSRC is set without setting it
+  if test "$( zsh --version | awk '{print $2}' | awk -F'.' ' ( $1 > 5 || ( $1 == 5 && $2 >= 3 ) ) ' )"; then
+    [[ -v ANTIGEN_RSRC ]] || ANTIGEN_RSRC="${ADOTDIR:-$HOME/.antigen}/.resources"
+  else
+    ANTIGEN_RSRC="${ADOTDIR:-$HOME/.antigen}/.resources"
+  fi
 
   if [[ $ANTIGEN_AUTO_CONFIG != false && -f $ANTIGEN_RSRC ]]; then
     ANTIGEN_CHECK_FILES=$(cat $ANTIGEN_RSRC 2> /dev/null)
