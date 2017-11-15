@@ -10,10 +10,6 @@ env:
     - USE_CONTAINER=docker
 matrix:
   include:
-    - os: osx
-      language: generic
-      env:
-        - USE_CONTAINER=no
     - os: linux
       env: ZSH_VERSION=zsh-5.3.1
     - os: linux
