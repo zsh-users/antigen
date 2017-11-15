@@ -66,6 +66,7 @@ EOC
   { zcompile "$ANTIGEN_CACHE" } &!
 
   # Compile config files, if any
+  LOG "CHECK_FILES $ANTIGEN_CHECK_FILES"
   [[ $ANTIGEN_AUTO_CONFIG == true && -n $ANTIGEN_CHECK_FILES ]] && {
     echo $ANTIGEN_CHECK_FILES >! "$ANTIGEN_RSRC"
     zcompile $ANTIGEN_CHECK_FILES
@@ -109,8 +110,12 @@ EOC
     # Auto determine check_files
     # There always should be 5 steps from original source as the correct way is to use
     # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
-    if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 5 ]]; then
-      ANTIGEN_CHECK_FILES+=("${${funcfiletrace[5]%:*}##* }")
+    LOG "TRACE: ${funcfiletrace}"
+    if [[ $ANTIGEN_AUTO_CONFIG == true ]]; then
+      ANTIGEN_CHECK_FILES+=(~/.zshrc)
+      if [[ $#funcfiletrace -ge 5 ]]; then
+        ANTIGEN_CHECK_FILES+=("${${funcfiletrace[6]%:*}##* }")
+      fi
     fi
 
     # Generate and compile cache
