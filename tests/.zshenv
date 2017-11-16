@@ -8,7 +8,8 @@ export ADOTDIR=$(mktemp -du "/tmp/dot-antigen-tmp-XXXXX")
 
 export ANTIGEN=${ANTIGEN:-"/antigen"}
 export ANTIGEN_AUTO_CONFIG=false
-export ANTIGEN_CACHE=false
+# Commented out due to tests/cache.t
+#export ANTIGEN_CACHE=false
 export ANTIGEN_RSRC=$ADOTDIR/.resources
 export _ANTIGEN_WARN_DUPLICATES=false
 export _ANTIGEN_INTERACTIVE=true
