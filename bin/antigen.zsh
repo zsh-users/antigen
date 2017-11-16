@@ -1863,7 +1863,7 @@ EOC
     LOG "TRACE: ${funcfiletrace}"
     if [[ $ANTIGEN_AUTO_CONFIG == true ]]; then
       ANTIGEN_CHECK_FILES+=(~/.zshrc)
-      if [[ $#funcfiletrace -ge 5 ]]; then
+      if [[ $#funcfiletrace -ge 6 ]]; then
         ANTIGEN_CHECK_FILES+=("${${funcfiletrace[6]%:*}##* }")
       fi
     fi
