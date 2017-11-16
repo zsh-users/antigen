@@ -10,7 +10,7 @@ zmodload zsh/parameter
 
 if [[ $ANTIGEN_CACHE != false ]]; then
   ANTIGEN_CACHE="${ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
-  ANTIGEN_RSRC="${ADOTDIR:-$HOME/.antigen}/.resources"
+  ANTIGEN_RSRC="${ANTIGEN_RSRC:-${ADOTDIR:-$HOME/.antigen}/.resources}"
 
   if [[ $ANTIGEN_AUTO_CONFIG != false && -f $ANTIGEN_RSRC ]]; then
     ANTIGEN_CHECK_FILES=$(cat $ANTIGEN_RSRC 2> /dev/null)
@@ -1360,7 +1360,7 @@ antigen-use () {
   fi
 }
 antigen-version () {
-  local version="v2.2.1"
+  local version="develop"
   local extensions revision=""
   if [[ -d $_ANTIGEN_INSTALL_DIR/.git ]]; then
     revision=" ($(git --git-dir=$_ANTIGEN_INSTALL_DIR/.git rev-parse --short '@'))"
@@ -1782,7 +1782,7 @@ typeset -g _ZCACHE_CAPTURE_PREFIX
 cat > $ANTIGEN_CACHE <<EOC
 #-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
-#-- ANTIGEN v2.2.1
+#-- ANTIGEN develop
 $(functions -- _antigen)
 antigen () {
   local MATCH MBEGIN MEND
@@ -1806,7 +1806,7 @@ ${(j::)_sources}
 #--- BUNDLES END
 typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=($(print ${(qq)_ANTIGEN_BUNDLE_RECORD}))
 typeset -g _ANTIGEN_CACHE_LOADED; _ANTIGEN_CACHE_LOADED=true
-typeset -g ANTIGEN_CACHE_VERSION; ANTIGEN_CACHE_VERSION='v2.2.1'
+typeset -g ANTIGEN_CACHE_VERSION; ANTIGEN_CACHE_VERSION='develop'
 
 #-- END ZCACHE GENERATED FILE
 EOC
@@ -1814,9 +1814,12 @@ EOC
   { zcompile "$ANTIGEN_CACHE" } &!
 
   # Compile config files, if any
+  LOG "CHECK_FILES $ANTIGEN_CHECK_FILES"
   [[ $ANTIGEN_AUTO_CONFIG == true && -n $ANTIGEN_CHECK_FILES ]] && {
-    echo "$ANTIGEN_CHECK_FILES" >! "$ANTIGEN_RSRC"
-    zcompile "$ANTIGEN_CHECK_FILES"
+    echo ${(j:\n:)ANTIGEN_CHECK_FILES} >! "$ANTIGEN_RSRC"
+    for rsrc in $ANTIGEN_CHECK_FILES; do
+      zcompile $rsrc
+    done
   } &!
 
   return true
@@ -1846,6 +1849,9 @@ EOC
   # Default cache path.
   -antigen-set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
   -antigen-set-default ANTIGEN_RSRC $ADOTDIR/.resources
+  if [[ $ANTIGEN_CACHE == false ]]; then
+    return 1
+  fi
   
   return 0
 }
@@ -1857,14 +1863,18 @@ EOC
     # Auto determine check_files
     # There always should be 5 steps from original source as the correct way is to use
     # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
-    if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 5 ]]; then
-      ANTIGEN_CHECK_FILES+=("${${funcfiletrace[5]%:*}##* }")
+    LOG "TRACE: ${funcfiletrace}"
+    if [[ $ANTIGEN_AUTO_CONFIG == true ]]; then
+      ANTIGEN_CHECK_FILES+=(~/.zshrc)
+      if [[ $#funcfiletrace -ge 6 ]]; then
+        ANTIGEN_CHECK_FILES+=("${${funcfiletrace[6]%:*}##* }")
+      fi
     fi
 
     # Generate and compile cache
     -antigen-cache-generate
     [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
-    
+
     unset _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
 
     # Release all hooked functions

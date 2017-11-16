@@ -66,9 +66,12 @@ EOC
   { zcompile "$ANTIGEN_CACHE" } &!
 
   # Compile config files, if any
+  LOG "CHECK_FILES $ANTIGEN_CHECK_FILES"
   [[ $ANTIGEN_AUTO_CONFIG == true && -n $ANTIGEN_CHECK_FILES ]] && {
-    echo "$ANTIGEN_CHECK_FILES" >! "$ANTIGEN_RSRC"
-    zcompile "$ANTIGEN_CHECK_FILES"
+    echo ${(j:\n:)ANTIGEN_CHECK_FILES} >! "$ANTIGEN_RSRC"
+    for rsrc in $ANTIGEN_CHECK_FILES; do
+      zcompile $rsrc
+    done
   } &!
 
   return true
@@ -98,6 +101,9 @@ EOC
   # Default cache path.
   -antigen-set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
   -antigen-set-default ANTIGEN_RSRC $ADOTDIR/.resources
+  if [[ $ANTIGEN_CACHE == false ]]; then
+    return 1
+  fi
   
   return 0
 }
@@ -109,14 +115,18 @@ EOC
     # Auto determine check_files
     # There always should be 5 steps from original source as the correct way is to use
     # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
-    if [[ $ANTIGEN_AUTO_CONFIG == true && -z "$ANTIGEN_CHECK_FILES" && $#funcfiletrace -ge 5 ]]; then
-      ANTIGEN_CHECK_FILES+=("${${funcfiletrace[5]%:*}##* }")
+    LOG "TRACE: ${funcfiletrace}"
+    if [[ $ANTIGEN_AUTO_CONFIG == true ]]; then
+      ANTIGEN_CHECK_FILES+=(~/.zshrc)
+      if [[ $#funcfiletrace -ge 6 ]]; then
+        ANTIGEN_CHECK_FILES+=("${${funcfiletrace[6]%:*}##* }")
+      fi
     fi
 
     # Generate and compile cache
     -antigen-cache-generate
     [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
-    
+
     unset _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
 
     # Release all hooked functions
