@@ -1849,6 +1849,9 @@ EOC
   # Default cache path.
   -antigen-set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
   -antigen-set-default ANTIGEN_RSRC $ADOTDIR/.resources
+  if [[ $ANTIGEN_CACHE == false ]]; then
+    return 1
+  fi
   
   return 0
 }
@@ -1871,7 +1874,7 @@ EOC
     # Generate and compile cache
     -antigen-cache-generate
     [[ -f "$ANTIGEN_CACHE" ]] && source "$ANTIGEN_CACHE";
-    
+
     unset _ZCACHE_BUNDLE_SOURCE _ZCACHE_CAPTURE_BUNDLE _ZCACHE_CAPTURE_FUNCTIONS
 
     # Release all hooked functions
