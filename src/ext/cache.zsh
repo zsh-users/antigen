@@ -68,8 +68,10 @@ EOC
   # Compile config files, if any
   LOG "CHECK_FILES $ANTIGEN_CHECK_FILES"
   [[ $ANTIGEN_AUTO_CONFIG == true && -n $ANTIGEN_CHECK_FILES ]] && {
-    echo $ANTIGEN_CHECK_FILES >! "$ANTIGEN_RSRC"
-    zcompile $ANTIGEN_CHECK_FILES
+    echo ${(j:\n:)ANTIGEN_CHECK_FILES} >! "$ANTIGEN_RSRC"
+    for rsrc in $ANTIGEN_CHECK_FILES; do
+      zcompile $rsrc
+    done
   } &!
 
   return true
