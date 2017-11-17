@@ -7,6 +7,7 @@
  # Homepage: http://antigen.sharats.me
  # License: MIT License <mitl.sharats.me>
 zmodload zsh/parameter
+autoload -U is-at-least
 
 if [[ $ANTIGEN_CACHE != false ]]; then
   ANTIGEN_CACHE="${ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"

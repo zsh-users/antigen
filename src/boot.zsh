@@ -1,4 +1,5 @@
 zmodload zsh/parameter
+autoload -U is-at-least
 
 if [[ $ANTIGEN_CACHE != false ]]; then
   ANTIGEN_CACHE="${ANTIGEN_CACHE:-${ADOTDIR:-$HOME/.antigen}/init.zsh}"
