@@ -5,10 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/) [v2.0.0](http:
 
 ## [2.2.2] - Unreleased
 
-## Fixed
-
+## Added
 - [#605] Create CODE_OF_CONDUCT.md
+
+## Changed
+- [#611] Remove "no extensions loaded" message
+- [#610, #596, #608] Automatically generate cache with `reset` command
+- [#609, #593] Add autoload for is-at-least
+
+## Fixed
 - [#590, #588, #587, #606] Fix multiple issues with caching generation
+
 
 ## [2.2.1] - 2017-06-24
 
