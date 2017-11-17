@@ -13,3 +13,11 @@ Enable extension.
   $ antigen list
   You don't have any bundles.
   [1]
+
+Can programatically generate cache.
+
+  $ antigen reset &> /dev/null
+  $ antigen cache-gen
+  $ ls $ADOTDIR/init*
+  .*init.zsh.* (re)
+  .*init.zsh.zwc* (re)
