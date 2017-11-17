@@ -10,11 +10,13 @@ This project adheres to [Semantic Versioning](http://semver.org/) [v2.0.0](http:
 
 ## Changed
 - [#611] Remove "no extensions loaded" message
-- [#610, #596, #608] Automatically generate cache with `reset` command
+- [#610, #596, #608] Fix cache generation with `cache-gen` command
 - [#609, #593] Add autoload for is-at-least
+- [#615] Oh-my-zsh themes backward compatibility
 
 ## Fixed
 - [#590, #588, #587, #606] Fix multiple issues with caching generation
+- [#613] Defer cache loading to `antigen-apply` command
 
 
 ## [2.2.1] - 2017-06-24
