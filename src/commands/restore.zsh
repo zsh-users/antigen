@@ -23,7 +23,7 @@ antigen-restore () {
           git clone "$url" "$clone_dir" &> /dev/null
       fi
 
-      (cd -q "$clone_dir" && git checkout $version_hash) &> /dev/null
+      (\cd -q "$clone_dir" && git checkout $version_hash) &> /dev/null
     done
 
   echo ' done.'

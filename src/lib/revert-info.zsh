@@ -16,7 +16,7 @@
     local clone_dir="$(-antigen-get-clone-dir "$url")"
     if [[ -d "$clone_dir" ]]; then
       (echo -n "$clone_dir:"
-        cd -q "$clone_dir"
+        \cd -q "$clone_dir"
         git rev-parse HEAD) >> $ADOTDIR/revert-info
     fi
   done
