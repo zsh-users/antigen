@@ -9,7 +9,7 @@ antigen-snapshot () {
   urls=$(-antigen-echo-record | awk '$4 == "true" {print $1}' | sort -u)
   for url in ${(f)urls}; do
     dir="$(-antigen-get-clone-dir "$url")"
-    version_hash="$(cd -q "$dir" && git rev-parse HEAD)"
+    version_hash="$(\cd -q "$dir" && git rev-parse HEAD)"
     bundles+=("$version_hash $url");
   done
   snapshot_content=${(j:\n:)bundles}

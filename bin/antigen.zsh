@@ -380,7 +380,7 @@ antigen () {
 
   # A temporary function wrapping the `git` command with repeated arguments.
   --plugin-git () {
-    (cd -q "$clone_dir" && eval ${ANTIGEN_CLONE_ENV} git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
+    (\cd -q "$clone_dir" && eval ${ANTIGEN_CLONE_ENV} git --git-dir="$clone_dir/.git" --no-pager "$@" &>>! $ANTIGEN_LOG)
   }
 
   local success=false
@@ -760,7 +760,7 @@ antigen () {
     local clone_dir="$(-antigen-get-clone-dir "$url")"
     if [[ -d "$clone_dir" ]]; then
       (echo -n "$clone_dir:"
-        cd -q "$clone_dir"
+        \cd -q "$clone_dir"
         git rev-parse HEAD) >> $ADOTDIR/revert-info
     fi
   done
@@ -1129,7 +1129,7 @@ antigen-restore () {
           git clone "$url" "$clone_dir" &> /dev/null
       fi
 
-      (cd -q "$clone_dir" && git checkout $version_hash) &> /dev/null
+      (\cd -q "$clone_dir" && git checkout $version_hash) &> /dev/null
     done
 
   echo ' done.'
@@ -1157,7 +1157,7 @@ antigen-revert () {
 # TODO: Once update is finished, show a summary of the new commits, as a kind of
 # "what's new" message.
 antigen-selfupdate () {
-  ( cd -q $_ANTIGEN_INSTALL_DIR
+  (\cd -q $_ANTIGEN_INSTALL_DIR
    if [[ ! ( -d .git || -f .git ) ]]; then
      echo "Your copy of antigen doesn't appear to be a git clone. " \
        "The 'selfupdate' command cannot work in this case."
@@ -1185,7 +1185,7 @@ antigen-snapshot () {
   urls=$(-antigen-echo-record | awk '$4 == "true" {print $1}' | sort -u)
   for url in ${(f)urls}; do
     dir="$(-antigen-get-clone-dir "$url")"
-    version_hash="$(cd -q "$dir" && git rev-parse HEAD)"
+    version_hash="$(\cd -q "$dir" && git rev-parse HEAD)"
     bundles+=("$version_hash $url");
   done
   snapshot_content=${(j:\n:)bundles}
