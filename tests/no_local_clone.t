@@ -20,7 +20,7 @@ Load the plugin with a clone.
 Empty the record.
 
   $ _ANTIGEN_BUNDLE_RECORD=()
-  $ antigen list
+  $ antigen-list
   You don't have any bundles.
   [1]
 

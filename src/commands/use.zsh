@@ -15,4 +15,3 @@ antigen-use () {
     return 1
   fi
 }
-

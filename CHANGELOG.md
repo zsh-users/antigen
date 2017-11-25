@@ -3,6 +3,119 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/) [v2.0.0](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.2] - 2017-11-19
+
+## Added
+- [#605] Create `CODE_OF_CONDUCT.md`
+
+## Changed
+- [#611] Remove "no extensions loaded" message
+- [#610, #596, #608] Fix cache generation with `cache-gen` command
+- [#609, #593] Add autoload for is-at-least
+- [#615] Oh-my-zsh themes backward compatibility
+
+## Fixed
+- [#590, #588, #587, #606] Fix multiple issues with caching generation
+- [#613] Defer cache loading to `antigen-apply` command
+- [#618, #617] Unalias built-in `cd`
+
+
+## [2.2.1] - 2017-06-24
+
+We're adding a new environment variable:
+
+  - `ANTIGEN_MUTEX` - Use to configure whether to check for mutex or ignore it.
+
+This configuration effectively controls if the `lock` should work. Alternatively you
+may configure which extension you want to load:
+
+    _ANTIGEN_BUILTIN_EXTENSIONS='lock parallel defer cache'
+
+Just remove `lock` from the `_ANTIGEN_BUILTIN_EXTENSIONS` environment variable. Take
+into account that this may change in the future.
+
+## Added
+- [#561, #563] Add flag to disable mutex check
+
+## Changed
+- [#559, #562] Update wiki with all installation options (Debian package, OpenSUSE, Homebrew, etc)
+- [#564] Improve README.md installation section and content
+
+## Fixed
+- [#569, #565] Avoid compiled theme artifact showing up on completion
+- [#558] Fix Makefile's glob used to build logging library if required
+- [#555, #557, #556] Fix issue with `ps` command's output being discarded (breaking parallel extension)
+- [#571, #568] Fix issues with `typeset` on zsh 5.0.x and below
+
+Thanks everyone who reported issues and provided feedback.
+
+## [2.2.0] - 2017-06-18
+
+We're deploying an extension system to further extend Antigen's functionality.
+Core functionality such as parallel install and cache are built upon this system,
+see `src/ext`.
+
+Extensions must adhere to a basic interface:
+
+    - `-antigen-{extension-name}-init`
+    - `-antigen-{extension-name}-execute`
+
+Both these functions must return 0 or 1 to abort initialization. Example:
+
+    antigen ext custom
+    # -antigen-custom-init
+    # -antigne-custom-execute
+
+Internally an extension must use Antigen's hook system to retrieve arguments and run custom
+functionality:
+
+    - `antigen-add-hook`: antigen-add-hook [antigen-function] [hook-function] ["replace"|"pre"|"post"] ["once"|"repeat"]
+    - `antigen-remove-hook`: antigen-remove-hook [hook-function]
+
+### Added
+- [#529, #506] Parallel bundle install
+- [#542] Reset default library url with antigen-use
+
+### Changed
+- [#547, #552] `antigen-theme` command won't switch between themes
+
+### Fixed
+- [#550, #548] Fix parallel extension running multiple clone instances
+- [#549, #463] Fix compdump missing completions
+- [#553] Catch spurious error message by `ps`
+
+Thanks everyone who reported issues and provided feedback.
+
+## [2.1.1] - 2017-05-20
+
+### Changed
+- [#537] Clean up README.mkd
+- [#534] Add new article on zsh and antigen
+
+### Fixed
+- [#540] Don't require confirmation when removing lock
+- [#535, #536] Avoid duplicate paths
+
+Thanks everyone who reported issues and provided feedback.
+
+## [2.1.0] - 2017-05-14
+
+### Fixed
+- [#525] Use `GIT_TERMINAL_PROMPT=0` to avoid password prompt on clone
+- [#511] Clean up globally defined variables
+
+### Added
+- [#527] Internal extension system
+- [#526] Use mutex to prevent concurrent installations
+- [#501] Autodetect config files
+
+### Changed
+- [#513] Defer bundle loading to `antigen-apply` command
+- [#512] Show warning message when bundle is already 
+- [#520] Remove runtime hack to load themes
+
+Thanks everyone who reported issues and provided feedback.
+
 ## [2.0.2] - 2017-04-22
 
 ### Changed
@@ -447,6 +560,10 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 - Added CHANGELOG.md
 - Following [Semantic Versioning](http://semver.org/)
 
+[2.2.1]: https://github.com/zsh-users/antigen/compare/v2.2.0...v2.2.1
+[2.2.0]: https://github.com/zsh-users/antigen/compare/v2.1.1...v2.2.0
+[2.1.1]: https://github.com/zsh-users/antigen/compare/v2.1.0...v2.1.1
+[2.1.0]: https://github.com/zsh-users/antigen/compare/v2.0.2...v2.1.0
 [2.0.2]: https://github.com/zsh-users/antigen/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/zsh-users/antigen/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/zsh-users/antigen/compare/v1.4.1...v2.0.0
@@ -472,4 +589,3 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 [1.0.3]: https://github.com/zsh-users/antigen/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/zsh-users/antigen/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/zsh-users/antigen/compare/v1...v1.0.1
-

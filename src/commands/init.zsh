@@ -23,7 +23,7 @@
 # Returns
 #   Nothing
 antigen-init () {
-  local src="$1"
+  local src="$1" line
 
   # If we're given an argument it should be a path to a file
   if [[ -n "$src" ]]; then
@@ -31,7 +31,7 @@ antigen-init () {
       source "$src"
       return
     else
-      echo "Antigen: invalid argument provided.";
+      printf "Antigen: invalid argument provided.\n" >&2
       return 1
     fi
   fi
@@ -41,4 +41,3 @@ antigen-init () {
     eval $line
   done
 }
-

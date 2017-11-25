@@ -1,4 +1,5 @@
 antigen-restore () {
+  local line
   if [[ $# == 0 ]]; then
     echo 'Please provide a snapshot file to restore from.' >&2
     return 1
@@ -22,10 +23,9 @@ antigen-restore () {
           git clone "$url" "$clone_dir" &> /dev/null
       fi
 
-      (cd "$clone_dir" && git checkout $version_hash) &> /dev/null
+      (\cd -q "$clone_dir" && git checkout $version_hash) &> /dev/null
     done
 
   echo ' done.'
   echo 'Please open a new shell to get the restored changes.'
 }
-

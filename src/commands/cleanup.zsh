@@ -5,7 +5,7 @@ antigen-cleanup () {
     force=true
   fi
 
-  if [[ ! -d "$ANTIGEN_BUNDLES" || -z "$(\ls "$ANTIGEN_BUNDLES")" ]]; then
+  if [[ ! -d "$ANTIGEN_BUNDLES" || -z "$(\ls -A "$ANTIGEN_BUNDLES")" ]]; then
     echo "You don't have any bundles."
     return 0
   fi

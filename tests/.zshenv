@@ -1,9 +1,23 @@
+# Display all globally defined variables from functions
+setopt localoptions warncreateglobal
+
 # zshrc file written for antigen's tests. Might not be a good one for daily use.
 # See cram's documentation for some of the variables used below.
 export ADOTDIR=$(mktemp -du "/tmp/dot-antigen-tmp-XXXXX")
 [[ ! -d "$ADOTDIR" ]] && mkdir -p "$ADOTDIR"
 
 export ANTIGEN=${ANTIGEN:-"/antigen"}
+export ANTIGEN_AUTO_CONFIG=false
+# Commented out due to tests/cache.t
+#export ANTIGEN_CACHE=false
+export ANTIGEN_RSRC=$ADOTDIR/.resources
+export _ANTIGEN_WARN_DUPLICATES=false
+export _ANTIGEN_INTERACTIVE=true
+
+# Comment/uncomment this line to be able to see detailed debug logs on
+# the tests output (tests naturally will fail)
+# export ANTIGEN_DEBUG_LOG=/dev/stdout
+
 export TESTDIR=$(mktemp -d "/tmp/cram-testdir-XXXXX" || /tmp/cram-testdir)
 test -f "$TESTDIR/.zcompdump" && rm "$TESTDIR/.zcompdump"
 source "$ANTIGEN/antigen.zsh"
@@ -82,6 +96,52 @@ PLUGIN_DIR4="$TESTDIR/test-plugin4"
   mkdir "$PLUGIN_DIR4"
   echo "echo hello world" > "$PLUGIN_DIR4/hello-world"
   chmod u+x "$PLUGIN_DIR4/hello-world"
+# }
+
+# Another test plugin.
+
+PLUGIN_DIR5="$TESTDIR/test-plugin5"
+# {
+  mkdir "$PLUGIN_DIR5"
+
+  # A wrapper function over `git` to work with the test plugin repo.
+  alias pg3='git --git-dir "$PLUGIN_DIR5/.git" --work-tree "$PLUGIN_DIR5"'
+
+  {
+      pg3 init
+      pg3 config user.name 'test'
+      pg3 config user.email 'test@test.test'
+      
+      echo "export VERSION='initial'" > "$PLUGIN_DIR5/version.zsh"
+      pg3 add .
+      pg3 commit -m 'Initial commit'
+      pg3 branch stable
+      
+      echo "export VERSION='v0.0.1'" > "$PLUGIN_DIR5/version.zsh"
+      pg3 add .
+      pg3 commit -m 'v0.0.1'
+      pg3 tag v0.0.1
+
+      echo "export VERSION='v0.0.2'" > "$PLUGIN_DIR5/version.zsh"
+      pg3 add .
+      pg3 commit -m 'v0.0.2'
+      pg3 tag v0.0.2
+      
+      echo "export VERSION='v1.0.3'" > "$PLUGIN_DIR5/version.zsh"
+      pg3 add .
+      pg3 commit -m 'v1.0.3'
+      pg3 tag v1.0.3
+      
+      echo "export VERSION='v1.1.4'" > "$PLUGIN_DIR5/version.zsh"
+      pg3 add .
+      pg3 commit -m 'v1.1.4'
+      pg3 tag v1.1.4
+      
+      echo "export VERSION='v3'" > "$PLUGIN_DIR5/version.zsh"
+      pg3 add .
+      pg3 commit -m 'v3'
+      pg3 tag v3
+  } > /dev/null
 # }
 
 # Wrapper around \wc command to handle wc format differences between GNU and BSD

@@ -1,4 +1,6 @@
 -antigen-use-oh-my-zsh () {
+  typeset -g ZSH ZSH_CACHE_DIR
+  ANTIGEN_DEFAULT_REPO_URL=$ANTIGEN_OMZ_REPO_URL
   if [[ -z "$ZSH" ]]; then
     ZSH="$(-antigen-get-clone-dir "$ANTIGEN_DEFAULT_REPO_URL")"
   fi
@@ -7,4 +9,3 @@
   fi
   antigen-bundle --loc=lib
 }
-

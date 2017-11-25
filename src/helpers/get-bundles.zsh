@@ -7,6 +7,7 @@
 #   List of bundles installed
 -antigen-get-bundles () {
   local mode revision url bundle_name bundle_entry loc no_local_clone
+  local record bundle make_local_clone
   mode=${1:-"--short"}
 
   for record in $_ANTIGEN_BUNDLE_RECORD; do
@@ -20,11 +21,12 @@
     case "$mode" in
         --short)
           # Only check revision for bundle with a requested branch
-	  if [[ $url == *\|* ]]; then
+          if [[ $url == *\|* ]]; then
             revision=$(-antigen-bundle-rev $url $make_local_clone)
-	  else
-	    revision="master"
-	  fi
+          else
+            revision="master"
+          fi
+
           if [[ $loc != '/' ]]; then
             bundle_name="$bundle_name ~ $loc"
           fi
