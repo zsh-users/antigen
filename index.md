@@ -3,7 +3,7 @@
   <br>
   Antigen <sup>v2</sup>
 </h1>
-<h4 align="center">The plugin manager for zsh.</h2>
+<h4 align="center">The plugin manager for zsh.</h4>
 
 <p align="center">
   <a href="https://github.com/zsh-users/antigen/releases/latest"><img src="https://img.shields.io/github/release/zsh-users/antigen.svg?label=latest" alt="Latest"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=develop" alt="Build Status"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/next.svg?label=next" alt="Build Status"></a>
