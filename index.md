@@ -1,113 +1,49 @@
-# Antigen <sup>v1</sup>
+<h1 align="center">
+  <a href="https://github.com/zsh-users/antigen"><img src="antigen.png" alt="Antigen"></a>
+  <br>
+  Antigen <sup>v2</sup>
+</h1>
+<h4 align="center">The plugin manager for zsh.</h2>
 
-### A plugin manager for zsh, inspired by oh-my-zsh and vundle. 
-
-[![Latest](https://img.shields.io/github/release/zsh-users/antigen.svg?label=latest)](https://github.com/zsh-users/antigen/releases/latest) [![Build Status](https://img.shields.io/travis/zsh-users/antigen/master.svg?label=stable)](http://travis-ci.org/zsh-users/antigen) [![Build Status](https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=next)](http://travis-ci.org/zsh-users/antigen)
-
-[Installation](#installation) | [Configuration](#configuration) | [Documentation](https://github.com/zsh-users/antigen/wiki) | [Bug tracker](https://github.com/zsh-users/antigen/issues) | [Discussions](https://trello.com/b/P0xrGgfT/antigen) | [Chat](https://gitter.im/antigen-zsh/develop) | [License](http://mit.sharats.me/)
+<p align="center">
+  <a href="https://github.com/zsh-users/antigen/releases/latest"><img src="https://img.shields.io/github/release/zsh-users/antigen.svg?label=latest" alt="Latest"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/develop.svg?label=develop" alt="Build Status"></a> <a href="http://travis-ci.org/zsh-users/antigen"><img src="https://img.shields.io/travis/zsh-users/antigen/next.svg?label=next" alt="Build Status"></a>
+</p>
+<p align="center">
+  <a href="#installation">Installation</a> | <a href="https://github.com/zsh-users/antigen/wiki">Documentation</a> | <a href="https://github.com/zsh-users/antigen/issues">Bug tracker</a> | <a href="https://trello.com/b/P0xrGgfT/antigen">Roadmap</a> | <a href="https://gitter.im/antigen-zsh/develop">Chat</a> | <a href="http://mit.sharats.me/">License</a>
+</p>
 
 Antigen is a small set of functions that help you easily manage your shell (zsh)
 plugins, called bundles. The concept is pretty much the same as bundles in a
 typical vim+pathogen setup. Antigen is to zsh, what [Vundle][] is to vim.
 
+
 [![https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce](https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce.png)](https://asciinema.org/a/cn20v8fy6wrhab4l5kifv6dce)
+
 
 Antigen has reached a certain level of stability and has been used in the wild
 for around a couple of years. If you face any problems, please open an issue.
 
-Antigen works with zsh versions `>= 4.3.5`.
+Antigen works with zsh versions `>= 4.3.11`.
 
-Note: Please read the commit comments of the changesets when you pull a new
-version of antigen.
+## Installation
 
-## Show off
+Install Antigen from our main repository with the latest stable version available:
 
-> Enough talk. Let's fight!
->   -- Po, Kung-fu Panda.
+    curl -L git.io/antigen > antigen.zsh
+    # or use git.io/antigen-nightly for the latest version
 
-You're going to experience antigen right in your open shell. No `.zshrc`
-tweaking and reading the rest of this documentation. Kinda like an ice-cream
-sample, if you will.
+There are several installation methods using your System Package manager, just look
+at the [Installation][] wiki page.
 
-Get and load antigen.
-
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.4.1/bin/antigen.zsh > antigen.zsh
-    source antigen.zsh
-
-There. You now have all the antigen goodies. Let's try install some plugins. How
-about some color to start with. Get the [syntax highlighting plugin][] by
-running
-
-    antigen bundle zsh-users/zsh-syntax-highlighting
-
-Now let it do its thing and once you're back at your prompt, try and type a
-command. See that? Colors!
-
-So, you do git? ruby? git and ruby? There are lots of awesome plugins over at
-oh-my-zsh. Treat yourself to some.
-
-    antigen bundle robbyrussell/oh-my-zsh plugins/ruby
-    # Or for the lazy,
-    antigen bundle git
-
-There are lots of plugins out there in the wild and people are writing zsh
-utilities as small scripts all the time. Antigen is compatible with all of them.
-The plugins and scripts don't need any special handling to be compatible with
-antigen.
-
-Another example, [kennethreitz's autoenv][autoenv] (or
-[the zsh optimized version][z-autoenv] of it). Just a bundle command away.
-
-    antigen bundle kennethreitz/autoenv
-    # or `antigen bundle Tarrasch/zsh-autoenv`
-
-And boom! you have all the autoenv goodness. Just remember how you used to do
-these before antigen, clone it, modify your zshrc to source it, load a new
-terminal, all just to test it out. Duh!
-
-A subtle aspect of this is that you can tell antigen to grab just about anything
-from anyone's `dotfiles` repo, as long as it is in a directory under any repo on
-github.
-
-And themes? How would you like a fancy new prompt for yourself?
-
-    antigen theme funky
-
-No? Not your taste? There are many themes available to you, check out the
-oh-my-zsh's [page on themes][].
-
-You can install themes from unofficial repos too!
-
-    antigen theme XsErG/zsh-themes themes/lazyuser
-
-See? It's easy! To see how that works, refer to [the section on the
-`antigen theme` command further down](#antigen-theme).
-
-Note: Many of those plugins and especially themes, assume you have the core
-library of oh-my-zsh loaded. So, if you want to experiment further, issue a
-
-    antigen use oh-my-zsh
-
-and continue until you're tired. At which point you can come back to this page
-;)
+Now you may head towards the [Commands][] and [Configuration][] wiki pages to further
+understand Antigen's functionallity and customization.
 
 ## Usage
 
-So, now that you're here, I suppose you are convinced and want antigen running
-your shell all the time. Sweet. Let's do it.
-
-There are several installation methods available in the [Installation](#installation)
-section or you can use git:
-
-First, clone this repo, probably as a submodule if you have your dotfiles in a
-git repo,
-
-    git clone https://github.com/zsh-users/antigen.git
-
 The usage should be very familiar to you if you use Vundle. A typical `.zshrc`
-might look like this
+might look like this:
 
-    source /path-to-antigen-clone/antigen.zsh
+    source /path-to-antigen/antigen.zsh
 
     # Load the oh-my-zsh's library.
     antigen use oh-my-zsh
@@ -125,16 +61,20 @@ might look like this
     # Load the theme.
     antigen theme robbyrussell
 
-    # Tell antigen that you're done.
+    # Tell Antigen that you're done.
     antigen apply
 
-Open your zsh with this zshrc and you should see all the bundles you defined
-here, getting installed. Once its done, you are ready to roll. The complete
-syntax for the `antigen bundle` command is discussed further down on this page.
+Open your zsh with this `.zshrc` and you should see all the bundles you defined
+here, getting installed. Once it's done, you are ready to roll. The complete
+syntax for the `antigen bundle` command is discussed in the [Commands][] page.
 
-You can find more examples in the wiki: [Antigen in the wild][wild].
+Furthermore, [In the wild][wild] wiki section has more configuration examples. You may
+as well take a look at the [Show off][] wiki page
+for interactive mode usage.
 
-## Motivation
+## Meta
+
+### Motivation
 
 If you use zsh and [oh-my-zsh][], you know that having many different plugins
 that are developed by many different authors in a single (sub)repo is not very
@@ -144,7 +84,7 @@ admire robbyrussell's efforts for reviewing and merging the gigantic number of
 pull requests the project gets. We need a better way of plugin management.
 
 This was discussed on [a][1] [few][2] [issues][3], but it doesn't look like
-there was any progress made. So, I'm trying to start this off with antigen,
+there was any progress made. So, I'm trying to start this off with Antigen,
 hoping to better this situation. Please note that I'm by no means a zsh or any
 shell script expert (far from it).
 
@@ -152,7 +92,7 @@ shell script expert (far from it).
 [2]: https://github.com/robbyrussell/oh-my-zsh/issues/377
 [3]: https://github.com/robbyrussell/oh-my-zsh/issues/1014
 
-Inspired by vundle, antigen can pull oh-my-zsh style plugins from various github
+Inspired by vundle, Antigen can pull oh-my-zsh style plugins from various github
 repositories. You are not limited to use plugins from the oh-my-zsh repository
 only and you don't need to maintain your own fork and pull from upstream every
 now and then. I actually encourage you to grab plugins and scripts from various
@@ -166,568 +106,24 @@ Antigen also lets you switch the prompt theme with one command, just like that
 and your prompt is changed, just for this session of course (unless you put this
 line in your `.zshrc`).
 
-## Commands
-
-### antigen bundle
-
-This command tells antigen to install (if not already installed) and load the
-given plugin. The simplest usage follows the following syntax.
-
-    antigen bundle <plugin-name>
-
-This will install and load the `plugins/<name>` directory from [robbyrussell's
-oh-my-zsh][oh-my-zsh] (can be changed by setting `ANTIGEN_DEFAULT_REPO_URL`).
-
-However, the above is just syntax sugar for the extended syntax of the
-`antigen bundle` command.
-
-    antigen bundle [<url> [<loc>]]
-
-where `<url>` is the repository url and it defaults to [robbyrussell's
-oh-my-zsh][oh-my-zsh] repo (can be changed by setting `ANTIGEN_DEFAULT_REPO_URL`
-discussed further down). `<loc>` is the path under this repository which has the
-zsh plugin. This is typically the directory that contains a `*.plugin.zsh` file,
-but it could contain a completion file or just many `*.zsh` files to be sourced,
-or it could simply be a file (with any extension) that you want to source.
-`<loc>` defaults to `/`, which indicates the repository itself is a plugin.
-
-An example invocation would be
-
-    # The following is the same as `antigen bundle ant`. But for demonstration
-    # purposes, we use the extended syntax here.
-    antigen bundle https://github.com/robbyrussell/oh-my-zsh.git plugins/ant
-
-This would install the ant plugin from robbyrussell's oh-my-zsh repo. Of course,
-github url's can be shortened.
-
-    antigen bundle robbyrussell/oh-my-zsh plugins/ant
-
-And since this repo is the default, even that isn't necessary. But we can't
-specify the `loc` without giving the first argument.
-
-For this and a few other reasons, `antigen bundle` also supports a simple
-keyword argument syntax, using which we can rewrite the above as
-
-    antigen bundle --loc=plugins/ant
-
-Which picks up the default for the `url` argument, and uses the `loc` given to
-it.
-
-*Note* that you can mix and match positional and keyword arguments. But you
-can't have positional arguments after keyword arguments.
-
-    antigen bundle robbyrussell/oh-my-zsh --loc=plugins/ant
-
-And keyword arguments don't care about the order in which the arguments are
-specified. The following is perfectly valid.
-
-    antigen bundle --loc=plugins/ant --url=robbyrussell/oh-my-zsh
-
-You can also specify a local directory on your file system as a bundle. In this
-case, make sure the path you give is the absolute path (i.e., starts with a
-`/`). Relative paths are not supported. If the repo you gave is a local
-directory path, then it is not necessary that this path is a git repo. Please
-refer to the notes on `--no-local-clone` below.
-
-This command can also be used from your shell environment. This allows you to
-install plugins on the fly and try them out. Of course if you want a bundle to
-be available every time you open a shell, put it in your `.zshrc`.
-
-Other keyword-only arguments accepted:
-
-`--branch={git-branch-name}` &mdash; Specify the branch of the git repo to be
-used for this bundle (without the braces of course). The default is whatever
-branch the clone comes with, which is usually `master`. For example,
-
-    antigen bundle github-user/repo --branch=develop
-
-This will get the plugin as in the branch `develop`.
-
-Note that if you specify two plugins to be loaded from the same git repo, but
-different branches, then two separate clones of this repo will be maintained.
-This is a small implementation detail and shouldn't influence you in any way.
-
-`--no-local-clone` &mdash; This command can be useful if you are developing a
-plugin and already have a clone on your local file system. If this argument is
-not given, even if the given repo url is a local path, a clone is made in the
-`$ADOTDIR/repos`, and the plugin is loaded from that clone. But, if you give
-this argument, the plugin is sourced straight from the repo location, without
-creating a clone. For example,
-
-    antigen bundle /absolute/path/to/the/plugin --no-local-clone
-
-Note that if the repo url is *not* an absolute local path or a branch has been
-specified with the `--branch` option, this argument has no effect. That is,
-for this option to have any affect, the repo url must be an absolute local path
-and no `--branch` should be specified.
-
-Also, if the local path given as the url is not a git repo, then this
-argument is forced as it doesn't makes sense to *clone* something that's not a
-git repo. This property can be used to load any utility scripts you have in your
-dotfiles repo. For example,
-
-    antigen bundle $HOME/dotfiles/oh-my-zsh/custom
-
-In addition to the above discussed arguments, `antigen bundle` also takes a
-`btype` keyword-only argument, that is used internally. You shouldn't be
-concerned with this argument, its only used internally and will probably go away
-in the future.  It indicates whether the bundle is a theme or a simple plugin.
-
-For details on what constitutes a valid bundle and how Antigen handles different types of bundles, see the [Notes on writing plugins](#notes-on-writing-plugins) section.
-
-### antigen bundles
-
-If you have a fair number of bundles, using the `antigen bundle` command can
-look cumbersome. You can use the `antigen bundles` command to *bulk* define
-bundles instead of individual calls to `antigen bundle`.
-
-Usage is pretty straightforward. Just pipe the bundle specifications, just as
-you would give to the `antigen bundle` command, one per line, into the
-`antigen bundles` command. The easiest way to do this, is using the heredoc
-syntax.
-
-    antigen bundles <<EOBUNDLES
-      # Guess what to install when running an unknown command.
-      command-not-found
-
-      # The heroku tool helper plugin.
-      heroku
-    EOBUNDLES
-
-This is equivalent to
-
-    antigen bundle command-not-found
-    antigen bundle heroku
-
-Of course, as you can see, from the lines piped to `antigen bundles`, empty
-lines and those starting with a `#` are ignored. The rest are passed to
-`antigen bundle` without any quoting rules applied. They are actually `eval`-ed
-with the `antigen bundle` command. See the source if you want to really
-understand how it works. Its a very small function.
-
-*Note*: Indenting the contents inside the EOBUNDLES heredoc is not required for
-antigen-bundles to work. Its allowed (and encouraged) to improve readability.
-
-Another thing to take into account is that variables (ex. environment variables)
-and especial builtin characters (`~`, `.`) won't work inside a heredoc, so you may
-have to change a `antigen-bundle` syntax to work with `antigen-bundles`.
-
-### antigen init
-
-Makes usage of caching in order to quickly load bundles. Improves performance greatly
-and it's recommened if you have an stable set of bundles. See wiki's [cookbook](https://github.com/zsh-users/antigen/wiki/Cookbook#init-command) section
-for further details.
-
-    antigen init /path/to/.antigenrc
-
-Where `.antigenrc` contains your antigen configuration (`antigen bundle`, `antigen bundles`,
-`antigen theme`, etc).
-
-This command is available only with cache enabled, ie: `_ANTIGEN_CACHE_ENABLED=true`.
-
-
-### antigen update
-
-This is something you might not want to put in your `.zshrc`. Instead, run it
-occasionally to update all your plugins. It doesn't take any arguments.
-
-    antigen update
-
-Please note that the updates that are downloaded are not immediately available.
-You have to open a new shell to be able to see the changes. This is a limitation
-by design since reloading all the plugins *might* have some nasty side effects
-that may not be immediately apparent. Let's just say it can make your shell act
-real quirky.
-
-**Please note**: This command is not for updating *antigen* itself. Its for
-updating the bundles you are using with antigen. To update your copy of antigen,
-use the `selfupdate` command described further below.
-
-### antigen revert <sup>&alpha;</sup>
-
-Reverts the state of all your plugins to how they were before the last
-`antigen update`. This command is currently experimental, so don't rely too much
-on it. There is a test for it, and it passes, so it should work fine though.
-
-Takes no options.
-
-Insider detail: The information for reverting is stored in
-`$ADOTDIR/revert-info` file.  If its not present, reverting is not possible.
-
-### antigen list
-
-Use this command to list out the currently *loaded* plugins. Keep in mind that
-this includes any bundles installed on-the-fly.
-
-    antigen list [--short]
-
-Without arguments it gives out four entries per line of output, denoting the
-following fields of each bundle.
-
-    <repo-url> <loc> <btype> <has-local-clone?>
-
-The `btype` field is an internal detail, that specifies if the bundle is a
-`plugin` or a `theme`.
-
-The final field is `true` or `false` reflecting whether there is a local clone
-for this bundle.
-
-With `--short` argument it will only print short bundle names only.
-
-### antigen cleanup
-
-Used to clean up the clones of repos which are not used by any plugins currently
-loaded. It takes no arguments. When run, it lists out the repo-clones that are
-available but are not used by any plugin *currently loaded*.
-
-This command, by default asks for confirmation before deleting the unused
-clones. If the `--force` argument is given, then this confirmation is not asked.
-It straight away deletes all the unused clones. This option makes this command
-usable in a non-interactive fashion.
-
-### antigen purge
-
-This command removes a bundle from filesystem. Usage:
-
-    antigen purge example/bundle [--force]
-
-Where `example/bundle` is the bundle you want to purge from filesystem.
-
-Take into account that the bundle will be removed from filesystem but next time
-you open up a shell, if you have an `antigen bundle example/bundle` line laying
-around, the bundle will be installed again.
-
-This command, by default asks for confirmation before deleting bundles. If the
-`--force` argument is given, then this confirmation is not asked.
-
-### antigen reset
-
-If cache is enabled this command will clean the generated cache. This is useful
-if you are using `antigen-init` command in order to reload bundle configuration changes.
-
-Usage:
-
-    antigen reset
-
-Takes no further arguments.
-
-### antigen use
-
-This command lets you load any (supported) zsh pre-packaged framework, like
-oh-my-zsh, as well as any library from custom url. Usage is
-
-    antigen use oh-my-zsh
-
-Additional arguments may be present depending on the framework you are
-`use`-ing. Here are the supported frameworks.
-
-#### oh-my-zsh
-
-This is (almost) the same as
-
-    antigen bundle --loc=lib
-
-So, it basically installs the oh-my-zsh's library as a bundle.
-
-One other thing it does is that some oh-my-zsh plugins expect a `$ZSH` set to
-the full path of the oh-my-zsh clone being used. This is also set to the
-correct path, if not already set to something else.
-
-Please note that this assumes that the `ANTIGEN_DEFAULT_REPO_URL` is set to the
-oh-my-zsh repo or a fork of that repo. If you want to specify the `url` too,
-then you can't use the `antigen use oh-my-zsh` short cut. You have to do that
-directly with the `antigen bundle` command.
-
-Use
-
-    antigen use oh-my-zsh
-
-in  your `.zshrc`, before any `antigen bundle` declarations. It takes no further
-arguments.
-
-#### prezto
-
-Use
-
-    antigen use prezto 
-
-in  your `.zshrc`, before any `antigen bundle` declarations. It takes no further arguments.
-
-That is, it initializes the canonical repo of the prezto framework,  Your .zshrc file could look like this:
-
-    antigen use prezto
-    antigen bundle sorin-ionescu/prezto modules/helper  # required for Git module
-    antigen bundle sorin-ionescu/prezto modules/editor
-    antigen bundle sorin-ionescu/prezto modules/git
-    antigen bundle sorin-ionescu/prezto modules/prompt
-    antigen apply
-
-Please note that Prezto support is new and experimental. If you find any bugs, please
-report over on github issues.
-Also note that due to how Prezto is implemented Antigen has to alter `ZDOTDIR`
-environment variable, which is restored immediately after `antigen apply` command.
-
-#### custom library
-
-Use
-
-    antigen use https://github.com/custom/lib.git
-
-in your `.zshrc`, before any `antigen bundle` declarations. It take all arguments
-`antigen-bundle` command does.
-
-### antigen theme
-
-Used for switching the prompt theme. Invoke it with the name of the theme you
-want to use.
-
-    antigen theme fox
-
-This will get the theme file located at `themes/fox.zsh-theme` in the repo
-specified by `ANTIGEN_DEFAULT_REPO_URL`.
-
-To pull themes from other repositories, use `antigen theme` just like
-`antigen bundle`. Exactly the same, just make sure the `url` and `loc`
-combination point to a theme file, having a `.zsh-theme` extension.
-
-For example,
-
-    antigen theme robbyrussell/oh-my-zsh themes/apple
-
-Will pull the apple theme from the canonical oh-my-zsh repo. Also, note that the
-`.zsh-theme` extension is not present. It can be given, its optional.
-
-To get themes from arbitrary git repos (such as gists) use,
-
-    antigen theme https://gist.github.com/3750104.git agnoster
-
-in which case there is a file called `agnoster.zsh-theme` present in the gist at
-https://gist.github.com/3750104.
-
-You can use this command to change your theme on the fly in your shell. Go on,
-try out a few themes in your shell before you set it in your `.zshrc`.
-
-**Note**: Some themes use functions that are loaded by `antigen use oh-my-zsh`.
-So, to avoid any trouble, run `antigen use oh-my-zsh` if you haven't already
-before experimenting with themes. If you have `antigen use oh-my-zsh` in your
-`.zshrc`, you're covered.
-
-**Note**: Do *not* provide the `--btype` argument to `antigen theme`. Its an
-internal argument.
-
-*For the interested, you can read more details on the purpose & workings of the
-`theme` command on the comments of issue #78.*
-
-### antigen apply
-
-You have to add this command after defining all bundles you need, in your zshrc.
-The completions defined by your bundles will be loaded at this step.
-
-It is possible to load completions as and when a bundle is specified with the
-bundle command, in which case this command would not be necessary. But loading
-the completions is a time-consuming process, so if the completions were loaded
-at every call to `antigen bundle`, your shell will start noticeably slow when
-you have a good number of bundle specifications.
-
-However, if you can suggest a way so that this would not be necessary, I am very
-interested in discussing it. Please open up an issue with your details. Thanks.
-
-### antigen snapshot <sup>&alpha;</sup>
-
-Creates a snapshot of all the clones you currently have *active* including the
-git version hash they are at and save it to a snapshot file. *Active* means, the
-clones for those listed by `antigen cleanup` are not included in the snapshot.
-
-Takes one optional argument, the file name in which the snapshot is to be saved.
-Defaults to `antigen snapshot`.
-
-**Note**: The snapshot currently *only* contains the details of those bundles
-that have a clone. That is, bundles that have `--no-local-clone` set or are
-directly sourced from your file system (without a git repo), are not recorded
-in the snapshot file.
-
-### antigen restore <sup>&alpha;</sup>
-
-Restore the bundles state as specified in the snapshot. Takes one required
-argument, the snapshot file name to read.
-
-Although it restores the clones of the repos specified in the snapshot file, any
-other clones present in your environment are not touched. This behavior may
-change in the future.
-
-### antigen selfupdate
-
-Use this command to update your copy of antigen. It basically does a `git pull`
-on your antigen's clone, *if* it is a git clone. Otherwise, it doesn't do
-anything.
-
-Takes no options.
-
-### antigen help
-
-This exists so that there can be some help right in the command line. Currently
-it doesn't provide much help other than redirecting you to the project page for
-documentation. It is intended to provide more meaning and sub-command specific
-help in the future.
-
-I could use some help here as I'm not that good at writing documentation that
-looks good as output on the command line.
-
-## Installation
-
-Install Antigen from our main repository for the latests and greatests version available:
-
-    curl https://cdn.rawgit.com/zsh-users/antigen/v1.4.1/bin/antigen.zsh > antigen.zsh
-
-Or using your system package manager:
-
-### Apt
-
-    apt-get install zsh-antigen
-
-### Brew
-
-    brew install antigen
-
-### AUR
-
-    yaourt -S antigen-git
-
-Remember that your package manager may install an older Antigen version.
-
-## Configuration
-
-The following environment variables can be set to customize the behavior of
-antigen. Make sure you set them *before* source-ing `antigen.zsh`.
-
-`ANTIGEN_DEFAULT_REPO_URL` &mdash; This is the default repository url that is
-used for `bundle` commands. The default value is robbyrussell's oh-my-zsh repo,
-but you can set this to the fork url of your own fork.
-
-`ADOTDIR` &mdash; This directory is used to store all the repo clones, your
-bundles, themes, caches and everything else antigen requires to run smoothly.
-Defaults to `$HOME/.antigen`.
-
-**Note**: `ANTIGEN_REPO_CACHE` & `ANTIGEN_BUNDLE_DIR` &mdash; These variables
-were used previously but are now removed. Please use `ADOTDIR` instead, as
-mentioned above.
-
-## Running the tests
-
-All the tests are in the `tests` folder and are run using the [cram][] test
-system. The latest version on that website, as of today is v0.5, which does not
-have the `--shell` argument which is required to run our tests. So, to get the
-correct version of cram, run
-
-    pip install cram==0.0.6
-
-With that, once you have cram installed, you can run the tests as
-
-    make tests PYENV= SHELL=zsh
-
-If you are making a feature addition, I'd really appreciate if you can add a
-test for your feature. Even if you can add a test for an existing feature, that
-would be great as the tests are currently seriously lagging behind the full
-functionality of antigen.
-
-## Notes on writing plugins
-
-Most shell utilities/plugins are made up of just one file. For a plugin called
-`awesomeness`, create a `awesomeness.plugin.zsh` and code away.
-
-That said, even if you write a single file as a `.sh` file with the goodness you
-want to create, antigen will work just fine with it. The `*.plugin.zsh` way is
-recommended by antigen, because it is widely used because of the [oh-my-zsh][]
-project.
-
-If you want to know how antigen loads the plugins, do continue.
-
-Firstly, antigen looks for a `*.plugin.zsh` file in the plugin directory. If
-present, it will source *only* this script. Nothing else is sourced. This is for
-oh-my-zsh style plugins.
-
-Secondly, it looks for a `init.zsh` file in the plugin directory. If present, Prezto will attempt to load the plugin with `pmodload`, removing "`modules/`" from the beginning of the plugin path if present. If `pmodload` is not available, Antigen will source *only* `init.zsh` and nothing else. This is for Prezto-style modules.
-
-Otherwise, it looks for `*.zsh` files and if there are any, *all* of them are
-sourced. The order in which they are sourced is not currently defined. Please
-don't rely on this order. Nothing else is sourced after all the `*.zsh` scripts.
-
-If no `*.zsh` files are present, it finally looks for any `*.sh` files and
-sources *all* of them. Again, the order in which they are sourced in not
-currently defined.
-
-No matter which (or none) of the above happen to be sourced, this plugin
-directory is added to the zsh's function path (`$fpath`) so that any completions
-in it are loaded.
-
-One exception to this rule is that if this plugin is a theme. In which case the
-theme script is just sourced and nothing else is done. Not even adding to
-`$fpath`.
-
-## A note on external zsh plugins
-
-Antigen downloads zsh scripts and sources them, according to your
-specifications. As such, these scripts are capable of doing some *real* damage
-to your system. If you are only downloading scripts from oh-my-zsh and/or
-prezto, you're probably fine, since there is a second level of manual checking
-before a script gets into the framework.
-
-But, if you are adding a script from any other source, please check the source
-code of the plugin to see its not doing anything malicious, before adding it to
-your `.zshrc`.
-
-## Meta
-
 ### Helping out
 
-Antigen is licensed with the [MIT License][license].
+We are always looking for new contributors! We have a number of issues marked
+as ["Help wanted"][Help wanted] that are good places to jump in and get started. Take a look at
+our [Roadmap][] to see future projects and discuss ideas.
 
-To contribute, please read the [contributing wiki page][contributing] before
-sending pull requests. If its a long/complicated change, please consider opening
-an [issue][] first so we can discuss it out. Thanks!
+Please be sure to check out our [Contributing guidelines][] to understand our workflow,
+and our [Coding conventions][].
 
-### Feedback please
+### Feedback
 
-Any comments/suggestions/feedback welcome. Please say hello to us on 
-[gitter](https://gitter.im/antigen-zsh/develop). Or open an issue to discuss something
-(anything!) about the project ;).
+Any comments/suggestions/feedback is truly welcome. Please say hello to us on [Gitter][]. Or
+open an issue to discuss something (anything!) about the project ;).
 
 ### Articles
 
-These are some external articles wrote by Antigen users.
-
-- [Oh-my-zsh is the Disease and Antigen is the Vaccine](http://joshldavis.com/2014/07/26/oh-my-zsh-is-a-disease-antigen-is-the-vaccine/)
-
-- [Awesome cmd line with antigen (zsh plugin manager)](https://medium.com/cocoaacademymag/awesome-cmd-line-with-antigen-zsh-plugin-manager-d497574f7b5)
-
-- [Just discovered.. zsh!](https://arteymix.github.io/2015/01/20/just-discovered-zsh.html)
-
-- [My switch to Zsh with Antigen](http://blog.namangoel.com/zsh-with-antigen)
-
-- [Antigen - vundle-like менеджер плагинов для zsh](https://neoascetic.me/antigen-zsh-plugin-manager/)
-
-- [Personalizando zsh: antigen](http://antonio-mario.com/personalizando-zsh-antigen/)
-
-- [Antigenを使おう](http://www.slideshare.net/mollifier/antigen-47698803)
-
-- [zshのプラグインマネージャーantigenでoh-my-zshの良いとこ取りをする](http://blog.glidenote.com/blog/2012/10/25/antigen/)
-
-- [NPM, antigen and ZSH pure prompt](http://stephen.yearl.us/npm-and-zsh-pure-prompt/)
-
-- [zsh with Antigen](http://mgdm.net/weblog/zsh-antigen/)
-
-- [Zsh Shell with Antigen + Oh-My-Zsh + Power Level 9k theme](https://www.youtube.com/watch?v=TIkJ5fDz2-g)
-
-- [Getting Started with ZSH](https://blogs.umass.edu/Techbytes/2014/12/01/getting-started-with-zsh/)
-
-- [My Interesting Zsh Prompt ](https://urbanoalvarez.es/blog/my-interesting-zsh-prompt)
-
-- [antigen - دانیال نیک نام](https://blog.niknam.org/1395/09/23/antigen/)
-
-- [What Can Antigen Do For You?](http://blog.andrewlang.net/post/150662693408/what-can-antigen-do-for-you)
-
-- [A Modern Terminal Workflow](http://wrotenwrites.com/a_modern_terminal_workflow_3/)
-
+There are many articles written by Antigen users out there. Be sure to check them out
+in the [Articles][Articles] page.
 
 ### Plugins and Alternatives
 
@@ -735,17 +131,20 @@ The [awesome-zsh-plugins][] list is a directory of plugins, themes and alternati
 you may find useful.
 
 [Vundle]: https://github.com/gmarik/vundle
-[page on themes]: https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 [awesome-zsh-plugins]: https://github.com/unixorn/awesome-zsh-plugins
 [wild]: https://github.com/zsh-users/antigen/wiki/In-the-wild
-[syntax highlighting plugin]: https://github.com/zsh-users/zsh-syntax-highlighting
-[autoenv]: https://github.com/kennethreitz/autoenv
-[z-autoenv]: https://github.com/Tarrasch/zsh-autoenv
 [oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh
-[cram]: https://bitheap.org/cram/
 [issue]: https://github.com/zsh-users/antigen/issues
 [license]: http://mit.sharats.me
 [contributing]: https://github.com/zsh-users/antigen/wiki/Contributing
-[twitter]: http://twitter.com/sharat87
-[antigen-hs]: https://github.com/Tarrasch/antigen-hs
-[zgen]: https://github.com/tarjoilija/zgen
+[wiki]: https://github.com/zsh-users/antigen/wiki
+[Commands]: https://github.com/zsh-users/antigen/wiki/Commands
+[Installation]: https://github.com/zsh-users/antigen/wiki/Installation
+[Configuration]: https://github.com/zsh-users/antigen/wiki/Configuration
+[Show off]: https://github.com/zsh-users/antigen/wiki/Show-off
+[Help wanted]: https://github.com/zsh-users/antigen/issues?q=is%3Aissue+is%3Aopen+label%3A%22Help+wanted%22
+[Roadmap]: https://trello.com/b/P0xrGgfT/antigen
+[Contributing guidelines]: https://github.com/zsh-users/antigen/wiki/Contributing
+[Coding conventions]: https://github.com/zsh-users/antigen/wiki/Styleguide
+[Gitter]: https://gitter.im/antigen-zsh/develop
+[Articles]: https://github.com/zsh-users/antigen/wiki/Articles 
