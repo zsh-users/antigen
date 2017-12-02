@@ -249,7 +249,7 @@ antigen () {
 
   if [[ -n "$bundle" ]]; then
     local dir=$(-antigen-get-clone-dir $ANTIGEN_DEFAULT_REPO_URL)
-    echo $(ls $dir/themes/ | grep '.zsh-theme$' | sed 's/.zsh-theme//')
+    echo $(ls $dir/themes/ | eval "$_ANTIGEN_GREP_COMMAND '.zsh-theme$'" | sed 's/.zsh-theme//')
   fi
 
   return 0
@@ -466,7 +466,9 @@ antigen () {
 
   # Compatibility with oh-my-zsh themes.
   -antigen-set-default _ANTIGEN_THEME_COMPAT true
-  
+
+  -antigen-set-default _ANTIGEN_GREP_COMMAND 'GREP_OPTIONS= command grep '
+
   # Add default built-in extensions to load at start up
   -antigen-set-default _ANTIGEN_BUILTIN_EXTENSIONS 'lock parallel defer cache'
 
@@ -872,7 +874,7 @@ antigen-bundles () {
   # quoting rules applied.
   local line
   setopt localoptions no_extended_glob # See https://github.com/zsh-users/antigen/issues/456
-  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+  eval "$_ANTIGEN_GREP_COMMAND '^[[:space:]]*[^[:space:]#]'" | while read line; do
     antigen-bundle ${=line%#*}
   done
 }
@@ -996,7 +998,7 @@ antigen-init () {
   fi
 
   # Otherwise we expect it to be a heredoc
-  grep '^[[:space:]]*[^[:space:]#]' | while read -r line; do
+  eval "$_ANTIGEN_GREP_COMMAND '^[[:space:]]*[^[:space:]#]'" | while read -r line; do
     eval $line
   done
 }
@@ -1380,7 +1382,7 @@ antigen-use () {
   fi
 }
 antigen-version () {
-  local version="v2.2.2"
+  local version="develop"
   local extensions revision=""
   if [[ -d $_ANTIGEN_INSTALL_DIR/.git ]]; then
     revision=" ($(git --git-dir=$_ANTIGEN_INSTALL_DIR/.git rev-parse --short '@'))"
@@ -1808,7 +1810,7 @@ typeset -g _ZCACHE_CAPTURE_PREFIX
 cat > $ANTIGEN_CACHE <<EOC
 #-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
-#-- ANTIGEN v2.2.2
+#-- ANTIGEN develop
 $(functions -- _antigen)
 antigen () {
   local MATCH MBEGIN MEND
@@ -1833,7 +1835,7 @@ ${(j::)_sources}
 typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=($(print ${(qq)_ANTIGEN_BUNDLE_RECORD}))
 typeset -g _ANTIGEN_CACHE_LOADED; _ANTIGEN_CACHE_LOADED=true
 typeset -ga _ZCACHE_BUNDLE_SOURCE; _ZCACHE_BUNDLE_SOURCE=($(print ${(qq)_ZCACHE_BUNDLE_SOURCE}))
-typeset -g _ANTIGEN_CACHE_VERSION; _ANTIGEN_CACHE_VERSION='v2.2.2'
+typeset -g _ANTIGEN_CACHE_VERSION; _ANTIGEN_CACHE_VERSION='develop'
 
 #-- END ZCACHE GENERATED FILE
 EOC
