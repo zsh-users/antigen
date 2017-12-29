@@ -6,7 +6,7 @@ antigen-apply () {
   # the one that actually initializes completions.
   TRACE "Gonna create compdump file @ apply" COMPDUMP
   autoload -Uz compinit
-  "$ANTIGEN_COMPINIT" -d "$ANTIGEN_COMPDUMP"
+  compinit $ANTIGEN_COMPINIT_OPTS -d "$ANTIGEN_COMPDUMP"
 
   # Apply all `compinit`s that have been deferred.
   local cdef
