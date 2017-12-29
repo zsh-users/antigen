@@ -1893,8 +1893,12 @@ EOC
     # There always should be 5 steps from original source as the correct way is to use
     # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
     LOG "TRACE: ${funcfiletrace}"
-    if [[ $ANTIGEN_AUTO_CONFIG == true && $#ANTIGEN_CHECK_FILES -eq 0 ]]; then
-      ANTIGEN_CHECK_FILES+=(~/.zshrc)
+    if [[ $AN~TIGEN_AUTO_CONFIG == true && $#ANTIGEN_CHECK_FILES -eq 0 ]]; then
+      # Check common configuration file does exist.
+      if [[ -f $HOME/.zshrc ]]; then
+        ANTIGEN_CHECK_FILES+=($HOME/.zshrc)
+      fi
+      # TODO Fix: Fuzzy match shoud be replaced by a sane way to determine it.
       if [[ $#funcfiletrace -ge 6 ]]; then
         ANTIGEN_CHECK_FILES+=("${${funcfiletrace[6]%:*}##* }")
       fi
