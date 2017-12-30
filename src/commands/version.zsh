@@ -1,10 +1,9 @@
 antigen-version () {
-  local extensions revision=""
-  if [[ -d $_ANTIGEN_INSTALL_DIR/.git ]]; then
-    revision=" ($(git --git-dir=$_ANTIGEN_INSTALL_DIR/.git rev-parse --short '@'))"
-  fi
+  local extensions
 
-  printf "Antigen %s%s\nBuilt: %s\n" "{{ANTIGEN_VERSION}}" $revision "{{ANTIGEN_BUILD_DATE}}"
+  printf "Antigen %s (%s)\nRevision date: %s\n" "{{ANTIGEN_VERSION}}" "{{ANTIGEN_REVISION}}" "{{ANTIGEN_REVISION_DATE}}"
+
+  # Show extension information if any is available
   if (( $+functions[antigen-ext] )); then
     typeset -a extensions; extensions=($(antigen-ext-list))
     if [[ $#extensions -gt 0 ]]; then

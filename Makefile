@@ -103,7 +103,8 @@ build:
 	@echo "-antigen-env-setup" >> ${TARGET}
 	@echo "${VERSION}" > ${VERSION_FILE}
 	@$(call ised,"s/{{ANTIGEN_VERSION}}/$$(cat ${VERSION_FILE})/",${TARGET})
-	@$(call ised,"s/{{ANTIGEN_BUILD_DATE}}/$$(date '+%F %T %z')/",${TARGET})
+	@$(call ised,"s/{{ANTIGEN_REVISION}}/$$(git rev-parse --short '@')/",${TARGET})
+	@$(call ised,"s/{{ANTIGEN_REVISION_DATE}}/$$(date -d @$$(git log -n1 --format='%at') '+%F %T %z')/",${TARGET})
 ifeq (${WITH_DEBUG}, no)
 	@$(call isede,"s/ (WARN|LOG|ERR|TRACE) .*&//",${TARGET})
 	@$(call isede,"/ (WARN|LOG|ERR|TRACE) .*/d",${TARGET})
