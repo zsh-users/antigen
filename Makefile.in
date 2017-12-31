@@ -101,13 +101,18 @@ endif
 	@ls -sh ${TARGET}
 
 release:
+	# Move to release branch
 	git checkout develop
-	${MAKE} build tests
 	git checkout -b release/${VERSION}
+	# Run build and tests
+	${MAKE} build tests
 	# Update changelog
 	${EDITOR} CHANGELOG.md
 	# Build release commit
-	git add CHANGELOG.md ${VERSION_FILE} README.mkd ${TARGET}
+	git add CHANGELOG.md README.mkd ${VERSION_FILE}
+	git commit -S -m "Update changelog for ${VERSION}"
+	# Update binary artifact
+	git add ${TARGET}
 	git commit -S -m "Build release ${VERSION}"
 
 publish:
