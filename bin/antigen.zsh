@@ -1385,7 +1385,7 @@ antigen-use () {
 antigen-version () {
   local extensions
 
-  printf "Antigen %s (%s)\nRevision date: %s\n" "develop" "2f87993" "2017-12-31 02:09:55 +0000"
+  printf "Antigen %s (%s)\nRevision date: %s\n" "develop" "6aa7016" "2017-12-31 03:20:22 +0000"
 
   # Show extension information if any is available
   if (( $+functions[antigen-ext] )); then
@@ -1894,8 +1894,8 @@ EOC
     LOG "TRACE: ${funcfiletrace}"
     if [[ $ANTIGEN_AUTO_CONFIG == true && $#ANTIGEN_CHECK_FILES -eq 0 ]]; then
       # Check common configuration file does exist.
-      if [[ -f $HOME/.zshrc ]]; then
-        ANTIGEN_CHECK_FILES+=($HOME/.zshrc)
+      if [[ -f ${ZDOTDIR:-$HOME}/.zshrc ]]; then
+        ANTIGEN_CHECK_FILES+=(${ZDOTDIR:-$HOME}/.zshrc)
       fi
       # TODO Fix: Fuzzy match shoud be replaced by a sane way to determine it.
       if [[ $#funcfiletrace -ge 6 ]]; then

@@ -127,8 +127,8 @@ EOC
     LOG "TRACE: ${funcfiletrace}"
     if [[ $ANTIGEN_AUTO_CONFIG == true && $#ANTIGEN_CHECK_FILES -eq 0 ]]; then
       # Check common configuration file does exist.
-      if [[ -f $HOME/.zshrc ]]; then
-        ANTIGEN_CHECK_FILES+=($HOME/.zshrc)
+      if [[ -f ${ZDOTDIR:-$HOME}/.zshrc ]]; then
+        ANTIGEN_CHECK_FILES+=(${ZDOTDIR:-$HOME}/.zshrc)
       fi
       # TODO Fix: Fuzzy match shoud be replaced by a sane way to determine it.
       if [[ $#funcfiletrace -ge 6 ]]; then
