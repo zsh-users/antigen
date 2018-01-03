@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/) [v2.0.0](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.3] - 2018-01-03
+
+## Added
+- [#630] Add zsh version 5.4.x to Travis CI
+- [#633, #634] Add configuration `ANTIGEN_COMPINIT_OPTS` for `compinit` command
+
+## Changed
+- [#636, #640] Show revision-date to version command
+
+## Fixed
+- [#635] Fix missing common resource file
+- [#628, #629] Handle `GREP_OPTIONS` env variable
+
+
 ## [2.2.2] - 2017-11-19
 
 ## Added
@@ -560,6 +574,8 @@ This setup further improves cache performance (`~0.02s`). It's fully optional.
 - Added CHANGELOG.md
 - Following [Semantic Versioning](http://semver.org/)
 
+[2.2.3]: https://github.com/zsh-users/antigen/compare/v2.2.2...v2.2.3
+[2.2.2]: https://github.com/zsh-users/antigen/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/zsh-users/antigen/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/zsh-users/antigen/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/zsh-users/antigen/compare/v2.1.0...v2.1.1
