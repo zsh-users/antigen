@@ -103,8 +103,8 @@ build:
 	@echo "-antigen-env-setup" >> ${TARGET}
 	@echo "${VERSION}" > ${VERSION_FILE}
 	@$(call ised,"s/{{ANTIGEN_VERSION}}/$$(cat ${VERSION_FILE})/",${TARGET})
-	@$(call ised,"s/{{ANTIGEN_REVISION}}/$$(git log -n1 --format=%h -- . ':(exclude)bin')/",${TARGET})
-	@$(call ised,"s/{{ANTIGEN_REVISION_DATE}}/$$(TZ=UTC date -d @$$(git log -n1 --format='%at' -- . ':(exclude)bin') '+%F %T %z')/",${TARGET})
+	@$(call ised,"s/{{ANTIGEN_REVISION}}/$$(git log -n1 --format=%h -- src)/",${TARGET})
+	@$(call ised,"s/{{ANTIGEN_REVISION_DATE}}/$$(git log -n1 --format='%ai' -- src)/",${TARGET})
 ifeq (${WITH_DEBUG}, no)
 	@$(call isede,"s/ (WARN|LOG|ERR|TRACE) .*&//",${TARGET})
 	@$(call isede,"/ (WARN|LOG|ERR|TRACE) .*/d",${TARGET})
@@ -113,13 +113,18 @@ endif
 	@ls -sh ${TARGET}
 
 release:
+	# Move to release branch
 	git checkout develop
-	${MAKE} build tests
 	git checkout -b release/${VERSION}
+	# Run build and tests
+	${MAKE} build tests
 	# Update changelog
 	${EDITOR} CHANGELOG.md
 	# Build release commit
-	git add CHANGELOG.md ${VERSION_FILE} README.mkd ${TARGET}
+	git add CHANGELOG.md README.mkd ${VERSION_FILE}
+	git commit -S -m "Update changelog for ${VERSION}"
+	# Update binary artifact
+	git add ${TARGET}
 	git commit -S -m "Build release ${VERSION}"
 
 publish:
