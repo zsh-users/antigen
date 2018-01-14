@@ -81,9 +81,8 @@ define isede
 	mv "$(2).1" "$(2)"
 endef
 
-.PHONY: itests tests install all
 
-build:
+build:  ## Builds Antigen with current configuration settings.
 	@echo Building Antigen...
 	@printf "${BANNER}" > ${BIN}/antigen.zsh
 	@printf "${HEADER_TEXT}" >> ${BIN}/antigen.zsh
@@ -100,7 +99,7 @@ endif
 	@echo Done.
 	@ls -sh ${TARGET}
 
-release:
+release: ## Creates a new release. Specify a version with `VERSION=v1.2.3`.
 	# Move to release branch
 	git checkout develop
 	git checkout -b release/${VERSION}
@@ -115,11 +114,11 @@ release:
 	git add ${TARGET}
 	git commit -S -m "Build release ${VERSION}"
 
-publish:
+publish: ## Publish a release upstream (origin). Specify a version with `VERSION=v1.2.3`.
 	git push origin release/${VERSION}
 	# Merge release branch into develop before deploying
 
-deploy:
+deploy: ## Creates release artifacts and push tag upstream. Specify a version with `VERSION=v1.2.3`.
 	git checkout develop
 	git tag -m "Build release ${VERSION}" -s ${VERSION}
 	git archive --output=${VERSION}.tar.gz --prefix=antigen-$$(echo ${VERSION}|sed s/v//)/ ${VERSION}
@@ -136,25 +135,29 @@ else ifeq (${USE_CONTAINER}, no)
 	${COMMAND}
 endif
 
-info:
+info:	## Display Antigen, zsh, git version and environment variables.
 	@${MAKE} .container COMMAND="sh -c 'cat ${PROJECT}/VERSION; zsh --version; git --version; env'"
 
 itests:
 	@${MAKE} tests CRAM_OPTS=-i
 
-tests:
+tests:  ## Run cram tests, use `TEST=.../path/to/tests.t` to run an specific test.
 	@${MAKE} .container COMMAND="sh -c 'ZDOTDIR=${TESTS} ANTIGEN=${PROJECT} cram ${CRAM_OPTS} --shell=zsh ${TEST}'"
 
-stats:
+stats:  ## Run stats script with current version.
 	@${MAKE} .container COMMAND="${TOOLS}/stats --zsh zsh --antigen ${PROJECT}"
 
-install:
+install: ## Install Antigen locally.
 	mkdir -p ${PREFIX}/share && cp ${TARGET} ${PREFIX}/share/antigen.zsh
 
-clean:
+clean:  ## Removes Antigen from system.
 	rm -f ${PREFIX}/share/antigen.zsh
 
-install-deps:
+install-deps: ## Install Antigen development dependencies.
 	sudo pip install cram=='0.6.*'
 
-all: clean build install
+# From: https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
+
+

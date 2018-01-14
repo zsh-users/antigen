@@ -37,7 +37,7 @@ antigen bundles <<EOBUNDLES
   chrissicool/zsh-256color
   pass
   sprunge
-  git@github.com:desyncr/gitr.git --branch=develop
+  github.com/desyncr/gitr.git --branch=develop
   git://repo.or.cz/safe-rm.git
 EOBUNDLES
 
