@@ -50,6 +50,9 @@
 
   # Add default built-in extensions to load at start up
   -antigen-set-default _ANTIGEN_BUILTIN_EXTENSIONS 'lock parallel defer cache'
+  
+  # Set up configured theme
+  -antigen-set-default _ANTIGEN_THEME ''
 
   # Setup antigen's own completion.
   if -antigen-interactive-mode; then

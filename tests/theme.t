@@ -43,28 +43,29 @@ Should be registered correctly in BUNDLE_RECORD.
   $ echo ${(j:\n:)_ANTIGEN_BUNDLE_RECORD} | grep theme
   *arrow.zsh-theme* (glob)
 
-Using the same theme does not change anything.
+Using the same theme does not re-install theme.
 
-  $ antigen-theme $PLUGIN_DIR arrow
+  $ antigen-theme $PLUGIN_DIR silly
   $ antigen-list --long
-  *arrow* (glob)
+  *silly* (glob)
 
-  $ antigen-theme $PLUGIN_DIR arrow &> /dev/null
-  $ antigen-list --long | grep arrow
-  *arrow* (glob)
+  $ antigen-theme $PLUGIN_DIR silly &> /dev/null
+  [1]
+  $ antigen-list --long | grep silly
+  *silly* (glob)
 
 Can load a theme without specifying a theme name:
 
   $ antigen-theme $PLUGIN_DIR
-  $ antigen-list --long | grep arrow
-  *arrow* (glob)
+  $ antigen-list --long | grep test-plugin
+  *test-plugin* (glob)
 
 Do not change current directory.
 
   $ cd /tmp/ 
-  $ antigen-theme $PLUGIN_DIR
-  $ antigen-list --long | grep arrow
-  *arrow* (glob)
+  $ antigen-theme $PLUGIN_DIR silly
+  $ antigen-list --long | grep silly
+  *silly* (glob)
   $ pwd
   /tmp
 
@@ -72,4 +73,13 @@ Do not provide a default theme name value.
 
   $ antigen-theme
   Antigen: Must provide a theme url or name.
+  [1]
+
+Warm about theme already active.
+
+  $ antigen-theme $PLUGIN_DIR arrow
+  $ antigen-list --long | grep arrow
+  *arrow* (glob)
+  $ antigen-theme $PLUGIN_DIR arrow
+  Antigen: Theme "*" is already active. (glob)
   [1]

@@ -113,10 +113,3 @@ Warns about duplicate bundle.
   $ antigen-bundle $PLUGIN_DIR3
   Seems .* is already installed! (re)
   [1]
-
-  $ _ANTIGEN_WARN_DUPLICATES=false
-  $ antigen-theme $PLUGIN_DIR silly &> /dev/null
-  $ _ANTIGEN_WARN_DUPLICATES=true
-  $ antigen-theme $PLUGIN_DIR silly
-  Seems .* is already installed! (re)
-  [1]
