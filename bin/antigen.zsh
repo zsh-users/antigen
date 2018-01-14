@@ -1402,7 +1402,7 @@ antigen-use () {
 antigen-version () {
   local extensions
 
-  printf "Antigen %s (%s)\nRevision date: %s\n" "develop" "0d03d1f" "2018-01-13 22:55:22 -0300"
+  printf "Antigen %s (%s)\nRevision date: %s\n" "develop" "3e6275b" "2018-01-13 23:06:57 -0300"
 
   # Show extension information if any is available
   if (( $+functions[antigen-ext] )); then
@@ -1939,6 +1939,12 @@ EOC
   
   # Defer antigen-bundle.
   antigen-bundle-cached () {
+    # Return an error is not bundle name/url is passed or a heredoc is misused,
+    # see https://github.com/zsh-users/antigen/issues/602
+    if [[ $# -eq 0 ]]; then
+      printf "Antigen: Must provide a bundle url or name.\n" >&2
+      return 1
+    fi
     _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${@}}")
   }
   antigen-add-hook antigen-bundle antigen-bundle-cached pre
