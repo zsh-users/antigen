@@ -1230,17 +1230,20 @@ antigen-snapshot () {
 #   0 if everything was succesfully
 antigen-theme () {
   local name=$1 result=0 record=$1
-  if [[ $name = */* ]]; then
-     record="$1 ${2:-/}"
-  fi
-
-  local match mbegin mend MATCH MBEGIN MEND
 
   # Verify arguments are passed properly.
   if [[ -z "$name" ]]; then
     printf "Antigen: Must provide a theme url or name.\n" >&2
     return 1
   fi
+
+  # Generate record name based off path and name for themes loaded from local paths,
+  # this also supports themes loaded from the same repository.
+  if [[ $name = */* ]]; then
+     record="$1 ${2:-/}"
+  fi
+
+  local match mbegin mend MATCH MBEGIN MEND
 
   # Verify theme hasn't been loaded previously.
   if [[ "$_ANTIGEN_THEME" == "$record" ]]; then
@@ -1399,7 +1402,7 @@ antigen-use () {
 antigen-version () {
   local extensions
 
-  printf "Antigen %s (%s)\nRevision date: %s\n" "develop" "ff391b5" "2018-01-02 13:19:57 +0100"
+  printf "Antigen %s (%s)\nRevision date: %s\n" "develop" "0d03d1f" "2018-01-13 22:55:22 -0300"
 
   # Show extension information if any is available
   if (( $+functions[antigen-ext] )); then
