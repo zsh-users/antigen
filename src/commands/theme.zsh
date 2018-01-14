@@ -9,7 +9,13 @@
 #   0 if everything was succesfully
 antigen-theme () {
   local name=$1 result=0 record=$1
-  
+
+  # Verify arguments are passed properly.
+  if [[ -z "$name" ]]; then
+    printf "Antigen: Must provide a theme url or name.\n" >&2
+    return 1
+  fi
+
   # Generate record name based off path and name for themes loaded from local paths,
   # this also supports themes loaded from the same repository.
   if [[ $name = */* ]]; then
@@ -17,12 +23,6 @@ antigen-theme () {
   fi
 
   local match mbegin mend MATCH MBEGIN MEND
-
-  # Verify arguments are passed properly.
-  if [[ -z "$name" ]]; then
-    printf "Antigen: Must provide a theme url or name.\n" >&2
-    return 1
-  fi
 
   # Verify theme hasn't been loaded previously.
   if [[ "$_ANTIGEN_THEME" == "$record" ]]; then
