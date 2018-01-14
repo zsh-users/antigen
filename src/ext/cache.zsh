@@ -155,6 +155,12 @@ EOC
   
   # Defer antigen-bundle.
   antigen-bundle-cached () {
+    # Return an error is not bundle name/url is passed or a heredoc is misused,
+    # see https://github.com/zsh-users/antigen/issues/602
+    if [[ $# -eq 0 ]]; then
+      printf "Antigen: Must provide a bundle url or name.\n" >&2
+      return 1
+    fi
     _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${@}}")
   }
   antigen-add-hook antigen-bundle antigen-bundle-cached pre
