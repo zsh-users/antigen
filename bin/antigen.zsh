@@ -68,7 +68,7 @@ compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
 antigen () {
   local cmd="$1"
   if [[ -z "$cmd" ]]; then
-    echo 'Antigen: Please give a command to run.' >&2
+    antigen-help >&2
     return 1
   fi
   shift
@@ -1402,7 +1402,7 @@ antigen-use () {
 antigen-version () {
   local extensions
 
-  printf "Antigen %s (%s)\nRevision date: %s\n" "develop" "f3b7bc4" "2018-01-14 13:05:10 -0300"
+  printf "Antigen %s (%s)\nRevision date: %s\n" "develop" "9312823" "2018-01-15 14:20:20 -0300"
 
   # Show extension information if any is available
   if (( $+functions[antigen-ext] )); then
