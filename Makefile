@@ -115,6 +115,8 @@ release: ## Creates a new release. Specify a version with `VERSION=v1.2.3`.
 	# Move to release branch
 	git checkout develop
 	git checkout -b release/${VERSION}
+	# Update version information
+	@echo ${VERSION} > ${VERSION_FILE}
 	# Run build and tests
 	${MAKE} build tests
 	# Update changelog
@@ -125,20 +127,28 @@ release: ## Creates a new release. Specify a version with `VERSION=v1.2.3`.
 	# Update binary artifact
 	git add ${TARGET}
 	git commit -S -m "Build release ${VERSION}"
+	git push origin release/$(cat ${VERSION_FILE})
 
-publish: ## Publish a release upstream (origin). Specify a version with `VERSION=v1.2.3`.
-	git push origin release/${VERSION}
-	# Merge release branch into develop before deploying
-
-deploy: ## Creates release artifacts and push tag upstream. Specify a version with `VERSION=v1.2.3`.
+create-tag:
 	git checkout develop
-	git tag -m "Build release ${VERSION}" -s ${VERSION}
-	git archive --output=${VERSION}.tar.gz --prefix=antigen-$$(echo ${VERSION}|sed s/v//)/ ${VERSION}
-	zcat ${VERSION}.tar.gz | gpg --armor --detach-sign >${VERSION}.tar.gz.sign
+	git merge release/$$(cat ${VERSION_FILE})
+	git tag -m "Build release $$(cat ${VERSION_FILE})" -s $$(cat ${VERSION_FILE})
+
+archive:
+	git archive --output=$$(cat ${VERSION_FILE}).tar.gz --prefix=$$(echo $$(cat ${VERSION_FILE})|sed s/v//)/ $$(cat ${VERSION_FILE})
+
+sign-archive:
+	zcat $$(cat ${VERSION_FILE}).tar.gz | gpg --armor --detach-sign >$$(cat ${VERSION_FILE}).tar.gz.sign
 	# Verify signature
-	zcat ${VERSION}.tar.gz | gpg --verify ${VERSION}.tar.gz.sign -
+	zcat $$(cat ${VERSION_FILE}).tar.gz | gpg --verify $$(cat ${VERSION_FILE}).tar.gz.sign -
+
+publish: create-tag archive sign-archive ## Creates release artifacts and push tag upstream.
 	# Push upstream
-	git push upstream ${VERSION}
+	git push upstream $$(cat ${VERSION_FILE})
+
+create-release:
+	echo -e ${TARGET}\\n$$(cat ${VERSION_FILE}).tar.gz\\n$$(cat ${VERSION_FILE}).tar.gz.sign | bash ./tools/github-release Release $$(cat ${VERSION_FILE})
+
 
 .container:
 ifeq (${USE_CONTAINER}, docker)
