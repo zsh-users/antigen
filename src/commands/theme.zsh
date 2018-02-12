@@ -33,7 +33,7 @@ antigen-theme () {
   # Remove currently active hooks, this may leave the prompt broken if the
   # new theme is not found/can not be loaded. We should have a way to test if
   # a theme/bundle can be loaded/exists.
-  #-antigen-theme-reset-hooks
+  -antigen-theme-reset-hooks
 
   if [[ "$1" != */* && "$1" != --* ]]; then
     # The first argument is just a name of the plugin, to be picked up from
@@ -52,7 +52,7 @@ antigen-theme () {
     if [[ "$_ANTIGEN_THEME" != "" && $_ANTIGEN_BUNDLE_RECORD[(I)*$_ANTIGEN_THEME*] > 0 ]]; then
       _ANTIGEN_BUNDLE_RECORD[$_ANTIGEN_BUNDLE_RECORD[(I)*$_ANTIGEN_THEME*]]=()
     fi
-    
+
     # Set new theme as active.
     _ANTIGEN_THEME=$record
   fi
@@ -72,9 +72,6 @@ antigen-theme () {
   fi
 
   for hook in chpwd precmd preexec periodic; do
-    add-zsh-hook -D "${hook}" "prompt_*"
-    # common in omz themes
-    add-zsh-hook -D "${hook}" "*_${hook}"
-    add-zsh-hook -d "${hook}" "vcs_info"
+    add-zsh-hook -D "${hook}" "*"
   done
 }
