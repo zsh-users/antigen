@@ -46,6 +46,7 @@ if [[ $ANTIGEN_CACHE != false ]]; then
     return 0
   fi
 fi
+[[ -z "$_ANTIGEN_INSTALL_FILENAME" ]] && _ANTIGEN_INSTALL_FILENAME=$(basename $0 2> /dev/null)
 [[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
 
 # Each line in this string has the following entries separated by a space
@@ -1830,7 +1831,7 @@ cat > $ANTIGEN_CACHE <<EOC
 $(functions -- _antigen)
 antigen () {
   local MATCH MBEGIN MEND
-  [[ "\$ZSH_EVAL_CONTEXT" =~ "toplevel:*" || "\$ZSH_EVAL_CONTEXT" =~ "cmdarg:*" ]] && source "$_ANTIGEN_INSTALL_DIR/antigen.zsh" && eval antigen \$@;
+  [[ "\$ZSH_EVAL_CONTEXT" =~ "toplevel:*" || "\$ZSH_EVAL_CONTEXT" =~ "cmdarg:*" ]] && source "$_ANTIGEN_INSTALL_DIR/$_ANTIGEN_INSTALL_FILENAME" && eval antigen \$@;
   return 0;
 }
 typeset -gaU fpath path

@@ -1,3 +1,4 @@
+[[ -z "$_ANTIGEN_INSTALL_FILENAME" ]] && _ANTIGEN_INSTALL_FILENAME=$(basename $0 2> /dev/null)
 [[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
 
 # Each line in this string has the following entries separated by a space
