@@ -93,9 +93,8 @@ define isede
 	mv "$(2).1" "$(2)"
 endef
 
-.PHONY: itests tests install all
 
-build:
+build:  ## Builds Antigen with current configuration settings.
 	@echo Building Antigen...
 	@printf "${BANNER}" > ${BIN}/antigen.zsh
 	@printf "${HEADER_TEXT}" >> ${BIN}/antigen.zsh
@@ -112,10 +111,12 @@ endif
 	@echo Done.
 	@ls -sh ${TARGET}
 
-release:
+release: ## Creates a new release. Specify a version with `VERSION=v1.2.3`.
 	# Move to release branch
 	git checkout develop
 	git checkout -b release/${VERSION}
+	# Update version information
+	@echo ${VERSION} > ${VERSION_FILE}
 	# Run build and tests
 	${MAKE} build tests
 	# Update changelog
@@ -126,20 +127,28 @@ release:
 	# Update binary artifact
 	git add ${TARGET}
 	git commit -S -m "Build release ${VERSION}"
+	git push origin release/$(cat ${VERSION_FILE})
 
-publish:
-	git push origin release/${VERSION}
-	# Merge release branch into develop before deploying
-
-deploy:
+create-tag:
 	git checkout develop
-	git tag -m "Build release ${VERSION}" -s ${VERSION}
-	git archive --output=${VERSION}.tar.gz --prefix=antigen-$$(echo ${VERSION}|sed s/v//)/ ${VERSION}
-	zcat ${VERSION}.tar.gz | gpg --armor --detach-sign >${VERSION}.tar.gz.sign
+	git merge release/$$(cat ${VERSION_FILE})
+	git tag -m "Build release $$(cat ${VERSION_FILE})" -s $$(cat ${VERSION_FILE})
+
+archive:
+	git archive --output=$$(cat ${VERSION_FILE}).tar.gz --prefix=$$(echo $$(cat ${VERSION_FILE})|sed s/v//)/ $$(cat ${VERSION_FILE})
+
+sign-archive:
+	zcat $$(cat ${VERSION_FILE}).tar.gz | gpg --armor --detach-sign >$$(cat ${VERSION_FILE}).tar.gz.sign
 	# Verify signature
-	zcat ${VERSION}.tar.gz | gpg --verify ${VERSION}.tar.gz.sign -
+	zcat $$(cat ${VERSION_FILE}).tar.gz | gpg --verify $$(cat ${VERSION_FILE}).tar.gz.sign -
+
+publish: create-tag archive sign-archive ## Creates release artifacts and push tag upstream.
 	# Push upstream
-	git push upstream ${VERSION}
+	git push upstream $$(cat ${VERSION_FILE})
+
+create-release:
+	echo -e ${TARGET}\\n$$(cat ${VERSION_FILE}).tar.gz\\n$$(cat ${VERSION_FILE}).tar.gz.sign | bash ./tools/github-release Release $$(cat ${VERSION_FILE})
+
 
 .container:
 ifeq (${USE_CONTAINER}, docker)
@@ -148,25 +157,29 @@ else ifeq (${USE_CONTAINER}, no)
 	${COMMAND}
 endif
 
-info:
+info:	## Display Antigen, zsh, git version and environment variables.
 	@${MAKE} .container COMMAND="sh -c 'cat ${PROJECT}/VERSION; zsh --version; git --version; env'"
 
 itests:
 	@${MAKE} tests CRAM_OPTS=-i
 
-tests:
+tests:  ## Run cram tests, use `TEST=.../path/to/tests.t` to run an specific test.
 	@${MAKE} .container COMMAND="sh -c 'ZDOTDIR=${TESTS} ANTIGEN=${PROJECT} cram ${CRAM_OPTS} --shell=zsh ${TEST}'"
 
-stats:
+stats:  ## Run stats script with current version.
 	@${MAKE} .container COMMAND="${TOOLS}/stats --zsh zsh --antigen ${PROJECT}"
 
-install:
+install: ## Install Antigen locally.
 	mkdir -p ${PREFIX}/share && cp ${TARGET} ${PREFIX}/share/antigen.zsh
 
-clean:
+clean:  ## Removes Antigen from system.
 	rm -f ${PREFIX}/share/antigen.zsh
 
-install-deps:
+install-deps: ## Install Antigen development dependencies.
 	sudo pip install cram=='0.6.*'
 
-all: clean build install
+# From: https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
+
+
