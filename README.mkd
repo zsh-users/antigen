@@ -82,9 +82,6 @@ And a typical `.zshrc` might look like this:
     # Load Antigen source
     source /path-to-antigen/antigen.zsh
 
-    # Initialize Antigen.
-    antigen init ~/.antigenrc
-
 Open your zsh with this `.zshrc` and this `.antigenrc` and you should see all 
 the bundles you defined at `.antigenrc` getting installed.
 
