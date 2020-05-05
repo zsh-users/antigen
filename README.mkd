@@ -36,9 +36,61 @@ Now you may head towards the [Commands][] and [Configuration][] wiki pages to fu
 understand Antigen's functionallity and customization.
 
 ## Usage
+There are two methods for configuring Antigen. Both methods are perfectly valid but we
+recommend you to adopt the
+[Separation of Concerns](https://en.wikipedia.org/wiki/Separation_of_concerns) design
+principle by concentrating Antigen related configurations at `.antigenrc` file.
 
-The usage should be very familiar to you if you use Vundle. A typical `.zshrc`
-might look like this:
+- [Recommended method (.antigenrc + .zshrc)](#recommended-method)
+- [Second method (.zshrc only)](#second-method)
+
+The usage should be very familiar to you if you use Vundle. Once it's done,
+you are ready to roll. The complete syntax for the `antigen bundle` command
+is discussed in the [Commands][] page.
+
+Furthermore, [In the wild][wild] wiki section has more configuration examples.
+You may as well take a look at the [Show off][] wiki page for interactive mode
+usage.
+
+### Recommended method
+A typical `.antigenrc` might look like this:
+    
+    #!/usr/bin/env bash
+
+    # Load the oh-my-zsh's library.
+    antigen use oh-my-zsh
+
+    # Bundles from the default repo (robbyrussell's oh-my-zsh).
+    antigen bundle git
+    antigen bundle heroku
+    antigen bundle pip
+    antigen bundle lein
+    antigen bundle command-not-found
+
+    # Syntax highlighting bundle.
+    antigen bundle zsh-users/zsh-syntax-highlighting
+
+    # Load the theme.
+    antigen theme robbyrussell
+
+    # Tell Antigen that you're done.
+    antigen apply
+
+
+And a typical `.zshrc` might look like this:
+    
+    # Load Antigen source
+    source /path-to-antigen/antigen.zsh
+
+    # Initialize Antigen.
+    antigen init ~/.antigenrc
+
+Open your zsh with this `.zshrc` and this `.antigenrc` and you should see all 
+the bundles you defined at `.antigenrc` getting installed.
+
+### Second method
+
+A typical `.zshrc` might look like this:
 
     source /path-to-antigen/antigen.zsh
 
@@ -61,13 +113,7 @@ might look like this:
     # Tell Antigen that you're done.
     antigen apply
 
-Open your zsh with this `.zshrc` and you should see all the bundles you defined
-here, getting installed. Once it's done, you are ready to roll. The complete
-syntax for the `antigen bundle` command is discussed in the [Commands][] page.
-
-Furthermore, [In the wild][wild] wiki section has more configuration examples. You may
-as well take a look at the [Show off][] wiki page
-for interactive mode usage.
+Open your zsh with this `.zshrc` and you should see all the bundles you defined here, getting installed.
 
 ## Meta
 
