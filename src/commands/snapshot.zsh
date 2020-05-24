@@ -1,5 +1,5 @@
 antigen-snapshot () {
-  local snapshot_file="${1:-antigen-shapshot}"
+  local snapshot_file="${1:-antigen-snapshot}"
   local urls url dir version_hash snapshot_content
   local -a bundles
 
