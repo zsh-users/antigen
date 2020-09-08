@@ -1816,7 +1816,7 @@ typeset -g _ZCACHE_CAPTURE_PREFIX
          }' >>! "$compat"
         record="$compat"
       fi
-      _sources+=("source '${record}';"$'\n')
+      _sources+=("() source '${record}';"$'\n')
     elif [[ -d $record ]]; then
       _PATH+=("${record}")
       _fpath+=("${record}")
@@ -1891,14 +1891,14 @@ EOC
 
   # Cache auto config files to check for changes (.zshrc, .antigenrc etc)
   -antigen-set-default ANTIGEN_AUTO_CONFIG true
-  
+
   # Default cache path.
   -antigen-set-default ANTIGEN_CACHE $ADOTDIR/init.zsh
   -antigen-set-default ANTIGEN_RSRC $ADOTDIR/.resources
   if [[ $ANTIGEN_CACHE == false ]]; then
     return 1
   fi
-  
+
   return 0
 }
 
@@ -1934,9 +1934,9 @@ EOC
     antigen-remove-hook -antigen-load-source-cached
     antigen-remove-hook antigen-bundle-cached
   }
-  
+
   antigen-add-hook antigen-apply antigen-apply-cached post once
-  
+
   # Defer antigen-bundle.
   antigen-bundle-cached () {
     # Return an error is not bundle name/url is passed or a heredoc is misused,
@@ -1948,13 +1948,13 @@ EOC
     _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${@}}")
   }
   antigen-add-hook antigen-bundle antigen-bundle-cached pre
-  
+
   # Defer loading.
   -antigen-load-env-cached () {
     local bundle
     typeset -A bundle; bundle=($@)
     local location=${bundle[dir]}/${bundle[loc]}
-    
+
     # Load to path if there is no sourceable
     if [[ ${bundle[loc]} == "/" ]]; then
       _ZCACHE_BUNDLE_SOURCE+=("${location}")
@@ -1964,13 +1964,13 @@ EOC
     _ZCACHE_BUNDLE_SOURCE+=("${location}")
   }
   antigen-add-hook -antigen-load-env -antigen-load-env-cached replace
-  
+
   # Defer sourcing.
   -antigen-load-source-cached () {
     _ZCACHE_BUNDLE_SOURCE+=($@)
   }
   antigen-add-hook -antigen-load-source -antigen-load-source-cached replace
-  
+
   return 0
 }
 
