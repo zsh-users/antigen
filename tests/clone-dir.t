@@ -23,8 +23,8 @@ There may be a dot-git suffix in branches names.
 You may use a plugin from a library on an specific tag/branch.
 
   $ antigen bundle git@v1.2.3-1
-  Installing robbyrussell/oh-my-zsh@v1.2.3-1... 
-  git clone .* --branch v1.2.3-1 -- https://github.com/robbyrussell/oh-my-zsh.git .*/bundles/robbyrussell/oh-my-zsh-v1.2.3-1 (re)
+  Installing ohmyzsh/ohmyzsh@v1.2.3-1... 
+  git clone .* --branch v1.2.3-1 -- https://github.com/ohmyzsh/ohmyzsh.git .*/bundles/ohmyzsh/ohmyzsh-v1.2.3-1 (re)
   
   Done. Took *s. (glob)
 

@@ -85,9 +85,9 @@ there was any progress made. So, I'm trying to start this off with Antigen,
 hoping to better this situation. Please note that I'm by no means a zsh or any
 shell script expert (far from it).
 
-[1]: https://github.com/robbyrussell/oh-my-zsh/issues/465
-[2]: https://github.com/robbyrussell/oh-my-zsh/issues/377
-[3]: https://github.com/robbyrussell/oh-my-zsh/issues/1014
+[1]: https://github.com/ohmyzsh/ohmyzsh/issues/465
+[2]: https://github.com/ohmyzsh/ohmyzsh/issues/377
+[3]: https://github.com/ohmyzsh/ohmyzsh/issues/1014
 
 Inspired by vundle, Antigen can pull oh-my-zsh style plugins from various github
 repositories. You are not limited to use plugins from the oh-my-zsh repository
@@ -130,7 +130,7 @@ you may find useful.
 [Vundle]: https://github.com/gmarik/vundle
 [awesome-zsh-plugins]: https://github.com/unixorn/awesome-zsh-plugins
 [wild]: https://github.com/zsh-users/antigen/wiki/In-the-wild
-[oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh
+[oh-my-zsh]: https://github.com/ohmyzsh/ohmyzsh
 [issue]: https://github.com/zsh-users/antigen/issues
 [license]: http://mit.sharats.me
 [contributing]: https://github.com/zsh-users/antigen/wiki/Contributing
