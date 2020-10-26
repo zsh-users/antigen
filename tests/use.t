@@ -59,8 +59,8 @@ Test load from oh-my-zsh:
   $ antigen bundle other/plugin
   $ antigen apply
   $ antigen list --long
-  https://github.com/robbyrussell/oh-my-zsh.git lib plugin true
-  https://github.com/robbyrussell/oh-my-zsh.git plugins/wd plugin true
+  https://github.com/ohmyzsh/ohmyzsh.git lib plugin true
+  https://github.com/ohmyzsh/ohmyzsh.git plugins/wd plugin true
   https://github.com/other/plugin.git / plugin true
 
 Test load from prezto:

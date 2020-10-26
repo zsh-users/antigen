@@ -6,7 +6,7 @@
 # Returns
 #   List of themes by name
 -antigen-get-themes () {
-  local library='robbyrussell/oh-my-zsh'
+  local library='ohmyzsh/ohmyzsh'
   local bundle=$(-antigen-find-bundle $library)
 
   if [[ -n "$bundle" ]]; then
