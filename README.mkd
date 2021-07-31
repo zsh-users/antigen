@@ -32,7 +32,7 @@ Install Antigen from our main repository with the latest stable version availabl
 Or if you use <a href="https://github.com/ohmyzsh/ohmyzsh">Oh My Zsh</a>:
 
     curl -L git.io/antigen > $ZSH/tools/antigen
-    echo "alias antigen="zsh $ZSH/tools/antigen"
+    echo "alias antigen="zsh $ZSH/tools/antigen" >> ~/.zhsrc
 
 There are several installation methods using your System Package manager, just look
 at the [Installation][] wiki page.
