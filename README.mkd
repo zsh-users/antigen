@@ -33,7 +33,7 @@ There are several installation methods using your System Package manager, just l
 at the [Installation][] wiki page.
 
 Now you may head towards the [Commands][] and [Configuration][] wiki pages to further
-understand Antigen's functionallity and customization.
+understand Antigen's functionality and customization.
 
 ## Usage
 
