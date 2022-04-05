@@ -61,7 +61,7 @@ fi
 
 # Used to defer compinit/compdef
 typeset -a __deferred_compdefs
-compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
+compdef () { __deferred_compdefs=($__deferred_compdefs "${${(@q-)@}}") }
 
 # A syntax sugar to avoid the `-` when calling antigen commands. With this
 # function, you can write `antigen-bundle` as `antigen bundle` and so on.
@@ -799,7 +799,7 @@ antigen-apply () {
   # Apply all `compinit`s that have been deferred.
   local cdef
   for cdef in "${__deferred_compdefs[@]}"; do
-    compdef "$cdef"
+    compdef ${(Q)${(z)cdef}}
   done
 
   { zcompile "$ANTIGEN_COMPDUMP" } &!
