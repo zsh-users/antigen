@@ -9,6 +9,10 @@
 zmodload zsh/parameter
 autoload -U is-at-least
 
+# Used to defer compinit/compdef
+typeset -a __deferred_compdefs
+compdef () { __deferred_compdefs=($__deferred_compdefs "${${(@q-)@}}") }
+
 # While boot.zsh is part of the ext/cache functionallity it may be disabled
 # with ANTIGEN_CACHE flag, and it's always compiled with antigen.zsh
 if [[ $ANTIGEN_CACHE != false ]]; then
@@ -58,10 +62,6 @@ if (( ! $+commands[git] )); then
     echo 'Antigen: Please install git to use Antigen.' >&2
     return 1
 fi
-
-# Used to defer compinit/compdef
-typeset -a __deferred_compdefs
-compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
 
 # A syntax sugar to avoid the `-` when calling antigen commands. With this
 # function, you can write `antigen-bundle` as `antigen bundle` and so on.
@@ -796,15 +796,15 @@ antigen-apply () {
   autoload -Uz compinit
   compinit $ANTIGEN_COMPINIT_OPTS -d "$ANTIGEN_COMPDUMP"
 
-  # Apply all `compinit`s that have been deferred.
+  # Apply all `compdef`s that have been deferred.
   local cdef
   for cdef in "${__deferred_compdefs[@]}"; do
-    compdef "$cdef"
+    compdef ${(Q)${(z)cdef}}
   done
 
   { zcompile "$ANTIGEN_COMPDUMP" } &!
 
-  unset __deferred_compdefs
+  __deferred_compdefs=()
 }
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
@@ -1836,11 +1836,21 @@ antigen () {
 typeset -gaU fpath path
 fpath+=(${_fpath[@]}) path+=(${_PATH[@]})
 _antigen_compinit () {
-  autoload -Uz compinit; compinit $ANTIGEN_COMPINIT_OPTS -d "$ANTIGEN_COMPDUMP"; compdef _antigen antigen
+  autoload -Uz compinit
+  compinit $ANTIGEN_COMPINIT_OPTS -d "$ANTIGEN_COMPDUMP"
+  compdef _antigen antigen
+  
+  # Apply all \`compdef\`s that have been deferred.
+  local cdef
+  for cdef in "\${__deferred_compdefs[@]}"; do
+    compdef \${(Q)\${(z)cdef}}
+  done
+
+  __deferred_compdefs=()
+  
   add-zsh-hook -D precmd _antigen_compinit
 }
 autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
-compdef () {}
 
 if [[ -n "$ZSH" ]]; then
   ZSH="$ZSH"; ZSH_CACHE_DIR="$ZSH_CACHE_DIR"
