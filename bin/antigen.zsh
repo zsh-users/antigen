@@ -804,7 +804,7 @@ antigen-apply () {
 
   { zcompile "$ANTIGEN_COMPDUMP" } &!
 
-  unset __deferred_compdefs
+  __deferred_compdefs=()
 }
 # Syntaxes
 #   antigen-bundle <url> [<loc>=/]
@@ -1846,7 +1846,7 @@ _antigen_compinit () {
     compdef \${(Q)\${(z)cdef}}
   done
 
-  unset __deferred_compdefs
+  __deferred_compdefs=()
   
   add-zsh-hook -D precmd _antigen_compinit
 }
