@@ -16,10 +16,15 @@ antigen-bundle () {
 
   local record="${bundle[url]} ${bundle[loc]} ${bundle[btype]} ${bundle[make_local_clone]}"
   if [[ $_ANTIGEN_WARN_DUPLICATES == true && ! ${_ANTIGEN_BUNDLE_RECORD[(I)$record]} == 0 ]]; then
-    printf "Seems %s is already installed!\n" ${bundle[name]}
+    if [[ ${bundle[loc]} == "/" ]]; then
+      printf "Antigen: Seems %s %s is already installed!\n" ${bundle[btype]} ${bundle[name]}
+    else
+      local local_name=${bundle[loc]#plugins/}
+      printf "Antigen: Seems %s %s from %s is already installed!\n" ${bundle[btype]} ${local_name} ${bundle[name]}
+    fi
     return 1
   fi
- 
+
   # Clone bundle if we haven't done do already.
   if [[ ! -d "${bundle[dir]}" ]]; then
     if ! -antigen-bundle-install ${(kv)bundle}; then
@@ -30,10 +35,15 @@ antigen-bundle () {
   # Load the plugin.
   if ! -antigen-load ${(kv)bundle}; then
     TRACE "-antigen-load failed to load ${bundle[name]}" BUNDLE
-    printf "Antigen: Failed to load %s.\n" ${bundle[btype]} >&2
+    if [[ ${bundle[loc]} == "/" ]]; then
+      printf "Antigen: Failed to load %s %s.\n" ${bundle[btype]} ${bundle[name]}
+    else
+      local local_name=${bundle[loc]#plugins/}
+      printf "Antigen: Failed to load %s %s from %s.\n" ${bundle[btype]} ${local_name} ${bundle[name]}
+    fi
     return 1
   fi
-  
+
   # Only add it to the record if it could be installed and loaded.
   _ANTIGEN_BUNDLE_RECORD+=("$record")
 }
@@ -56,11 +66,11 @@ antigen-bundle () {
 
   if ! -antigen-ensure-repo "${bundle[url]}"; then
     # Return immediately if there is an error cloning
-    TRACE "-antigen-bundle-instal failed to clone ${bundle[url]}" BUNDLE
-    printf "Error! Activate logging and try again.\n" >&2
+    TRACE "-antigen-bundle-install failed to clone ${bundle[url]}" BUNDLE
+    printf "Antigen: Error! Activate logging and try again.\n" >&2
     return 1
   fi
 
   local took=$(( $(date +'%s') - $start ))
-  printf "Done. Took %ds.\n" $took
+  printf "Antigen: Done. Took %ds.\n" $took
 }
