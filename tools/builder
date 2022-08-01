@@ -69,7 +69,7 @@ function builder/compile () {
   fi
 
   # Configure bindir for this branch
-  ./configure --bindir="$target/$version" --prefix="$target/$version"--without-tcsetpgrp
+  ./configure --bindir="$target/$version" --prefix="$target/$version" --without-tcsetpgrp
 
   # Make
   make -j5
