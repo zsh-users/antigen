@@ -160,7 +160,7 @@ itests:
 	@${MAKE} tests CRAM_OPTS=-i
 
 tests:
-	@${MAKE} .container COMMAND="sh -c 'ZDOTDIR=${TESTS} ANTIGEN=${PROJECT} cram ${CRAM_OPTS} --shell=zsh ${TEST}'"
+	@${MAKE} .container COMMAND="sh -c 'ZDOTDIR=${TESTS} ANTIGEN=${PROJECT} .venv/bin/cram ${CRAM_OPTS} --shell=zsh ${TEST}'"
 
 stats:
 	@${MAKE} .container COMMAND="${TOOLS}/stats --zsh zsh --antigen ${PROJECT}"
