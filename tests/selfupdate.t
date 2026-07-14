@@ -58,7 +58,7 @@ Use selfupdate from normal repository
    ver |*2 +- (glob)
    1 file changed, 1 insertion(+), 1 deletion(-)
   $ _ANTIGEN_INSTALL_DIR=$TEST_NORMAL antigen-selfupdate
-  Already up-to-date.
+  Already up*to*date. (glob)
 
 Use selfupdate from submodule repository
 
@@ -70,4 +70,4 @@ Use selfupdate from submodule repository
    ver |*2 +- (glob)
    1 file changed, 1 insertion(+), 1 deletion(-)
   $ _ANTIGEN_INSTALL_DIR=$TEST_SUBMODULE/antigen antigen-selfupdate
-  Already up-to-date.
+  Already up*to*date. (glob)

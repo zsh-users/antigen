@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  test-docker:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        zsh_version:
+          - zsh-5.8
+          - zsh-5.7
+          - zsh-5.6
+          - zsh-5.5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Tests in Docker Container
+        run: |
+          make info tests stats USE_CONTAINER=docker ZSH_VERSION=${{ matrix.zsh_version }}
+
+  test-local:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+
+      - name: Install zsh
+        run: |
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            sudo apt update
+            sudo apt install -y zsh
+          elif [[ "${{ runner.os }}" == "macOS" ]]; then
+            brew install zsh
+          fi
+        shell: bash
+
+      - name: Install Cram
+        run: |
+          python3 -m venv venv
+          venv/bin/pip install cram
+
+      - name: Run Local Tests
+        run: |
+          make build
+          ZDOTDIR=$(pwd)/tests ANTIGEN=$(pwd) venv/bin/cram -v --shell=zsh tests

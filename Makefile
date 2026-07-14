@@ -143,7 +143,12 @@ deploy:
 
 .container:
 ifeq (${USE_CONTAINER}, docker)
-	@docker run --rm --privileged=true -it -v ${PROJECT}:/antigen ${CONTAINER_IMAGE}${ZSH_VERSION} $(shell echo "${COMMAND}" | sed "s|${PROJECT}|${CONTAINER_ROOT}|g")
+ifneq ($(filter zshusers/zsh:%,$(ZSH_VERSION)),)
+	$(eval CONTAINER_IMAGE_VERSION := $(ZSH_VERSION))
+else
+	$(eval CONTAINER_IMAGE_VERSION := $(CONTAINER_IMAGE)$(ZSH_VERSION))
+endif
+	@docker run --rm --privileged=true -v ${PROJECT}:/antigen $(CONTAINER_IMAGE_VERSION) $(shell echo "${COMMAND}" | sed "s|${PROJECT}|${CONTAINER_ROOT}|g")
 else ifeq (${USE_CONTAINER}, no)
 	${COMMAND}
 endif
@@ -155,7 +160,7 @@ itests:
 	@${MAKE} tests CRAM_OPTS=-i
 
 tests:
-	@${MAKE} .container COMMAND="sh -c 'ZDOTDIR=${TESTS} ANTIGEN=${PROJECT} cram ${CRAM_OPTS} --shell=zsh ${TEST}'"
+	@${MAKE} .container COMMAND="sh -c 'ZDOTDIR=${TESTS} ANTIGEN=${PROJECT} .venv/bin/cram ${CRAM_OPTS} --shell=zsh ${TEST}'"
 
 stats:
 	@${MAKE} .container COMMAND="${TOOLS}/stats --zsh zsh --antigen ${PROJECT}"
