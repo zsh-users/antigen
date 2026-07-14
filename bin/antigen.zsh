@@ -46,7 +46,7 @@ if [[ $ANTIGEN_CACHE != false ]]; then
     return 0
   fi
 fi
-[[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
+[[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${${(%):-%x}:A:h}
 
 # Each line in this string has the following entries separated by a space
 # character.
@@ -1823,7 +1823,8 @@ typeset -g _ZCACHE_CAPTURE_PREFIX
     fi
   done
 
-cat > $ANTIGEN_CACHE <<EOC
+  local tmp_cache="$ANTIGEN_CACHE.tmp"
+  cat > "$tmp_cache" <<EOC
 #-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
 #-- ANTIGEN develop
@@ -1857,7 +1858,11 @@ typeset -g _ANTIGEN_THEME; _ANTIGEN_THEME='$_ANTIGEN_THEME'
 #-- END ZCACHE GENERATED FILE
 EOC
 
-  { zcompile "$ANTIGEN_CACHE" } &!
+  zcompile "$tmp_cache"
+  mv -f "$tmp_cache" "$ANTIGEN_CACHE"
+  if [[ -f "$tmp_cache.zwc" ]]; then
+    mv -f "$tmp_cache.zwc" "$ANTIGEN_CACHE.zwc"
+  fi
 
   # Compile config files, if any
   LOG "CHECK_FILES $ANTIGEN_CHECK_FILES"

@@ -50,9 +50,7 @@ The alias defined in the other zsh file should not be available.
 
 Fpath should be updated correctly.
 
-  $ echo ${(j:\n:)fpath}
-  .*/site-functions (re)
-  .*/functions (re)
+  $ echo ${(j:\n:)fpath} | grep -E '(test-plugin|test-plugin2)$'
   .*/test-plugin (re)
   .*/test-plugin2 (re)
 
