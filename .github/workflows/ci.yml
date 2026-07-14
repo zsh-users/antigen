@@ -32,7 +32,7 @@ jobs:
         run: |
           make info tests stats USE_CONTAINER=docker ZSH_VERSION=${{ matrix.zsh_version }}
 
-    test-local:
+  test-local:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
