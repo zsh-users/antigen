@@ -54,6 +54,10 @@ jobs:
         with:
           python-version: '3.x'
 
+
+      - name: Install zsh
+        run: sudo apt install zsh
+
       - name: Install Cram
         run: |
           python3 -m venv venv
