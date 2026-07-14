@@ -143,7 +143,7 @@ deploy:
 
 .container:
 ifeq (${USE_CONTAINER}, docker)
-	@docker run --rm --privileged=true -it -v ${PROJECT}:/antigen ${CONTAINER_IMAGE}${ZSH_VERSION} $(shell echo "${COMMAND}" | sed "s|${PROJECT}|${CONTAINER_ROOT}|g")
+	@docker run --rm --privileged=true -v ${PROJECT}:/antigen ${CONTAINER_IMAGE}${ZSH_VERSION} $(shell echo "${COMMAND}" | sed "s|${PROJECT}|${CONTAINER_ROOT}|g")
 else ifeq (${USE_CONTAINER}, no)
 	${COMMAND}
 endif
