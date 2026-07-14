@@ -56,7 +56,14 @@ jobs:
 
 
       - name: Install zsh
-        run: sudo apt install zsh
+        run: |
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            sudo apt update
+            sudo apt install -y zsh
+          elif [[ "${{ runner.os }}" == "macOS" ]]; then
+            brew install zsh
+          fi
+        shell: bash
 
       - name: Install Cram
         run: |
