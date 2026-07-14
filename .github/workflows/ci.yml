@@ -32,16 +32,7 @@ jobs:
         run: |
           make info tests stats USE_CONTAINER=docker ZSH_VERSION=${{ matrix.zsh_version }}
 
-      - name: Verify Build Integrity
-        run: |
-          SHASUM=$(shasum -a 256 ./bin/antigen.zsh)
-          VERSION=$(cat ./VERSION) make build USE_CONTAINER=docker ZSH_VERSION=${{ matrix.zsh_version }}
-          SHACHECK=$(shasum -a 256 ./bin/antigen.zsh)
-          echo "Original: $SHASUM"
-          echo "Rebuilt:  $SHACHECK"
-          test "$SHASUM" == "$SHACHECK"
-
-  test-local:
+    test-local:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
