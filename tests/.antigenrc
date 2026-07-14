@@ -13,7 +13,6 @@ antigen bundles <<EOBUNDLES
   caarlos0/zsh-git-fetch-merge
   caarlos0/zsh-git-sync
   caarlos0/zsh-mkc
-  peterhurford/git-it-on.zsh
   caarlos0/jvm.git
   caarlos0/zsh-open-pr
   junegunn/fzf@0.16.*
