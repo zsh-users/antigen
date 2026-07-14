@@ -12,6 +12,8 @@ jobs:
     strategy:
       matrix:
         zsh_version:
+          - zshusers/zsh:5.9
+          - zshusers/zsh:5.8
           - zsh-5.7
           - zsh-5.6
           - zsh-5.5

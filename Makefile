@@ -143,7 +143,12 @@ deploy:
 
 .container:
 ifeq (${USE_CONTAINER}, docker)
-	@docker run --rm --privileged=true -v ${PROJECT}:/antigen ${CONTAINER_IMAGE}${ZSH_VERSION} $(shell echo "${COMMAND}" | sed "s|${PROJECT}|${CONTAINER_ROOT}|g")
+	ifneq ($(filter zshusers/zsh:%,$(ZSH_VERSION)),)
+		CONTAINER_IMAGE_VERSION := $(ZSH_VERSION)
+	else
+		CONTAINER_IMAGE_VERSION := $(CONTAINER_IMAGE)$(ZSH_VERSION)
+	endif
+	@docker run --rm --privileged=true -v ${PROJECT}:/antigen $(CONTAINER_IMAGE_VERSION) $(shell echo "${COMMAND}" | sed "s|${PROJECT}|${CONTAINER_ROOT}|g")
 else ifeq (${USE_CONTAINER}, no)
 	${COMMAND}
 endif
