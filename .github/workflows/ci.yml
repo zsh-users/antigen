@@ -12,21 +12,10 @@ jobs:
     strategy:
       matrix:
         zsh_version:
-          - zshusers/zsh:5.9
-          - zshusers/zsh:5.8
+          - zsh-5.8
           - zsh-5.7
           - zsh-5.6
           - zsh-5.5
-          - zsh-5.4.2
-          - zsh-5.4.1
-          - zsh-5.4
-          - zsh-5.3.1
-          - zsh-5.3
-          - zsh-5.2
-          - zsh-5.1.1
-          - zsh-5.0.0
-          - zsh-4.3.17
-          - zsh-4.3.11
     steps:
       - uses: actions/checkout@v4
 
