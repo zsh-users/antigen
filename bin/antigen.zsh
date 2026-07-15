@@ -1432,7 +1432,7 @@ antigen-use () {
 antigen-version () {
   local extensions
 
-  printf "Antigen %s (%s)\nRevision date: %s\n" "develop" "0554db1" "2026-07-14 16:52:45 +0100"
+  printf "Antigen %s (%s)\nRevision date: %s\n" "develop" "e8f037f" "2017-06-24 07:07:52 -0300"
 
   # Show extension information if any is available
   if (( $+functions[antigen-ext] )); then

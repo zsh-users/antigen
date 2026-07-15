@@ -7,13 +7,16 @@ Should display Antigen defined environment variables.
   ADOTDIR=.* (re)
   ANTIGEN_BUNDLES=.* (re)
   ANTIGEN_COMPDUMP=.* (re)
+  ANTIGEN_COMPINIT_OPTS=-i
   ANTIGEN_LOG=/dev/null
   ANTIGEN_CLONE_ENV=GIT_TERMINAL_PROMPT=0
   ANTIGEN_CLONE_OPTS=--single-branch --recursive --depth=1
   ANTIGEN_SUBMODULE_OPTS=--recursive --depth=1
   _ANTIGEN_WARN_DUPLICATES=.* (re)
   _ANTIGEN_THEME_COMPAT=true
+  _ANTIGEN_GREP_COMMAND=GREP_OPTIONS= command grep 
   _ANTIGEN_BUILTIN_EXTENSIONS=lock parallel defer cache
+  _ANTIGEN_THEME=
 
 Should list any variable defined through -set-default.
 
