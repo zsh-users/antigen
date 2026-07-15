@@ -1,11 +1,10 @@
-# Helper function: Same as `$1=$2`, but will only happen if the name
-# specified by `$1` is not already set.
--antigen-set-default () {
-  local arg_name="$1"
-  local arg_value="$2"
-  eval "test -z \"\$$arg_name\" && typeset -g $arg_name='$arg_value'"
-}
-
+# Set up default environment variables for Antigen
+# 
+# Usage
+#   -antigen-env-setup
+#
+# Returns
+#   Nothing.
 -antigen-env-setup () {
   typeset -gU fpath path
 
