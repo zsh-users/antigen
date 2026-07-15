@@ -6,10 +6,10 @@ typeset -A opts;
 opts=(
 with-debug      yes
 with-extensions yes
-with-lock 	    yes
-with-parallel	  yes
-with-cache 	    yes
-with-defer 	    yes
+with-lock       yes
+with-parallel   yes
+with-cache      yes
+with-defer      yes
 with-completion yes
 )
 
@@ -37,7 +37,7 @@ Example:
 
     # Disable completion
     ./configure --disable-completion
-    
+
     # Enable debug
     ./configure --with-debug
 
@@ -47,8 +47,8 @@ fi
 
 
 while [[ $# -gt 0 ]]; do
-	argkey="${1%\=*}"
-	key="${argkey//--/}"
+  argkey="${1%\=*}"
+  key="${argkey//--/}"
   if [[ $key = enable-* || $key = disable-* ]]; then
     if [[ $1 = *=* ]]; then
       printf "No options required for: %s (%s)\n" $argkey $1 >&2
@@ -57,12 +57,12 @@ while [[ $# -gt 0 ]]; do
     [[ $key = enable-* ]] && value=yes || value=no
     key="with-${key//enable-/}"
     key="${key//disable-/}"
-    if [[ ! $opts[$key] ]]; then
+    if [[ ${opts[$key]} == "" ]]; then
       printf "Invalid option argument: %s (%s)\n" $argkey $key >&2
       printf "Valid options are: %s\n" ${(kj:, :)opts} >&2
       exit 1
     fi
-    
+
     # Disable all extentions
     if [[ $key == "with-extensions" && $value == "no" ]]; then
       opts[with-lock]=no
