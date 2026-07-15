@@ -36,3 +36,15 @@ Again, check if they are both applied.
   hehe
   $ hehe2
   hehe2
+
+Handle GREP_OPTIONS gracefully.
+
+  $ GREP_OPTIONS="--color=always "
+  $ echo "  $PLUGIN_DIR\n  $PLUGIN_DIR2" | antigen-bundles
+
+Check if they are both applied.
+
+  $ hehe
+  hehe
+  $ hehe2
+  hehe2

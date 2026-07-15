@@ -1,4 +1,4 @@
-[[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
+[[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${${(%):-%x}:A:h}
 
 # Each line in this string has the following entries separated by a space
 # character.
@@ -20,7 +20,7 @@ compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
 antigen () {
   local cmd="$1"
   if [[ -z "$cmd" ]]; then
-    echo 'Antigen: Please give a command to run.' >&2
+    antigen-help >&2
     return 1
   fi
   shift

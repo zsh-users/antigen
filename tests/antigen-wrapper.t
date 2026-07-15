@@ -19,3 +19,16 @@ Call with an alias
   $ alias a=antigen
   $ a dummy
   me dummy
+
+Call without arguments should exit with error.
+
+  $ antigen 2>/dev/null
+  [1]
+
+Call without arguments should display help message.
+
+  $ antigen 2>&1 | head -n 4
+  Antigen .* (re)
+  Revision .* (re)
+  
+  Antigen is a .* (re)

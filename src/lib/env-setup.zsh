@@ -31,6 +31,7 @@
   fi
 
   -antigen-set-default ANTIGEN_COMPDUMP "${ADOTDIR:-$HOME}/.zcompdump"
+  -antigen-set-default ANTIGEN_COMPINIT_OPTS "-i"
   -antigen-set-default ANTIGEN_LOG /dev/null
 
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
@@ -44,15 +45,20 @@
 
   # Compatibility with oh-my-zsh themes.
   -antigen-set-default _ANTIGEN_THEME_COMPAT true
-  
+
+  -antigen-set-default _ANTIGEN_GREP_COMMAND 'GREP_OPTIONS= command grep '
+
   # Add default built-in extensions to load at start up
   -antigen-set-default _ANTIGEN_BUILTIN_EXTENSIONS 'lock parallel defer cache'
+  
+  # Set up configured theme
+  -antigen-set-default _ANTIGEN_THEME ''
 
   # Setup antigen's own completion.
   if -antigen-interactive-mode; then
     TRACE "Gonna create compdump file @ env-setup" COMPDUMP
     autoload -Uz compinit
-    compinit -d "$ANTIGEN_COMPDUMP"
+    compinit $ANTIGEN_COMPINIT_OPTS -d "$ANTIGEN_COMPDUMP"
     compdef _antigen antigen
   else
     (( $+functions[antigen-ext-init] )) && antigen-ext-init

@@ -4,7 +4,7 @@ antigen-bundles () {
   # quoting rules applied.
   local line
   setopt localoptions no_extended_glob # See https://github.com/zsh-users/antigen/issues/456
-  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+  eval "$_ANTIGEN_GREP_COMMAND '^[[:space:]]*[^[:space:]#]'" | while read line; do
     antigen-bundle ${=line%#*}
   done
 }

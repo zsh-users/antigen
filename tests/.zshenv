@@ -6,8 +6,9 @@ setopt localoptions warncreateglobal
 export ADOTDIR=$(mktemp -du "/tmp/dot-antigen-tmp-XXXXX")
 [[ ! -d "$ADOTDIR" ]] && mkdir -p "$ADOTDIR"
 
-export ANTIGEN=${ANTIGEN:-"/antigen"}
+export ANTIGEN=${ANTIGEN:-${ZDOTDIR:A:h}}
 export ANTIGEN_AUTO_CONFIG=false
+export GIT_CONFIG_PARAMETERS="'init.defaultBranch=master' 'protocol.file.allow=always'"
 # Commented out due to tests/cache.t
 #export ANTIGEN_CACHE=false
 export ANTIGEN_RSRC=$ADOTDIR/.resources

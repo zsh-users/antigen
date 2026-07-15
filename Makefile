@@ -103,6 +103,8 @@ build:
 	@echo "-antigen-env-setup" >> ${TARGET}
 	@echo "${VERSION}" > ${VERSION_FILE}
 	@$(call ised,"s/{{ANTIGEN_VERSION}}/$$(cat ${VERSION_FILE})/",${TARGET})
+	@$(call ised,"s/{{ANTIGEN_REVISION}}/$$(git log -n1 --format=%h -- src)/",${TARGET})
+	@$(call ised,"s/{{ANTIGEN_REVISION_DATE}}/$$(git log -n1 --format='%ai' -- src)/",${TARGET})
 ifeq (${WITH_DEBUG}, no)
 	@$(call isede,"s/ (WARN|LOG|ERR|TRACE) .*&//",${TARGET})
 	@$(call isede,"/ (WARN|LOG|ERR|TRACE) .*/d",${TARGET})
@@ -111,13 +113,18 @@ endif
 	@ls -sh ${TARGET}
 
 release:
+	# Move to release branch
 	git checkout develop
-	${MAKE} build tests
 	git checkout -b release/${VERSION}
+	# Run build and tests
+	${MAKE} build tests
 	# Update changelog
 	${EDITOR} CHANGELOG.md
 	# Build release commit
-	git add CHANGELOG.md ${VERSION_FILE} README.mkd ${TARGET}
+	git add CHANGELOG.md README.mkd ${VERSION_FILE}
+	git commit -S -m "Update changelog for ${VERSION}"
+	# Update binary artifact
+	git add ${TARGET}
 	git commit -S -m "Build release ${VERSION}"
 
 publish:
@@ -136,7 +143,12 @@ deploy:
 
 .container:
 ifeq (${USE_CONTAINER}, docker)
-	@docker run --rm --privileged=true -it -v ${PROJECT}:/antigen ${CONTAINER_IMAGE}${ZSH_VERSION} $(shell echo "${COMMAND}" | sed "s|${PROJECT}|${CONTAINER_ROOT}|g")
+ifneq ($(filter zshusers/zsh:%,$(ZSH_VERSION)),)
+	$(eval CONTAINER_IMAGE_VERSION := $(ZSH_VERSION))
+else
+	$(eval CONTAINER_IMAGE_VERSION := $(CONTAINER_IMAGE)$(ZSH_VERSION))
+endif
+	@docker run --rm --privileged=true -v ${PROJECT}:/antigen $(CONTAINER_IMAGE_VERSION) $(shell echo "${COMMAND}" | sed "s|${PROJECT}|${CONTAINER_ROOT}|g")
 else ifeq (${USE_CONTAINER}, no)
 	${COMMAND}
 endif
@@ -148,7 +160,7 @@ itests:
 	@${MAKE} tests CRAM_OPTS=-i
 
 tests:
-	@${MAKE} .container COMMAND="sh -c 'ZDOTDIR=${TESTS} ANTIGEN=${PROJECT} cram ${CRAM_OPTS} --shell=zsh ${TEST}'"
+	@${MAKE} .container COMMAND="sh -c 'ZDOTDIR=${TESTS} ANTIGEN=${PROJECT} .venv/bin/cram ${CRAM_OPTS} --shell=zsh ${TEST}'"
 
 stats:
 	@${MAKE} .container COMMAND="${TOOLS}/stats --zsh zsh --antigen ${PROJECT}"

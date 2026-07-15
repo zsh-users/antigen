@@ -46,7 +46,7 @@ if [[ $ANTIGEN_CACHE != false ]]; then
     return 0
   fi
 fi
-[[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${0:A:h}
+[[ -z "$_ANTIGEN_INSTALL_DIR" ]] && _ANTIGEN_INSTALL_DIR=${${(%):-%x}:A:h}
 
 # Each line in this string has the following entries separated by a space
 # character.
@@ -68,7 +68,7 @@ compdef () { __deferred_compdefs=($__deferred_compdefs "$*") }
 antigen () {
   local cmd="$1"
   if [[ -z "$cmd" ]]; then
-    echo 'Antigen: Please give a command to run.' >&2
+    antigen-help >&2
     return 1
   fi
   shift
@@ -249,7 +249,7 @@ antigen () {
 
   if [[ -n "$bundle" ]]; then
     local dir=$(-antigen-get-clone-dir $ANTIGEN_DEFAULT_REPO_URL)
-    echo $(ls $dir/themes/ | grep '.zsh-theme$' | sed 's/.zsh-theme//')
+    echo $(ls $dir/themes/ | eval "$_ANTIGEN_GREP_COMMAND '.zsh-theme$'" | sed 's/.zsh-theme//')
   fi
 
   return 0
@@ -453,6 +453,7 @@ antigen () {
   fi
 
   -antigen-set-default ANTIGEN_COMPDUMP "${ADOTDIR:-$HOME}/.zcompdump"
+  -antigen-set-default ANTIGEN_COMPINIT_OPTS "-i"
   -antigen-set-default ANTIGEN_LOG /dev/null
 
   # CLONE_OPTS uses ${=CLONE_OPTS} expansion so don't use spaces
@@ -466,15 +467,20 @@ antigen () {
 
   # Compatibility with oh-my-zsh themes.
   -antigen-set-default _ANTIGEN_THEME_COMPAT true
-  
+
+  -antigen-set-default _ANTIGEN_GREP_COMMAND 'GREP_OPTIONS= command grep '
+
   # Add default built-in extensions to load at start up
   -antigen-set-default _ANTIGEN_BUILTIN_EXTENSIONS 'lock parallel defer cache'
+  
+  # Set up configured theme
+  -antigen-set-default _ANTIGEN_THEME ''
 
   # Setup antigen's own completion.
   if -antigen-interactive-mode; then
     TRACE "Gonna create compdump file @ env-setup" COMPDUMP
     autoload -Uz compinit
-    compinit -d "$ANTIGEN_COMPDUMP"
+    compinit $ANTIGEN_COMPINIT_OPTS -d "$ANTIGEN_COMPDUMP"
     compdef _antigen antigen
   else
     (( $+functions[antigen-ext-init] )) && antigen-ext-init
@@ -788,7 +794,7 @@ antigen-apply () {
   # the one that actually initializes completions.
   TRACE "Gonna create compdump file @ apply" COMPDUMP
   autoload -Uz compinit
-  compinit -d "$ANTIGEN_COMPDUMP"
+  compinit $ANTIGEN_COMPINIT_OPTS -d "$ANTIGEN_COMPDUMP"
 
   # Apply all `compinit`s that have been deferred.
   local cdef
@@ -872,7 +878,7 @@ antigen-bundles () {
   # quoting rules applied.
   local line
   setopt localoptions no_extended_glob # See https://github.com/zsh-users/antigen/issues/456
-  grep '^[[:space:]]*[^[:space:]#]' | while read line; do
+  eval "$_ANTIGEN_GREP_COMMAND '^[[:space:]]*[^[:space:]#]'" | while read line; do
     antigen-bundle ${=line%#*}
   done
 }
@@ -996,7 +1002,7 @@ antigen-init () {
   fi
 
   # Otherwise we expect it to be a heredoc
-  grep '^[[:space:]]*[^[:space:]#]' | while read -r line; do
+  eval "$_ANTIGEN_GREP_COMMAND '^[[:space:]]*[^[:space:]#]'" | while read -r line; do
     eval $line
   done
 }
@@ -1218,22 +1224,38 @@ antigen-snapshot () {
 # Shares the same syntax as antigen-bundle command.
 #
 # Usage
-#   antigen-theme zsh/theme[.zsh-theme]
+#   antigen-theme [path] [zsh/theme[.zsh-theme]]
 #
 # Returns
 #   0 if everything was succesfully
 antigen-theme () {
-  local name=$1 result=0 record
-  local match mbegin mend MATCH MBEGIN MEND
+  local name=$1 result=0 record=$1
 
-  if [[ -z "$1" ]]; then
+  # Verify arguments are passed properly.
+  if [[ -z "$name" ]]; then
     printf "Antigen: Must provide a theme url or name.\n" >&2
     return 1
   fi
 
-  -antigen-theme-reset-hooks
+  # Generate record name based off path and name for themes loaded from local paths,
+  # this also supports themes loaded from the same repository.
+  if [[ $name = */* ]]; then
+     record="$1 ${2:-/}"
+  fi
 
-  record=$(-antigen-find-record "theme")
+  local match mbegin mend MATCH MBEGIN MEND
+
+  # Verify theme hasn't been loaded previously.
+  if [[ "$_ANTIGEN_THEME" == "$record" ]]; then
+    printf "Antigen: Theme \"%s\" is already active.\n" $name >&2
+    return 1
+  fi
+
+  # Remove currently active hooks, this may leave the prompt broken if the
+  # new theme is not found/can not be loaded. We should have a way to test if
+  # a theme/bundle can be loaded/exists.
+  #-antigen-theme-reset-hooks
+
   if [[ "$1" != */* && "$1" != --* ]]; then
     # The first argument is just a name of the plugin, to be picked up from
     # the default repo.
@@ -1245,17 +1267,15 @@ antigen-theme () {
   fi
   result=$?
 
-  # Remove a theme from the record if the following conditions apply:
-  #   - there was no error in bundling the given theme
-  #   - there is a theme registered
-  #   - registered theme is not the same as the current one
-  if [[ $result == 0 && -n $record ]]; then
-    # http://zsh-workers.zsh.narkive.com/QwfCWpW8/what-s-wrong-with-this-expression
-    if [[ "$record" =~ "$@" ]]; then
-      return $result
-    else
-      _ANTIGEN_BUNDLE_RECORD[$_ANTIGEN_BUNDLE_RECORD[(I)$record]]=()
+  # Do remove theme record if we're successful at loading this one.
+  if [[ $result == 0 ]]; then
+    # Remove theme from record if there was one registered.
+    if [[ "$_ANTIGEN_THEME" != "" && $_ANTIGEN_BUNDLE_RECORD[(I)*$_ANTIGEN_THEME*] > 0 ]]; then
+      _ANTIGEN_BUNDLE_RECORD[$_ANTIGEN_BUNDLE_RECORD[(I)*$_ANTIGEN_THEME*]]=()
     fi
+    
+    # Set new theme as active.
+    _ANTIGEN_THEME=$record
   fi
 
   return $result
@@ -1380,13 +1400,11 @@ antigen-use () {
   fi
 }
 antigen-version () {
-  local version="v2.2.2"
-  local extensions revision=""
-  if [[ -d $_ANTIGEN_INSTALL_DIR/.git ]]; then
-    revision=" ($(git --git-dir=$_ANTIGEN_INSTALL_DIR/.git rev-parse --short '@'))"
-  fi
+  local extensions
 
-  printf "Antigen %s%s\n" $version $revision
+  printf "Antigen %s (%s)\nRevision date: %s\n" "develop" "0554db1" "2026-07-14 16:52:45 +0100"
+
+  # Show extension information if any is available
   if (( $+functions[antigen-ext] )); then
     typeset -a extensions; extensions=($(antigen-ext-list))
     if [[ $#extensions -gt 0 ]]; then
@@ -1805,10 +1823,11 @@ typeset -g _ZCACHE_CAPTURE_PREFIX
     fi
   done
 
-cat > $ANTIGEN_CACHE <<EOC
+  local tmp_cache="$ANTIGEN_CACHE.tmp"
+  cat > "$tmp_cache" <<EOC
 #-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
-#-- ANTIGEN v2.2.2
+#-- ANTIGEN develop
 $(functions -- _antigen)
 antigen () {
   local MATCH MBEGIN MEND
@@ -1818,7 +1837,7 @@ antigen () {
 typeset -gaU fpath path
 fpath+=(${_fpath[@]}) path+=(${_PATH[@]})
 _antigen_compinit () {
-  autoload -Uz compinit; compinit -d "$ANTIGEN_COMPDUMP"; compdef _antigen antigen
+  autoload -Uz compinit; compinit $ANTIGEN_COMPINIT_OPTS -d "$ANTIGEN_COMPDUMP"; compdef _antigen antigen
   add-zsh-hook -D precmd _antigen_compinit
 }
 autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
@@ -1833,12 +1852,17 @@ ${(j::)_sources}
 typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=($(print ${(qq)_ANTIGEN_BUNDLE_RECORD}))
 typeset -g _ANTIGEN_CACHE_LOADED; _ANTIGEN_CACHE_LOADED=true
 typeset -ga _ZCACHE_BUNDLE_SOURCE; _ZCACHE_BUNDLE_SOURCE=($(print ${(qq)_ZCACHE_BUNDLE_SOURCE}))
-typeset -g _ANTIGEN_CACHE_VERSION; _ANTIGEN_CACHE_VERSION='v2.2.2'
+typeset -g _ANTIGEN_CACHE_VERSION; _ANTIGEN_CACHE_VERSION='develop'
+typeset -g _ANTIGEN_THEME; _ANTIGEN_THEME='$_ANTIGEN_THEME'
 
 #-- END ZCACHE GENERATED FILE
 EOC
 
-  { zcompile "$ANTIGEN_CACHE" } &!
+  zcompile "$tmp_cache"
+  mv -f "$tmp_cache" "$ANTIGEN_CACHE"
+  if [[ -f "$tmp_cache.zwc" ]]; then
+    mv -f "$tmp_cache.zwc" "$ANTIGEN_CACHE.zwc"
+  fi
 
   # Compile config files, if any
   LOG "CHECK_FILES $ANTIGEN_CHECK_FILES"
@@ -1892,7 +1916,11 @@ EOC
     # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
     LOG "TRACE: ${funcfiletrace}"
     if [[ $ANTIGEN_AUTO_CONFIG == true && $#ANTIGEN_CHECK_FILES -eq 0 ]]; then
-      ANTIGEN_CHECK_FILES+=(~/.zshrc)
+      # Check common configuration file does exist.
+      if [[ -f ${ZDOTDIR:-$HOME}/.zshrc ]]; then
+        ANTIGEN_CHECK_FILES+=(${ZDOTDIR:-$HOME}/.zshrc)
+      fi
+      # TODO Fix: Fuzzy match shoud be replaced by a sane way to determine it.
       if [[ $#funcfiletrace -ge 6 ]]; then
         ANTIGEN_CHECK_FILES+=("${${funcfiletrace[6]%:*}##* }")
       fi
@@ -1916,6 +1944,12 @@ EOC
   
   # Defer antigen-bundle.
   antigen-bundle-cached () {
+    # Return an error is not bundle name/url is passed or a heredoc is misused,
+    # see https://github.com/zsh-users/antigen/issues/602
+    if [[ $# -eq 0 ]]; then
+      printf "Antigen: Must provide a bundle url or name.\n" >&2
+      return 1
+    fi
     _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${@}}")
   }
   antigen-add-hook antigen-bundle antigen-bundle-cached pre

@@ -39,7 +39,8 @@ typeset -g _ZCACHE_CAPTURE_PREFIX
     fi
   done
 
-cat > $ANTIGEN_CACHE <<EOC
+  local tmp_cache="$ANTIGEN_CACHE.tmp"
+  cat > "$tmp_cache" <<EOC
 #-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
 #-- ANTIGEN {{ANTIGEN_VERSION}}
@@ -52,7 +53,7 @@ antigen () {
 typeset -gaU fpath path
 fpath+=(${_fpath[@]}) path+=(${_PATH[@]})
 _antigen_compinit () {
-  autoload -Uz compinit; compinit -d "$ANTIGEN_COMPDUMP"; compdef _antigen antigen
+  autoload -Uz compinit; compinit $ANTIGEN_COMPINIT_OPTS -d "$ANTIGEN_COMPDUMP"; compdef _antigen antigen
   add-zsh-hook -D precmd _antigen_compinit
 }
 autoload -Uz add-zsh-hook; add-zsh-hook precmd _antigen_compinit
@@ -68,11 +69,16 @@ typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=($(print ${(qq)_ANTI
 typeset -g _ANTIGEN_CACHE_LOADED; _ANTIGEN_CACHE_LOADED=true
 typeset -ga _ZCACHE_BUNDLE_SOURCE; _ZCACHE_BUNDLE_SOURCE=($(print ${(qq)_ZCACHE_BUNDLE_SOURCE}))
 typeset -g _ANTIGEN_CACHE_VERSION; _ANTIGEN_CACHE_VERSION='{{ANTIGEN_VERSION}}'
+typeset -g _ANTIGEN_THEME; _ANTIGEN_THEME='$_ANTIGEN_THEME'
 
 #-- END ZCACHE GENERATED FILE
 EOC
 
-  { zcompile "$ANTIGEN_CACHE" } &!
+  zcompile "$tmp_cache"
+  mv -f "$tmp_cache" "$ANTIGEN_CACHE"
+  if [[ -f "$tmp_cache.zwc" ]]; then
+    mv -f "$tmp_cache.zwc" "$ANTIGEN_CACHE.zwc"
+  fi
 
   # Compile config files, if any
   LOG "CHECK_FILES $ANTIGEN_CHECK_FILES"
@@ -126,7 +132,11 @@ EOC
     # `antigen` wrapper not `antigen-apply` directly and it's called by an extension.
     LOG "TRACE: ${funcfiletrace}"
     if [[ $ANTIGEN_AUTO_CONFIG == true && $#ANTIGEN_CHECK_FILES -eq 0 ]]; then
-      ANTIGEN_CHECK_FILES+=(~/.zshrc)
+      # Check common configuration file does exist.
+      if [[ -f ${ZDOTDIR:-$HOME}/.zshrc ]]; then
+        ANTIGEN_CHECK_FILES+=(${ZDOTDIR:-$HOME}/.zshrc)
+      fi
+      # TODO Fix: Fuzzy match shoud be replaced by a sane way to determine it.
       if [[ $#funcfiletrace -ge 6 ]]; then
         ANTIGEN_CHECK_FILES+=("${${funcfiletrace[6]%:*}##* }")
       fi
@@ -150,6 +160,12 @@ EOC
   
   # Defer antigen-bundle.
   antigen-bundle-cached () {
+    # Return an error is not bundle name/url is passed or a heredoc is misused,
+    # see https://github.com/zsh-users/antigen/issues/602
+    if [[ $# -eq 0 ]]; then
+      printf "Antigen: Must provide a bundle url or name.\n" >&2
+      return 1
+    fi
     _ZCACHE_CAPTURE_BUNDLE+=("${(j: :)${@}}")
   }
   antigen-add-hook antigen-bundle antigen-bundle-cached pre

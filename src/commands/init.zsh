@@ -37,7 +37,7 @@ antigen-init () {
   fi
 
   # Otherwise we expect it to be a heredoc
-  grep '^[[:space:]]*[^[:space:]#]' | while read -r line; do
+  eval "$_ANTIGEN_GREP_COMMAND '^[[:space:]]*[^[:space:]#]'" | while read -r line; do
     eval $line
   done
 }

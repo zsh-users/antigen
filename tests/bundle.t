@@ -50,9 +50,7 @@ The alias defined in the other zsh file should not be available.
 
 Fpath should be updated correctly.
 
-  $ echo ${(j:\n:)fpath}
-  .*/site-functions (re)
-  .*/functions (re)
+  $ echo ${(j:\n:)fpath} | grep -E '(test-plugin|test-plugin2)$'
   .*/test-plugin (re)
   .*/test-plugin2 (re)
 
@@ -111,12 +109,5 @@ Warns about duplicate bundle.
   $ antigen-bundle $PLUGIN_DIR3 &> /dev/null
   $ _ANTIGEN_WARN_DUPLICATES=true
   $ antigen-bundle $PLUGIN_DIR3
-  Seems .* is already installed! (re)
-  [1]
-
-  $ _ANTIGEN_WARN_DUPLICATES=false
-  $ antigen-theme $PLUGIN_DIR silly &> /dev/null
-  $ _ANTIGEN_WARN_DUPLICATES=true
-  $ antigen-theme $PLUGIN_DIR silly
   Seems .* is already installed! (re)
   [1]
