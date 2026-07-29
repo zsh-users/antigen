@@ -23,7 +23,7 @@
     # If there is a lock set up then we won't process anything.
     if [[ -f $ANTIGEN_LOCK ]]; then
       # Set up flag do the message is not repeated for each antigen-* command
-      [[ $_ANTIGEN_LOCK_PROCESS == false ]] && printf "Antigen: Another process in running.\n"
+      [[ $_ANTIGEN_LOCK_PROCESS == false ]] && printf "Antigen: Another process is running.\n"
       _ANTIGEN_LOCK_PROCESS=true
       # Do not further process hooks. For this hook to properly work it
       # should be registered first.
