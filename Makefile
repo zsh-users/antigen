@@ -93,7 +93,7 @@ define isede
 	mv "$(2).1" "$(2)"
 endef
 
-.PHONY: itests tests install all
+.PHONY: build check-version release deploy publish itests tests install all
 
 build:
 	@echo Building Antigen...
@@ -112,34 +112,26 @@ endif
 	@echo Done.
 	@ls -sh ${TARGET}
 
-release:
-	# Move to release branch
-	git checkout develop
-	git checkout -b release/${VERSION}
-	# Run build and tests
-	${MAKE} build tests
-	# Update changelog
-	${EDITOR} CHANGELOG.md
-	# Build release commit
-	git add CHANGELOG.md README.mkd ${VERSION_FILE}
-	git commit -S -m "Update changelog for ${VERSION}"
-	# Update binary artifact
-	git add ${TARGET}
-	git commit -S -m "Build release ${VERSION}"
+check-version:
+	@printf '%s\n' "$(VERSION)" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$$' || { echo "Usage: make $@ VERSION=vX.Y.Z"; exit 1; }
 
-publish:
-	git push origin release/${VERSION}
-	# Merge release branch into develop before deploying
+release: check-version build tests
+	@$(EDITOR) CHANGELOG.md
+	@echo $(VERSION) > $(VERSION_FILE)
+	git add CHANGELOG.md $(VERSION_FILE) $(TARGET)
+	git commit -S -m "Release $(VERSION)"
+	git tag -s -m "Release $(VERSION)" $(VERSION)
 
-deploy:
-	git checkout develop
-	git tag -m "Build release ${VERSION}" -s ${VERSION}
-	git archive --output=${VERSION}.tar.gz --prefix=antigen-$$(echo ${VERSION}|sed s/v//)/ ${VERSION}
-	zcat ${VERSION}.tar.gz | gpg --armor --detach-sign >${VERSION}.tar.gz.sign
-	# Verify signature
-	zcat ${VERSION}.tar.gz | gpg --verify ${VERSION}.tar.gz.sign -
-	# Push upstream
-	git push upstream ${VERSION}
+deploy: check-version
+	git archive --output=$(VERSION).tar.gz --prefix=antigen-$$(echo $(VERSION)|sed s/v//)/ $(VERSION)
+	gpg --armor --detach-sign $(VERSION).tar.gz
+	gpg --verify $(VERSION).tar.gz.asc $(VERSION).tar.gz
+
+publish: check-version
+	git push origin develop --follow-tags
+	gh release create $(VERSION) $(TARGET) $(VERSION).tar.gz $(VERSION).tar.gz.asc \
+		--title "Release $(VERSION)" \
+		--notes "$$(sed -n '/^## \[$(VERSION)\]/,/^## \[/p' CHANGELOG.md | sed '$$d')"
 
 .container:
 ifeq (${USE_CONTAINER}, docker)
