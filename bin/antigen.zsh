@@ -1432,7 +1432,7 @@ antigen-use () {
 antigen-version () {
   local extensions
 
-  printf "Antigen %s (%s)\nRevision date: %s\n" "develop" "e8f037f" "2017-06-24 07:07:52 -0300"
+  printf "Antigen %s (%s)\nRevision date: %s\n" "v2.3.0" "ca80840" "2026-10-09 22:50:57 +0100"
 
   # Show extension information if any is available
   if (( $+functions[antigen-ext] )); then
@@ -1857,7 +1857,7 @@ typeset -g _ZCACHE_CAPTURE_PREFIX
   cat > "$tmp_cache" <<EOC
 #-- START ZCACHE GENERATED FILE
 #-- GENERATED: $(date)
-#-- ANTIGEN develop
+#-- ANTIGEN v2.3.0
 $(functions -- _antigen)
 antigen () {
   local MATCH MBEGIN MEND
@@ -1882,7 +1882,7 @@ ${(j::)_sources}
 typeset -gaU _ANTIGEN_BUNDLE_RECORD; _ANTIGEN_BUNDLE_RECORD=($(print ${(qq)_ANTIGEN_BUNDLE_RECORD}))
 typeset -g _ANTIGEN_CACHE_LOADED; _ANTIGEN_CACHE_LOADED=true
 typeset -ga _ZCACHE_BUNDLE_SOURCE; _ZCACHE_BUNDLE_SOURCE=($(print ${(qq)_ZCACHE_BUNDLE_SOURCE}))
-typeset -g _ANTIGEN_CACHE_VERSION; _ANTIGEN_CACHE_VERSION='develop'
+typeset -g _ANTIGEN_CACHE_VERSION; _ANTIGEN_CACHE_VERSION='v2.3.0'
 typeset -g _ANTIGEN_THEME; _ANTIGEN_THEME='$_ANTIGEN_THEME'
 
 #-- END ZCACHE GENERATED FILE
